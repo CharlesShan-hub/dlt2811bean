@@ -20,6 +20,5 @@ public class RpcCallClient extends BaseClientHandler<RpcCallDao> {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         decodeResp(frame, new CmsRpcCallResponse());
-        log.info("RpcCall succeeded");
     }
 }

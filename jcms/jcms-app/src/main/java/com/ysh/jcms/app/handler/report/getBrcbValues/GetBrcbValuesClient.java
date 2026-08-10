@@ -57,6 +57,5 @@ public class GetBrcbValuesClient extends BaseClientHandler<GetBrcbValuesDao> {
             }
         }
         ctx.setResult(entries);
-        log.info("GetBRCBValues succeeded: {} entries", entries.size());
     }
 }

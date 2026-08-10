@@ -27,7 +27,7 @@ public class SelectConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
         if (!CmsConsole.requireParam(args, "ref", "Usage: select --ref <reference>"))
             return;
@@ -39,12 +39,12 @@ public class SelectConsole extends CommandHandler {
             ConsolePrinter.info("Selecting (with value): " + ref);
             SelectWithValueDao dao = new SelectWithValueDao().ref(ref).args(args);
             console.getClient(SelectWithValueClient.class).execute(dao);
-            CmsConsole.outputMessage("Selected (with value) " + ref);
+            ConsolePrinter.success("Selected (with value) " + ref);
         } else {
-            CmsConsole.outputMessage("Selected " + ref);
+            ConsolePrinter.success("Selected " + ref);
             SelectDao dao = new SelectDao().ref(ref);
             console.getClient(SelectClient.class).execute(dao);
-            CmsConsole.outputMessage("Selected " + ref);
+            ConsolePrinter.success("Selected " + ref);
         }
     }
 }

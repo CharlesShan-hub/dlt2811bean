@@ -23,7 +23,7 @@ public class SetFileConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         String local = args.get("local");
@@ -38,6 +38,6 @@ public class SetFileConsole extends CommandHandler {
         ConsolePrinter.info("Uploading " + local + " -> " + remote + " ...");
         console.getClient(SetFileClient.class).execute(dao);
 
-        CmsConsole.outputMessage("Uploaded " + local + " to " + remote + " successfully");
+        ConsolePrinter.success("Uploaded " + local + " to " + remote + " successfully");
     }
 }

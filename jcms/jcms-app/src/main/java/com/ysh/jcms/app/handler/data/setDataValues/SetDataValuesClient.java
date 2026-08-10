@@ -29,6 +29,5 @@ public class SetDataValuesClient extends BaseClientHandler<SetDataValuesDao> {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsSetDataValuesResponse resp = decodeResp(frame, new CmsSetDataValuesResponse());
-        log.info("SetDataValues succeeded");
     }
 }

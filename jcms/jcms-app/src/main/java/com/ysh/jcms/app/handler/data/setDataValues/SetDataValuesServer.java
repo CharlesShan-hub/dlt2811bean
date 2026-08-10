@@ -29,7 +29,7 @@ public class SetDataValuesServer extends BaseServerHandler<CmsSetDataValuesReque
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsSetDataValuesRequest req, int reqId) {
-        log.info("SetDataValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.data.size());
+        log.info("SetDataValues from {}: reqId={}, {} entries", session.sessionId(), reqId, req.data.size());
 
         SclDocument doc = requireScl(session, reqId);
         SclIED ied = requireIed(session, reqId);

@@ -19,13 +19,13 @@ public class GetRpcMethodDirectoryConsole extends CommandHandler {
     }
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
         String iface = args.get("interface");
         String after = args.get("after");
         ConsolePrinter.info("Fetching RPC method directory" + (iface != null ? " for interface " + iface : ""));
         GetRpcMethodDirectoryDao dao = new GetRpcMethodDirectoryDao().iface(iface).after(after);
         console.getClient(GetRpcMethodDirectoryClient.class).execute(dao);
-        CmsConsole.outputMessage("RPC method directory fetched");
+        ConsolePrinter.success("RPC method directory fetched");
     }
 }

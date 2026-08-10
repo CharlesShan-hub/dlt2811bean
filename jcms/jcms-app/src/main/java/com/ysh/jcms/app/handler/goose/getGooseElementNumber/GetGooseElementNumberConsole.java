@@ -26,7 +26,7 @@ public class GetGooseElementNumberConsole extends CommandHandler {
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         boolean jsonMode = CmsConsole.isJsonMode(args);
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         if (!CmsConsole.requireParam(args, "ref", "Usage: get-goose-elem-num --ref <gocbRef> --members \"...\""))

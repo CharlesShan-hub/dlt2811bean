@@ -26,7 +26,7 @@ public class CreateDataSetConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         if (!CmsConsole.requireParam(args, "ds", "Usage: create-dataset --ds <ref> --members \"...\""))
@@ -67,6 +67,6 @@ public class CreateDataSetConsole extends CommandHandler {
 
         console.getClient(CreateDataSetClient.class).execute(dao);
 
-        CmsConsole.outputMessage("Created dataset " + dsRef + " successfully", args);
+        ConsolePrinter.success("Created dataset " + dsRef + " successfully");
     }
 }

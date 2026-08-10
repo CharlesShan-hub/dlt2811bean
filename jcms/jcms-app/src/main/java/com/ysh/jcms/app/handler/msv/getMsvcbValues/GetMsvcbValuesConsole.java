@@ -23,7 +23,7 @@ public class GetMsvcbValuesConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
         if (!CmsConsole.requireParam(args, "refs", "Usage: get-msvcb-vals --refs \"<ref1> <ref2>...\""))
             return;
@@ -32,6 +32,6 @@ public class GetMsvcbValuesConsole extends CommandHandler {
         ConsolePrinter.info("Fetching MSVCB values for " + refs.size() + " reference(s)");
         GetMsvcbValuesDao dao = new GetMsvcbValuesDao().refs(refs);
         console.getClient(GetMsvcbValuesClient.class).execute(dao);
-        CmsConsole.outputMessage("MSVCB values fetched for " + refs.size() + " reference(s)");
+        ConsolePrinter.success("MSVCB values fetched for " + refs.size() + " reference(s)");
     }
 }

@@ -23,6 +23,5 @@ public class CancelClient extends BaseClientHandler<CancelDao> {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         decodeResp(frame, new CmsCancelResponse());
-        log.info("Cancel succeeded");
     }
 }

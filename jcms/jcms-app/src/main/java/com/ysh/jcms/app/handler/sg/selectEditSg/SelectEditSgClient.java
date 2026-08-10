@@ -24,6 +24,5 @@ public class SelectEditSgClient extends BaseClientHandler<SelectEditSgDao> {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsSelectEditSgResponse resp = decodeResp(frame, new CmsSelectEditSgResponse());
-        log.info("SelectEditSG succeeded");
     }
 }

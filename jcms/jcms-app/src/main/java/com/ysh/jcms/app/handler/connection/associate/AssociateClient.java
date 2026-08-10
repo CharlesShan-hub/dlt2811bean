@@ -23,10 +23,19 @@ public class AssociateClient extends BaseClientHandler<AssociateClientDao> {
 
     @Override
     public void execute(AssociateClientDao dao) throws Exception {
-        if (dao.secure()) {
-            dao.authParam(buildAuthParam(node.getCredentialManager(), dao.sapRef()));
-        }
         send(ServiceName.ASSOCIATE, dao);
+    }
+
+    @Override
+    protected void beforeAll(AssociateClientDao dao) throws IOException {
+        if (!dao.secure()) {
+            dao.authParam(null);
+        }
+        try {
+            dao.authParam(buildAuthParam(node.credentialManager(), dao.sapRef()));
+        } catch (Exception e) {
+            throw new IOException("Failed to build authentication parameter", e);
+        }
     }
 
     @Override
@@ -35,7 +44,7 @@ public class AssociateClient extends BaseClientHandler<AssociateClientDao> {
 
         int serviceError = resp.serviceError.value();
         if (serviceError != CmsServiceError.NO_ERROR) {
-            node.getClient().getSession().setState(SessionState.DISCONNECTED);
+            node.client().session().state(SessionState.DISCONNECTED);
             throw new IOException("Association rejected: serviceError=" + serviceError);
         }
 
@@ -44,22 +53,19 @@ public class AssociateClient extends BaseClientHandler<AssociateClientDao> {
             try {
                 validateServerAuthParam(resp.authenticationParameter, dao.sapRef());
             } catch (Exception e) {
-                node.getClient().getSession().setState(SessionState.DISCONNECTED);
+                node.client().session().state(SessionState.DISCONNECTED);
                 throw new IOException("Server authentication failed: " + e.getMessage(), e);
             }
         }
 
-        node.getClient().getSession().setAssociationId(resp.associationId.value());
-        node.getClient().getSession().setAssociatedApRef(dao.sapRef());
-        node.getClient().getSession().setAssociatedSecure(dao.secure());
-        node.getClient().getSession().setState(SessionState.ASSOCIATED);
-        log.info("Association established: session={}", node.getClient().getSession().getSessionId());
+        node.client().session().associationId(resp.associationId.value()).associatedApRef(dao.sapRef()).associatedSecure(dao.secure())
+                .state(SessionState.ASSOCIATED);
     }
 
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsAssociateError err = decodeErr(frame, new CmsAssociateError());
-        node.getClient().getSession().setState(SessionState.DISCONNECTED);
+        node.client().session().state(SessionState.DISCONNECTED);
         throw new IOException("Association rejected: error=" + err.value());
     }
 

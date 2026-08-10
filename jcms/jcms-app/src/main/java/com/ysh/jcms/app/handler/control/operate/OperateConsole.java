@@ -24,7 +24,7 @@ public class OperateConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
         if (!CmsConsole.requireParam(args, "ref", "Usage: operate --ref <reference>"))
             return;
@@ -33,6 +33,6 @@ public class OperateConsole extends CommandHandler {
         ConsolePrinter.info("Operating: " + ref);
         OperateDao dao = new OperateDao().ref(ref).args(args);
         console.getClient(OperateClient.class).execute(dao);
-        CmsConsole.outputMessage("Operated " + ref);
+        ConsolePrinter.success("Operated " + ref);
     }
 }

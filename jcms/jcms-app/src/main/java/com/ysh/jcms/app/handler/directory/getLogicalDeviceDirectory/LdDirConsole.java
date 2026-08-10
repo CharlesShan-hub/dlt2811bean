@@ -25,7 +25,7 @@ public class LdDirConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
         LdDirDao dao = new LdDirDao();
         String ld = args.get("ld");

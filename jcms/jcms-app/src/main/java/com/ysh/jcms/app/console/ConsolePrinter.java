@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.console;
 
 import com.ysh.jcms.data.InnerBase;
+import com.ysh.jcms.util.CmsFormatUtil;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -78,11 +79,14 @@ public final class ConsolePrinter {
     public static void info(String msg) {
         println(CYAN + "  " + msg + RST);
     }
+    /** 输出 JSON 成功响应：{"success":true,"message":"..."}。 */
     public static void success(String msg) {
-        println(GRN + "  OK  " + msg + RST);
+        raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
     }
+
+    /** 输出 JSON 错误响应：{"success":false,"error":"..."}。 */
     public static void error(String msg) {
-        println(RED + "  ERR " + msg + RST);
+        raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
     }
     public static void gray(String msg) {
         println(GRY + "  " + msg + RST);
@@ -117,21 +121,13 @@ public final class ConsolePrinter {
     }
 
     /**
-     * 输出 JSON 成功响应，自动添加 {@code "success":true} 前缀。 {@code jsonBody} 的格式应为
-     * {@code "key1":val1,"key2":val2,...}（不含外层大括号）。
-     */
-    public static void jsonSuccess(String jsonBody) {
-        raw("{\"success\":true," + jsonBody + "}");
-    }
-
-    /**
      * 输出 JSON 成功响应，接受 {@code dao.result()} 返回的任意对象（内部自动识别 Map 类型）。
      */
     public static void outputJson(Object result) {
         if (result instanceof Map) {
             outputJson((Map<String, Object>) result);
         } else {
-            raw("{\"success\":true,\"error\":\"result is not a Map\"}");
+            error("result is not a Map");
         }
     }
 
@@ -146,7 +142,7 @@ public final class ConsolePrinter {
             }
             raw(json);
         } catch (Exception e) {
-            raw("{\"success\":true,\"error\":\"serialization failed\"}");
+            error("serialization failed");
         }
     }
 

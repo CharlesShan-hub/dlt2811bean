@@ -20,6 +20,5 @@ public class GetRpcInterfaceDirectoryClient extends BaseClientHandler<GetRpcInte
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         decodeResp(frame, new CmsGetRpcInterfaceDirectoryResponse());
-        log.info("GetRpcInterfaceDirectory succeeded");
     }
 }

@@ -33,6 +33,5 @@ public class SetGoCbValuesClient extends BaseClientHandler<SetGoCbValuesDao> {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsSetGoCbValuesResponse resp = decodeResp(frame, new CmsSetGoCbValuesResponse());
-        log.info("SetGoCBValues succeeded");
     }
 }

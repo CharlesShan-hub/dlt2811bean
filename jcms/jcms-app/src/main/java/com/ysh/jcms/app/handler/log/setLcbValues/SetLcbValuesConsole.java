@@ -37,7 +37,7 @@ public class SetLcbValuesConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         if (!CmsConsole.requireParam(args, "ref", "Usage: set-lcb-vals --ref <lcbRef> [options]"))
@@ -71,6 +71,6 @@ public class SetLcbValuesConsole extends CommandHandler {
 
         ConsolePrinter.info("Setting LCB values: ref=" + ref);
         console.getClient(SetLcbValuesClient.class).execute(dao);
-        CmsConsole.outputMessage("LCB values set for " + ref);
+        ConsolePrinter.success("LCB values set for " + ref);
     }
 }

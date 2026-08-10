@@ -27,7 +27,7 @@ public class GetRpcInterfaceDefinitionServer
         if (def == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        log.info("GetRpcInterfaceDefinition from {}: interface={}", session.getSessionId(), iface);
+        log.info("GetRpcInterfaceDefinition from {}: interface={}", session.sessionId(), iface);
         CmsGetRpcInterfaceDefinitionResponse resp = new CmsGetRpcInterfaceDefinitionResponse();
         for (String methodName : def.methods.keySet()) {
             CmsRpcMethodEntry entry = RpcRegistry.buildMethodEntry(iface, methodName);

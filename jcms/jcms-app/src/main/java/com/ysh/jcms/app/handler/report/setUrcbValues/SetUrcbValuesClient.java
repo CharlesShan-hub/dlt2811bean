@@ -33,6 +33,5 @@ public class SetUrcbValuesClient extends BaseClientHandler<SetUrcbValuesDao> {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsSetUrcbValuesResponse resp = decodeResp(frame, new CmsSetUrcbValuesResponse());
-        log.info("SetURCBValues succeeded");
     }
 }

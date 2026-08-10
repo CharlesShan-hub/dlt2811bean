@@ -27,7 +27,7 @@ public class SetBrcbValuesConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         if (!CmsConsole.requireParam(args, "ref", "Usage: set-brcb-vals --ref <brcbRef> [options]"))
@@ -64,6 +64,6 @@ public class SetBrcbValuesConsole extends CommandHandler {
 
         ConsolePrinter.info("Setting BRCB values: ref=" + ref);
         console.getClient(SetBrcbValuesClient.class).execute(dao);
-        CmsConsole.outputMessage("BRCB values set for " + ref);
+        ConsolePrinter.success("BRCB values set for " + ref);
     }
 }

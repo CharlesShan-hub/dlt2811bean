@@ -23,7 +23,7 @@ public class SetMsvcbValuesConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
         if (!CmsConsole.requireParam(args, "ref", "Usage: set-msvcb-vals --ref <ref>"))
             return;
@@ -36,6 +36,6 @@ public class SetMsvcbValuesConsole extends CommandHandler {
         ConsolePrinter.info("Setting MSVCB values: ref=" + ref);
         SetMsvcbValuesDao dao = new SetMsvcbValuesDao().ref(ref).svEna(svEna).msvId(msvId).datSet(datSet);
         console.getClient(SetMsvcbValuesClient.class).execute(dao);
-        CmsConsole.outputMessage("MSVCB values set for " + ref);
+        ConsolePrinter.success("MSVCB values set for " + ref);
     }
 }

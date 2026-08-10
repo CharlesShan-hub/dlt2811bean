@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.dataset.getDataSetValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.handler.PaginationContext;
+import com.ysh.jcms.app.handler.CmsClientOperator;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetValuesError;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetValuesResponse;
@@ -25,10 +25,13 @@ public class GetDataSetValuesClient extends BaseClientHandler<GetDataSetValuesDa
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void execute(GetDataSetValuesDao dao) throws Exception {
-        dao.paginationContext().setResult(new ArrayList<DataSetValue>());
         send(ServiceName.GET_DATA_SET_VALUES, dao);
+    }
+
+    @Override
+    protected void beforeAll(GetDataSetValuesDao dao) throws IOException {
+        CmsClientOperator.initResult(dao, "value");
     }
 
     @Override
@@ -38,9 +41,7 @@ public class GetDataSetValuesClient extends BaseClientHandler<GetDataSetValuesDa
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void onSuccess(Frame frame, GetDataSetValuesDao dao) throws IOException {
-        PaginationContext ctx = dao.paginationContext();
         CmsGetDataSetValuesResponse resp = decodeResp(frame, new CmsGetDataSetValuesResponse());
 
         List<DataSetValue> entries = new ArrayList<>();
@@ -51,13 +52,10 @@ public class GetDataSetValuesClient extends BaseClientHandler<GetDataSetValuesDa
             String val = src.toValueString();
             entries.add(new DataSetValue(ct, val));
         }
-        List<DataSetValue> all = (List<DataSetValue>) ctx.getResult();
-        all.addAll(entries);
-        ctx.setLastMoreFollows(resp.moreFollows.value());
+        CmsClientOperator.page(dao).add("value", entries).moreFollows(resp.moreFollows.value());
         // GetDataSetValuesResponse's value is List<CmsData> (no reference field),
-        // so we use the index-based approach: lastReference is not applicable
-        // for this response type. Auto-pull will not function for this service.
-        log.info("GetDataSetValues page: {} values (moreFollows={})", entries.size(), ctx.isLastMoreFollows());
+        // so lastRef is not applicable. Auto-pull will not function for this service.
+        log.info("GetDataSetValues page: {} values (moreFollows={})", entries.size(), resp.moreFollows.value());
     }
 
     @Override

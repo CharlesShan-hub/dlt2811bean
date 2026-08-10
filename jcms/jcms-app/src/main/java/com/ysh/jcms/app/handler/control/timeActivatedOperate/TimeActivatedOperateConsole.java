@@ -24,7 +24,7 @@ public class TimeActivatedOperateConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
         if (!CmsConsole.requireParam(args, "ref", "Usage: time-act-ope --ref <reference> --oper-tm <epochSeconds>"))
             return;
@@ -36,6 +36,6 @@ public class TimeActivatedOperateConsole extends CommandHandler {
         ConsolePrinter.info("TimeActivatedOperate: " + ref + " at " + operTm);
         TimeActivatedOperateDao dao = new TimeActivatedOperateDao().ref(ref).operTmEpochSeconds(operTm).args(args);
         console.getClient(TimeActivatedOperateClient.class).execute(dao);
-        CmsConsole.outputMessage("TimeActivatedOperate scheduled for " + ref);
+        ConsolePrinter.success("TimeActivatedOperate scheduled for " + ref);
     }
 }

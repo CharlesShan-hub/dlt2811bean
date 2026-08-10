@@ -23,6 +23,5 @@ public class SelectClient extends BaseClientHandler<SelectDao> {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         decodeResp(frame, new CmsSelectResponse());
-        log.info("Select succeeded");
     }
 }

@@ -34,7 +34,7 @@ public class SetGoCbValuesConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         if (!CmsConsole.requireParam(args, "ref", "Usage: set-gocb-vals --ref <gocbRef> [options]"))
@@ -56,6 +56,6 @@ public class SetGoCbValuesConsole extends CommandHandler {
 
         ConsolePrinter.info("Setting GoCB values: ref=" + ref);
         console.getClient(SetGoCbValuesClient.class).execute(dao);
-        CmsConsole.outputMessage("GoCB values set for " + ref);
+        ConsolePrinter.success("GoCB values set for " + ref);
     }
 }

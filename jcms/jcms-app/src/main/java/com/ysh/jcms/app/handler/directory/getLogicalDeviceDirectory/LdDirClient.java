@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.handler.PaginationContext;
+import com.ysh.jcms.app.handler.CmsClientOperator;
 import com.ysh.jcms.data.scalar.CmsSubReference;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryError;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryResponse;
@@ -9,17 +9,25 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class LdDirClient extends BaseClientHandler<LdDirDao> {
 
     @Override
     public void execute(LdDirDao dao) throws Exception {
-        PaginationContext ctx = dao.paginationContext();
-        ctx.getAccumulatedRefs().clear();
         send(ServiceName.GET_LOGIC_DEVICE_DIRECTORY, dao);
-        node.getContentManager().initLdDir(new ArrayList<>(ctx.getAccumulatedRefs()));
-        log.info("GetLogicalDeviceDirectory succeeded: {} logical nodes", ctx.getAccumulatedRefs().size());
+    }
+
+    @Override
+    protected void beforeAll(LdDirDao dao) throws IOException {
+        CmsClientOperator.initResult(dao, "lnReference");
+    }
+
+    @Override
+    protected void afterAll(LdDirDao dao) throws IOException {
+        List<CmsSubReference> refs = CmsClientOperator.getResultList(dao, "lnReference");
+        node.contentManager().initLdDir(refs.stream().map(CmsSubReference::value).collect(Collectors.toList()));
     }
 
     @Override
@@ -30,17 +38,10 @@ public class LdDirClient extends BaseClientHandler<LdDirDao> {
 
     @Override
     protected void onSuccess(Frame frame, LdDirDao dao) throws IOException {
-        PaginationContext ctx = dao.paginationContext();
         CmsGetLogicalDeviceDirectoryResponse resp = decodeResp(frame, new CmsGetLogicalDeviceDirectoryResponse());
-
-        for (CmsSubReference ref : resp.lnReference) {
-            ctx.getAccumulatedRefs().add(ref.value());
-        }
-        ctx.setLastMoreFollows(resp.moreFollows.value());
-        if (resp.lnReference.size() > 0) {
-            ctx.setLastReference(resp.lnReference.get(resp.lnReference.size() - 1).value());
-        }
-        log.info("GetLogicalDeviceDirectory page: {} lnRefs (moreFollows={})", resp.lnReference.size(), ctx.isLastMoreFollows());
+        CmsClientOperator.page(dao).add("lnReference", resp.lnReference).moreFollows(resp.moreFollows.value()).lastRef(resp.lnReference,
+                CmsSubReference::value);
+        log.info("GetLogicalDeviceDirectory page: {} lnRefs (moreFollows={})", resp.lnReference.size(), resp.moreFollows.value());
     }
 
     @Override

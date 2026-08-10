@@ -19,10 +19,10 @@ public class AbortServer extends BaseServerHandler<CmsAbort, CmsType> {
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsAbort req, int reqId) {
-        log.warn("Abort received: session={}, reason={}", session.getSessionId(), req.reason.value());
+        log.warn("Abort received: session={}, reason={}", session.sessionId(), req.reason.value());
 
         session.clear();
-        session.setState(SessionState.DISCONNECTED);
+        session.state(SessionState.DISCONNECTED);
         return noResponse();
     }
 }

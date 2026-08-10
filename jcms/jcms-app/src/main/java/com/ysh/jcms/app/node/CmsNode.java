@@ -23,12 +23,16 @@ public class CmsNode {
 
     private static final Logger log = LoggerFactory.getLogger(CmsNode.class);
 
+    /* ====== fields ====== */
+
     private final InnerServer server;
     private final InnerClient client = new InnerClient();
     private final Map<Class<?>, Object> clientHandlers = new HashMap<>();
     private final SclManager sclManager = new SclManager();
     private final ContentManager contentManager = new ContentManager();
     private final GmCredentialManager credentialManager;
+
+    /* ====== constructors ====== */
 
     public CmsNode(boolean createServer) {
         this.server = createServer ? new InnerServer() : null;
@@ -40,7 +44,8 @@ public class CmsNode {
         this.credentialManager = initCredentialManager();
     }
 
-    /** Initialize credential manager with a self-signed context. */
+    /* ====== private helpers ====== */
+
     private static GmCredentialManager initCredentialManager() {
         try {
             return SecurityContext.generateSelfSigned().credentialManager();
@@ -48,6 +53,8 @@ public class CmsNode {
             throw new RuntimeException("Failed to initialize GmCredentialManager", e);
         }
     }
+
+    /* ====== registration ====== */
 
     public void registerServer(ServiceHandler handler) {
         if (server != null)
@@ -64,9 +71,67 @@ public class CmsNode {
         return (T) clientHandlers.get(type);
     }
 
+    /* ====== lifecycle ====== */
+
     /**
-     * Execute a registered client handler with the given args. Looks up the handler
-     * by class, finds its {@code execute} method, and invokes it.
+     * Start the server node.
+     *
+     * @param test
+     *            if {@code true}, load SCL from {@code testSclFiles}
+     */
+    public void start(boolean test) throws IOException {
+        if (server != null) {
+            CmsConfig.Server cfg = CmsConfigLoader.load().server();
+            log.info("SCL config: sclFiles={}, testSclFiles={}", cfg.sclFiles(), cfg.testSclFiles());
+            String sclFile = test ? cfg.getResolvedTestSclFile() : cfg.getResolvedSclFile();
+            log.info("SCL file resolved: {} (test={})", sclFile, test);
+            if (sclFile != null) {
+                sclManager.load(sclFile);
+                if (sclManager.isLoaded()) {
+                    SclDocument sclDoc = sclManager.getDocument();
+                    server.sclDocument(sclDoc);
+                    if (sclDoc != null) {
+                        new ReportEngine(sclDoc);
+                        log.info("ReportEngine initialized with SCL document");
+                    } else {
+                        log.warn("No SCL document available - ReportEngine not initialized");
+                    }
+                }
+            }
+            server.start();
+        }
+    }
+
+    public void stop() {
+        client.close();
+        if (server != null)
+            server.stop();
+    }
+
+    /* ====== client operations ====== */
+
+    public void connect(String host, int port) throws IOException {
+        client.connect(host, port);
+    }
+
+    public void connectTls(String host, int port, SSLContext sslContext) throws IOException {
+        client.connectTls(host, port, sslContext);
+    }
+
+    public Frame sendRequest(ServiceName sc, byte[] asduBytes, long timeoutMs) throws IOException {
+        return client.sendRequest(sc, asduBytes, timeoutMs);
+    }
+
+    public Frame sendRequest(ServiceName sc, byte[] asduBytes) throws IOException {
+        return client.sendRequest(sc, asduBytes);
+    }
+
+    public void close() {
+        client.close();
+    }
+
+    /**
+     * Execute a registered client handler via reflection.
      *
      * <pre>
      * CmsAssociateResponse resp = node.execute(AssociateClient.class, dao);
@@ -93,83 +158,27 @@ public class CmsNode {
         throw new IllegalStateException("No execute method with " + args.length + " params on " + handlerClass.getSimpleName());
     }
 
-    /**
-     * Start the server node.
-     *
-     * @param test
-     *            if {@code true}, load SCL from {@code testSclFiles} (for
-     *            unit/integration tests); otherwise load from {@code sclFiles} (for
-     *            production server console)
-     */
-    public void start(boolean test) throws IOException {
-        if (server != null) {
-            CmsConfig.Server cfg = CmsConfigLoader.load().server();
-            log.info("SCL config: sclFiles={}, testSclFiles={}", cfg.sclFiles(), cfg.testSclFiles());
-            String sclFile = test ? cfg.getResolvedTestSclFile() : cfg.getResolvedSclFile();
-            log.info("SCL file resolved: {} (test={})", sclFile, test);
-            if (sclFile != null) {
-                sclManager.load(sclFile);
-                if (sclManager.isLoaded()) {
-                    server.setScl2Document(sclManager.getDocument());
-                    // Initialize ReportEngine with the scl2 document
-                    SclDocument scl2Doc = sclManager.getDocument();
-                    if (scl2Doc != null) {
-                        new ReportEngine(scl2Doc);
-                        log.info("ReportEngine initialized with scl2 document");
-                    } else {
-                        log.warn("No scl2 document available - ReportEngine not initialized");
-                    }
-                }
-            }
-            server.start();
-        }
-    }
+    /* ====== accessors ====== */
 
-    public SclManager getSclManager() {
+    public SclManager sclManager() {
         return sclManager;
     }
-    public ContentManager getContentManager() {
+    public ContentManager contentManager() {
         return contentManager;
     }
-    public GmCredentialManager getCredentialManager() {
+    public GmCredentialManager credentialManager() {
         return credentialManager;
     }
-
-    public void stop() {
-        client.close();
-        if (server != null)
-            server.stop();
+    public boolean clientConnected() {
+        return client.connected();
     }
-
-    public void connect(String host, int port) throws IOException {
-        client.connect(host, port);
+    public boolean serverRunning() {
+        return server != null && server.running();
     }
-
-    public void connectTls(String host, int port, SSLContext sslContext) throws IOException {
-        client.connectTls(host, port, sslContext);
-    }
-
-    public Frame sendRequest(ServiceName sc, byte[] asduBytes, long timeoutMs) throws IOException {
-        return client.sendRequest(sc, asduBytes, timeoutMs);
-    }
-
-    public Frame sendRequest(ServiceName sc, byte[] asduBytes) throws IOException {
-        return client.sendRequest(sc, asduBytes);
-    }
-
-    public void close() {
-        client.close();
-    }
-    public boolean isClientConnected() {
-        return client.isConnected();
-    }
-    public boolean isServerRunning() {
-        return server != null && server.isRunning();
-    }
-    public InnerServer getServer() {
+    public InnerServer server() {
         return server;
     }
-    public InnerClient getClient() {
+    public InnerClient client() {
         return client;
     }
 }

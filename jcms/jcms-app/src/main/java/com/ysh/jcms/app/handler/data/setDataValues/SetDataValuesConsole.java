@@ -24,7 +24,7 @@ public class SetDataValuesConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         String pairsStr = args.get("pairs");
@@ -61,6 +61,6 @@ public class SetDataValuesConsole extends CommandHandler {
 
         console.getClient(SetDataValuesClient.class).execute(dao);
 
-        CmsConsole.outputMessage("Set " + dao.entries().size() + " data value(s) successfully", args);
+        ConsolePrinter.success("Set " + dao.entries().size() + " data value(s) successfully");
     }
 }

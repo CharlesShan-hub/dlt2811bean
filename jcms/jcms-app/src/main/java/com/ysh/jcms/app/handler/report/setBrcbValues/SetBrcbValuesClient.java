@@ -33,6 +33,5 @@ public class SetBrcbValuesClient extends BaseClientHandler<SetBrcbValuesDao> {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsSetBrcbValuesResponse resp = decodeResp(frame, new CmsSetBrcbValuesResponse());
-        log.info("SetBRCBValues succeeded");
     }
 }

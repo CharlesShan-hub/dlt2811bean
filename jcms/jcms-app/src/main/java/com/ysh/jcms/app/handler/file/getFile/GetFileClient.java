@@ -49,8 +49,6 @@ public class GetFileClient extends BaseClientHandler<GetFileDao> {
                 break;
         }
 
-        log.info("GetFile: downloaded '{}' ({} bytes, {} chunks)", remoteFile, totalBytes, chunks.size());
-
         if (outputFile != null && !outputFile.isEmpty()) {
             Path outPath = Paths.get(outputFile);
             Path parent = outPath.getParent();
@@ -64,9 +62,6 @@ public class GetFileClient extends BaseClientHandler<GetFileDao> {
             } finally {
                 out.close();
             }
-            log.info("GetFile: saved to '{}'", outputFile);
-        } else {
-            log.info("GetFile: downloaded '{}' ({} bytes) — no --output specified", remoteFile, totalBytes);
         }
     }
 

@@ -20,6 +20,5 @@ public class GetRpcMethodDefinitionClient extends BaseClientHandler<GetRpcMethod
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         decodeResp(frame, new CmsGetRpcMethodDefinitionResponse());
-        log.info("GetRpcMethodDefinition succeeded");
     }
 }

@@ -36,14 +36,18 @@ public class InnerServer implements ConnectionListener {
 
     private static final Logger log = LoggerFactory.getLogger(InnerServer.class);
 
+    /* ====== fields ====== */
+
     private final int port;
     private final int sslPort;
     private final ServerAcceptor acceptor;
     private ServerAcceptor sslAcceptor;
     private final Dispatcher dispatcher = new Dispatcher();
     private final CopyOnWriteArrayList<ServerSession> sessions = new CopyOnWriteArrayList<>();
-    private SclDocument scl2Document;
+    private SclDocument sclDocument;
     private KeepAliveManager keepalive;
+
+    /* ====== constructors ====== */
 
     public InnerServer() {
         CmsConfig.Server cfg = CmsConfigLoader.load().server();
@@ -58,6 +62,8 @@ public class InnerServer implements ConnectionListener {
         this.sslPort = sslPort;
         this.acceptor = new ServerAcceptor(port, this);
     }
+
+    /* ====== TLS configuration ====== */
 
     private void configureTls() {
         if (sslPort <= 0)
@@ -108,16 +114,13 @@ public class InnerServer implements ConnectionListener {
         return kmf.getKeyManagers();
     }
 
-    public SclDocument getSclDocument() {
-        return scl2Document;
-    }
-    public void setScl2Document(SclDocument doc) {
-        this.scl2Document = doc;
-    }
+    /* ====== registration ====== */
 
     public void register(ServiceHandler handler) {
         dispatcher.register(handler);
     }
+
+    /* ====== lifecycle ====== */
 
     public void start() throws IOException {
         acceptor.start();
@@ -144,26 +147,37 @@ public class InnerServer implements ConnectionListener {
         sessions.clear();
     }
 
-    public int getPort() {
-        return port;
-    }
-    public int getSslPort() {
-        return sslPort;
-    }
-    public boolean hasTls() {
-        return sslAcceptor != null;
-    }
-    public boolean isRunning() {
+    public boolean running() {
         return acceptor.isRunning();
     }
-    public java.util.List<ServerSession> getSessions() {
+
+    /* ====== accessors ====== */
+
+    public SclDocument sclDocument() {
+        return sclDocument;
+    }
+    public void sclDocument(SclDocument doc) {
+        this.sclDocument = doc;
+    }
+    public int port() {
+        return port;
+    }
+    public int sslPort() {
+        return sslPort;
+    }
+    public boolean tls() {
+        return sslAcceptor != null;
+    }
+    public java.util.List<ServerSession> sessions() {
         return new java.util.ArrayList<>(sessions);
     }
+
+    /* ====== ConnectionListener callbacks ====== */
 
     @Override
     public void onConnected(Connection connection) {
         ServerSession ss = new ServerSession(connection);
-        ss.setScl2Document(scl2Document);
+        ss.sclDocument(sclDocument);
         ss.touchActivity();
         sessions.add(ss);
     }
@@ -210,7 +224,7 @@ public class InnerServer implements ConnectionListener {
     public void onDisconnected(Connection connection) {
         ServerSession ss = findSession(connection);
         if (ss != null) {
-            ss.setState(SessionState.DISCONNECTED);
+            ss.state(SessionState.DISCONNECTED);
             sessions.remove(ss);
         }
     }
@@ -222,14 +236,16 @@ public class InnerServer implements ConnectionListener {
 
     private ServerSession findSession(Connection connection) {
         for (ServerSession ss : sessions) {
-            if (ss.getConnection() == connection)
+            if (ss.connection() == connection)
                 return ss;
         }
         return null;
     }
 
+    /* ====== ServerSession inner class ====== */
+
     public static class ServerSession extends Session {
-        private SclDocument scl2Document;
+        private SclDocument sclDocument;
         private SclAccessPoint sclAccessPoint;
         private SclIED sclIed;
         private SclDataTypeTemplates sclDataTypeTemplates;
@@ -244,48 +260,47 @@ public class InnerServer implements ConnectionListener {
             this.lastActivityTime = System.currentTimeMillis();
             this.keepaliveRetries = 0;
         }
-        public long getLastActivityTime() {
+        public long lastActivityTime() {
             return lastActivityTime;
         }
-        public int getKeepaliveRetries() {
+        public int keepaliveRetries() {
             return keepaliveRetries;
         }
         public int incrementKeepaliveRetries() {
             return ++keepaliveRetries;
         }
         public void close() {
-            getConnection().close();
+            connection().close();
         }
 
-        public SclDocument getSclDocument() {
-            return scl2Document;
+        public SclDocument sclDocument() {
+            return sclDocument;
         }
-        public void setScl2Document(SclDocument doc) {
-            this.scl2Document = doc;
+        public void sclDocument(SclDocument doc) {
+            this.sclDocument = doc;
         }
-        public SclAccessPoint getSclAccessPoint() {
+        public SclAccessPoint sclAccessPoint() {
             return sclAccessPoint;
         }
-        public void setSclAccessPoint(SclAccessPoint sclAccessPoint) {
+        public void sclAccessPoint(SclAccessPoint sclAccessPoint) {
             this.sclAccessPoint = sclAccessPoint;
         }
-
-        public SclIED getSclIed() {
+        public SclIED sclIed() {
             return sclIed;
         }
-        public void setSclIed(SclIED ied) {
+        public void sclIed(SclIED ied) {
             this.sclIed = ied;
         }
-        public SclDataTypeTemplates getSclDataTypeTemplates() {
+        public SclDataTypeTemplates sclDataTypeTemplates() {
             return sclDataTypeTemplates;
         }
-        public void setSclDataTypeTemplates(SclDataTypeTemplates sclDataTypeTemplates) {
-            this.sclDataTypeTemplates = sclDataTypeTemplates;
+        public void sclDataTypeTemplates(SclDataTypeTemplates templates) {
+            this.sclDataTypeTemplates = templates;
         }
 
         @Override
         public void clear() {
-            SgSessionState.clear(getSessionId());
+            SgSessionState.clear(sessionId());
             super.clear();
         }
     }

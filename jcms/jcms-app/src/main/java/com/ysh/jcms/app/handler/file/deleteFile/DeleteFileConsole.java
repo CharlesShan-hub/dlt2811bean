@@ -23,7 +23,7 @@ public class DeleteFileConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         if (!CmsConsole.requireParam(args, "file", "Usage: delete-file --file <path>"))
@@ -36,6 +36,6 @@ public class DeleteFileConsole extends CommandHandler {
 
         console.getClient(DeleteFileClient.class).execute(dao);
 
-        CmsConsole.outputMessage("Deleted file " + file + " successfully");
+        ConsolePrinter.success("Deleted file " + file + " successfully");
     }
 }

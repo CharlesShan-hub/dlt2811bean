@@ -21,16 +21,16 @@ public class ConfirmEditSgValuesServer extends BaseServerHandler<CmsConfirmEditS
     protected Frame onDecodeSuccess(Session session, CmsConfirmEditSgValuesRequest req, int reqId) {
 
         String ref = str(req.sgcbReference);
-        log.info("ConfirmEditSGValues from {}: reqId={}, sgcbRef={}", session.getSessionId(), reqId, ref);
+        log.info("ConfirmEditSGValues from {}: reqId={}, sgcbRef={}", session.sessionId(), reqId, ref);
 
         if (ref == null)
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        SgcState state = SgSessionState.getState(session.getSessionId());
+        SgcState state = SgSessionState.getState(session.sessionId());
         int count = state.getEditValues().size();
         state.commitEditValues();
 
-        log.info("ConfirmEditSGValues: committed {} values for sgcbRef={}, session={}", count, ref, session.getSessionId());
+        log.info("ConfirmEditSGValues: committed {} values for sgcbRef={}, session={}", count, ref, session.sessionId());
         return ok(new CmsConfirmEditSgValuesResponse(), reqId);
     }
 }

@@ -23,7 +23,7 @@ public class ConfirmEditSgValuesConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         if (!CmsConsole.requireParam(args, "ref", "Usage: confirm-edit-sg --ref <sgcbRef>"))
@@ -36,6 +36,6 @@ public class ConfirmEditSgValuesConsole extends CommandHandler {
 
         console.getClient(ConfirmEditSgValuesClient.class).execute(dao);
 
-        CmsConsole.outputMessage("Edit SG values confirmed for " + ref);
+        ConsolePrinter.success("Edit SG values confirmed for " + ref);
     }
 }

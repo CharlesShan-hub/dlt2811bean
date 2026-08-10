@@ -19,7 +19,7 @@ public class GetRpcMethodDefinitionConsole extends CommandHandler {
     }
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
         if (!CmsConsole.requireParam(args, "refs", "Usage: rpc-method-def --refs \"<ref1> <ref2>...\""))
             return;
@@ -27,6 +27,6 @@ public class GetRpcMethodDefinitionConsole extends CommandHandler {
         ConsolePrinter.info("Fetching RPC method definition for " + refs.size() + " ref(s)");
         GetRpcMethodDefinitionDao dao = new GetRpcMethodDefinitionDao().refs(refs);
         console.getClient(GetRpcMethodDefinitionClient.class).execute(dao);
-        CmsConsole.outputMessage("RPC method definition fetched");
+        ConsolePrinter.success("RPC method definition fetched");
     }
 }

@@ -62,8 +62,6 @@ public class SetFileClient extends BaseClientHandler<SetFileDao> {
                 break;
             position += chunkLen;
         }
-
-        log.info("SetFile: uploaded '{}' -> '{}' ({} bytes, {} chunks)", localFile, remoteFile, totalBytes, chunks);
     }
 
     @Override

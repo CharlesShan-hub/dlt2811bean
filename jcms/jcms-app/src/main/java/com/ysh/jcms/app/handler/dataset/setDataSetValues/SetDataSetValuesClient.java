@@ -31,6 +31,5 @@ public class SetDataSetValuesClient extends BaseClientHandler<SetDataSetValuesDa
     protected void onSuccess(Frame frame) throws IOException {
         CmsSetDataSetValuesResponse resp = new CmsSetDataSetValuesResponse();
         resp.decode(frame.asduBytes());
-        log.info("SetDataSetValues succeeded");
     }
 }

@@ -38,9 +38,6 @@ public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
         dao.negotiatedAsduSize(resp.asduSize.value());
         dao.negotiatedProtocolVersion(resp.protocolVersion.value());
         dao.modelVersion(resp.modelVersion.value());
-
-        log.info("Negotiate completed: apduSize={}, asduSize={}, protocolVersion={}, modelVersion={}", resp.apduSize.value(),
-                resp.asduSize.value(), resp.protocolVersion.value(), resp.modelVersion.value());
     }
 
     @Override

@@ -29,7 +29,7 @@ public class GetDataDirectoryServer extends BaseServerHandler<CmsGetDataDirector
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetDataDirectoryRequest req, int reqId) {
-        log.info("GetDataDirectory from {}: reqId={}", session.getSessionId(), reqId);
+        log.info("GetDataDirectory from {}: reqId={}", session.sessionId(), reqId);
 
         SclDocument doc = requireScl(session, reqId);
         SclIED ied = requireIed(session, reqId);

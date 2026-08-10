@@ -21,7 +21,7 @@ public class ReleaseServer extends BaseServerHandler<CmsReleaseRequest, CmsRelea
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsReleaseRequest req, int reqId) {
-        log.info("Release request from {}: reqId={}", session.getSessionId(), reqId);
+        log.info("Release request from {}: reqId={}", session.sessionId(), reqId);
 
         if (!session.isAssociated()) {
             return onDecodeError(reqId, CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE);
@@ -30,8 +30,8 @@ public class ReleaseServer extends BaseServerHandler<CmsReleaseRequest, CmsRelea
         byte[] respBytes = new CmsReleaseResponse().serviceError(CmsServiceError.NO_ERROR).encode();
 
         session.clear();
-        session.setState(SessionState.CONNECTED);
-        log.info("Release completed: session={}", session.getSessionId());
+        session.state(SessionState.CONNECTED);
+        log.info("Release completed: session={}", session.sessionId());
 
         return buildSuccess(respBytes, reqId);
     }

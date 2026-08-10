@@ -18,7 +18,7 @@ public class TimeActivatedOperateServer extends BaseServerHandler<CmsTimeActivat
     @Override
     protected Frame onDecodeSuccess(Session session, CmsTimeActivatedOperateRequest req, int reqId) {
         String ref = str(req.reference);
-        log.info("TimeActivatedOperate from {}: reqId={}, ref={}, operTm={}", session.getSessionId(), reqId, ref,
+        log.info("TimeActivatedOperate from {}: reqId={}, ref={}, operTm={}", session.sessionId(), reqId, ref,
                 req.operTm.secondsSinceEpoch.value());
 
         if (ref == null)

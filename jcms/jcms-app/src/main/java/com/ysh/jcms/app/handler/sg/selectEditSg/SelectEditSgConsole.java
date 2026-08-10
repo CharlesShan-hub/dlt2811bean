@@ -24,7 +24,7 @@ public class SelectEditSgConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         if (!CmsConsole.requireParam(args, "ref", "Usage: select-edit-sg --ref <sgcbRef> --num <groupNumber>"))
@@ -52,6 +52,6 @@ public class SelectEditSgConsole extends CommandHandler {
 
         console.getClient(SelectEditSgClient.class).execute(dao);
 
-        CmsConsole.outputMessage("Edit SG set to " + sgNum + " for " + ref, args);
+        ConsolePrinter.success("Edit SG set to " + sgNum + " for " + ref);
     }
 }

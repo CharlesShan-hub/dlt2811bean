@@ -37,7 +37,7 @@ public class ConnectHandler extends CommandHandler {
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         boolean jsonMode = "true".equals(args.get("json"));
-        if (console.isConnected()) {
+        if (console.connected()) {
             String msg = "Already connected. Type 'disconnect' first.";
             if (jsonMode) {
                 ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");

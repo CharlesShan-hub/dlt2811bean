@@ -32,6 +32,5 @@ public class SetLcbValuesClient extends BaseClientHandler<SetLcbValuesDao> {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsSetLcbValuesResponse resp = decodeResp(frame, new CmsSetLcbValuesResponse());
-        log.info("SetLCBValues succeeded");
     }
 }

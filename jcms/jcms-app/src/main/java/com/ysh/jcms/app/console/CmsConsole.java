@@ -48,32 +48,32 @@ public abstract class CmsConsole extends CmsNode {
 
     // ── console helpers (used by handlers) ──
 
-    public boolean isConnected() {
-        return isClientConnected() && getClient().getSession() != null && getClient().getSession().getState() == SessionState.ASSOCIATED;
+    public boolean connected() {
+        return clientConnected() && client().session() != null && client().session().state() == SessionState.ASSOCIATED;
     }
 
     /** 当前关联的访问点引用（IED/AP），未关联时返回 null。 */
-    public String getAssociatedAp() {
-        return isConnected() && getClient().getSession() != null ? getClient().getSession().getAssociatedApRef() : null;
+    public String associatedAp() {
+        return connected() && client().session() != null ? client().session().associatedApRef() : null;
     }
 
     /** 当前 TCP 连接是否 TLS 加密。 */
-    public boolean isTlsConnected() {
-        return getClient() != null && getClient().isTls();
+    public boolean tlsConnected() {
+        return client() != null && client().isTls();
     }
 
     /** 当前关联是否使用应用层安全认证。 */
-    public boolean isAssociatedSecure() {
-        return isConnected() && getClient().getSession() != null && getClient().getSession().isAssociatedSecure();
+    public boolean associatedSecure() {
+        return connected() && client().session() != null && client().session().associatedSecure();
     }
 
     // ── helpers for console command handlers ──
 
-    /** Check connected, output error and return false if not. */
-    public boolean requireConnected(Map<String, String> args) {
-        if (isConnected())
+    /** Check associated, output error and return false if not. */
+    public boolean requireAssociated(Map<String, String> args) {
+        if (connected())
             return true;
-        ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected.\"}");
+        ConsolePrinter.error("Not associated. Use 'associate' first.");
         return false;
     }
 
@@ -82,9 +82,9 @@ public abstract class CmsConsole extends CmsNode {
      * false if not.
      */
     public boolean requireTcpConnected(Map<String, String> args) {
-        if (isClientConnected())
+        if (clientConnected())
             return true;
-        ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Use 'connect' first.\"}");
+        ConsolePrinter.error("Not connected. Use 'connect' first.");
         return false;
     }
 
@@ -93,13 +93,8 @@ public abstract class CmsConsole extends CmsNode {
         String v = args.get(key);
         if (v != null && !v.isEmpty())
             return true;
-        ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --" + key + ".\"}");
+        ConsolePrinter.error("Missing --" + key + ".");
         return false;
-    }
-
-    /** Output a JSON success message. */
-    public static void outputMessage(String msg) {
-        ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
     }
 
     /**
@@ -110,20 +105,14 @@ public abstract class CmsConsole extends CmsNode {
         return true;
     }
 
-    /**
-     * @deprecated Use {@link ConsolePrinter#raw(String)} directly.
-     */
-    @Deprecated
+    /** 输出 JSON 错误响应（委托 {@link ConsolePrinter#error}）。 */
     public static void jsonError(String msg) {
-        ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+        ConsolePrinter.error(msg);
     }
 
-    /**
-     * @deprecated Use {@link ConsolePrinter#raw(String)} directly.
-     */
-    @Deprecated
+    /** 输出 JSON 成功响应（委托 {@link ConsolePrinter#success}）。 */
     public static void jsonMessage(String msg) {
-        ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+        ConsolePrinter.success(msg);
     }
 
     /**
@@ -132,14 +121,6 @@ public abstract class CmsConsole extends CmsNode {
     @Deprecated
     public static void jsonArray(String msg) {
         ConsolePrinter.raw(msg);
-    }
-
-    /**
-     * @deprecated The outputMessage(Map) variant is no longer needed.
-     */
-    @Deprecated
-    public static void outputMessage(String msg, Map<String, String> args) {
-        outputMessage(msg);
     }
 
     /**
@@ -230,7 +211,7 @@ public abstract class CmsConsole extends CmsNode {
                 }
             }
         }
-        if (isConnected())
+        if (connected())
             close();
         onStop();
         closeReader();

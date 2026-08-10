@@ -56,6 +56,5 @@ public class GetUrcbValuesClient extends BaseClientHandler<GetUrcbValuesDao> {
             }
         }
         ctx.setResult(entries);
-        log.info("GetURCBValues succeeded: {} entries", entries.size());
     }
 }

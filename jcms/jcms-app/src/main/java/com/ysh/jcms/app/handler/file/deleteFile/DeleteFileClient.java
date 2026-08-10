@@ -25,6 +25,5 @@ public class DeleteFileClient extends BaseClientHandler<DeleteFileDao> {
     protected void onSuccess(Frame frame) throws IOException {
         CmsDeleteFileResponse resp = new CmsDeleteFileResponse();
         resp.decode(frame.asduBytes());
-        log.info("DeleteFile succeeded");
     }
 }

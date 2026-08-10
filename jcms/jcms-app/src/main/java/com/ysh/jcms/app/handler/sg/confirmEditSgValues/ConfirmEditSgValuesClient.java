@@ -24,6 +24,5 @@ public class ConfirmEditSgValuesClient extends BaseClientHandler<ConfirmEditSgVa
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsConfirmEditSgValuesResponse resp = decodeResp(frame, new CmsConfirmEditSgValuesResponse());
-        log.info("ConfirmEditSGValues succeeded");
     }
 }

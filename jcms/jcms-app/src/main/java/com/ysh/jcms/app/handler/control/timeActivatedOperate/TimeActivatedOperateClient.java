@@ -23,6 +23,5 @@ public class TimeActivatedOperateClient extends BaseClientHandler<TimeActivatedO
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         decodeResp(frame, new CmsTimeActivatedOperateResponse());
-        log.info("TimeActivatedOperate scheduled");
     }
 }

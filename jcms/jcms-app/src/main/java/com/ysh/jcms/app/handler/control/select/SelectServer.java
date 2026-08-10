@@ -30,7 +30,7 @@ public class SelectServer extends BaseServerHandler<CmsSelectRequest, CmsSelectE
     @Override
     protected Frame onDecodeSuccess(Session session, CmsSelectRequest req, int reqId) {
         String ref = str(req.reference);
-        String sid = session.getSessionId();
+        String sid = session.sessionId();
 
         log.info("Select from {}: reqId={}, ref={}", sid, reqId, ref);
 

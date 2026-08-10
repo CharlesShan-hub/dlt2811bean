@@ -24,7 +24,7 @@ public class GetDataValuesServer extends BaseServerHandler<CmsGetDataValuesReque
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetDataValuesRequest req, int reqId) {
-        log.info("GetDataValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.size());
+        log.info("GetDataValues from {}: reqId={}, {} refs", session.sessionId(), reqId, req.data.size());
 
         SclIED ied = requireIed(session, reqId);
 

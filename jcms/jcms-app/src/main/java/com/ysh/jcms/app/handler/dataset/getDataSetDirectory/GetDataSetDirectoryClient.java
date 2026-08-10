@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.dataset.getDataSetDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.handler.PaginationContext;
+import com.ysh.jcms.app.handler.CmsClientOperator;
 import com.ysh.jcms.data.sequence.dataset.CmsDataRefFcEntry;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetDirectoryError;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetDirectoryResponse;
@@ -25,10 +25,13 @@ public class GetDataSetDirectoryClient extends BaseClientHandler<GetDataSetDirec
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void execute(GetDataSetDirectoryDao dao) throws Exception {
-        dao.paginationContext().setResult(new ArrayList<DirEntry>());
         send(ServiceName.GET_DATA_SET_DIRECTORY, dao);
+    }
+
+    @Override
+    protected void beforeAll(GetDataSetDirectoryDao dao) throws IOException {
+        CmsClientOperator.initResult(dao, "memberData");
     }
 
     @Override
@@ -38,22 +41,15 @@ public class GetDataSetDirectoryClient extends BaseClientHandler<GetDataSetDirec
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void onSuccess(Frame frame, GetDataSetDirectoryDao dao) throws IOException {
-        PaginationContext ctx = dao.paginationContext();
         CmsGetDataSetDirectoryResponse resp = decodeResp(frame, new CmsGetDataSetDirectoryResponse());
 
         List<DirEntry> entries = new ArrayList<>();
         for (CmsDataRefFcEntry e : resp.memberData) {
             entries.add(new DirEntry(e.reference.value(), null));
         }
-        List<DirEntry> all = (List<DirEntry>) ctx.getResult();
-        all.addAll(entries);
-        ctx.setLastMoreFollows(resp.moreFollows.value());
-        if (resp.memberData.size() > 0) {
-            ctx.setLastReference(resp.memberData.get(resp.memberData.size() - 1).reference.value());
-        }
-        log.info("GetDataSetDirectory page: {} entries (moreFollows={})", entries.size(), ctx.isLastMoreFollows());
+        CmsClientOperator.page(dao).add("memberData", entries).moreFollows(resp.moreFollows.value()).lastRef(entries, e -> e.reference);
+        log.info("GetDataSetDirectory page: {} entries (moreFollows={})", entries.size(), resp.moreFollows.value());
     }
 
     @Override

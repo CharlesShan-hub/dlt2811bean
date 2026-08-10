@@ -14,11 +14,15 @@ public class ReleaseClient extends BaseClientHandler<ReleaseDao> {
 
     @Override
     public void execute(ReleaseDao dao) throws Exception {
-        byte[] assocId = node.getClient().getSession().getAssociationId();
+        send(ServiceName.RELEASE, dao);
+    }
+
+    @Override
+    protected void beforeAll(ReleaseDao dao) throws IOException {
+        byte[] assocId = node.client().session().associationId();
         if (assocId != null && assocId.length > 0) {
             dao.associationId(assocId);
         }
-        send(ServiceName.RELEASE, dao);
     }
 
     @Override
@@ -28,7 +32,7 @@ public class ReleaseClient extends BaseClientHandler<ReleaseDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, ReleaseDao dao) throws IOException {
         CmsReleaseResponse resp = decodeResp(frame, new CmsReleaseResponse());
 
         int serviceError = resp.serviceError.value();
@@ -36,8 +40,7 @@ public class ReleaseClient extends BaseClientHandler<ReleaseDao> {
             throw new IOException("Release rejected: serviceError=" + serviceError);
         }
 
-        node.getClient().getSession().clear();
-        node.getClient().getSession().setState(SessionState.CONNECTED);
-        log.info("Release completed");
+        node.client().session().clear();
+        node.client().session().state(SessionState.CONNECTED);
     }
 }

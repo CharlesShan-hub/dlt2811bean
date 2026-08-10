@@ -24,20 +24,12 @@ public class AssociateConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.isClientConnected()) {
-            if (CmsConsole.isJsonMode(args)) {
-                CmsConsole.jsonError("Not connected. Use 'connect' first.");
-            } else {
-                ConsolePrinter.error("Not connected. Use 'connect' first.");
-            }
+        if (!console.clientConnected()) {
+            CmsConsole.jsonError("Not connected. Use 'connect' first.");
             return;
         }
-        if (console.isConnected()) {
-            if (CmsConsole.isJsonMode(args)) {
-                CmsConsole.jsonError("Already associated. Use 'release' or 'disconnect' first.");
-            } else {
-                ConsolePrinter.error("Already associated. Use 'release' or 'disconnect' first.");
-            }
+        if (console.connected()) {
+            CmsConsole.jsonError("Already associated. Use 'release' or 'disconnect' first.");
             return;
         }
 
@@ -50,6 +42,6 @@ public class AssociateConsole extends CommandHandler {
         console.getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef(sapRef).secure(secure));
 
         String msg = sapRef != null ? "Associated: " + sapRef + (secure ? " (secure)" : "") : "Associated: (default access point)";
-        CmsConsole.outputMessage(msg, args);
+        ConsolePrinter.success(msg);
     }
 }

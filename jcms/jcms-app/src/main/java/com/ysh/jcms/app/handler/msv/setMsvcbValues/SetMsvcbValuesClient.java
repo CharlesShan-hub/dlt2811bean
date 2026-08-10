@@ -23,6 +23,5 @@ public class SetMsvcbValuesClient extends BaseClientHandler<SetMsvcbValuesDao> {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         decodeResp(frame, new CmsSetMsvcbValuesResponse());
-        log.info("SetMSVCBValues succeeded");
     }
 }

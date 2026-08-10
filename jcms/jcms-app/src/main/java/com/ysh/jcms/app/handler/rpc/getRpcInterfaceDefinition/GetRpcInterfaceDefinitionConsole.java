@@ -19,7 +19,7 @@ public class GetRpcInterfaceDefinitionConsole extends CommandHandler {
     }
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
         if (!CmsConsole.requireParam(args, "interface", "Usage: rpc-iface-def --interface <name>"))
             return;
@@ -28,6 +28,6 @@ public class GetRpcInterfaceDefinitionConsole extends CommandHandler {
         ConsolePrinter.info("Fetching RPC interface definition: " + iface);
         GetRpcInterfaceDefinitionDao dao = new GetRpcInterfaceDefinitionDao().iface(iface).after(after);
         console.getClient(GetRpcInterfaceDefinitionClient.class).execute(dao);
-        CmsConsole.outputMessage("RPC interface definition fetched for " + iface);
+        ConsolePrinter.success("RPC interface definition fetched for " + iface);
     }
 }

@@ -23,6 +23,5 @@ public class SelectWithValueClient extends BaseClientHandler<SelectWithValueDao>
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         decodeResp(frame, new CmsSelectWithValueResponse());
-        log.info("SelectWithValue succeeded");
     }
 }

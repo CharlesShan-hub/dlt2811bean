@@ -16,7 +16,7 @@ public class TimeActivatedOperateTerminationServer extends BaseServerHandler<Cms
     @Override
     protected Frame onDecodeSuccess(Session session, CmsTimeActivatedOperateTermination req, int reqId) {
         String ref = str(req.reference);
-        log.info("TimeActivatedOperateTermination from {}: reqId={}, ref={}", session.getSessionId(), reqId, ref);
+        log.info("TimeActivatedOperateTermination from {}: reqId={}, ref={}", session.sessionId(), reqId, ref);
         return noResponse();
     }
 }

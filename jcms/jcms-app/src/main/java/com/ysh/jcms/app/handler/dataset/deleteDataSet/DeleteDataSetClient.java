@@ -25,6 +25,5 @@ public class DeleteDataSetClient extends BaseClientHandler<DeleteDataSetDao> {
     protected void onSuccess(Frame frame) throws IOException {
         CmsDeleteDataSetResponse resp = new CmsDeleteDataSetResponse();
         resp.decode(frame.asduBytes());
-        log.info("DeleteDataSet succeeded");
     }
 }

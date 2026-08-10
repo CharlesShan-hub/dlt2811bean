@@ -48,7 +48,7 @@ public class SetEditSgValueConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         String refsStr = args.get("refs");
@@ -107,6 +107,6 @@ public class SetEditSgValueConsole extends CommandHandler {
 
         console.getClient(SetEditSgValueClient.class).execute(dao);
 
-        CmsConsole.outputMessage("Edit SG values set successfully", args);
+        ConsolePrinter.success("Edit SG values set successfully");
     }
 }

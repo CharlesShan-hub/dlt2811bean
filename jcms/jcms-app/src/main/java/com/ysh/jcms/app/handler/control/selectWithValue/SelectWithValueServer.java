@@ -30,7 +30,7 @@ public class SelectWithValueServer extends BaseServerHandler<CmsSelectWithValueR
     @Override
     protected Frame onDecodeSuccess(Session session, CmsSelectWithValueRequest req, int reqId) {
         String ref = str(req.reference);
-        String sid = session.getSessionId();
+        String sid = session.sessionId();
 
         log.info("SelectWithValue from {}: reqId={}, ref={}", sid, reqId, ref);
 

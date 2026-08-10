@@ -24,7 +24,7 @@ public class CancelConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
         if (!CmsConsole.requireParam(args, "ref", "Usage: cancel --ref <reference>"))
             return;
@@ -33,6 +33,6 @@ public class CancelConsole extends CommandHandler {
         ConsolePrinter.info("Cancelling: " + ref);
         CancelDao dao = new CancelDao().ref(ref).args(args);
         console.getClient(CancelClient.class).execute(dao);
-        CmsConsole.outputMessage("Cancelled " + ref);
+        ConsolePrinter.success("Cancelled " + ref);
     }
 }

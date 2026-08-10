@@ -20,7 +20,6 @@ public class AbortClient extends BaseClientHandler<AbortClientDao> {
 
     @Override
     protected void onSuccess(Frame frame) {
-        node.getClient().close();
-        log.info("Abort sent, connection closed.");
+        node.client().close();
     }
 }

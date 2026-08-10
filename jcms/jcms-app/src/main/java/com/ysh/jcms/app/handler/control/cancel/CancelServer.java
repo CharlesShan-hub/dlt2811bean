@@ -30,7 +30,7 @@ public class CancelServer extends BaseServerHandler<CmsCancelRequest, CmsCancelE
     @Override
     protected Frame onDecodeSuccess(Session session, CmsCancelRequest req, int reqId) {
         String ref = str(req.reference);
-        String sid = session.getSessionId();
+        String sid = session.sessionId();
 
         log.info("Cancel from {}: reqId={}, ref={}", sid, reqId, ref);
 

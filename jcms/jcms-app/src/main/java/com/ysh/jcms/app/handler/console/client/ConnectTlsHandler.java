@@ -34,7 +34,7 @@ public class ConnectTlsHandler extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (console.isConnected()) {
+        if (console.connected()) {
             ConsolePrinter.error("Already connected. Type 'disconnect' first.");
             return;
         }

@@ -23,6 +23,5 @@ public class OperateClient extends BaseClientHandler<OperateDao> {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         decodeResp(frame, new CmsOperateResponse());
-        log.info("Operate succeeded");
     }
 }

@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.data.getDataDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.handler.PaginationContext;
+import com.ysh.jcms.app.handler.CmsClientOperator;
 import com.ysh.jcms.data.sequence.data.CmsSubRefEntry;
 import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.pdu.data.CmsGetDataDirectoryError;
@@ -26,10 +26,13 @@ public class GetDataDirectoryClient extends BaseClientHandler<GetDataDirectoryDa
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void execute(GetDataDirectoryDao dao) throws Exception {
-        dao.paginationContext().setResult(new ArrayList<DirEntry>());
         send(ServiceName.GET_DATA_DIRECTORY, dao);
+    }
+
+    @Override
+    protected void beforeAll(GetDataDirectoryDao dao) throws IOException {
+        CmsClientOperator.initResult(dao, "dataAttribute");
     }
 
     @Override
@@ -39,22 +42,15 @@ public class GetDataDirectoryClient extends BaseClientHandler<GetDataDirectoryDa
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void onSuccess(Frame frame, GetDataDirectoryDao dao) throws IOException {
-        PaginationContext ctx = dao.paginationContext();
         CmsGetDataDirectoryResponse resp = decodeResp(frame, new CmsGetDataDirectoryResponse());
 
         List<DirEntry> entries = new ArrayList<>();
         for (CmsSubRefEntry e : resp.dataAttribute) {
             entries.add(new DirEntry(e.reference.value(), fcCode(e)));
         }
-        List<DirEntry> all = (List<DirEntry>) ctx.getResult();
-        all.addAll(entries);
-        ctx.setLastMoreFollows(resp.moreFollows.value());
-        if (resp.dataAttribute.size() > 0) {
-            ctx.setLastReference(resp.dataAttribute.get(resp.dataAttribute.size() - 1).reference.value());
-        }
-        log.info("GetDataDirectory page: {} entries (moreFollows={})", entries.size(), ctx.isLastMoreFollows());
+        CmsClientOperator.page(dao).add("dataAttribute", entries).moreFollows(resp.moreFollows.value()).lastRef(entries, e -> e.reference);
+        log.info("GetDataDirectory page: {} entries (moreFollows={})", entries.size(), resp.moreFollows.value());
     }
 
     @Override

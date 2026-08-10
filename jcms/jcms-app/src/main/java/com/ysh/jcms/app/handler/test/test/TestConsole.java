@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.test.test;
 
 import com.ysh.jcms.app.console.CmsConsole;
+import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
@@ -22,9 +23,9 @@ public class TestConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
         console.getClient(TestClient.class).execute(new TestDao());
-        CmsConsole.outputMessage("Ping/pong OK");
+        ConsolePrinter.success("Ping/pong OK");
     }
 }

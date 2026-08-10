@@ -4,6 +4,7 @@ import com.ysh.jcms.utils.scl.state.RcbStateManager;
 import com.ysh.jcms.utils.transport.wire.Connection;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 /**
  * Session — abstract base for a logical CMS conversation over a
@@ -11,6 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@Accessors(fluent = true)
 public abstract class Session {
 
     private final String sessionId;

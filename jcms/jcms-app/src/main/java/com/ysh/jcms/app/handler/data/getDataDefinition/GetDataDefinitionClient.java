@@ -49,6 +49,5 @@ public class GetDataDefinitionClient extends BaseClientHandler<GetDataDefinition
             entries.add(new DefEntry(cdc, choice));
         }
         ctx.setResult(entries);
-        log.info("GetDataDefinition succeeded: {} entries", entries.size());
     }
 }

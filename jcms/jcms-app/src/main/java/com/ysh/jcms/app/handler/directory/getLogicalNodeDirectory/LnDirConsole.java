@@ -49,7 +49,7 @@ public class LnDirConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
         if (!CmsConsole.requireParam(args, "ln", "Usage: ln-dir --ln <ldName|lnReference> [--acsi <type>] [--after REF]"))
             return;

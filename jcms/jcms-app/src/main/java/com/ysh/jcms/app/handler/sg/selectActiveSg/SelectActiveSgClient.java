@@ -24,6 +24,5 @@ public class SelectActiveSgClient extends BaseClientHandler<SelectActiveSgDao> {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsSelectActiveSgResponse resp = decodeResp(frame, new CmsSelectActiveSgResponse());
-        log.info("SelectActiveSG succeeded");
     }
 }

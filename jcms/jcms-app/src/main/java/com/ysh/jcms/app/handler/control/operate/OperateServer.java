@@ -31,7 +31,7 @@ public class OperateServer extends BaseServerHandler<CmsOperateRequest, CmsOpera
     @Override
     protected Frame onDecodeSuccess(Session session, CmsOperateRequest req, int reqId) {
         String ref = str(req.reference);
-        String sid = session.getSessionId();
+        String sid = session.sessionId();
 
         log.info("Operate from {}: reqId={}, ref={}", sid, reqId, ref);
 

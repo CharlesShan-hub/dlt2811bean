@@ -24,7 +24,7 @@ public class QueryLogAfterConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         if (!CmsConsole.requireParam(args, "ref", "Usage: query-log-after --ref <logRef> --entry <entryId> [--start <ms>]"))
@@ -44,6 +44,6 @@ public class QueryLogAfterConsole extends CommandHandler {
             ConsolePrinter.info("Querying log after entry: ref=" + ref + " entry=" + entryId);
         }
         console.getClient(QueryLogAfterClient.class).execute(dao);
-        CmsConsole.outputMessage("QueryLogAfter completed", args);
+        ConsolePrinter.success("QueryLogAfter completed");
     }
 }

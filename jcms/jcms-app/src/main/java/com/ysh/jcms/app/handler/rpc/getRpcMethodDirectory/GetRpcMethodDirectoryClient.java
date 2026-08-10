@@ -20,6 +20,5 @@ public class GetRpcMethodDirectoryClient extends BaseClientHandler<GetRpcMethodD
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         decodeResp(frame, new CmsGetRpcMethodDirectoryResponse());
-        log.info("GetRpcMethodDirectory succeeded");
     }
 }

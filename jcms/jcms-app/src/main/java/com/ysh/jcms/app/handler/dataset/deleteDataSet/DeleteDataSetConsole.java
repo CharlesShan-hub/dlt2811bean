@@ -23,7 +23,7 @@ public class DeleteDataSetConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         if (!CmsConsole.requireParam(args, "ds", "Usage: delete-dataset --ds <ref>"))
@@ -36,6 +36,6 @@ public class DeleteDataSetConsole extends CommandHandler {
 
         console.getClient(DeleteDataSetClient.class).execute(dao);
 
-        CmsConsole.outputMessage("Deleted dataset " + dsRef + " successfully");
+        ConsolePrinter.success("Deleted dataset " + dsRef + " successfully");
     }
 }

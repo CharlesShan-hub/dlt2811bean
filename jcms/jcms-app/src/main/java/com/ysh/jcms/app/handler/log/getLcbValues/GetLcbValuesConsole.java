@@ -26,7 +26,7 @@ public class GetLcbValuesConsole extends CommandHandler {
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         boolean jsonMode = CmsConsole.isJsonMode(args);
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         if (!CmsConsole.requireParam(args, "refs", "Usage: get-lcb-vals --refs \"<ref1> <ref2>...\""))

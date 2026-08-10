@@ -23,7 +23,7 @@ public class GetDataDefinitionServer extends BaseServerHandler<CmsGetDataDefinit
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetDataDefinitionRequest req, int reqId) {
-        log.info("GetDataDefinition from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.size());
+        log.info("GetDataDefinition from {}: reqId={}, {} refs", session.sessionId(), reqId, req.data.size());
 
         SclDocument doc = requireScl(session, reqId);
         SclIED ied = requireIed(session, reqId);

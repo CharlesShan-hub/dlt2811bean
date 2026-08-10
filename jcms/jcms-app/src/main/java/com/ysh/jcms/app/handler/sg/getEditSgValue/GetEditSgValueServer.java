@@ -25,9 +25,9 @@ public class GetEditSgValueServer extends BaseServerHandler<CmsGetEditSgValueReq
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetEditSgValueRequest req, int reqId) {
-        log.info("GetEditSGValue from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.size());
+        log.info("GetEditSGValue from {}: reqId={}, {} refs", session.sessionId(), reqId, req.data.size());
 
-        SgcState state = SgSessionState.getState(session.getSessionId());
+        SgcState state = SgSessionState.getState(session.sessionId());
         SclDocument doc = requireScl(session, reqId);
 
         CmsGetEditSgValueResponse resp = new CmsGetEditSgValueResponse();

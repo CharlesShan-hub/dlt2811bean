@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.handler.PaginationContext;
+import com.ysh.jcms.app.handler.CmsClientOperator;
 import com.ysh.jcms.data.scalar.CmsSubReference;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryError;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryResponse;
@@ -9,20 +9,25 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LnDirClient extends BaseClientHandler<LnDirDao> {
 
     @Override
     public void execute(LnDirDao dao) throws Exception {
-        LnDirContext ctx = (LnDirContext) dao.paginationContext();
-        ctx.setAcsiClass(dao.acsiClass());
-        ctx.getAccumulatedRefs().clear();
         send(ServiceName.GET_LOGIC_NODE_DIRECTORY, dao);
-        List<String> refs = new ArrayList<>(ctx.getAccumulatedRefs());
-        node.getContentManager().initNodeDir(ctx.getAcsiClass(), refs);
-        log.info("GetLogicalNodeDirectory succeeded: {} references, acsiClass={}", refs.size(), ctx.getAcsiClass());
+    }
+
+    @Override
+    protected void beforeAll(LnDirDao dao) throws IOException {
+        CmsClientOperator.initResult(dao, "reference");
+    }
+
+    @Override
+    protected void afterAll(LnDirDao dao) throws IOException {
+        List<CmsSubReference> refs = CmsClientOperator.getResultList(dao, "reference");
+        node.getContentManager().initNodeDir(dao.acsiClass(), refs.stream().map(CmsSubReference::value).collect(Collectors.toList()));
     }
 
     @Override
@@ -33,18 +38,10 @@ public class LnDirClient extends BaseClientHandler<LnDirDao> {
 
     @Override
     protected void onSuccess(Frame frame, LnDirDao dao) throws IOException {
-        PaginationContext ctx = dao.paginationContext();
-        LnDirContext lnCtx = (LnDirContext) ctx;
         CmsGetLogicalNodeDirectoryResponse resp = decodeResp(frame, new CmsGetLogicalNodeDirectoryResponse());
-
-        for (CmsSubReference ref : resp.reference) {
-            lnCtx.getAccumulatedRefs().add(ref.value());
-        }
-        lnCtx.setLastMoreFollows(resp.moreFollows.value());
-        if (resp.reference.size() > 0) {
-            lnCtx.setLastReference(resp.reference.get(resp.reference.size() - 1).value());
-        }
-        log.info("GetLogicalNodeDirectory page: {} refs (moreFollows={})", resp.reference.size(), lnCtx.isLastMoreFollows());
+        CmsClientOperator.page(dao).add("reference", resp.reference).moreFollows(resp.moreFollows.value()).lastRef(resp.reference,
+                CmsSubReference::value);
+        log.info("GetLogicalNodeDirectory page: {} refs (moreFollows={})", resp.reference.size(), resp.moreFollows.value());
     }
 
     @Override

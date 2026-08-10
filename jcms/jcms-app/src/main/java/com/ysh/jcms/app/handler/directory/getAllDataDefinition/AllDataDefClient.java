@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getAllDataDefinition;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.handler.PaginationContext;
+import com.ysh.jcms.app.handler.CmsClientOperator;
 import com.ysh.jcms.app.node.ContentManager;
 import com.ysh.jcms.data.sequence.directory.CmsDataDefinitionEntry;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionError;
@@ -16,11 +16,14 @@ import java.util.List;
 public class AllDataDefClient extends BaseClientHandler<AllDataDefDao> {
 
     @Override
-    @SuppressWarnings("unchecked")
     public void execute(AllDataDefDao dao) throws Exception {
-        dao.paginationContext().setResult(new ArrayList<ContentManager.DataDefEntry>());
-        node.getContentManager().initDataDef(new ArrayList<>()); // clear before fresh pull
         send(ServiceName.GET_ALL_DATA_DEFINITION, dao);
+    }
+
+    @Override
+    protected void beforeAll(AllDataDefDao dao) throws IOException {
+        CmsClientOperator.initResult(dao, "data");
+        node.getContentManager().initDataDef(new ArrayList<>()); // clear before fresh pull
     }
 
     @Override
@@ -31,7 +34,6 @@ public class AllDataDefClient extends BaseClientHandler<AllDataDefDao> {
 
     @Override
     protected void onSuccess(Frame frame, AllDataDefDao dao) throws IOException {
-        PaginationContext ctx = dao.paginationContext();
         CmsGetAllDataDefinitionResponse resp = decodeResp(frame, new CmsGetAllDataDefinitionResponse());
 
         List<ContentManager.DataDefEntry> entries = new ArrayList<>();
@@ -44,16 +46,8 @@ public class AllDataDefClient extends BaseClientHandler<AllDataDefDao> {
             entries.add(new ContentManager.DataDefEntry(ref, cdc, choice));
         }
         node.getContentManager().addDataDef(entries);
-        // also accumulate in ctx for thread-safe API responses
-        List<ContentManager.DataDefEntry> all = (List<ContentManager.DataDefEntry>) ctx.getResult();
-        if (all != null) {
-            all.addAll(entries);
-        }
-        ctx.setLastMoreFollows(resp.moreFollows.value());
-        if (resp.data.size() > 0) {
-            ctx.setLastReference(resp.data.get(resp.data.size() - 1).reference.value());
-        }
-        log.info("GetAllDataDefinition page: {} entries (moreFollows={})", entries.size(), ctx.isLastMoreFollows());
+        CmsClientOperator.page(dao).add("data", entries).moreFollows(resp.moreFollows.value()).lastRef(entries, e -> e.reference);
+        log.info("GetAllDataDefinition page: {} entries (moreFollows={})", entries.size(), resp.moreFollows.value());
     }
 
     @Override

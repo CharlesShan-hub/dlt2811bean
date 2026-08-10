@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.connection.abort;
 
 import com.ysh.jcms.app.console.CmsConsole;
+import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
@@ -23,10 +24,10 @@ public class AbortConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireTcpConnected(args))
             return;
         int reason = Integer.parseInt(args.get("reason"));
         console.getClient(AbortClient.class).execute(new AbortClientDao().reason(reason));
-        CmsConsole.outputMessage("Abort sent: " + new CmsAbortReason(reason).value() + " (" + reason + ")");
+        ConsolePrinter.success("Abort sent: " + new CmsAbortReason(reason).value() + " (" + reason + ")");
     }
 }

@@ -27,7 +27,7 @@ public class SetUrcbValuesConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         if (!CmsConsole.requireParam(args, "ref", "Usage: set-urcb-vals --ref <urcbRef> [options]"))
@@ -61,6 +61,6 @@ public class SetUrcbValuesConsole extends CommandHandler {
 
         ConsolePrinter.info("Setting URCB values: ref=" + ref);
         console.getClient(SetUrcbValuesClient.class).execute(dao);
-        CmsConsole.outputMessage("URCB values set for " + ref);
+        ConsolePrinter.success("URCB values set for " + ref);
     }
 }

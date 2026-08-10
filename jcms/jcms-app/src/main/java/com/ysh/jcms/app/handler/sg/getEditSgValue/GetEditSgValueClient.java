@@ -44,7 +44,6 @@ public class GetEditSgValueClient extends BaseClientHandler<GetEditSgValueDao> {
             values.add(new ValueEntry(data.choice(), describeValue(data)));
         }
         ctx.setResult(values);
-        log.info("GetEditSGValue succeeded: {} values", values.size());
     }
 
     private static String describeValue(CmsData data) {

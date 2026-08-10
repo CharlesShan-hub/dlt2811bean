@@ -48,7 +48,7 @@ public class AllCbValuesConsole extends CommandHandler {
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         boolean jsonMode = CmsConsole.isJsonMode(args);
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         if (!CmsConsole.requireParam(args, "ln", "Usage: all-cb --ln <ldName|lnReference> --acsi <type> [--after REF]"))

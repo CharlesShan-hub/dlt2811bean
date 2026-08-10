@@ -19,7 +19,7 @@ public class RpcCallConsole extends CommandHandler {
     }
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
         if (!CmsConsole.requireParam(args, "method", "Usage: rpc-call --method <接口名.方法名>"))
             return;
@@ -27,6 +27,6 @@ public class RpcCallConsole extends CommandHandler {
         ConsolePrinter.info("RPC call: " + method);
         RpcCallDao dao = new RpcCallDao().method(method);
         console.getClient(RpcCallClient.class).execute(dao);
-        CmsConsole.outputMessage("RPC call " + method + " completed");
+        ConsolePrinter.success("RPC call " + method + " completed");
     }
 }

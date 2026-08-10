@@ -27,7 +27,7 @@ public class AssociateServer extends BaseServerHandler<CmsAssociateRequest, CmsA
     @Override
     protected Frame onDecodeSuccess(Session session, CmsAssociateRequest req, int reqId) {
         String sapRef = req.isPresent("serverAccessPointReference") ? req.serverAccessPointReference.value() : null;
-        log.info("Associate request from {}: reqId={}, sapRef={}", session.getSessionId(), reqId, sapRef);
+        log.info("Associate request from {}: reqId={}, sapRef={}", session.sessionId(), reqId, sapRef);
 
         if (session.isAssociated())
             return onDecodeError(reqId, CmsServiceError.INSTANCE_IN_USE);
@@ -51,9 +51,9 @@ public class AssociateServer extends BaseServerHandler<CmsAssociateRequest, CmsA
             resp.authenticationParameter(serverAuth);
 
         byte[] respBytes = resp.encode();
-        session.setAssociationId(assocId);
-        session.setState(SessionState.ASSOCIATED);
-        log.info("Association established: session={}", session.getSessionId());
+        session.associationId(assocId);
+        session.state(SessionState.ASSOCIATED);
+        log.info("Association established: session={}", session.sessionId());
         return buildSuccess(respBytes, reqId);
     }
 
@@ -64,7 +64,7 @@ public class AssociateServer extends BaseServerHandler<CmsAssociateRequest, CmsA
         if (!(session instanceof InnerServer.ServerSession))
             return;
         InnerServer.ServerSession ss = (InnerServer.ServerSession) session;
-        SclDocument scl = ss.getSclDocument();
+        SclDocument scl = ss.sclDocument();
         if (scl == null) {
             log.warn("Associate rejected: no SCL model loaded on server");
             throw new ServiceException(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
@@ -78,9 +78,9 @@ public class AssociateServer extends BaseServerHandler<CmsAssociateRequest, CmsA
             throw new ServiceException(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        ss.setSclAccessPoint(ap.ap);
-        ss.setSclIed(ap.ied);
-        ss.setSclDataTypeTemplates(scl.dataTypeTemplates());
+        ss.sclAccessPoint(ap.ap);
+        ss.sclIed(ap.ied);
+        ss.sclDataTypeTemplates(scl.dataTypeTemplates());
         log.info("Resolved SCL access point: IED={}, AP={}", ap.ied.name(), ap.ap.name());
     }
 }

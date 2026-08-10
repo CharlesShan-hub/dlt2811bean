@@ -29,7 +29,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     }
 
     protected int nextReqId() {
-        return node.getClient().getSession().nextReqId();
+        return node.client().session().nextReqId();
     }
 
     /** Max auto-pull iterations to prevent infinite loops. */
@@ -150,7 +150,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
         if (node == null)
             throw new IOException("BaseClientHandler node not set");
         trace(">>> " + sc + " (one-way)");
-        node.getClient().getConnection().send(new Frame(new FrameHeader().serviceCode(sc).resp(false).err(false), pduBytes, nextReqId()));
+        node.client().connection().send(new Frame(new FrameHeader().serviceCode(sc).resp(false).err(false), pduBytes, nextReqId()));
         onSuccess(null);
     }
 
@@ -163,6 +163,21 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     /** Trace a decoded response PDU. */
     protected static void traceResp(CmsType resp) {
         trace("<<<\n" + resp);
+    }
+
+    /**
+     * Called once before the first request is sent (both paginated and
+     * non-paginated). Default no-op. Override to set up DAO state before the
+     * request loop.
+     */
+    protected void beforeAll(D dao) throws IOException {
+    }
+
+    /**
+     * Called once after all pages are fetched (both paginated and non-paginated).
+     * Default no-op. Override for post-pagination work (e.g. initServerDir, log).
+     */
+    protected void afterAll(D dao) throws IOException {
     }
 
     protected void onSuccess(Frame frame) throws IOException {

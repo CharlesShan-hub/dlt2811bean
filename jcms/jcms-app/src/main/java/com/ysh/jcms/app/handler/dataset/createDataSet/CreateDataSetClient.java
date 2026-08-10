@@ -24,6 +24,5 @@ public class CreateDataSetClient extends BaseClientHandler<CreateDataSetDao> {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         decodeResp(frame, new CmsCreateDataSetResponse());
-        log.info("CreateDataSet succeeded");
     }
 }

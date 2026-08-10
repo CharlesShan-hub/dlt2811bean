@@ -29,7 +29,7 @@ public class GetDataSetValuesConsole extends CommandHandler {
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         boolean jsonMode = CmsConsole.isJsonMode(args);
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         if (!CmsConsole.requireParam(args, "ds", "Usage: get-dataset-values --ds <ref> [--after REF]"))

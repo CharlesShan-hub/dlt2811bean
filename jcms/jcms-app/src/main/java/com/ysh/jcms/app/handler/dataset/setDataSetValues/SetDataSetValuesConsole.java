@@ -24,7 +24,7 @@ public class SetDataSetValuesConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         if (!CmsConsole.requireParam(args, "ds", "Usage: set-dataset-values --ds <ref> --values \"<val1> <val2>...\""))
@@ -52,6 +52,6 @@ public class SetDataSetValuesConsole extends CommandHandler {
 
         console.getClient(SetDataSetValuesClient.class).execute(dao);
 
-        CmsConsole.outputMessage("Set " + dao.values().size() + " dataset value(s) successfully");
+        ConsolePrinter.success("Set " + dao.values().size() + " dataset value(s) successfully");
     }
 }

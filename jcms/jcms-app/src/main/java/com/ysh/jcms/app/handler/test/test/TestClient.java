@@ -8,6 +8,5 @@ public class TestClient extends BaseClientHandler<TestDao> {
     @Override
     public void execute(TestDao dao) throws Exception {
         send(ServiceName.TEST, new byte[0]);
-        log.info("Test ping/pong succeeded");
     }
 }

@@ -16,7 +16,7 @@ public class CommandTerminationServer extends BaseServerHandler<CmsCommandTermin
     @Override
     protected Frame onDecodeSuccess(Session session, CmsCommandTermination req, int reqId) {
         String ref = str(req.reference);
-        log.info("CommandTermination from {}: reqId={}, ref={}", session.getSessionId(), reqId, ref);
+        log.info("CommandTermination from {}: reqId={}, ref={}", session.sessionId(), reqId, ref);
         // Unconfirmed service — no response
         return noResponse();
     }

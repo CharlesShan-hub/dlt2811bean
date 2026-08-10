@@ -24,7 +24,7 @@ public class SelectActiveSgConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         if (!CmsConsole.requireParam(args, "ref", "Usage: select-active-sg --ref <sgcbRef> --num <groupNumber>"))
@@ -52,6 +52,6 @@ public class SelectActiveSgConsole extends CommandHandler {
 
         console.getClient(SelectActiveSgClient.class).execute(dao);
 
-        CmsConsole.outputMessage("Active SG set to " + sgNum + " for " + ref, args);
+        ConsolePrinter.success("Active SG set to " + sgNum + " for " + ref);
     }
 }

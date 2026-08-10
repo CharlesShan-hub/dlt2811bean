@@ -20,6 +20,5 @@ public class GetRpcInterfaceDefinitionClient extends BaseClientHandler<GetRpcInt
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         decodeResp(frame, new CmsGetRpcInterfaceDefinitionResponse());
-        log.info("GetRpcInterfaceDefinition succeeded");
     }
 }

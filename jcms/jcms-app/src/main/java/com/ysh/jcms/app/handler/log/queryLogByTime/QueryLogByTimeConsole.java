@@ -24,7 +24,7 @@ public class QueryLogByTimeConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
 
         if (!CmsConsole.requireParam(args, "ref", "Usage: query-log-by-time --ref <logRef> [--start <ms>] [--stop <ms>]"))
@@ -44,6 +44,6 @@ public class QueryLogByTimeConsole extends CommandHandler {
             ConsolePrinter.info("Querying log by time: ref=" + ref);
         }
         console.getClient(QueryLogByTimeClient.class).execute(dao);
-        CmsConsole.outputMessage("QueryLogByTime completed", args);
+        ConsolePrinter.success("QueryLogByTime completed");
     }
 }

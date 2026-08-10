@@ -56,6 +56,5 @@ public class GetSgcbValuesClient extends BaseClientHandler<GetSgcbValuesDao> {
             }
         }
         ctx.setResult(results);
-        log.info("GetSGCBValues succeeded: {} entries", results.size());
     }
 }

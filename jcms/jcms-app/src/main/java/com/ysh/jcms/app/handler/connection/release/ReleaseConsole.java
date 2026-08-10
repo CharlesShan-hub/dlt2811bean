@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.connection.release;
 
 import com.ysh.jcms.app.console.CmsConsole;
+import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
@@ -22,9 +23,9 @@ public class ReleaseConsole extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        if (!console.requireAssociated(args))
             return;
         console.getClient(com.ysh.jcms.app.handler.connection.release.ReleaseClient.class).execute(new ReleaseDao());
-        CmsConsole.outputMessage("Released.");
+        ConsolePrinter.success("Released.");
     }
 }

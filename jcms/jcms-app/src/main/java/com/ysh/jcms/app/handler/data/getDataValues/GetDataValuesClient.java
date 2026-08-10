@@ -46,7 +46,6 @@ public class GetDataValuesClient extends BaseClientHandler<GetDataValuesDao> {
             values.add(new DataValue(d.choice(), d.toValueString()));
         }
         ctx.setResult(values);
-        log.info("GetDataValues succeeded: {} values", values.size());
     }
 
 }
