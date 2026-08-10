@@ -27,7 +27,7 @@ public class GetDataSetValuesServer extends BaseServerHandler<CmsGetDataSetValue
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetDataSetValuesRequest req, int reqId) {
-        log.info("GetDataSetValues from {}: reqId={}", session.getSessionId(), reqId);
+        log.info("GetDataSetValues from {}: reqId={}", session.sessionId(), reqId);
 
         SclDocument doc = requireScl(session, reqId);
         SclIED ied = requireIed(session, reqId);

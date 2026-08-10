@@ -31,7 +31,7 @@ public class AllCbValuesServer extends BaseServerHandler<CmsGetAllCbValuesReques
         int acsiClass = req.acsiClass.value();
         String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
 
-        log.info("GetAllCBValues from {}: reqId={}, acsiClass={}", session.getSessionId(), reqId, acsiClass);
+        log.info("GetAllCBValues from {}: reqId={}, acsiClass={}", session.sessionId(), reqId, acsiClass);
 
         SclIED ied = requireIed(session, reqId);
         SclAccessPoint ap = requireAp(session, reqId);

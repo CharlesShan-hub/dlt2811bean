@@ -25,13 +25,13 @@ public class ListHandler extends CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.getSclManager().isLoaded()) {
+        if (!console.sclManager().loaded()) {
             ConsolePrinter.error("SCL not loaded.");
             return;
         }
 
         List<String> aps = new ArrayList<>();
-        for (SclIED ied : console.getSclManager().getIeds()) {
+        for (SclIED ied : console.sclManager().ieds()) {
             ied.accessPoints().forEach(ap -> aps.add(ied.name() + "/" + ap.name()));
         }
 

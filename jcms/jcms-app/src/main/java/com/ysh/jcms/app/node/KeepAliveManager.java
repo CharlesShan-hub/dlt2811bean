@@ -77,24 +77,24 @@ public class KeepAliveManager {
         long now = System.currentTimeMillis();
 
         for (InnerServer.ServerSession ss : sessions) {
-            if (ss.getState() != SessionState.ASSOCIATED)
+            if (ss.state() != SessionState.ASSOCIATED)
                 continue;
 
-            long idle = now - ss.getLastActivityTime();
-            int retries = ss.getKeepaliveRetries();
+            long idle = now - ss.lastActivityTime();
+            int retries = ss.keepaliveRetries();
 
             if (idle > cfg.idleTimeoutMs() + (long) cfg.retryIntervalMs() * (retries + 1)) {
                 if (retries >= cfg.maxRetries()) {
-                    log.warn("Keepalive: session {} max retries exceeded, disconnecting", ss.getSessionId());
+                    log.warn("Keepalive: session {} max retries exceeded, disconnecting", ss.sessionId());
                     ss.close();
                 } else {
                     ss.incrementKeepaliveRetries();
                     try {
-                        ss.getConnection()
+                        ss.connection()
                                 .send(new Frame(new FrameHeader().serviceCode(ServiceName.TEST).resp(false).err(false), new byte[0], 0));
-                        log.debug("Keepalive: sent TEST probe to session {} (retry={})", ss.getSessionId(), retries + 1);
+                        log.debug("Keepalive: sent TEST probe to session {} (retry={})", ss.sessionId(), retries + 1);
                     } catch (IOException e) {
-                        log.warn("Keepalive: TEST probe failed for session {}", ss.getSessionId());
+                        log.warn("Keepalive: TEST probe failed for session {}", ss.sessionId());
                         ss.close();
                     }
                 }

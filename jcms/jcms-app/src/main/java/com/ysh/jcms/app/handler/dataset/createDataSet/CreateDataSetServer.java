@@ -25,7 +25,7 @@ public class CreateDataSetServer extends BaseServerHandler<CmsCreateDataSetReque
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsCreateDataSetRequest req, int reqId) {
-        log.info("CreateDataSet from {}: reqId={}, {} members", session.getSessionId(), reqId, req.memberData.size());
+        log.info("CreateDataSet from {}: reqId={}, {} members", session.sessionId(), reqId, req.memberData.size());
 
         SclIED ied = requireIed(session, reqId);
         SclAccessPoint ap = requireAp(session, reqId);

@@ -23,7 +23,7 @@ public class AllDataValuesClient extends BaseClientHandler<AllDataValuesDao> {
     @Override
     protected void beforeAll(AllDataValuesDao dao) throws IOException {
         CmsClientOperator.initResult(dao, "data");
-        node.getContentManager().initAllData(new ArrayList<>()); // clear before fresh pull
+        node.contentManager().initAllData(new ArrayList<>()); // clear before fresh pull
     }
 
     @Override
@@ -43,7 +43,7 @@ public class AllDataValuesClient extends BaseClientHandler<AllDataValuesDao> {
                 continue; // skip error/empty entries
             entries.add(new ContentManager.AllDataEntry(entry.reference, entry.choiceType, entry.valueString));
         }
-        node.getContentManager().addAllData(entries);
+        node.contentManager().addAllData(entries);
         CmsClientOperator.page(dao).add("data", entries).moreFollows(resp.moreFollows.value()).lastRef(entries, e -> e.reference);
         log.info("GetAllDataValues page: {} entries (moreFollows={})", entries.size(), resp.moreFollows.value());
     }

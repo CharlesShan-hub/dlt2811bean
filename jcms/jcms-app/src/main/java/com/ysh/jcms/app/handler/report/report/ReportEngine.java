@@ -69,7 +69,7 @@ public class ReportEngine {
             return new ReportControlBlock(rcbRef, rc);
         });
         rcb.addSubscriber(session);
-        log.info("Report subscription: {} added for ref={}", session.getSessionId(), rcbRef);
+        log.info("Report subscription: {} added for ref={}", session.sessionId(), rcbRef);
     }
 
     /** Unsubscribe a session from an RCB. Called when rptEna=false is set. */
@@ -79,7 +79,7 @@ public class ReportEngine {
             return;
         rcb.removeSubscriber(session);
         rcb.cancelIntegrityTimer();
-        log.info("Report unsubscription: {} removed for ref={}", session.getSessionId(), rcbRef);
+        log.info("Report unsubscription: {} removed for ref={}", session.sessionId(), rcbRef);
     }
 
     /**
@@ -148,11 +148,11 @@ public class ReportEngine {
                     try {
                         if (session instanceof ServerSession) {
                             ServerSession ss = (ServerSession) session;
-                            ss.getConnection().send(frame);
+                            ss.connection().send(frame);
                             sent++;
                         }
                     } catch (Exception e) {
-                        log.warn("Failed to push report to {}: {}", session.getSessionId(), e.getMessage());
+                        log.warn("Failed to push report to {}: {}", session.sessionId(), e.getMessage());
                     }
                 }
                 log.info("Report pushed for ref={}: {} bytes, {} subscribers", rcb.getRef(), asduBytes.length, sent);

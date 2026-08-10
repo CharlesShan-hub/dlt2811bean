@@ -29,7 +29,7 @@ public class SetGoCbValuesServer extends BaseServerHandler<CmsSetGoCbValuesReque
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsSetGoCbValuesRequest req, int reqId) {
-        log.info("SetGoCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.gocb.size());
+        log.info("SetGoCBValues from {}: reqId={}, {} entries", session.sessionId(), reqId, req.gocb.size());
 
         SclIED ied = getSclIed(session);
         SclAccessPoint ap = getSclAccessPoint(session);

@@ -214,7 +214,7 @@ public class CmsClientConsole extends CmsConsole {
         registerClient(new RpcCallClient());
 
         // Set up push handler for incoming REPORT frames from server
-        getClient().setReportHandler(frame -> {
+        client().reportHandler(frame -> {
             ReportClient rc = getClient(ReportClient.class);
             if (rc != null) {
                 rc.handleReport(frame);

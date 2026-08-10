@@ -30,7 +30,7 @@ public class GetMsvcbValuesServer extends BaseServerHandler<CmsGetMsvcbValuesReq
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetMsvcbValuesRequest req, int reqId) {
-        log.info("GetMSVCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.size());
+        log.info("GetMSVCBValues from {}: reqId={}, {} refs", session.sessionId(), reqId, req.reference.size());
 
         SclIED ied = requireIed(session, reqId);
         SclAccessPoint ap = requireAp(session, reqId);

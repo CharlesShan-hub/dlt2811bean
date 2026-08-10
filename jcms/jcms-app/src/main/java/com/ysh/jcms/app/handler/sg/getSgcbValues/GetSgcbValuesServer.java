@@ -24,7 +24,7 @@ public class GetSgcbValuesServer extends BaseServerHandler<CmsGetSgcbValuesReque
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetSgcbValuesRequest req, int reqId) {
-        log.info("GetSGCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.sgcbReference.size());
+        log.info("GetSGCBValues from {}: reqId={}, {} refs", session.sessionId(), reqId, req.sgcbReference.size());
 
         CmsGetSgcbValuesResponse resp = new CmsGetSgcbValuesResponse();
 
@@ -46,7 +46,7 @@ public class GetSgcbValuesServer extends BaseServerHandler<CmsGetSgcbValuesReque
     }
 
     private static CmsSgcb buildSgcb(String ref, Session session, int numOfSG) {
-        SgcState state = SgSessionState.getState(session.getSessionId());
+        SgcState state = SgSessionState.getState(session.sessionId());
         CmsSgcb sgcb = new CmsSgcb().numOfSG(numOfSG).actSG(state.getActSG()).editSG(state.getEditSG());
         sgcb.tActEdt.now();
         sgcb.setPresent("resvTms", false);

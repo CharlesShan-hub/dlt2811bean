@@ -35,7 +35,7 @@ public class ContentManager {
         this.allDataEntries.addAll(entries);
     }
 
-    public synchronized List<AllDataEntry> getAllDataEntries() {
+    public synchronized List<AllDataEntry> allDataEntries() {
         return Collections.unmodifiableList(new ArrayList<>(allDataEntries));
     }
 
@@ -62,7 +62,7 @@ public class ContentManager {
         this.dataDefEntries.addAll(entries);
     }
 
-    public synchronized List<DataDefEntry> getDataDefEntries() {
+    public synchronized List<DataDefEntry> dataDefEntries() {
         return Collections.unmodifiableList(new ArrayList<>(dataDefEntries));
     }
 
@@ -92,16 +92,16 @@ public class ContentManager {
         set.addAll(refs);
     }
 
-    public synchronized Set<String> getLdNames() {
+    public synchronized Set<String> ldNames() {
         return Collections.unmodifiableSet(new LinkedHashSet<>(ldNames));
     }
-    public synchronized Set<String> getLnNames() {
+    public synchronized Set<String> lnNames() {
         return Collections.unmodifiableSet(new LinkedHashSet<>(lnNames));
     }
-    public synchronized Set<String> getDataRefs() {
+    public synchronized Set<String> dataRefs() {
         return Collections.unmodifiableSet(new LinkedHashSet<>(dataRefs));
     }
-    public synchronized Set<String> getDataSetRefs() {
+    public synchronized Set<String> dataSetRefs() {
         return Collections.unmodifiableSet(new LinkedHashSet<>(dataSetRefs));
     }
 
@@ -109,7 +109,7 @@ public class ContentManager {
      * Get references by ACSIClass (from GetLogicalNodeDirectory results). Returns
      * empty set if no results for the given class.
      */
-    public synchronized Set<String> getNodeRefs(int acsiClass) {
+    public synchronized Set<String> nodeRefs(int acsiClass) {
         Set<String> set = lnRefsByAcsiClass.get(acsiClass);
         return set != null ? Collections.unmodifiableSet(new LinkedHashSet<>(set)) : Collections.emptySet();
     }

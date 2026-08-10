@@ -48,11 +48,11 @@ public class SvrDirAfterTempTest extends BaseLoopbackTest {
         SvrDirClient c = clientNode().getClient(SvrDirClient.class);
 
         c.execute(new SvrDirDao());
-        List<String> all = new ArrayList<>(clientNode().getContentManager().getLdNames());
+        List<String> all = new ArrayList<>(clientNode().contentManager().ldNames());
         System.out.println("ALL=" + all);
 
         String last = "C1";
         c.execute(new SvrDirDao().referenceAfter(last));
-        System.out.println("AFTER last=" + last + " -> " + clientNode().getContentManager().getLdNames());
+        System.out.println("AFTER last=" + last + " -> " + clientNode().contentManager().ldNames());
     }
 }

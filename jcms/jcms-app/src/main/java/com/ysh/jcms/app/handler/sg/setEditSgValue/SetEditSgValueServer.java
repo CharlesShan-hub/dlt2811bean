@@ -29,12 +29,12 @@ public class SetEditSgValueServer extends BaseServerHandler<CmsSetEditSgValueReq
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsSetEditSgValueRequest req, int reqId) {
-        log.info("SetEditSGValue from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.data.size());
+        log.info("SetEditSGValue from {}: reqId={}, {} entries", session.sessionId(), reqId, req.data.size());
 
         if (req.data == null || req.data.size() == 0)
             return ok(new CmsSetEditSgValueResponse(), reqId);
 
-        SgcState state = SgSessionState.getState(session.getSessionId());
+        SgcState state = SgSessionState.getState(session.sessionId());
         for (int i = 0; i < req.data.size(); i++) {
             CmsSgRefValueEntry entry = req.data.get(i);
             String ref = str(entry.reference);
@@ -44,7 +44,7 @@ public class SetEditSgValueServer extends BaseServerHandler<CmsSetEditSgValueReq
             }
             state.putEditValue(ref, entry.value.encode());
         }
-        log.info("SetEditSGValue: stored {} values for session={}", req.data.size(), session.getSessionId());
+        log.info("SetEditSGValue: stored {} values for session={}", req.data.size(), session.sessionId());
         return ok(new CmsSetEditSgValueResponse(), reqId);
     }
 }

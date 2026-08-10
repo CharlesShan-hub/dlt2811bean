@@ -57,7 +57,7 @@ public abstract class SetCbValuesServer<R extends CmsType, E extends CmsType, En
     @Override
     protected Frame onDecodeSuccess(Session session, R req, int reqId) {
         List<Entry> entries = entries(req);
-        log.info("{} from {}: reqId={}, {} entries", getServiceName(), session.getSessionId(), reqId, entries.size());
+        log.info("{} from {}: reqId={}, {} entries", getServiceName(), session.sessionId(), reqId, entries.size());
 
         if (entries.isEmpty())
             return ok(successResp(), reqId);

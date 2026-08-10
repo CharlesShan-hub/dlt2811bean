@@ -22,7 +22,7 @@ public class DeleteDataSetServer extends BaseServerHandler<CmsDeleteDataSetReque
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsDeleteDataSetRequest req, int reqId) {
-        log.info("DeleteDataSet from {}: reqId={}", session.getSessionId(), reqId);
+        log.info("DeleteDataSet from {}: reqId={}", session.sessionId(), reqId);
 
         SclIED ied = requireIed(session, reqId);
         SclAccessPoint ap = requireAp(session, reqId);

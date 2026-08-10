@@ -24,7 +24,7 @@ public class GetGoReferenceServer extends BaseServerHandler<CmsGetGoReferenceReq
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetGoReferenceRequest req, int reqId) {
         String gocbRef = str(req.gocbReference);
-        log.info("GetGoReference from {}: reqId={}, gocbRef={}, {} offsets", session.getSessionId(), reqId, gocbRef, req.memberOfs.size());
+        log.info("GetGoReference from {}: reqId={}, gocbRef={}, {} offsets", session.sessionId(), reqId, gocbRef, req.memberOfs.size());
 
         // For now, return a basic response with the GoCB reference and confRev.
         // Full dataset member resolution would require traversing the SCL data model

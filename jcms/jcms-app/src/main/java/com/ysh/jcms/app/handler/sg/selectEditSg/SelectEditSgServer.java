@@ -22,7 +22,7 @@ public class SelectEditSgServer extends BaseServerHandler<CmsSelectEditSgRequest
         String ref = str(req.sgcbReference);
         int sgNum = req.settingGroupNumber.value() & 0xFF;
 
-        log.info("SelectEditSG from {}: reqId={}, sgcbRef={}, sgNum={}", session.getSessionId(), reqId, ref, sgNum);
+        log.info("SelectEditSG from {}: reqId={}, sgcbRef={}, sgNum={}", session.sessionId(), reqId, ref, sgNum);
 
         if (ref == null)
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
@@ -33,8 +33,8 @@ public class SelectEditSgServer extends BaseServerHandler<CmsSelectEditSgRequest
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
-        SgSessionState.getState(session.getSessionId()).setEditSG(sgNum);
-        log.info("SelectEditSG: set editSG={} for session={}", sgNum, session.getSessionId());
+        SgSessionState.getState(session.sessionId()).setEditSG(sgNum);
+        log.info("SelectEditSG: set editSG={} for session={}", sgNum, session.sessionId());
         return ok(new CmsSelectEditSgResponse(), reqId);
     }
 }

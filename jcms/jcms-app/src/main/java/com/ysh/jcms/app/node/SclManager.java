@@ -38,6 +38,9 @@ public class SclManager {
         return loadFromFile(filePath);
     }
 
+    public String source() {
+        return source;
+    }
     public String getSource() {
         return source;
     }
@@ -62,13 +65,22 @@ public class SclManager {
         return this;
     }
 
+    public SclDocument document() {
+        return document;
+    }
     public SclDocument getDocument() {
         return document;
+    }
+    public java.util.List<com.ysh.jcms.utils.scl.model.ied.SclIED> ieds() {
+        return document != null ? document.ieds() : java.util.Collections.emptyList();
     }
     public java.util.List<com.ysh.jcms.utils.scl.model.ied.SclIED> getIeds() {
         return document != null ? document.ieds() : java.util.Collections.emptyList();
     }
 
+    public boolean loaded() {
+        return document != null;
+    }
     public boolean isLoaded() {
         return document != null;
     }

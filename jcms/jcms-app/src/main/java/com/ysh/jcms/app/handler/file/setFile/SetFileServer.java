@@ -28,7 +28,7 @@ public class SetFileServer extends BaseServerHandler<CmsSetFileRequest, CmsSetFi
         byte[] fileData = req.fileData.value();
         boolean endOfFile = req.endOfFile.value();
 
-        log.info("SetFile from {}: reqId={}, file={}, startPosition={}, dataLen={}, eof={}", session.getSessionId(), reqId, fileName,
+        log.info("SetFile from {}: reqId={}, file={}, startPosition={}, dataLen={}, eof={}", session.sessionId(), reqId, fileName,
                 startPosition, fileData != null ? fileData.length : 0, endOfFile);
 
         if (fileName == null || fileName.isEmpty()) {

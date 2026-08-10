@@ -29,7 +29,7 @@ public class QueryLogByTimeServer extends BaseServerHandler<CmsQueryLogByTimeReq
     protected Frame onDecodeSuccess(Session session, CmsQueryLogByTimeRequest req, int reqId) {
         String logRef = str(req.logReference);
 
-        log.info("QueryLogByTime from {}: reqId={}, logRef={}", session.getSessionId(), reqId, logRef);
+        log.info("QueryLogByTime from {}: reqId={}, logRef={}", session.sessionId(), reqId, logRef);
 
         Long startTime = null;
         if (req.isPresent("startTime")) {

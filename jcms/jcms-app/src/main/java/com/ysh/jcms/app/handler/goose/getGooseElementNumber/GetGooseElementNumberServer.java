@@ -24,7 +24,7 @@ public class GetGooseElementNumberServer extends BaseServerHandler<CmsGetGooseEl
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetGooseElementNumberRequest req, int reqId) {
         String gocbRef = str(req.gocbReference);
-        log.info("GetGOOSEElementNumber from {}: reqId={}, gocbRef={}, {} members", session.getSessionId(), reqId, gocbRef,
+        log.info("GetGOOSEElementNumber from {}: reqId={}, gocbRef={}, {} members", session.sessionId(), reqId, gocbRef,
                 req.memberData.size());
 
         // Return the GoCB reference and confRev.

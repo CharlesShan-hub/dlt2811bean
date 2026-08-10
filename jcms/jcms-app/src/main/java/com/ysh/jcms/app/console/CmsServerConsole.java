@@ -152,13 +152,13 @@ public class CmsServerConsole extends CmsConsole {
             System.err.println("Failed to start server: " + e.getMessage());
             return;
         }
-        System.out.println("CMS Server running on port " + getServer().getPort());
-        if (getServer().hasTls()) {
-            System.out.println("TLS port: " + getServer().getSslPort());
+        System.out.println("CMS Server running on port " + server().port());
+        if (server().tls()) {
+            System.out.println("TLS port: " + server().sslPort());
         }
-        System.out.println("SCL loaded: " + getSclManager().isLoaded());
-        if (getSclManager().isLoaded()) {
-            System.out.println("SCL file: " + getSclManager().getSource());
+        System.out.println("SCL loaded: " + sclManager().loaded());
+        if (sclManager().loaded()) {
+            System.out.println("SCL file: " + sclManager().source());
         }
         System.out.println("Type 'exit' to stop...");
     }

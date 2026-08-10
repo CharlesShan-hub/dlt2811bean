@@ -26,8 +26,8 @@ public class NegotiateLoopbackTest extends BaseLoopbackTest {
     public void negotiate() throws Exception {
         clientNode().getClient(NegotiateClient.class).execute(new NegotiateClientDao());
 
-        Session session = clientNode().getClient().getSession();
-        assertTrue(session.isNegotiated());
-        assertTrue(session.getNegotiatedApduSize() > 0);
+        Session session = clientNode().client().session();
+        assertTrue(session.negotiated());
+        assertTrue(session.negotiatedApduSize() > 0);
     }
 }

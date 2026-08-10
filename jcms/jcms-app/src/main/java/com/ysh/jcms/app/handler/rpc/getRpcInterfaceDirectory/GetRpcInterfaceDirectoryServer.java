@@ -18,7 +18,7 @@ public class GetRpcInterfaceDirectoryServer
     }
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetRpcInterfaceDirectoryRequest req, int reqId) {
-        log.info("GetRpcInterfaceDirectory from {}", session.getSessionId());
+        log.info("GetRpcInterfaceDirectory from {}", session.sessionId());
         CmsGetRpcInterfaceDirectoryResponse resp = new CmsGetRpcInterfaceDirectoryResponse();
         for (String name : RpcRegistry.getInterfaceNames()) {
             resp.reference.add(new CmsString(name));

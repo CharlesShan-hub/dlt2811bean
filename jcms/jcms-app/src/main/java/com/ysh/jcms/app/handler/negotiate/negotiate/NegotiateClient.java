@@ -20,18 +20,18 @@ public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
     protected void onSuccess(Frame frame, NegotiateClientDao dao) throws IOException {
         CmsNegotiateResponse resp = decodeResp(frame, new CmsNegotiateResponse());
 
-        ClientSession session = node.getClient().getSession();
-        session.setNegotiatedApduSize(resp.apduSize.value());
-        session.setPeerAsduSize((int) resp.asduSize.value());
-        session.setPeerProtocolVersion((int) resp.protocolVersion.value());
-        session.setNegotiated(true);
+        ClientSession session = node.client().session();
+        session.negotiatedApduSize(resp.apduSize.value());
+        session.peerAsduSize((int) resp.asduSize.value());
+        session.peerProtocolVersion((int) resp.protocolVersion.value());
+        session.negotiated(true);
 
         // 标准 b)：apduSize > asduSize → 支持分帧
         boolean fragSupported = resp.apduSize.value() > resp.asduSize.value();
-        session.setFragmentationSupported(fragSupported);
-        session.getConnection().setFragmentationSupported(fragSupported);
-        session.getConnection().setMaxFrameSize(resp.apduSize.value());
-        session.getConnection().setPeerAsduSize((int) resp.asduSize.value());
+        session.fragmentationSupported(fragSupported);
+        session.connection().fragmentationSupported(fragSupported);
+        session.connection().maxFrameSize(resp.apduSize.value());
+        session.connection().peerAsduSize((int) resp.asduSize.value());
 
         // 回填响应值到 DAO，供 Console 输出
         dao.negotiatedApduSize(resp.apduSize.value());

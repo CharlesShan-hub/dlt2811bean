@@ -87,8 +87,8 @@ public class CmsNode {
             log.info("SCL file resolved: {} (test={})", sclFile, test);
             if (sclFile != null) {
                 sclManager.load(sclFile);
-                if (sclManager.isLoaded()) {
-                    SclDocument sclDoc = sclManager.getDocument();
+                if (sclManager.loaded()) {
+                    SclDocument sclDoc = sclManager.document();
                     server.sclDocument(sclDoc);
                     if (sclDoc != null) {
                         new ReportEngine(sclDoc);

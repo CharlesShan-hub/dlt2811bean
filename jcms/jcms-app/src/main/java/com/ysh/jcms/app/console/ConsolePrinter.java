@@ -79,14 +79,14 @@ public final class ConsolePrinter {
     public static void info(String msg) {
         println(CYAN + "  " + msg + RST);
     }
-    /** 输出 JSON 成功响应：{"success":true,"message":"..."}。 */
+    /** 输出 JSON 成功响应：{"success":true,"info":"...","data":null}。 */
     public static void success(String msg) {
-        raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+        raw("{\"success\":true,\"info\":\"" + CmsFormatUtil.escapeJson(msg) + "\",\"data\":null}");
     }
 
-    /** 输出 JSON 错误响应：{"success":false,"error":"..."}。 */
+    /** 输出 JSON 错误响应：{"success":false,"info":"...","data":null}。 */
     public static void error(String msg) {
-        raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+        raw("{\"success\":false,\"info\":\"" + CmsFormatUtil.escapeJson(msg) + "\",\"data\":null}");
     }
     public static void gray(String msg) {
         println(GRY + "  " + msg + RST);
@@ -132,10 +132,15 @@ public final class ConsolePrinter {
     }
 
     public static void outputJson(Map<String, Object> fields) {
+        outputJson(fields, null);
+    }
+
+    public static void outputJson(Map<String, Object> fields, String info) {
         try {
             LinkedHashMap<String, Object> all = new LinkedHashMap<>();
             all.put("success", true);
-            all.putAll(fields);
+            all.put("info", info);
+            all.put("data", fields);
             String json = InnerBase.MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(all);
             if (captureStream.get() == null) {
                 json = highlightJson(json);

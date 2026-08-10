@@ -22,7 +22,7 @@ public class SelectActiveSgServer extends BaseServerHandler<CmsSelectActiveSgReq
         String ref = str(req.sgcbReference);
         int sgNum = req.settingGroupNumber.value() & 0xFF;
 
-        log.info("SelectActiveSG from {}: reqId={}, sgcbRef={}, sgNum={}", session.getSessionId(), reqId, ref, sgNum);
+        log.info("SelectActiveSG from {}: reqId={}, sgcbRef={}, sgNum={}", session.sessionId(), reqId, ref, sgNum);
 
         if (ref == null)
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
@@ -33,8 +33,8 @@ public class SelectActiveSgServer extends BaseServerHandler<CmsSelectActiveSgReq
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
-        SgSessionState.getState(session.getSessionId()).setActSG(sgNum);
-        log.info("SelectActiveSG: set actSG={} for session={}", sgNum, session.getSessionId());
+        SgSessionState.getState(session.sessionId()).setActSG(sgNum);
+        log.info("SelectActiveSG: set actSG={} for session={}", sgNum, session.sessionId());
         return ok(new CmsSelectActiveSgResponse(), reqId);
     }
 }

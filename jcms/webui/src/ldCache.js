@@ -118,8 +118,10 @@ export function setLds(list) {
 export async function refreshLds() {
   try {
     const res = await executeJson('server-dir --auto-pull true --json')
-    if (res.success && Array.isArray(res.data)) {
-      setLds(res.data)
+    if (res.success && res.data) {
+      // 兼容两种格式：旧版 data 直接是数组；新版 data 为 { reference: [...], moreFollows }
+      const refs = Array.isArray(res.data) ? res.data : (res.data.reference || [])
+      setLds(refs)
     } else {
       setLds([])
     }

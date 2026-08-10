@@ -26,7 +26,7 @@ public class GetFileAttributeValuesServer extends BaseServerHandler<CmsGetFileAt
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetFileAttributeValuesRequest req, int reqId) {
         String fileName = str(req.filename);
-        log.info("GetFileAttributeValues from {}: reqId={}, file={}", session.getSessionId(), reqId, fileName);
+        log.info("GetFileAttributeValues from {}: reqId={}, file={}", session.sessionId(), reqId, fileName);
 
         if (fileName == null || fileName.isEmpty()) {
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);

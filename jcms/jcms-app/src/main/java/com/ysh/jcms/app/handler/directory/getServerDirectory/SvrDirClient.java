@@ -26,8 +26,8 @@ public class SvrDirClient extends BaseClientHandler<SvrDirDao> {
 
     @Override
     protected void afterAll(SvrDirDao dao) throws IOException {
-        List<CmsObjectReference> refs = CmsClientOperator.getResultList(dao, "reference");
-        node.contentManager().initServerDir(refs.stream().map(CmsObjectReference::value).collect(Collectors.toList()));
+        List<String> refs = CmsClientOperator.getResultList(dao, "reference");
+        node.contentManager().initServerDir(refs);
     }
 
     @Override
@@ -39,7 +39,8 @@ public class SvrDirClient extends BaseClientHandler<SvrDirDao> {
     @Override
     protected void onSuccess(Frame frame, SvrDirDao dao) throws IOException {
         CmsGetServerDirectoryResponse resp = decodeResp(frame, new CmsGetServerDirectoryResponse());
-        CmsClientOperator.page(dao).add("reference", resp.reference).moreFollows(resp.moreFollows.value()).lastRef(resp.reference,
+        List<String> refs = resp.reference.stream().map(CmsObjectReference::value).collect(Collectors.toList());
+        CmsClientOperator.page(dao).add("reference", refs).moreFollows(resp.moreFollows.value()).lastRef(resp.reference,
                 CmsObjectReference::value);
         log.info("GetServerDirectory page: {} refs (moreFollows={})", resp.reference.size(), resp.moreFollows.value());
     }

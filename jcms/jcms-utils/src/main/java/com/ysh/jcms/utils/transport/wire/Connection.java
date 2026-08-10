@@ -121,22 +121,25 @@ public class Connection {
         }
     }
 
-    public void setMaxFrameSize(int maxFrameSize) {
+    public Connection maxFrameSize(int maxFrameSize) {
         this.maxFrameSize = maxFrameSize;
+        return this;
     }
-    public void setPeerAsduSize(int peerAsduSize) {
+    public Connection peerAsduSize(int peerAsduSize) {
         this.peerAsduSize = peerAsduSize;
+        return this;
     }
-    public void setFragmentationSupported(boolean fragmentationSupported) {
+    public Connection fragmentationSupported(boolean fragmentationSupported) {
         this.fragmentationSupported = fragmentationSupported;
+        return this;
     }
     public boolean isConnected() {
         return running && !socket.isClosed();
     }
-    public Socket getSocket() {
+    public Socket socket() {
         return socket;
     }
-    public ConnectionListener getListener() {
+    public ConnectionListener listener() {
         return listener;
     }
 

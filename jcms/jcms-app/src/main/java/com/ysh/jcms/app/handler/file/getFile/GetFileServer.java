@@ -28,7 +28,7 @@ public class GetFileServer extends BaseServerHandler<CmsGetFileRequest, CmsGetFi
         String fileName = str(req.filename);
         long startPosition = req.startPosition.value();
 
-        log.info("GetFile from {}: reqId={}, file={}, startPosition={}", session.getSessionId(), reqId, fileName, startPosition);
+        log.info("GetFile from {}: reqId={}, file={}, startPosition={}", session.sessionId(), reqId, fileName, startPosition);
 
         if (fileName == null || fileName.isEmpty()) {
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);

@@ -29,7 +29,7 @@ public class AllDataValuesServer extends BaseServerHandler<CmsGetAllDataValuesRe
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetAllDataValuesRequest req, int reqId) {
         String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
-        log.info("GetAllDataValues from {}: reqId={}, refAfter={}", session.getSessionId(), reqId, refAfter);
+        log.info("GetAllDataValues from {}: reqId={}, refAfter={}", session.sessionId(), reqId, refAfter);
 
         SclDocument doc = requireScl(session, reqId);
         SclIED ied = requireIed(session, reqId);

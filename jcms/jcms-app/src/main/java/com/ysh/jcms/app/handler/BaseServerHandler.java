@@ -229,7 +229,7 @@ public abstract class BaseServerHandler<R extends CmsType, E extends CmsType> ex
 
     protected SclDocument getSclDocument(Session session) {
         try {
-            return ((InnerServer.ServerSession) session).getSclDocument();
+            return ((InnerServer.ServerSession) session).sclDocument();
         } catch (ClassCastException e) {
             return null;
         }
@@ -237,7 +237,7 @@ public abstract class BaseServerHandler<R extends CmsType, E extends CmsType> ex
 
     protected com.ysh.jcms.utils.scl.model.ied.SclIED getSclIed(Session session) {
         try {
-            return ((InnerServer.ServerSession) session).getSclIed();
+            return ((InnerServer.ServerSession) session).sclIed();
         } catch (ClassCastException e) {
             return null;
         }
@@ -253,7 +253,7 @@ public abstract class BaseServerHandler<R extends CmsType, E extends CmsType> ex
 
     protected com.ysh.jcms.utils.scl.model.ied.SclAccessPoint getSclAccessPoint(Session session) {
         try {
-            return ((InnerServer.ServerSession) session).getSclAccessPoint();
+            return ((InnerServer.ServerSession) session).sclAccessPoint();
         } catch (ClassCastException e) {
             return null;
         }
@@ -280,7 +280,7 @@ public abstract class BaseServerHandler<R extends CmsType, E extends CmsType> ex
             pdu.decode(request.asduBytes());
             return true;
         } catch (Exception e) {
-            log.error("Failed to decode {} from {}: {}", pdu.getClass().getSimpleName(), session.getSessionId(), e.getMessage());
+            log.error("Failed to decode {} from {}: {}", pdu.getClass().getSimpleName(), session.sessionId(), e.getMessage());
             return false;
         }
     }

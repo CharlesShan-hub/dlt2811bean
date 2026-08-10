@@ -59,7 +59,7 @@ public abstract class CmsConsole extends CmsNode {
 
     /** 当前 TCP 连接是否 TLS 加密。 */
     public boolean tlsConnected() {
-        return client() != null && client().isTls();
+        return client() != null && client().tls();
     }
 
     /** 当前关联是否使用应用层安全认证。 */

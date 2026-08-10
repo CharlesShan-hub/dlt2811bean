@@ -27,7 +27,7 @@ public class GetLogStatusValuesServer extends BaseServerHandler<CmsGetLogStatusV
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetLogStatusValuesRequest req, int reqId) {
-        log.info("GetLogStatusValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.logReference.size());
+        log.info("GetLogStatusValues from {}: reqId={}, {} refs", session.sessionId(), reqId, req.logReference.size());
 
         CmsGetLogStatusValuesResponse resp = new CmsGetLogStatusValuesResponse();
 

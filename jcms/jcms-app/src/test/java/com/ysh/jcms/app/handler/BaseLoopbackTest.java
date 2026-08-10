@@ -115,7 +115,7 @@ public abstract class BaseLoopbackTest {
      */
     protected void associate() throws Exception {
         clientNode().getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef("E1Q1SB1/S1").secure(false));
-        assertEquals(SessionState.ASSOCIATED, clientNode().getClient().getSession().getState());
+        assertEquals(SessionState.ASSOCIATED, clientNode().client().session().state());
     }
 
     /**

@@ -30,7 +30,7 @@ public class QueryLogAfterServer extends BaseServerHandler<CmsQueryLogAfterReque
     protected Frame onDecodeSuccess(Session session, CmsQueryLogAfterRequest req, int reqId) {
         String logRef = str(req.logReference);
 
-        log.info("QueryLogAfter from {}: reqId={}, logRef={}", session.getSessionId(), reqId, logRef);
+        log.info("QueryLogAfter from {}: reqId={}, logRef={}", session.sessionId(), reqId, logRef);
 
         String entryId = new String(req.entry.value(), StandardCharsets.UTF_8).trim();
         Long startTime = null;

@@ -29,7 +29,7 @@ public class SetMsvcbValuesServer extends BaseServerHandler<CmsSetMsvcbValuesReq
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsSetMsvcbValuesRequest req, int reqId) {
-        log.info("SetMSVCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.msvcb.size());
+        log.info("SetMSVCBValues from {}: reqId={}, {} entries", session.sessionId(), reqId, req.msvcb.size());
 
         SclIED ied = getSclIed(session);
         SclAccessPoint ap = getSclAccessPoint(session);

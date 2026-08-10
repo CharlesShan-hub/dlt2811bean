@@ -253,7 +253,7 @@ public class InnerServer implements ConnectionListener {
         private volatile int keepaliveRetries;
 
         public ServerSession(Connection connection) {
-            super("srv-" + connection.getSocket().getPort(), connection);
+            super("srv-" + connection.socket().getPort(), connection);
         }
 
         public void touchActivity() {

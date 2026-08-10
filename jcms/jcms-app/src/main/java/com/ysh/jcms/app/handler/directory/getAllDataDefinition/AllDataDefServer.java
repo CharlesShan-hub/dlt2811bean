@@ -30,7 +30,7 @@ public class AllDataDefServer extends BaseServerHandler<CmsGetAllDataDefinitionR
     protected Frame onDecodeSuccess(Session session, CmsGetAllDataDefinitionRequest req, int reqId) {
         String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
 
-        log.info("GetAllDataDefinition from {}: reqId={}", session.getSessionId(), reqId);
+        log.info("GetAllDataDefinition from {}: reqId={}", session.sessionId(), reqId);
 
         SclDocument doc = requireScl(session, reqId);
         SclIED ied = requireIed(session, reqId);

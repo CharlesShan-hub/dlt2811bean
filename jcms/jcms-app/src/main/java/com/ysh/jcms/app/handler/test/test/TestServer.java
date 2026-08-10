@@ -14,7 +14,7 @@ public class TestServer extends BaseServerHandler {
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsType req, int reqId) {
-        log.info("Test ping from {}", session.getSessionId());
+        log.info("Test ping from {}", session.sessionId());
         return buildSuccess(new byte[0], reqId);
     }
 }

@@ -30,7 +30,7 @@ public class GetFileDirectoryServer extends BaseServerHandler<CmsGetFileDirector
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetFileDirectoryRequest req, int reqId) {
-        log.info("GetFileDirectory from {}: reqId={}", session.getSessionId(), reqId);
+        log.info("GetFileDirectory from {}: reqId={}", session.sessionId(), reqId);
 
         String root = CmsConfigLoader.load().protocol().file().rootPath();
         Path rootPath = Paths.get(root).normalize();

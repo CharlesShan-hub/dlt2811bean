@@ -25,8 +25,7 @@ public class LdDirServer extends BaseServerHandler<CmsGetLogicalDeviceDirectoryR
     protected Frame onDecodeSuccess(Session session, CmsGetLogicalDeviceDirectoryRequest req, int reqId) {
         String ldName = req.isPresent("ldName") ? req.ldName.value() : null;
         String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
-        log.info("GetLogicalDeviceDirectory from {}: reqId={}, ldName={}, referenceAfter={}", session.getSessionId(), reqId, ldName,
-                refAfter);
+        log.info("GetLogicalDeviceDirectory from {}: reqId={}, ldName={}, referenceAfter={}", session.sessionId(), reqId, ldName, refAfter);
 
         SclIED ied = requireIed(session, reqId);
         SclAccessPoint ap = requireAp(session, reqId);

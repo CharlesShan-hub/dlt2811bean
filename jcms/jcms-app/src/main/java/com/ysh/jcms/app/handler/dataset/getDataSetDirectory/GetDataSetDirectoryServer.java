@@ -25,7 +25,7 @@ public class GetDataSetDirectoryServer extends BaseServerHandler<CmsGetDataSetDi
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetDataSetDirectoryRequest req, int reqId) {
-        log.info("GetDataSetDirectory from {}: reqId={}", session.getSessionId(), reqId);
+        log.info("GetDataSetDirectory from {}: reqId={}", session.sessionId(), reqId);
 
         SclIED ied = requireIed(session, reqId);
         SclAccessPoint ap = requireAp(session, reqId);

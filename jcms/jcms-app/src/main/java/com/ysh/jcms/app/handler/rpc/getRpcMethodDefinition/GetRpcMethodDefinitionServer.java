@@ -16,7 +16,7 @@ public class GetRpcMethodDefinitionServer extends BaseServerHandler<CmsGetRpcMet
     }
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetRpcMethodDefinitionRequest req, int reqId) {
-        log.info("GetRpcMethodDefinition from {}: {} refs", session.getSessionId(), req.reference.size());
+        log.info("GetRpcMethodDefinition from {}: {} refs", session.sessionId(), req.reference.size());
         CmsGetRpcMethodDefinitionResponse resp = new CmsGetRpcMethodDefinitionResponse();
         for (CmsString refObj : req.reference) {
             String ref = refObj.value();

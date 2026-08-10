@@ -26,8 +26,8 @@ public class LnDirClient extends BaseClientHandler<LnDirDao> {
 
     @Override
     protected void afterAll(LnDirDao dao) throws IOException {
-        List<CmsSubReference> refs = CmsClientOperator.getResultList(dao, "reference");
-        node.getContentManager().initNodeDir(dao.acsiClass(), refs.stream().map(CmsSubReference::value).collect(Collectors.toList()));
+        List<String> refs = CmsClientOperator.getResultList(dao, "reference");
+        node.contentManager().initNodeDir(dao.acsiClass(), refs);
     }
 
     @Override
@@ -39,7 +39,8 @@ public class LnDirClient extends BaseClientHandler<LnDirDao> {
     @Override
     protected void onSuccess(Frame frame, LnDirDao dao) throws IOException {
         CmsGetLogicalNodeDirectoryResponse resp = decodeResp(frame, new CmsGetLogicalNodeDirectoryResponse());
-        CmsClientOperator.page(dao).add("reference", resp.reference).moreFollows(resp.moreFollows.value()).lastRef(resp.reference,
+        List<String> refs = resp.reference.stream().map(CmsSubReference::value).collect(Collectors.toList());
+        CmsClientOperator.page(dao).add("reference", refs).moreFollows(resp.moreFollows.value()).lastRef(resp.reference,
                 CmsSubReference::value);
         log.info("GetLogicalNodeDirectory page: {} refs (moreFollows={})", resp.reference.size(), resp.moreFollows.value());
     }

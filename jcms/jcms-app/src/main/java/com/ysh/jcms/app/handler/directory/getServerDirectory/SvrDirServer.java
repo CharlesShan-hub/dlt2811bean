@@ -24,7 +24,7 @@ public class SvrDirServer extends BaseServerHandler<CmsGetServerDirectoryRequest
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetServerDirectoryRequest req, int reqId) {
-        log.info("GetServerDirectory from {}: reqId={}, objectClass={}, refAfter={}, present={}", session.getSessionId(), reqId,
+        log.info("GetServerDirectory from {}: reqId={}, objectClass={}, refAfter={}, present={}", session.sessionId(), reqId,
                 req.getObjectClass(), req.isPresent("referenceAfter") ? req.referenceAfter.value() : null, req.isPresent("referenceAfter"));
 
         if (req.getObjectClass() != CmsObjectClass.LOGICAL_DEVICE)

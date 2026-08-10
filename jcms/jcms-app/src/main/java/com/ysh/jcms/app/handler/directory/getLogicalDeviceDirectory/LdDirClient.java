@@ -26,8 +26,8 @@ public class LdDirClient extends BaseClientHandler<LdDirDao> {
 
     @Override
     protected void afterAll(LdDirDao dao) throws IOException {
-        List<CmsSubReference> refs = CmsClientOperator.getResultList(dao, "lnReference");
-        node.contentManager().initLdDir(refs.stream().map(CmsSubReference::value).collect(Collectors.toList()));
+        List<String> refs = CmsClientOperator.getResultList(dao, "lnReference");
+        node.contentManager().initLdDir(refs);
     }
 
     @Override
@@ -39,7 +39,8 @@ public class LdDirClient extends BaseClientHandler<LdDirDao> {
     @Override
     protected void onSuccess(Frame frame, LdDirDao dao) throws IOException {
         CmsGetLogicalDeviceDirectoryResponse resp = decodeResp(frame, new CmsGetLogicalDeviceDirectoryResponse());
-        CmsClientOperator.page(dao).add("lnReference", resp.lnReference).moreFollows(resp.moreFollows.value()).lastRef(resp.lnReference,
+        List<String> refs = resp.lnReference.stream().map(CmsSubReference::value).collect(Collectors.toList());
+        CmsClientOperator.page(dao).add("lnReference", refs).moreFollows(resp.moreFollows.value()).lastRef(resp.lnReference,
                 CmsSubReference::value);
         log.info("GetLogicalDeviceDirectory page: {} lnRefs (moreFollows={})", resp.lnReference.size(), resp.moreFollows.value());
     }

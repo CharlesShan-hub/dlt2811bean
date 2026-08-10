@@ -41,12 +41,12 @@ public class RpcCallServer extends BaseServerHandler<CmsRpcCallRequest, CmsRpcCa
         // Dispatch to implementation
         Function<Void, String> impl = methods.get(method);
         if (impl == null) {
-            log.warn("RpcCall from {}: method='{}' has no implementation", session.getSessionId(), method);
+            log.warn("RpcCall from {}: method='{}' has no implementation", session.sessionId(), method);
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String result = impl.apply(null);
-        log.info("RpcCall from {}: method='{}' -> '{}'", session.getSessionId(), method, result);
+        log.info("RpcCall from {}: method='{}' -> '{}'", session.sessionId(), method, result);
 
         // Build response with visible-string data
         CmsData rspData = new CmsData().alt_visible_string(result);

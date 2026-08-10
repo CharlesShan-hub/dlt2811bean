@@ -22,7 +22,7 @@ public class GetBrcbValuesServer extends BaseServerHandler<CmsGetBrcbValuesReque
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetBrcbValuesRequest req, int reqId) {
-        log.info("GetBRCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.size());
+        log.info("GetBRCBValues from {}: reqId={}, {} refs", session.sessionId(), reqId, req.reference.size());
 
         SclIED ied = requireIed(session, reqId);
         SclAccessPoint ap = requireAp(session, reqId);

@@ -23,7 +23,7 @@ public class AllDataDefClient extends BaseClientHandler<AllDataDefDao> {
     @Override
     protected void beforeAll(AllDataDefDao dao) throws IOException {
         CmsClientOperator.initResult(dao, "data");
-        node.getContentManager().initDataDef(new ArrayList<>()); // clear before fresh pull
+        node.contentManager().initDataDef(new ArrayList<>()); // clear before fresh pull
     }
 
     @Override
@@ -45,7 +45,7 @@ public class AllDataDefClient extends BaseClientHandler<AllDataDefDao> {
             String cdc = src.isPresent("cdcType") ? src.cdcType.value() : "";
             entries.add(new ContentManager.DataDefEntry(ref, cdc, choice));
         }
-        node.getContentManager().addDataDef(entries);
+        node.contentManager().addDataDef(entries);
         CmsClientOperator.page(dao).add("data", entries).moreFollows(resp.moreFollows.value()).lastRef(entries, e -> e.reference);
         log.info("GetAllDataDefinition page: {} entries (moreFollows={})", entries.size(), resp.moreFollows.value());
     }

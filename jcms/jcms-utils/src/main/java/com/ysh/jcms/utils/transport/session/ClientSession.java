@@ -19,7 +19,7 @@ public class ClientSession extends Session {
     private volatile long defaultTimeoutMs = 5000;
 
     public ClientSession(Connection connection) {
-        super("cli-" + connection.getSocket().getLocalPort(), connection);
+        super("cli-" + connection.socket().getLocalPort(), connection);
     }
 
     public ClientSession defaultTimeoutMs(long ms) {

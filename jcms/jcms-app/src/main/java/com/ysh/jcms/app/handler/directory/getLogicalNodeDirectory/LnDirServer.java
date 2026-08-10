@@ -31,7 +31,7 @@ public class LnDirServer extends BaseServerHandler<CmsGetLogicalNodeDirectoryReq
         int acsiClass = req.acsiClass.value();
         String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
 
-        log.info("GetLogicalNodeDirectory from {}: reqId={}, acsiClass={}", session.getSessionId(), reqId, acsiClass);
+        log.info("GetLogicalNodeDirectory from {}: reqId={}, acsiClass={}", session.sessionId(), reqId, acsiClass);
 
         SclDocument doc = requireScl(session, reqId);
         SclIED ied = requireIed(session, reqId);

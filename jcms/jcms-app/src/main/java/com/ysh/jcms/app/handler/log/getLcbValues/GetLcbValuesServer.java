@@ -23,7 +23,7 @@ public class GetLcbValuesServer extends BaseServerHandler<CmsGetLcbValuesRequest
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetLcbValuesRequest req, int reqId) {
-        log.info("GetLCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.size());
+        log.info("GetLCBValues from {}: reqId={}, {} refs", session.sessionId(), reqId, req.reference.size());
 
         SclIED ied = requireIed(session, reqId);
         SclAccessPoint ap = requireAp(session, reqId);

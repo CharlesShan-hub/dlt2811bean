@@ -38,9 +38,9 @@ public class AssociateLoopbackTest extends BaseLoopbackTest {
     public void associate_without_security() throws Exception {
         clientNode().getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef("E1Q1SB1/S1").secure(false));
 
-        assertEquals(SessionState.ASSOCIATED, clientNode().getClient().getSession().getState());
-        assertNotNull(clientNode().getClient().getSession().getAssociationId());
-        assertEquals(64, clientNode().getClient().getSession().getAssociationId().length);
+        assertEquals(SessionState.ASSOCIATED, clientNode().client().session().state());
+        assertNotNull(clientNode().client().session().associationId());
+        assertEquals(64, clientNode().client().session().associationId().length);
     }
 
     @Test
@@ -63,7 +63,7 @@ public class AssociateLoopbackTest extends BaseLoopbackTest {
         } catch (IOException e) {
             assertTrue(e.getMessage().contains("error="));
         }
-        assertEquals(SessionState.DISCONNECTED, clientNode().getClient().getSession().getState());
+        assertEquals(SessionState.DISCONNECTED, clientNode().client().session().state());
     }
 
     // ── with security ──
@@ -72,9 +72,9 @@ public class AssociateLoopbackTest extends BaseLoopbackTest {
     public void associate_with_security() throws Exception {
         clientNode().getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef("E1Q1SB1/S1").secure(true));
 
-        assertEquals(SessionState.ASSOCIATED, clientNode().getClient().getSession().getState());
-        assertNotNull(clientNode().getClient().getSession().getAssociationId());
-        assertEquals(64, clientNode().getClient().getSession().getAssociationId().length);
+        assertEquals(SessionState.ASSOCIATED, clientNode().client().session().state());
+        assertNotNull(clientNode().client().session().associationId());
+        assertEquals(64, clientNode().client().session().associationId().length);
     }
 
     @Test

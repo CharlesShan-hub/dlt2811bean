@@ -23,7 +23,7 @@ public class DeleteFileServer extends BaseServerHandler<CmsDeleteFileRequest, Cm
     @Override
     protected Frame onDecodeSuccess(Session session, CmsDeleteFileRequest req, int reqId) {
         String fileName = str(req.filename);
-        log.info("DeleteFile from {}: reqId={}, file={}", session.getSessionId(), reqId, fileName);
+        log.info("DeleteFile from {}: reqId={}, file={}", session.sessionId(), reqId, fileName);
 
         if (fileName == null || fileName.isEmpty()) {
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);

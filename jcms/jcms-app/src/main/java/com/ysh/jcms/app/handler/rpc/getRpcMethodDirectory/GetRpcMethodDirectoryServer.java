@@ -18,7 +18,7 @@ public class GetRpcMethodDirectoryServer extends BaseServerHandler<CmsGetRpcMeth
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetRpcMethodDirectoryRequest req, int reqId) {
         String iface = str(req.interfaceName);
-        log.info("GetRpcMethodDirectory from {}: interface={}", session.getSessionId(), iface);
+        log.info("GetRpcMethodDirectory from {}: interface={}", session.sessionId(), iface);
 
         CmsGetRpcMethodDirectoryResponse resp = new CmsGetRpcMethodDirectoryResponse();
 
