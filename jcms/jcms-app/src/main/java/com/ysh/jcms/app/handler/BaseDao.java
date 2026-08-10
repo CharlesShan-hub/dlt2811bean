@@ -19,12 +19,27 @@ public abstract class BaseDao {
     /** Whether the client should automatically follow moreFollows pagination. */
     private boolean autoPull = false;
 
+    /**
+     * Result holder for passing decoded response data back to the caller.
+     * Each DAO subclass decides what type goes in here.
+     */
+    private Object result;
+
     public boolean autoPull() {
         return autoPull;
     }
 
     public void autoPull(boolean autoPull) {
         this.autoPull = autoPull;
+    }
+
+    public Object result() {
+        return result;
+    }
+
+    public BaseDao result(Object result) {
+        this.result = result;
+        return this;
     }
 
     /**

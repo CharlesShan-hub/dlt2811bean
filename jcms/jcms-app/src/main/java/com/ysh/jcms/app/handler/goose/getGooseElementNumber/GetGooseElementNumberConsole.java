@@ -60,7 +60,7 @@ public class GetGooseElementNumberConsole extends CommandHandler {
 
         console.getClient(GetGooseElementNumberClient.class).execute(dao);
 
-        GetGooseElementNumberClient.ElementNumberResult result = console.getClient(GetGooseElementNumberClient.class).getLastResult();
+        GetGooseElementNumberClient.ElementNumberResult result = (GetGooseElementNumberClient.ElementNumberResult) dao.result();
 
         if (result == null) {
             if (jsonMode) {

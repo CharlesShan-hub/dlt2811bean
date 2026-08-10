@@ -11,26 +11,13 @@ import java.io.IOException;
 
 public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
 
-    private NegotiateClientDao currentDao;
-
     @Override
     public void execute(NegotiateClientDao dao) throws Exception {
-        this.currentDao = dao;
-        try {
-            send(ServiceName.ASSOCIATE_NEGOTIATE, dao.toRequest());
-        } finally {
-            this.currentDao = null;
-        }
+        send(ServiceName.ASSOCIATE_NEGOTIATE, dao);
     }
 
     @Override
-    protected void onError(Frame frame) throws IOException {
-        CmsNegotiateError err = decodeErr(frame, new CmsNegotiateError());
-        throw new IOException("Negotiate rejected: " + err.value());
-    }
-
-    @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, NegotiateClientDao dao) throws IOException {
         CmsNegotiateResponse resp = decodeResp(frame, new CmsNegotiateResponse());
 
         ClientSession session = node.getClient().getSession();
@@ -47,14 +34,18 @@ public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
         session.getConnection().setPeerAsduSize((int) resp.asduSize.value());
 
         // 回填响应值到 DAO，供 Console 输出
-        if (currentDao != null) {
-            currentDao.negotiatedApduSize(resp.apduSize.value());
-            currentDao.negotiatedAsduSize(resp.asduSize.value());
-            currentDao.negotiatedProtocolVersion(resp.protocolVersion.value());
-            currentDao.modelVersion(resp.modelVersion.value());
-        }
+        dao.negotiatedApduSize(resp.apduSize.value());
+        dao.negotiatedAsduSize(resp.asduSize.value());
+        dao.negotiatedProtocolVersion(resp.protocolVersion.value());
+        dao.modelVersion(resp.modelVersion.value());
 
         log.info("Negotiate completed: apduSize={}, asduSize={}, protocolVersion={}, modelVersion={}", resp.apduSize.value(),
                 resp.asduSize.value(), resp.protocolVersion.value(), resp.modelVersion.value());
+    }
+
+    @Override
+    protected void onError(Frame frame) throws IOException {
+        CmsNegotiateError err = decodeErr(frame, new CmsNegotiateError());
+        throw new IOException("Negotiate rejected: " + err.value());
     }
 }

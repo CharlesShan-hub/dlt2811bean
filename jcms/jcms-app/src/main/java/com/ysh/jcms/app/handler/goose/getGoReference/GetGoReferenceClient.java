@@ -35,14 +35,9 @@ public class GetGoReferenceClient extends BaseClientHandler<GetGoReferenceDao> {
         }
     }
 
-    private GoRefResult lastResult;
-    public GoRefResult getLastResult() {
-        return lastResult;
-    }
-
     @Override
     public void execute(GetGoReferenceDao dao) throws Exception {
-        send(ServiceName.GET_GO_REFERENCE, dao.toRequest());
+        send(ServiceName.GET_GO_REFERENCE, dao);
     }
 
     @Override
@@ -52,7 +47,7 @@ public class GetGoReferenceClient extends BaseClientHandler<GetGoReferenceDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, GetGoReferenceDao dao) throws IOException {
         CmsGetGoReferenceResponse resp = decodeResp(frame, new CmsGetGoReferenceResponse());
 
         List<MemberDataEntry> members = new ArrayList<>();
@@ -62,6 +57,6 @@ public class GetGoReferenceClient extends BaseClientHandler<GetGoReferenceDao> {
             members.add(new MemberDataEntry(ref, fc));
         }
 
-        lastResult = new GoRefResult(resp.gocbReference.value(), resp.confRev.value(), resp.datSet.value(), members);
+        dao.result(new GoRefResult(resp.gocbReference.value(), resp.confRev.value(), resp.datSet.value(), members));
     }
 }

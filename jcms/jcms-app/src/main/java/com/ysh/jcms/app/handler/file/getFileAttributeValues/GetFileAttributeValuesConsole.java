@@ -41,7 +41,7 @@ public class GetFileAttributeValuesConsole extends CommandHandler {
 
         console.getClient(GetFileAttributeValuesClient.class).execute(dao);
 
-        GetFileAttributeValuesClient.FileAttrResult result = console.getClient(GetFileAttributeValuesClient.class).getLastResult();
+        GetFileAttributeValuesClient.FileAttrResult result = (GetFileAttributeValuesClient.FileAttrResult) dao.result();
 
         if (result == null) {
             if (jsonMode) {

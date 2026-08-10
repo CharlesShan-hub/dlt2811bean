@@ -43,7 +43,7 @@ public class GetFileDirectoryConsole extends CommandHandler {
 
         console.getClient(GetFileDirectoryClient.class).execute(dao);
 
-        GetFileDirectoryClient.FileDirectoryResult result = console.getClient(GetFileDirectoryClient.class).getLastResult();
+        GetFileDirectoryClient.FileDirectoryResult result = (GetFileDirectoryClient.FileDirectoryResult) dao.result();
 
         if (result == null || result.entries.isEmpty()) {
             if (jsonMode) {

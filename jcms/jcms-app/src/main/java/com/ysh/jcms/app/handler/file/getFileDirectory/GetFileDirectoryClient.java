@@ -35,14 +35,9 @@ public class GetFileDirectoryClient extends BaseClientHandler<GetFileDirectoryDa
         }
     }
 
-    private FileDirectoryResult lastResult;
-    public FileDirectoryResult getLastResult() {
-        return lastResult;
-    }
-
     @Override
     public void execute(GetFileDirectoryDao dao) throws Exception {
-        send(ServiceName.GET_FILE_DIRECTORY, dao.toRequest());
+        send(ServiceName.GET_FILE_DIRECTORY, dao);
     }
 
     @Override
@@ -52,7 +47,7 @@ public class GetFileDirectoryClient extends BaseClientHandler<GetFileDirectoryDa
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, GetFileDirectoryDao dao) throws IOException {
         CmsGetFileDirectoryResponse resp = decodeResp(frame, new CmsGetFileDirectoryResponse());
 
         List<FileEntryResult> entries = new ArrayList<>();
@@ -63,6 +58,6 @@ public class GetFileDirectoryClient extends BaseClientHandler<GetFileDirectoryDa
                     fe.checkSum.value()));
         }
 
-        lastResult = new FileDirectoryResult(entries, resp.moreFollows.value());
+        dao.result(new FileDirectoryResult(entries, resp.moreFollows.value()));
     }
 }

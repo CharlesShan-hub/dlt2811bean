@@ -22,15 +22,8 @@ import java.time.Instant;
 
 public class AssociateClient extends BaseClientHandler<AssociateClientDao> {
 
-    /** The sapRef used in the current request, needed for response validation. */
-    private String currentSapRef;
-    /** Whether the current request uses application-layer security. */
-    private boolean currentSecure;
-
     @Override
     public void execute(AssociateClientDao dao) throws Exception {
-        this.currentSapRef = dao.sapRef();
-        this.currentSecure = dao.secure();
         CmsAssociateRequest req = new CmsAssociateRequest();
         if (dao.sapRef() != null && !dao.sapRef().isEmpty()) {
             req.serverAccessPointReference(dao.sapRef());
@@ -40,18 +33,11 @@ public class AssociateClient extends BaseClientHandler<AssociateClientDao> {
             req.authenticationParameter(buildAuthParam(node.getCredentialManager(), dao.sapRef()));
         }
 
-        send(ServiceName.ASSOCIATE, req);
-    }
+        byte[] pdu = req.encode();
+        trace(">>>\n" + req);
+        Frame frame = send(ServiceName.ASSOCIATE, pdu);
+        // send() calls onError() which throws for error responses
 
-    @Override
-    protected void onError(Frame frame) throws IOException {
-        CmsAssociateError err = decodeErr(frame, new CmsAssociateError());
-        node.getClient().getSession().setState(SessionState.DISCONNECTED);
-        throw new IOException("Association rejected: error=" + err.value());
-    }
-
-    @Override
-    protected void onSuccess(Frame frame) throws IOException {
         CmsAssociateResponse resp = decodeResp(frame, new CmsAssociateResponse());
 
         int serviceError = resp.serviceError.value();
@@ -63,7 +49,7 @@ public class AssociateClient extends BaseClientHandler<AssociateClientDao> {
         // 验证服务端返回的认证参数（标准 B.3.2 双向认证）
         if (resp.isPresent("authenticationParameter") && resp.authenticationParameter.signatureCertificate.value().length > 0) {
             try {
-                validateServerAuthParam(resp.authenticationParameter);
+                validateServerAuthParam(resp.authenticationParameter, dao.sapRef());
             } catch (Exception e) {
                 node.getClient().getSession().setState(SessionState.DISCONNECTED);
                 throw new IOException("Server authentication failed: " + e.getMessage(), e);
@@ -71,10 +57,17 @@ public class AssociateClient extends BaseClientHandler<AssociateClientDao> {
         }
 
         node.getClient().getSession().setAssociationId(resp.associationId.value());
-        node.getClient().getSession().setAssociatedApRef(currentSapRef);
-        node.getClient().getSession().setAssociatedSecure(currentSecure);
+        node.getClient().getSession().setAssociatedApRef(dao.sapRef());
+        node.getClient().getSession().setAssociatedSecure(dao.secure());
         node.getClient().getSession().setState(SessionState.ASSOCIATED);
         log.info("Association established: session={}", node.getClient().getSession().getSessionId());
+    }
+
+    @Override
+    protected void onError(Frame frame) throws IOException {
+        CmsAssociateError err = decodeErr(frame, new CmsAssociateError());
+        node.getClient().getSession().setState(SessionState.DISCONNECTED);
+        throw new IOException("Association rejected: error=" + err.value());
     }
 
     private CmsAuthenticationParameter buildAuthParam(GmCredentialManager cm, String sapRef) throws Exception {
@@ -96,7 +89,7 @@ public class AssociateClient extends BaseClientHandler<AssociateClientDao> {
     /**
      * 验证服务端返回的 authParam（证书 + 签名 + 时间）。
      */
-    private void validateServerAuthParam(CmsAuthenticationParameter authParam) throws Exception {
+    private void validateServerAuthParam(CmsAuthenticationParameter authParam, String sapRef) throws Exception {
         // 1. 解析服务端证书
         byte[] certBytes = authParam.signatureCertificate.value();
         X509Certificate serverCert = GmCertificateParser.parseX509(certBytes);
@@ -130,9 +123,9 @@ public class AssociateClient extends BaseClientHandler<AssociateClientDao> {
         byte[] signatureValue = authParam.signedValue.value();
         if (signatureValue != null && signatureValue.length > 0 && authParam.signedTime != null) {
             // 构建被签名数据：sapRef + time（和服务器端一致）
-            String sapRef = currentSapRef != null ? currentSapRef : "";
+            String currentSapRef = sapRef != null ? sapRef : "";
             long signedTime = authParam.signedTime.secondsSinceEpoch.value();
-            byte[] sapBytes = sapRef.getBytes(StandardCharsets.UTF_8);
+            byte[] sapBytes = currentSapRef.getBytes(StandardCharsets.UTF_8);
             byte[] timeBytes = String.valueOf(signedTime).getBytes(StandardCharsets.UTF_8);
             byte[] signedData = new byte[sapBytes.length + timeBytes.length];
             System.arraycopy(sapBytes, 0, signedData, 0, sapBytes.length);

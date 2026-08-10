@@ -26,14 +26,9 @@ public class GetGooseElementNumberClient extends BaseClientHandler<GetGooseEleme
         }
     }
 
-    private ElementNumberResult lastResult;
-    public ElementNumberResult getLastResult() {
-        return lastResult;
-    }
-
     @Override
     public void execute(GetGooseElementNumberDao dao) throws Exception {
-        send(ServiceName.GET_GOOSE_ELEMENT_NUMBER, dao.toRequest());
+        send(ServiceName.GET_GOOSE_ELEMENT_NUMBER, dao);
     }
 
     @Override
@@ -43,7 +38,7 @@ public class GetGooseElementNumberClient extends BaseClientHandler<GetGooseEleme
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, GetGooseElementNumberDao dao) throws IOException {
         CmsGetGooseElementNumberResponse resp = decodeResp(frame, new CmsGetGooseElementNumberResponse());
 
         List<Integer> offsets = new ArrayList<>();
@@ -51,6 +46,6 @@ public class GetGooseElementNumberClient extends BaseClientHandler<GetGooseEleme
             offsets.add(off.value());
         }
 
-        lastResult = new ElementNumberResult(resp.gocbReference.value(), resp.confRev.value(), resp.datSet.value(), offsets);
+        dao.result(new ElementNumberResult(resp.gocbReference.value(), resp.confRev.value(), resp.datSet.value(), offsets));
     }
 }

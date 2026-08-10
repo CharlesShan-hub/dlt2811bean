@@ -40,7 +40,7 @@ public class CliApiServer {
 
     public void start() throws IOException {
         server = HttpServer.create(new InetSocketAddress(port), 0);
-        server.setExecutor(Executors.newFixedThreadPool(4));
+        server.setExecutor(Executors.newSingleThreadExecutor());
         server.createContext("/api/execute", this::handleExecute);
         server.createContext("/api/status", this::handleStatus);
         server.createContext("/ui", this::handleStatic);

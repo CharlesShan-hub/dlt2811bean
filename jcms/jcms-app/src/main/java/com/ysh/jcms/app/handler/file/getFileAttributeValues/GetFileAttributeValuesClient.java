@@ -23,14 +23,9 @@ public class GetFileAttributeValuesClient extends BaseClientHandler<GetFileAttri
         }
     }
 
-    private FileAttrResult lastResult;
-    public FileAttrResult getLastResult() {
-        return lastResult;
-    }
-
     @Override
     public void execute(GetFileAttributeValuesDao dao) throws Exception {
-        send(ServiceName.GET_FILE_ATTRIBUTE_VALUES, dao.toRequest());
+        send(ServiceName.GET_FILE_ATTRIBUTE_VALUES, dao);
     }
 
     @Override
@@ -40,12 +35,12 @@ public class GetFileAttributeValuesClient extends BaseClientHandler<GetFileAttri
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, GetFileAttributeValuesDao dao) throws IOException {
         CmsGetFileAttributeValuesResponse resp = decodeResp(frame, new CmsGetFileAttributeValuesResponse());
 
         long epochSeconds = resp.lastModified.secondsSinceEpoch.value();
         int fractionMicros = resp.lastModified.fractionOfSecond.value();
-        lastResult = new FileAttrResult(resp.fileName.value(), resp.fileSize.value(), epochSeconds * 1000 + fractionMicros / 1000,
-                resp.checkSum.value());
+        dao.result(new FileAttrResult(resp.fileName.value(), resp.fileSize.value(), epochSeconds * 1000 + fractionMicros / 1000,
+                resp.checkSum.value()));
     }
 }

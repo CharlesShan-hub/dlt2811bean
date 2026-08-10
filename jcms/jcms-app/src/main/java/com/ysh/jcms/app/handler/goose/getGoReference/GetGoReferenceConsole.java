@@ -49,7 +49,7 @@ public class GetGoReferenceConsole extends CommandHandler {
 
         console.getClient(GetGoReferenceClient.class).execute(dao);
 
-        GetGoReferenceClient.GoRefResult result = console.getClient(GetGoReferenceClient.class).getLastResult();
+        GetGoReferenceClient.GoRefResult result = (GetGoReferenceClient.GoRefResult) dao.result();
 
         if (result == null) {
             if (jsonMode) {
