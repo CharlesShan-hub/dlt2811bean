@@ -172,11 +172,15 @@
                       <!-- 第三行：值 + 类型（仅 set-data-values） -->
                       <div v-if="props.cmd === 'set-data-values'" class="refs-row">
                         <span class="refs-label-spacer"></span>
-                        <UiInput
-                          v-model="r.value"
-                          placeholder="值 value"
-                          class="refs-value-input"
-                        />
+                        <button
+                          type="button"
+                          class="glass glass-accent refs-value-btn"
+                          :class="{ 'refs-value-btn--has': r.value }"
+                          :title="'点击编辑值' + (r._resolvedType ? ' (类型: ' + r._resolvedType + ')' : '')"
+                          @click="openValueEditor(r)"
+                        >
+                          {{ r.value || '点击输入值' }}
+                        </button>
                         <span class="type-hint" :class="{ 'type-hint--unknown': !r._resolvedType }" :title="r._resolvedType ? '类型已自动解析' : '请先选择数据引用'">
                           {{ r._resolvedType || '（类型）' }}
                         </span>
@@ -248,6 +252,13 @@
       </div>
     </div>
   </div>
+  <ComplexValueEditor
+    :model-value="editorRow?.value ?? ''"
+    :visible="editorVisible"
+    :type="editorType"
+    @update:visible="editorVisible = $event"
+    @confirm="onEditorConfirm"
+  />
 </template>
 
 <script setup>
@@ -274,6 +285,7 @@ import { buildCmd, highlightCmdStr, syntaxHighlightJson, parseResult, parseCmd }
 import { FC_OPTIONS } from '../cmddefs/common.js'
 import { useSplitPane } from '../composables/useSplitPane.js'
 import { useCommandForm } from '../composables/useCommandForm.js'
+import ComplexValueEditor from '../components/ComplexValueEditor.vue'
 
 const props = defineProps({
   cmd: String,
@@ -370,6 +382,25 @@ const busy = ref(false)
 const result = ref(null)
 const connectCmd = ref('')
 const docOpen = ref(false)
+
+/** 值编辑器弹窗状态 */
+const editorVisible = ref(false)
+const editorRow = ref(null)
+const editorType = ref('')
+
+/** 打开值编辑器弹窗 */
+function openValueEditor(row) {
+  editorRow.value = row
+  editorType.value = row._resolvedType || ''
+  editorVisible.value = true
+}
+
+/** 值编辑器确认 */
+function onEditorConfirm(val) {
+  if (editorRow.value) {
+    editorRow.value.value = val
+  }
+}
 
 /** 可拖拽分割面板（跨标签页共享） */
 const {
@@ -1096,9 +1127,19 @@ async function releaseAp() {
   height: 22px;
 }
 
-.refs-value-input {
+.refs-value-btn {
   flex: 1;
   min-width: 0;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.refs-value-btn--has {
+  color: var(--text-primary);
 }
 
 .type-hint {

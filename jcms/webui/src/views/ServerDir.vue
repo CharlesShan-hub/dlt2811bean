@@ -41,20 +41,16 @@
               <tr v-for="entry in dirEntries" :key="entry.attr">
                 <td><span class="fc-badge">{{ entry.fc }}</span></td>
                 <td class="cell-attr">{{ entry.attr }}</td>
-                <td class="cell-value" @click="startEdit(entry)">
-                  <input
-                    v-if="editingRef === entry.fullRef"
-                    v-model="editValue"
-                    class="edit-input"
-                    :placeholder="entry.value ?? ''"
-                    autofocus
-                    @keydown.enter="saveEdit(entry)"
-                    @keydown.escape="cancelEdit"
-                    @blur="saveEdit(entry)"
-                  />
-                  <span v-else class="val-text">{{ entry.value ?? '—' }}</span>
-                  <span v-if="editingRef === entry.fullRef && saving" class="saving">保存中...</span>
-                  <span v-else-if="editError && editingRef === entry.fullRef" class="edit-err">{{ editError }}</span>
+                <td class="cell-value">
+                  <button
+                    type="button"
+                    class="val-btn"
+                    :class="{ 'val-btn--has': entry.value }"
+                    @click="startEdit(entry)"
+                  >
+                    {{ entry.value ?? '—' }}
+                  </button>
+                  <span v-if="editError && editingRef === entry.fullRef" class="edit-err">{{ editError }}</span>
                 </td>
                 <td class="cell-type">{{ entry.type ?? '—' }}</td>
               </tr>
@@ -70,12 +66,20 @@
       </div>
     </div>
   </div>
+  <ComplexValueEditor
+    v-model="editValue"
+    :visible="editorVisible"
+    :type="editorType"
+    @update:visible="editorVisible = $event"
+    @confirm="onEditorConfirm"
+  />
 </template>
 
 <script setup>
 import { ref, reactive, watch } from 'vue'
 import { executeJson } from '../api/cms.js'
 import TreeNode from '../components/TreeNode.vue'
+import ComplexValueEditor from '../components/ComplexValueEditor.vue'
 import { ldCache, refreshLds, ensureAllDefData } from '../ldCache.js'
 import { ACSI_DEFS } from '../acsiDefs.js'
 import { buildDoTree } from '../utils/treeBuilder.js'
@@ -93,9 +97,10 @@ const detailRaw = ref('')
 // Editing state
 const editingRef = ref(null)
 const editValue = ref('')
-const saving = ref(false)
 const editError = ref('')
-const editInputRef = ref(null)
+const editorVisible = ref(false)
+const editorType = ref('')
+const editorEntry = ref(null)
 
 // load LDs when connected（复用共享缓存，连接后已由 App 拉取）
 watch(() => props.connected, async (val) => {
@@ -385,44 +390,41 @@ function startEdit(entry) {
   editingRef.value = entry.fullRef
   editValue.value = entry.value && entry.value !== '(unavailable)' ? entry.value : ''
   editError.value = ''
+  editorType.value = entry.type || ''
+  editorEntry.value = entry
+  editorVisible.value = true
 }
 
-async function saveEdit(entry) {
-  if (editingRef.value !== entry.fullRef) return
-  if (editValue.value === entry.value) {
-    cancelEdit()
+async function onEditorConfirm(val) {
+  if (!editorEntry.value) return
+  const entry = editorEntry.value
+  if (val === entry.value) {
+    editorVisible.value = false
     return
   }
-  saving.value = true
   editError.value = ''
   try {
-    const allVals = [entry.fullRef, editValue.value]
+    const allVals = [entry.fullRef, val]
     const safeDelim = (candidates) => candidates.find(d => allVals.every(v => !v.includes(d)))
     let delim = safeDelim([' ', ',', ';', '|', '::'])
     if (!delim) {
-      let n = 2
-      while (!delim) {
-        const d = '|'.repeat(n)
-        if (allVals.every(v => !v.includes(d))) delim = d
-        else n++
-      }
+      // 如果在空格分隔的多个引用里，值中包含特殊字符，需要使用更长的分隔符
+      // 单值场景下，使用空格分隔即可
+      delim = ' '
     }
-    let cmd = `set-data-values --refs "${entry.fullRef}" --values "${editValue.value}"`
+    let cmd = `set-data-values --refs "${entry.fullRef}" --values "${val}"`
     if (delim !== ' ') {
-      cmd = `set-data-values --delimiter "${delim}" --refs "${entry.fullRef}" --values "${editValue.value}"`
+      cmd = `set-data-values --delimiter "${delim}" --refs "${entry.fullRef}" --values "${val}"`
     }
     cmd += ' --json'
     const res = await executeJson(cmd)
-    if (res.success) {
-      entry.value = editValue.value
-      editingRef.value = null
+    if (res && res.success) {
+      entry.value = val
     } else {
-      editError.value = res.error || '保存失败'
+      editError.value = res?.error || '保存失败'
     }
   } catch {
     editError.value = '请求失败'
-  } finally {
-    saving.value = false
   }
 }
 
@@ -594,6 +596,33 @@ function choiceTypeToType(choiceType) {
   display: inline-block;
 }
 
+.val-btn {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 2px 8px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: border-color 0.12s, color 0.12s, background 0.12s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.val-btn:hover {
+  border-color: var(--border);
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.val-btn--has {
+  color: var(--text-primary);
+}
+
 .edit-input {
   background: var(--bg-primary);
   border: 1px solid var(--accent);
@@ -608,12 +637,6 @@ function choiceTypeToType(choiceType) {
 
 .edit-input:focus {
   box-shadow: 0 0 0 2px var(--accent-muted);
-}
-
-.saving {
-  font-size: 11px;
-  color: var(--accent);
-  margin-left: 6px;
 }
 
 .edit-err {
