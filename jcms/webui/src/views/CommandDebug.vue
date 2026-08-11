@@ -145,7 +145,7 @@
                         />
                       </div>
                       <div class="refs-row">
-                        <button type="button" class="glass glass-danger refs-del" title="删除该引用" @click="removeRefs(i)">✕</button>
+                        <button v-if="!p.single" type="button" class="glass glass-danger refs-del" title="删除该引用" @click="removeRefs(i)">✕</button>
                         <UiSelect
                           v-model="r.sdo"
                           :options="rowSdoOptions(r)"
@@ -161,6 +161,7 @@
                           @update:modelValue="onRowDa(r)"
                         />
                         <UiSelect
+                          v-if="props.cmd !== 'data-dir'"
                           v-model="r.fc"
                           :options="fcRowOptions"
                           :disabled="!!r.da"
@@ -190,10 +191,10 @@
                         :placeholder="p.placeholder"
                         empty-label="（不选）"
                       />
-                      <button type="button" class="glass glass-danger refs-del" title="删除该引用" @click="removeRefs(i)">✕</button>
+                      <button v-if="!p.single" type="button" class="glass glass-danger refs-del" title="删除该引用" @click="removeRefs(i)">✕</button>
                     </div>
                   </template>
-                  <button type="button" class="glass glass-accent refs-add" @click="addRefs">＋ 添加引用</button>
+                  <button v-if="!p.single" type="button" class="glass glass-accent refs-add" @click="addRefs">＋ 添加引用</button>
                 </div>
                 <UiSwitch v-else-if="p.type === 'switch'" v-model="form[p.key]" />
                 <UiSwitch v-else-if="p.type === 'auto-pull-switch'" v-model="form[p.key]" />

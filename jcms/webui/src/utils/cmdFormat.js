@@ -115,6 +115,7 @@ export function buildCmd(cmd, params, form, opts = {}) {
     } else if (p.type === 'refs-list') {
       const rows = (v || []).filter(Boolean)
       const refs = []
+      const afterParts = []
       const fcs = []
       const values = []
       const types = []
@@ -123,8 +124,14 @@ export function buildCmd(cmd, params, form, opts = {}) {
           if (!row.ld || !row.ln) continue
           let ref = `${row.ld}/${row.ln}`
           if (row.do) ref += `.${row.do}`
-          if (row.sdo) ref += `.${row.sdo}`
-          if (row.da) ref += `.${row.da}`
+          // data-dir: SDO/DA 作为 --after 分页游标，不拼入 ref
+          if (cmd === 'data-dir') {
+            if (row.sdo) afterParts.push(row.sdo)
+            if (row.da) afterParts.push(row.da)
+          } else {
+            if (row.sdo) ref += `.${row.sdo}`
+            if (row.da) ref += `.${row.da}`
+          }
           refs.push(ref)
           fcs.push(row.fc || '')
           values.push(row.value || '')
@@ -167,6 +174,10 @@ export function buildCmd(cmd, params, form, opts = {}) {
           if (nonEmptyValues.length) {
             parts.push('--values', `"${values.join(delim)}"`)
           }
+        }
+        // data-dir: SDO/DA 作为 --after 分页游标
+        if (cmd === 'data-dir' && afterParts.length) {
+          parts.push('--after', `"${afterParts.join(delim)}"`)
         }
       }
     } else if (p.key === 'refs' && v !== '' && v !== null && v !== undefined) {

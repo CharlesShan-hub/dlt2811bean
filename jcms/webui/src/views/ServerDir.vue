@@ -396,7 +396,22 @@ async function saveEdit(entry) {
   saving.value = true
   editError.value = ''
   try {
-    const cmd = `set-data-values --pairs "${entry.fullRef}=${editValue.value}" --json`
+    const allVals = [entry.fullRef, editValue.value]
+    const safeDelim = (candidates) => candidates.find(d => allVals.every(v => !v.includes(d)))
+    let delim = safeDelim([' ', ',', ';', '|', '::'])
+    if (!delim) {
+      let n = 2
+      while (!delim) {
+        const d = '|'.repeat(n)
+        if (allVals.every(v => !v.includes(d))) delim = d
+        else n++
+      }
+    }
+    let cmd = `set-data-values --refs "${entry.fullRef}" --values "${editValue.value}"`
+    if (delim !== ' ') {
+      cmd = `set-data-values --delimiter "${delim}" --refs "${entry.fullRef}" --values "${editValue.value}"`
+    }
+    cmd += ' --json'
     const res = await executeJson(cmd)
     if (res.success) {
       entry.value = editValue.value

@@ -4,7 +4,7 @@
  *       DO/SDO/DA 选项懒加载、negotiate 默认值回填
  */
 import { reactive, watch } from 'vue'
-import { ldCache, ldLns, allLnRefs, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs } from '../ldCache.js'
+import { ldCache, ldLns, allLnRefs, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs, ensureAllDefData } from '../ldCache.js'
 import { executeJson } from '../api/cms.js'
 
 /** Map CMS choiceType to readable type name. */
@@ -214,27 +214,52 @@ export function useCommandForm(form, opts = {}) {
     let ref = `${row.ld}/${row.ln}.${row.do}`
     if (row.sdo) ref += `.${row.sdo}`
     if (row.da) ref += `.${row.da}`
+
+    // 1. 从 get-data-def 拿定义类型（SCL bType，始终准确）
+    // DO 级别: {data: [{cdcType: "INS", definition: {structure: [...]}}]}
+    // DA 级别: {data: [{definition: {int32: null}}]} — cdcType 为空，类型在 definition 的 key 名
+    let defType = ''
     try {
-      // 同时查 get-data-def（SCL 定义类型）和 get-data-values（实际值类型）
-      const [defRes, valRes] = await Promise.all([
-        executeJson(`get-data-def --refs "${ref}" --json`),
-        executeJson(`get-data-values --refs "${ref}" --json`),
-      ])
-
-      // 从 get-data-def 拿定义类型（SCL bType，始终准确）
-      // 新格式: {data: [{reference, cdcType}]}，旧格式: [{cdcType}]
-      let defType = ''
+      const defRes = await executeJson(`get-data-def --refs "${ref}" --json`)
       const defList = Array.isArray(defRes) ? defRes : (defRes?.data || [])
-      if (defList.length > 0 && defList[0] && defList[0].cdcType) {
-        defType = defList[0].cdcType
+      if (defList.length > 0 && defList[0]) {
+        const entry = defList[0]
+        if (entry.cdcType) {
+          defType = entry.cdcType
+        } else if (entry.definition && typeof entry.definition === 'object') {
+          // DA 级别：definition 是一个单 key 的 map，如 {"int32": null}
+          const keys = Object.keys(entry.definition)
+          if (keys.length === 1 && keys[0] !== 'structure') {
+            defType = keys[0]
+          }
+        }
       }
+    } catch { /* ignore */ }
 
-      // 从 get-data-values 拿实际值类型
-      // 新格式: {value: [{reference, value: {choice, "visible-string": ...}}]}
-      // 新格式(无choice): {value: [{"visible-string": "..."}]}
-      // 旧格式: [{valueString, choiceType}]
-      let valType = ''
-      let valTypeFromKey = false
+    // 2. 如果 get-data-def 没拿到，从 all-def 缓存拿（处理 stVal、q、t 等预定义 DA）
+    if (!defType && row.do) {
+      try {
+        const lnRef = `${row.ld}/${row.ln}`
+        const allDef = await ensureAllDefData(lnRef)
+        const doEntry = allDef[row.do]
+        if (doEntry && doEntry.structure) {
+          const daName = row.da || row.sdo || ''
+          if (daName) {
+            const da = doEntry.structure.find(s => s.name === daName)
+            if (da && da.type) defType = da.type
+          } else {
+            // DO 级别：使用 cdcType
+            defType = doEntry.cdcType
+          }
+        }
+      } catch { /* ignore */ }
+    }
+
+    // 3. 从 get-data-values 拿实际值类型（仅辅助，优先级低于 defType）
+    let valType = ''
+    let valFromChoice = false
+    try {
+      const valRes = await executeJson(`get-data-values --refs "${ref}" --json`)
       const valList = Array.isArray(valRes) ? valRes : (valRes?.value || [])
       if (valList.length > 0) {
         const item = valList[0]
@@ -242,31 +267,28 @@ export function useCommandForm(form, opts = {}) {
           if (item.choice != null) {
             // 新格式: choice 字段直接表示类型
             valType = choiceTypeToType(item.choice)
+            valFromChoice = true
           } else if (item.valueString != null) {
             // 旧格式: valueString + choiceType
             valType = choiceTypeToType(item.choiceType)
           } else {
-            // 新格式(无choice): 从 key 名推断类型（如 {"visible-string": "..."}）
+            // 新格式(无choice): 从 key 名推断（兜底，不可靠）
             const typeKeys = ['boolean','int8','int16','int32','int64','int8u','int16u','int32u','int64u',
               'float32','float64','octet-string','visible-string','unicode-string',
               'timestamp','quality','check']
             for (const k of typeKeys) {
               if (Object.prototype.hasOwnProperty.call(item, k)) {
                 valType = k
-                valTypeFromKey = true
                 break
               }
             }
           }
         }
       }
+    } catch { /* ignore */ }
 
-      // 从 key 名检测到的类型（包括 visible-string）始终准确，优先使用
-      // 否则：优先用定义类型，但 visible-string 类型用值类型替代
-      row._resolvedType = valTypeFromKey ? valType : ((valType && valType !== 'visible-string') ? valType : (defType || valType))
-    } catch {
-      row._resolvedType = ''
-    }
+    // 优先级：defType（get-data-def / all-def 缓存）> choice 字段 > 值 key 名
+    row._resolvedType = defType || (valFromChoice ? valType : '') || (valType !== 'visible-string' ? valType : '') || ''
   }
 
   // ── fc 变化时重新加载 DO 选项 ──

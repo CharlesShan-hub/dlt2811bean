@@ -43,8 +43,7 @@ GetDataDirectory-ErrorPDU ::= ServiceError — 8.4.3`,
 2. 嵌套结构的数据属性，应按深度优先的顺序逐层返回数据属性引用。
 3. SCL 定义的 DA 对象含有 \`fc\` 定义，因此结果中应包含 \`fc\`；DO 对象和 BDA 对象不含有 \`fc\` 定义，因此结果中应不包含 \`fc\`。`,
   params: [
-    { key: 'ref', label: '数据引用 ref', type: 'text', placeholder: 'LD/LN.DO 或 LD/LN.DO.DA' },
-    { key: 'after', label: '起始引用 after', type: 'text', placeholder: '可选：起始引用' },
+    { key: 'ref', label: '数据引用', type: 'refs-list', cascade: true, single: true },
     { key: 'auto-pull', label: '自动续拉 auto-pull', type: 'auto-pull-switch' },
   ],
 }

@@ -120,10 +120,7 @@ public class Navigator {
         SclDOI doi = ln.findDoiByName(sclRef.doName());
         if (doi == null) {
             // DO 可能在模板中定义但不在实例中（如 Beh）→ 返回无 DOI 的 Navigator，让下游走模板查找
-            if (sclRef.isDoLevel()) {
-                return new Navigator(doc, ied, ld, ln, null, null, null, sclRef);
-            }
-            return empty();
+            return new Navigator(doc, ied, ld, ln, null, null, null, sclRef);
         }
 
         if (sclRef.isDoLevel()) {
@@ -174,10 +171,7 @@ public class Navigator {
         SclDOI doi = ln.findDoiByName(sclRef.doName());
         if (doi == null) {
             // DO 可能在模板中定义但不在实例中（如 Beh）→ 返回无 DOI 的 Navigator，让下游走模板查找
-            if (sclRef.isDoLevel()) {
-                return new Navigator(doc, null, ld, ln, null, null, null, sclRef);
-            }
-            return empty();
+            return new Navigator(doc, null, ld, ln, null, null, null, sclRef);
         }
 
         if (sclRef.isDoLevel()) {
