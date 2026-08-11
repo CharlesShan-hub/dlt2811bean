@@ -21,6 +21,25 @@ public class AllDataValuesDao extends BaseDao {
     /** Optional pagination: return items after this reference */
     private String referenceAfter;
 
+    /**
+     * Convenience setter that detects {@code lnReference} (contains "/") vs
+     * {@code ldName} (no "/").
+     */
+    public void ln(String value) {
+        if (value.contains("/")) {
+            this.lnReference = value;
+        } else {
+            this.ldName = value;
+        }
+    }
+
+    /**
+     * Convenience setter for FC from a 2-char code string (e.g. "ST", "MX").
+     */
+    public void fc(String value) {
+        this.fc = com.ysh.jcms.data.scalar.CmsFC.fromString(value);
+    }
+
     @Override
     public CmsType toRequest() {
         CmsGetAllDataValuesRequest req = new CmsGetAllDataValuesRequest().referenceAfter(referenceAfter);

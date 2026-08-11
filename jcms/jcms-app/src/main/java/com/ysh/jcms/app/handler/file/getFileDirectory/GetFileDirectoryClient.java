@@ -58,6 +58,6 @@ public class GetFileDirectoryClient extends BaseClientHandler<GetFileDirectoryDa
                     fe.checkSum.value()));
         }
 
-        dao.result(new FileDirectoryResult(entries, resp.moreFollows.value()));
+        content().res(new FileDirectoryResult(entries, resp.moreFollows.value()));
     }
 }

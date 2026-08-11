@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Describes a single CLI parameter of a command.
@@ -52,7 +53,19 @@ public class Param {
     private Class<?> type = String.class;
 
     /**
-     * Delimiter regex used by {@link #convert(String)} to split a string into a
+     * Value mapping: user-friendly names → actual values.
+     * <p>
+     * When set, {@link #convert(String)} looks up the raw input in this map first.
+     * If found, the mapped value is used for type conversion. If not found, the
+     * raw input is used as-is (e.g. numeric inputs like {@code "3"} pass through
+     * directly for {@code Integer.class}).
+     * <p>
+     * Example: {@code .valueMap(Map.of("brcb", "3", "urcb", "4"))} allows
+     * {@code --acsi brcb} to produce {@code Integer 3}.
+     */
+    private Map<String, String> valueMap;
+
+    /** Delimiter regex used by {@link #convert(String)} to split a string into a
      * list. Defaults to {@code "\\s+"} (whitespace). Only effective when
      * {@link #type} is {@code List.class}.
      */
@@ -75,7 +88,15 @@ public class Param {
      * <li>{@code List.class} — split by {@link #delimiter}</li>
      * </ul>
      */
-    public Object convert(String value) {
+    public Object convert(String rawValue) {
+        // Apply value mapping if present (name → actual value string)
+        if (valueMap != null && !valueMap.isEmpty()) {
+            String mapped = valueMap.get(rawValue);
+            if (mapped != null) {
+                rawValue = mapped;
+            }
+        }
+        String value = rawValue;
         if (type == String.class)
             return value;
         if (type == Integer.class || type == int.class)

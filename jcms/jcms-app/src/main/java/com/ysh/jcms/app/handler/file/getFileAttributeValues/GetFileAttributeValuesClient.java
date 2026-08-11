@@ -40,7 +40,7 @@ public class GetFileAttributeValuesClient extends BaseClientHandler<GetFileAttri
 
         long epochSeconds = resp.lastModified.secondsSinceEpoch.value();
         int fractionMicros = resp.lastModified.fractionOfSecond.value();
-        dao.result(new FileAttrResult(resp.fileName.value(), resp.fileSize.value(), epochSeconds * 1000 + fractionMicros / 1000,
+        content().res(new FileAttrResult(resp.fileName.value(), resp.fileSize.value(), epochSeconds * 1000 + fractionMicros / 1000,
                 resp.checkSum.value()));
     }
 }

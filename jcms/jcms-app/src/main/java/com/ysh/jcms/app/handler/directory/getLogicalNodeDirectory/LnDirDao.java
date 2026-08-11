@@ -21,6 +21,18 @@ public class LnDirDao extends BaseDao {
     /** Optional pagination: return items after this reference */
     private String referenceAfter;
 
+    /**
+     * Convenience setter that detects {@code lnReference} (contains "/") vs
+     * {@code ldName} (no "/").
+     */
+    public void ln(String value) {
+        if (value.contains("/")) {
+            this.lnReference = value;
+        } else {
+            this.ldName = value;
+        }
+    }
+
     @Override
     public CmsType toRequest() {
         CmsGetLogicalNodeDirectoryRequest req = new CmsGetLogicalNodeDirectoryRequest().acsiClass(acsiClass).referenceAfter(referenceAfter);
