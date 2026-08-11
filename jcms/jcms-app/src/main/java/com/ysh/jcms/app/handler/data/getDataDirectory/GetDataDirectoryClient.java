@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.data.getDataDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.handler.CmsClientOperator;
 import com.ysh.jcms.data.sequence.data.CmsSubRefEntry;
 import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.pdu.data.CmsGetDataDirectoryError;
@@ -31,11 +30,6 @@ public class GetDataDirectoryClient extends BaseClientHandler<GetDataDirectoryDa
     }
 
     @Override
-    protected void beforeAll(GetDataDirectoryDao dao) throws IOException {
-        CmsClientOperator.initResult(dao, "dataAttribute");
-    }
-
-    @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetDataDirectoryError err = decodeErr(frame, new CmsGetDataDirectoryError());
         throw new IOException("GetDataDirectory rejected: " + err.value());
@@ -49,8 +43,9 @@ public class GetDataDirectoryClient extends BaseClientHandler<GetDataDirectoryDa
         for (CmsSubRefEntry e : resp.dataAttribute) {
             entries.add(new DirEntry(e.reference.value(), fcCode(e)));
         }
-        CmsClientOperator.page(dao).add("dataAttribute", entries).moreFollows(resp.moreFollows.value()).lastRef(entries, e -> e.reference);
-        log.info("GetDataDirectory page: {} entries (moreFollows={})", entries.size(), resp.moreFollows.value());
+        if (content() != null) {
+            content().res(entries);
+        }
     }
 
     @Override

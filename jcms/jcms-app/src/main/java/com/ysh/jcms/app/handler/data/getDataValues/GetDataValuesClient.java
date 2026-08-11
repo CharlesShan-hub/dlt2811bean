@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.data.getDataValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.pdu.data.CmsGetDataValuesError;
 import com.ysh.jcms.pdu.data.CmsGetDataValuesResponse;
@@ -37,7 +36,6 @@ public class GetDataValuesClient extends BaseClientHandler<GetDataValuesDao> {
 
     @Override
     protected void onSuccess(Frame frame, GetDataValuesDao dao) throws IOException {
-        PaginationContext ctx = dao.paginationContext();
         CmsGetDataValuesResponse resp = decodeResp(frame, new CmsGetDataValuesResponse());
         log.warn("GetDataValues page: {} values", resp);
 
@@ -45,7 +43,8 @@ public class GetDataValuesClient extends BaseClientHandler<GetDataValuesDao> {
         for (CmsData d : resp.value) {
             values.add(new DataValue(d.choice(), d.toValueString()));
         }
-        ctx.setResult(values);
+        if (content() != null) {
+            content().res(values);
+        }
     }
-
 }

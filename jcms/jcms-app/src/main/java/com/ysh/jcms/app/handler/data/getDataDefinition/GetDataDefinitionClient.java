@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.data.getDataDefinition;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.sequence.data.CmsDataDefResultEntry;
 import com.ysh.jcms.pdu.data.CmsGetDataDefinitionError;
 import com.ysh.jcms.pdu.data.CmsGetDataDefinitionResponse;
@@ -37,7 +36,6 @@ public class GetDataDefinitionClient extends BaseClientHandler<GetDataDefinition
 
     @Override
     protected void onSuccess(Frame frame, GetDataDefinitionDao dao) throws IOException {
-        PaginationContext ctx = dao.paginationContext();
         CmsGetDataDefinitionResponse resp = decodeResp(frame, new CmsGetDataDefinitionResponse());
 
         List<DefEntry> entries = new ArrayList<>();
@@ -48,6 +46,8 @@ public class GetDataDefinitionClient extends BaseClientHandler<GetDataDefinition
             String cdc = src.isPresent("cdcType") ? src.cdcType.value() : "";
             entries.add(new DefEntry(cdc, choice));
         }
-        ctx.setResult(entries);
+        if (content() != null) {
+            content().res(entries);
+        }
     }
 }

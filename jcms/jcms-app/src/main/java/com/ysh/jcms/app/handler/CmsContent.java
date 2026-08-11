@@ -47,7 +47,7 @@ public class CmsContent<D extends BaseDao> {
     }
 
     /** Set response data (called by {@code BaseClientHandler}). */
-    void res(Object res) {
+    public void res(Object res) {
         this.res = res;
     }
 

@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.dataset.getDataSetValues;
 
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetValuesRequest;
 import lombok.Getter;
@@ -12,10 +11,6 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 public class GetDataSetValuesDao extends BaseDao {
-    public GetDataSetValuesDao() {
-        paginationContext(new PaginationContext());
-    }
-
     private String datasetReference;
     private String referenceAfter;
 

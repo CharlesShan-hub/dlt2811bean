@@ -3,7 +3,6 @@ package com.ysh.jcms.app.console;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.app.handler.CmsContent;
-import com.ysh.jcms.app.console.Param.ParamType;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -36,7 +35,7 @@ import java.util.Map;
  * public class AbortConsole extends CommandHandler&lt;AbortDao, AbortClient&gt; {
  *     public AbortConsole() {
  *         super(CommandInfo.ABORT, false);
- *         param("reason", "中止原因码", "0", ParamType.INT);
+ *         param(Param.of("reason", "0", "reason", Integer.class, false), "中止原因码");
  *     }
  * }
  *
@@ -103,8 +102,8 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
 
     /**
      * Parameter definitions for command-line parsing. Declared via
-     * {@link #param(String, String)} calls in the subclass constructor; this
-     * method is final and should not be overridden.
+     * {@link #param(String, String)} calls in the subclass constructor; this method
+     * is final and should not be overridden.
      */
     public final List<Param> params() {
         return params;
@@ -112,41 +111,14 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
 
     // ── Param declaration (call in subclass constructor, one per line) ──
 
-    protected final void param(String name, String description) {
-        params.add(new Param().cliName(name).description(description));
-    }
-
-    protected final void param(String name, String description, String defaultValue) {
-        params.add(new Param().cliName(name).description(description).defaultValue(defaultValue));
-    }
-
-    protected final void param(String name, String description, String defaultValue, boolean required) {
-        params.add(new Param().cliName(name).description(description).defaultValue(defaultValue).required(required));
-    }
-
-    protected final void param(String name, String description, String defaultValue, String daoName) {
-        params.add(new Param().cliName(name).description(description).defaultValue(defaultValue).daoName(daoName));
-    }
-
-    protected final void param(String name, String description, String defaultValue, ParamType type) {
-        params.add(new Param().cliName(name).description(description).defaultValue(defaultValue).type(type));
-    }
-
-    protected final void param(String name, String description, String defaultValue, ParamType type, boolean required) {
-        params.add(new Param().cliName(name).description(description).defaultValue(defaultValue).type(type).required(required));
-    }
-
-    protected final void param(String name, String description, String defaultValue, String daoName, ParamType type) {
-        params.add(new Param().cliName(name).description(description).defaultValue(defaultValue).daoName(daoName).type(type));
-    }
-
-    protected final void param(String name, String description, String defaultValue, String daoName, ParamType type, boolean required) {
-        params.add(new Param().cliName(name).description(description).defaultValue(defaultValue).daoName(daoName).type(type).required(required));
+    protected final void param(Param p, String n) {
+        params.add(p.desp(n));
     }
 
     /** Execute the command with parsed arguments. */
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!validateRequired(args)) return;
+        if (!validateRequired(args))
+            return;
         if (isQuery) {
             executeQuery(console, args);
         } else {
@@ -177,8 +149,7 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
 
     private void requireDaoClient() {
         if (daoClass == null || clientClass == null) {
-            throw new IllegalStateException(
-                    name() + ": raw CommandHandler cannot execute; extend CommandHandler<Dao, Client> instead");
+            throw new IllegalStateException(name() + ": raw CommandHandler cannot execute; extend CommandHandler<Dao, Client> instead");
         }
     }
 
@@ -189,7 +160,7 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
             if (p.required()) {
                 String value = args.get(p.cliName());
                 if (value == null || value.trim().isEmpty()) {
-                    ConsolePrinter.error("Missing required parameter: --" + p.cliName() + " (" + p.description() + ")");
+                    ConsolePrinter.error("Missing required parameter: --" + p.cliName() + " (" + p.desp() + ")");
                     return false;
                 }
             }
@@ -208,32 +179,8 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
             String value = args.get(p.cliName());
             if (value == null)
                 continue;
-            Method m = dao.getClass().getMethod(daoName, p.type().javaType());
-            m.invoke(dao, convert(value, p.type()));
-        }
-    }
-
-    private static Object convert(String value, ParamType type) {
-        switch (type) {
-            case STRING :
-                return value;
-            case INT :
-            case INTEGER :
-                return Integer.parseInt(value);
-            case LONG :
-                return Long.parseLong(value);
-            case BOOLEAN :
-                return Boolean.parseBoolean(value);
-            case BYTE :
-                return Byte.parseByte(value);
-            case SHORT :
-                return Short.parseShort(value);
-            case FLOAT :
-                return Float.parseFloat(value);
-            case DOUBLE :
-                return Double.parseDouble(value);
-            default :
-                throw new IllegalArgumentException("Unknown type: " + type);
+            Method m = dao.getClass().getMethod(daoName, p.type());
+            m.invoke(dao, p.convert(value));
         }
     }
 }

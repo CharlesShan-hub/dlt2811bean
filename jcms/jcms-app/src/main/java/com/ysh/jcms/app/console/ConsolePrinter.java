@@ -6,9 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 public final class ConsolePrinter {
@@ -126,33 +124,19 @@ public final class ConsolePrinter {
     }
 
     /**
-     * 输出 JSON 成功响应，接受 {@code dao.result()} 返回的任意对象（内部自动识别 Map 类型）。
+     * 直接序列化原始对象为 JSON 输出，不做任何包装。
+     * <p>
+     * 调用方应直接传入要输出的数据对象（如 List、Map、POJO）， 该方法会将其序列化为 JSON 并输出。
      */
     public static void outputJson(Object result) {
-        if (result instanceof Map) {
-            outputJson((Map<String, Object>) result);
-        } else {
-            error("result is not a Map");
-        }
-    }
-
-    public static void outputJson(Map<String, Object> fields) {
-        outputJson(fields, null);
-    }
-
-    public static void outputJson(Map<String, Object> fields, String info) {
         try {
-            LinkedHashMap<String, Object> all = new LinkedHashMap<>();
-            all.put("success", true);
-            all.put("info", info);
-            all.put("data", fields);
-            String json = InnerBase.MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(all);
+            String json = InnerBase.MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(result);
             if (captureStream.get() == null) {
                 json = highlightJson(json);
             }
             raw(json);
         } catch (Exception e) {
-            error("serialization failed");
+            error("serialization failed: " + e.getMessage());
         }
     }
 

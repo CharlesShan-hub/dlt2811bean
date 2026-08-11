@@ -2,13 +2,13 @@ package com.ysh.jcms.app.handler.dataset.createDataSet;
 
 import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.data.core.CmsType;
+import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.data.sequence.dataset.CmsDataRefFcEntry;
 import com.ysh.jcms.pdu.dataset.CmsCreateDataSetRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -17,26 +17,22 @@ import java.util.List;
 public class CreateDataSetDao extends BaseDao {
     private String datasetReference;
     private String referenceAfter;
-    private List<MemberRef> members = new ArrayList<>();
-
-    @Setter
-    @Getter
-    @Accessors(fluent = true)
-    public static class MemberRef {
-        private String reference;
-        private int fc;
-    }
-
-    public CreateDataSetDao addMember(String reference, int fc) {
-        members.add(new MemberRef().reference(reference).fc(fc));
-        return this;
-    }
+    private List<String> memberRefs;
+    private List<String> memberFcs;
 
     @Override
     public CmsType toRequest() {
         CmsCreateDataSetRequest req = new CmsCreateDataSetRequest().datasetReference(datasetReference).referenceAfter(referenceAfter);
-        for (MemberRef m : members) {
-            req.memberData.add(new CmsDataRefFcEntry().reference(m.reference()).fc(m.fc()));
+        if (memberRefs != null && memberFcs != null) {
+            int size = Math.min(memberRefs.size(), memberFcs.size());
+            for (int i = 0; i < size; i++) {
+                String ref = memberRefs.get(i);
+                String fcStr = memberFcs.get(i);
+                if (ref == null || ref.isEmpty() || fcStr == null || fcStr.isEmpty())
+                    continue;
+                int fcCode = CmsFC.fromString(fcStr);
+                req.memberData.add(new CmsDataRefFcEntry().reference(ref).fc(fcCode));
+            }
         }
         return req;
     }

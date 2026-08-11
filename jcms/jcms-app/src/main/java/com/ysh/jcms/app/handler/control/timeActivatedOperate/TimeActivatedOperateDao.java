@@ -11,50 +11,58 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.Map;
-
 @Setter
 @Getter
 @Accessors(fluent = true)
 public class TimeActivatedOperateDao extends BaseDao {
     private String ref;
-    private long operTmEpochSeconds;
-    private Map<String, String> args;
+    private String ctlVal;
+    private String operTm;
+    private String origin;
+    private String ctlNum;
+    private String t;
+    private String test;
+    private String check;
 
     @Override
     public CmsType toRequest() {
-        CmsTimeActivatedOperateRequest req = new CmsTimeActivatedOperateRequest().reference(ref)
-                .operTm(new CmsUtcTime().secondsSinceEpoch(operTmEpochSeconds));
+        CmsTimeActivatedOperateRequest req = new CmsTimeActivatedOperateRequest().reference(ref);
 
-        String valueStr = args != null ? args.get("value") : null;
-        if (valueStr != null && !valueStr.isEmpty()) {
-            CmsData ctlVal = new CmsData();
-            ctlVal.alt_boolean(Boolean.parseBoolean(valueStr));
-            req.ctlVal(ctlVal);
+        if (operTm != null && !operTm.isEmpty()) {
+            req.operTm(new CmsUtcTime().secondsSinceEpoch(Long.parseLong(operTm)));
         }
 
-        String originStr = args != null ? args.get("origin") : null;
-        if (originStr != null && !originStr.isEmpty())
-            req.origin(new CmsOriginator().orCat(Integer.parseInt(originStr)));
+        if (t != null && !t.isEmpty()) {
+            req.t(new CmsUtcTime().secondsSinceEpoch(Long.parseLong(t)));
+        }
 
-        String ctlNumStr = args != null ? args.get("ctlNum") : null;
-        if (ctlNumStr != null && !ctlNumStr.isEmpty())
-            req.ctlNum(Integer.parseInt(ctlNumStr));
+        if (ctlVal != null && !ctlVal.isEmpty()) {
+            CmsData ctlValData = new CmsData();
+            ctlValData.alt_boolean(Boolean.parseBoolean(ctlVal));
+            req.ctlVal(ctlValData);
+        }
 
-        String testStr = args != null ? args.get("test") : null;
-        if (testStr != null)
-            req.test(Boolean.parseBoolean(testStr));
+        if (origin != null && !origin.isEmpty()) {
+            req.origin(new CmsOriginator().orCat(Integer.parseInt(origin)));
+        }
 
-        String checkStr = args != null ? args.get("check") : null;
-        if (checkStr != null && !checkStr.isEmpty()) {
-            CmsCheck check = new CmsCheck();
-            for (String flag : checkStr.split(",")) {
+        if (ctlNum != null && !ctlNum.isEmpty()) {
+            req.ctlNum(Integer.parseInt(ctlNum));
+        }
+
+        if (test != null) {
+            req.test(Boolean.parseBoolean(test));
+        }
+
+        if (check != null && !check.isEmpty()) {
+            CmsCheck checkObj = new CmsCheck();
+            for (String flag : check.split(",")) {
                 if ("syncheck".equalsIgnoreCase(flag.trim()))
-                    check.syncheck(true);
+                    checkObj.syncheck(true);
                 if ("interlock".equalsIgnoreCase(flag.trim()))
-                    check.interlock_check(true);
+                    checkObj.interlock_check(true);
             }
-            req.check(check);
+            req.check(checkObj);
         }
 
         return req;

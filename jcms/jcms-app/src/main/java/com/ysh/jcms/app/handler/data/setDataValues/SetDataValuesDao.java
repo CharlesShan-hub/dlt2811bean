@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -17,41 +16,37 @@ import java.util.List;
 @Accessors(fluent = true)
 public class SetDataValuesDao extends BaseDao {
 
-    /** Data value entries (reference + value string + optional fc) */
-    private List<Entry> entries = new ArrayList<>();
+    /** Object references, e.g. "LD0/LLN0.Mod.stVal". */
+    private List<String> references;
 
-    @Setter
-    @Getter
-    @Accessors(fluent = true)
-    public static class Entry {
-        /** Object reference (e.g. "LD0/LLN0.Mod.stVal") */
-        private String reference;
-        /** Value to set (as string) */
-        private String value;
-        /** Optional FunctionalConstraint filter */
-        private Integer fc;
-    }
+    /** Values to set (as strings), same order as references. */
+    private List<String> values;
 
-    public SetDataValuesDao addEntry(String reference, String value) {
-        entries.add(new Entry().reference(reference).value(value));
-        return this;
-    }
-
-    public SetDataValuesDao addEntry(String reference, String value, int fc) {
-        entries.add(new Entry().reference(reference).value(value).fc(fc));
-        return this;
-    }
+    /** Optional FunctionalConstraint codes, same order as references. */
+    private List<String> fcs;
 
     @Override
     public CmsType toRequest() {
         CmsSetDataValuesRequest req = new CmsSetDataValuesRequest();
-        for (Entry src : entries) {
-            CmsDataRefValueEntry entry = new CmsDataRefValueEntry().reference(src.reference());
-            fillCmsData(entry.value, src.value());
-            if (src.fc() != null && src.fc() != 0) {
-                entry.fc(src.fc());
+        if (references != null && values != null) {
+            int size = Math.min(references.size(), values.size());
+            for (int i = 0; i < size; i++) {
+                String ref = references.get(i);
+                String value = values.get(i);
+                if (ref == null || ref.isEmpty() || value == null)
+                    continue;
+                CmsDataRefValueEntry entry = new CmsDataRefValueEntry().reference(ref);
+                fillCmsData(entry.value, value);
+                if (fcs != null && i < fcs.size()) {
+                    String fcStr = fcs.get(i);
+                    if (fcStr != null && !fcStr.isEmpty()) {
+                        int fc = Integer.parseInt(fcStr);
+                        if (fc != 0)
+                            entry.fc(fc);
+                    }
+                }
+                req.data.add(entry);
             }
-            req.data.add(entry);
         }
         return req;
     }

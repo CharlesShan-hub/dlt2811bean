@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.data.getDataDirectory;
 
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.pdu.data.CmsGetDataDirectoryRequest;
 import lombok.Getter;
@@ -12,9 +11,6 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 public class GetDataDirectoryDao extends BaseDao {
-    public GetDataDirectoryDao() {
-        paginationContext(new PaginationContext());
-    }
 
     private String dataReference;
     private String referenceAfter;
