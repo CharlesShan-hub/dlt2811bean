@@ -8,6 +8,7 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
+import java.util.Collections;
 
 public class SetBrcbValuesClient extends BaseClientHandler<SetBrcbValuesDao> {
 
@@ -31,7 +32,8 @@ public class SetBrcbValuesClient extends BaseClientHandler<SetBrcbValuesDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
-        CmsSetBrcbValuesResponse resp = decodeResp(frame, new CmsSetBrcbValuesResponse());
+    protected void onSuccess(Frame frame, SetBrcbValuesDao dao) throws IOException {
+        decodeResp(frame, new CmsSetBrcbValuesResponse());
+        content().res(Collections.singletonList("BRCB values set successfully"));
     }
 }

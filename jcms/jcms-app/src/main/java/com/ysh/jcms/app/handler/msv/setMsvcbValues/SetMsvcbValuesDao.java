@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.msv.setMsvcbValues;
 
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.data.bitarray.CmsMsvcbOptFlds;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.msv.CmsSetMsvcbEntry;
 import com.ysh.jcms.pdu.msv.CmsSetMsvcbValuesRequest;
@@ -13,19 +14,36 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class SetMsvcbValuesDao extends BaseDao {
     private String ref;
-    private String svEna;
+    private Boolean svEna;
     private String msvId;
     private String datSet;
+    private Integer smpMod;
+    private Integer smpRate;
+    private Integer optFlds;
 
     @Override
     public CmsType toRequest() {
         CmsSetMsvcbEntry entry = new CmsSetMsvcbEntry().reference(ref != null ? ref : "");
-        if (svEna != null && !svEna.isEmpty())
-            entry.svEna(Boolean.parseBoolean(svEna));
-        if (msvId != null && !msvId.isEmpty())
+        if (svEna != null) {
+            entry.svEna(svEna);
+        }
+        if (msvId != null && !msvId.isEmpty()) {
             entry.msvID(msvId);
-        if (datSet != null && !datSet.isEmpty())
+        }
+        if (datSet != null && !datSet.isEmpty()) {
             entry.datSet(datSet);
+        }
+        if (smpMod != null) {
+            entry.smpMod(smpMod);
+        }
+        if (smpRate != null) {
+            entry.smpRate(smpRate);
+        }
+        if (optFlds != null) {
+            CmsMsvcbOptFlds f = new CmsMsvcbOptFlds();
+            f.value(optFlds);
+            entry.optFlds(f);
+        }
         CmsSetMsvcbValuesRequest req = new CmsSetMsvcbValuesRequest();
         req.msvcb.add(entry);
         return req;

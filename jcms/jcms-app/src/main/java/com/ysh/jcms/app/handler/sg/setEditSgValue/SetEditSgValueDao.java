@@ -9,9 +9,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DAO for SetEditSGValue (8.6.3). Holds a list of (reference, value) pairs to
@@ -22,49 +24,53 @@ import java.util.List;
 @Accessors(fluent = true)
 public class SetEditSgValueDao extends BaseDao {
 
-    private final List<Entry> entries = new ArrayList<>();
-
-    public SetEditSgValueDao addEntry(String ref, byte[] valueBytes, int choiceType) {
-        entries.add(new Entry(ref, valueBytes, choiceType));
-        return this;
+    private static final Map<String, Integer> TYPE_MAP = buildTypeMap();
+    private static Map<String, Integer> buildTypeMap() {
+        Map<String, Integer> m = new HashMap<>();
+        m.put("boolean", CmsData.CHOICE_BOOLEAN);
+        m.put("int8", CmsData.CHOICE_INT8);
+        m.put("int16", CmsData.CHOICE_INT16);
+        m.put("int32", CmsData.CHOICE_INT32);
+        m.put("int64", CmsData.CHOICE_INT64);
+        m.put("int8u", CmsData.CHOICE_INT8U);
+        m.put("int16u", CmsData.CHOICE_INT16U);
+        m.put("int32u", CmsData.CHOICE_INT32U);
+        m.put("int64u", CmsData.CHOICE_INT64U);
+        m.put("float32", CmsData.CHOICE_FLOAT32);
+        m.put("float64", CmsData.CHOICE_FLOAT64);
+        m.put("visible-string", CmsData.CHOICE_VISIBLE_STRING);
+        m.put("octet-string", CmsData.CHOICE_OCTET_STRING);
+        return Collections.unmodifiableMap(m);
     }
 
-    public static class Entry {
-        private final String ref;
-        private final byte[] valueBytes;
-        private final int choiceType;
+    private List<String> refs = new ArrayList<>();
+    private List<String> values = new ArrayList<>();
+    private String type = "visible-string";
 
-        public Entry(String ref, byte[] valueBytes, int choiceType) {
-            this.ref = ref;
-            this.valueBytes = valueBytes;
-            this.choiceType = choiceType;
-        }
-
-        public String ref() {
-            return ref;
-        }
-        public byte[] valueBytes() {
-            return valueBytes;
-        }
-        public int choiceType() {
-            return choiceType;
-        }
+    private static int resolveType(String typeStr) {
+        Integer choice = TYPE_MAP.get(typeStr);
+        if (choice == null)
+            throw new IllegalArgumentException("Unknown type: " + typeStr);
+        return choice;
     }
 
     @Override
     public CmsType toRequest() {
+        if (refs.size() != values.size())
+            throw new IllegalStateException("--refs count (" + refs.size() + ") != --values count (" + values.size() + ")");
+
+        int choiceType = resolveType(type);
         CmsSetEditSgValueRequest req = new CmsSetEditSgValueRequest();
-        for (Entry entry : entries) {
-            CmsData data = buildCmsData(entry);
-            req.data.add(new CmsSgRefValueEntry().reference(entry.ref()).value(data));
+        for (int i = 0; i < refs.size(); i++) {
+            CmsData data = buildCmsData(values.get(i), choiceType);
+            req.data.add(new CmsSgRefValueEntry().reference(refs.get(i)).value(data));
         }
         return req;
     }
 
-    private static CmsData buildCmsData(Entry entry) {
+    private static CmsData buildCmsData(String textVal, int choiceType) {
         CmsData data = new CmsData();
-        String textVal = new String(entry.valueBytes(), StandardCharsets.UTF_8);
-        switch (entry.choiceType()) {
+        switch (choiceType) {
             case CmsData.CHOICE_BOOLEAN :
                 data.alt_boolean("true".equalsIgnoreCase(textVal) || "1".equals(textVal));
                 break;

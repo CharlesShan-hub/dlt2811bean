@@ -22,7 +22,7 @@ public class ConfirmEditSgValuesClient extends BaseClientHandler<ConfirmEditSgVa
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
-        CmsConfirmEditSgValuesResponse resp = decodeResp(frame, new CmsConfirmEditSgValuesResponse());
+    protected void onSuccess(Frame frame, ConfirmEditSgValuesDao dao) throws IOException {
+        decodeResp(frame, new CmsConfirmEditSgValuesResponse());
     }
 }

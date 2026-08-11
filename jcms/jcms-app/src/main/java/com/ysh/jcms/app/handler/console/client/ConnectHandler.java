@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
+import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
@@ -22,14 +23,22 @@ public class ConnectHandler extends CommandHandler<BaseDao, BaseClientHandler<Ba
 
     public ConnectHandler() {
         super(CommandInfo.CONNECT);
-        param("ip", "服务器地址（默认 127.0.0.1）", "127.0.0.1");
-        param("port", "服务器端口（默认 8102，TLS 默认 9102）", "");
-        param("ap", "ServerAccessPoint 引用（如 C_B5041X/S1）", "");
-        param("secure", "使用 TLS 加密连接（不传值，出现即启用）", "");
-        param("apsecure", "应用层安全认证（不传值，出现即启用）", "");
-        param("apdu", "APDU 大小", "");
-        param("asdu", "ASDU 大小", "");
-        param("version", "协议版本", "");
+        Param p1 = Param.of("ip", "127.0.0.1", null, String.class, false);
+        param(p1, "服务器地址（默认 127.0.0.1）");
+        Param p2 = Param.of("port", "", null, String.class, false);
+        param(p2, "服务器端口（默认 8102，TLS 默认 9102）");
+        Param p3 = Param.of("ap", "", null, String.class, false);
+        param(p3, "ServerAccessPoint 引用（如 C_B5041X/S1）");
+        Param p4 = Param.of("secure", "", null, String.class, false);
+        param(p4, "使用 TLS 加密连接（不传值，出现即启用）");
+        Param p5 = Param.of("apsecure", "", null, String.class, false);
+        param(p5, "应用层安全认证（不传值，出现即启用）");
+        Param p6 = Param.of("apdu", "", null, String.class, false);
+        param(p6, "APDU 大小");
+        Param p7 = Param.of("asdu", "", null, String.class, false);
+        param(p7, "ASDU 大小");
+        Param p8 = Param.of("version", "", null, String.class, false);
+        param(p8, "协议版本");
     }
 
     @Override

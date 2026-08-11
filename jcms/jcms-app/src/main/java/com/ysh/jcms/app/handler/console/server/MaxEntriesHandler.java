@@ -1,9 +1,10 @@
 package com.ysh.jcms.app.handler.console.server;
 
 import com.ysh.jcms.app.console.CmsConsole;
-import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
+import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.app.handler.BaseServerHandler;
@@ -30,7 +31,8 @@ public class MaxEntriesHandler extends CommandHandler<BaseDao, BaseClientHandler
 
     public MaxEntriesHandler() {
         super(CommandInfo.MAX_ENTRIES);
-        param("value", "最大返回条数（0 恢复默认）", "");
+        Param p = Param.of("value", "", null, String.class, false);
+        param(p, "最大返回条数（0 恢复默认）");
     }
 
     @Override

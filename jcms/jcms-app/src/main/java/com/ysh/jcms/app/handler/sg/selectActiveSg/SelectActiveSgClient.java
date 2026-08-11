@@ -22,7 +22,7 @@ public class SelectActiveSgClient extends BaseClientHandler<SelectActiveSgDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
-        CmsSelectActiveSgResponse resp = decodeResp(frame, new CmsSelectActiveSgResponse());
+    protected void onSuccess(Frame frame, SelectActiveSgDao dao) throws IOException {
+        decodeResp(frame, new CmsSelectActiveSgResponse());
     }
 }

@@ -24,9 +24,7 @@ public class GetGooseElementNumberDao extends BaseDao {
         if (memberRefs != null && memberFcs != null) {
             int len = Math.min(memberRefs.size(), memberFcs.size());
             for (int i = 0; i < len; i++) {
-                req.memberData.add(new CmsGoRefFcEntry()
-                        .reference(memberRefs.get(i))
-                        .fc(Integer.parseInt(memberFcs.get(i))));
+                req.memberData.add(new CmsGoRefFcEntry().reference(memberRefs.get(i)).fc(Integer.parseInt(memberFcs.get(i))));
             }
         }
         return req;

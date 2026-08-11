@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.console;
 
 import com.ysh.jcms.app.handler.console.client.*;
-import com.ysh.jcms.app.handler.console.TracePduHandler;
+import com.ysh.jcms.app.handler.console.LogHandler;
 import com.ysh.jcms.app.handler.console.ClearHandler;
 import com.ysh.jcms.app.handler.rpc.getRpcInterfaceDirectory.GetRpcInterfaceDirectoryClient;
 import com.ysh.jcms.app.handler.rpc.getRpcInterfaceDirectory.GetRpcInterfaceDirectoryConsole;
@@ -275,7 +275,7 @@ public class CmsClientConsole extends CmsConsole {
         register(new GetFileConsole());
         register(new SetFileConsole());
         register(new DeleteFileConsole());
-        register(new TracePduHandler());
+        register(new LogHandler());
         register(new ClearHandler());
         register(new ReleaseConsole());
         register(new AssociateConsole());

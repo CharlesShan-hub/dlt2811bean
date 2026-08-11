@@ -22,7 +22,7 @@ public class SelectEditSgClient extends BaseClientHandler<SelectEditSgDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
-        CmsSelectEditSgResponse resp = decodeResp(frame, new CmsSelectEditSgResponse());
+    protected void onSuccess(Frame frame, SelectEditSgDao dao) throws IOException {
+        decodeResp(frame, new CmsSelectEditSgResponse());
     }
 }

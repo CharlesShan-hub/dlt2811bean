@@ -1,6 +1,8 @@
 package com.ysh.jcms.app.handler.report.setUrcbValues;
 
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.data.bitarray.CmsRcbOptFlds;
+import com.ysh.jcms.data.bitarray.CmsTriggerConditions;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.report.CmsSetUrcbEntry;
 import com.ysh.jcms.pdu.report.CmsSetUrcbValuesRequest;
@@ -15,11 +17,13 @@ public class SetUrcbValuesDao extends BaseDao {
     private String ref;
     private String rptId;
     private Boolean rptEna;
+    private Boolean resv;
     private String datSet;
+    private Integer optFlds;
     private Integer bufTm;
+    private Integer trgOps;
     private Integer intgPd;
     private Boolean gi;
-    private Boolean resv;
 
     @Override
     public CmsType toRequest() {
@@ -30,16 +34,26 @@ public class SetUrcbValuesDao extends BaseDao {
             entry.rptID(rptId);
         if (rptEna != null)
             entry.rptEna(rptEna);
+        if (resv != null)
+            entry.resv(resv);
         if (datSet != null)
             entry.datSet(datSet);
+        if (optFlds != null) {
+            CmsRcbOptFlds f = new CmsRcbOptFlds();
+            f.value(optFlds);
+            entry.optFlds(f);
+        }
         if (bufTm != null)
             entry.bufTm(bufTm);
+        if (trgOps != null) {
+            CmsTriggerConditions t = new CmsTriggerConditions();
+            t.value(trgOps);
+            entry.trgOps(t);
+        }
         if (intgPd != null)
             entry.intgPd(intgPd);
         if (gi != null)
             entry.gi(gi);
-        if (resv != null)
-            entry.resv(resv);
 
         req.urcb.add(entry);
         return req;

@@ -1,9 +1,10 @@
 package com.ysh.jcms.app.handler.console.client;
 
 import com.ysh.jcms.app.console.CmsConsole;
-import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
+import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.utils.config.CmsConfig;
@@ -23,7 +24,8 @@ public class ApCfgHandler extends CommandHandler<BaseDao, BaseClientHandler<Base
 
     public ApCfgHandler() {
         super(CommandInfo.AP_CFG);
-        param("source", "AP 来源: scd=从 SCD 读, list=从 defaultAps 列表读", "");
+        Param p = Param.of("source", "", null, String.class, false);
+        param(p, "AP 来源: scd=从 SCD 读, list=从 defaultAps 列表读");
     }
 
     @Override

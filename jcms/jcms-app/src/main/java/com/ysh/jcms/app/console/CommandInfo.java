@@ -100,6 +100,7 @@ public enum CommandInfo {
 
     // ── 其他 ──
     TEST("test", "测试连接", Requirement.CONNECTED),
+    LOG("log", "日志设置（PDU 跟踪等）", Requirement.NONE),
     TRACE_PDU("trace-pdu", "开启/关闭 PDU 跟踪", Requirement.NONE),
     MAX_ENTRIES("max-entries", "设置服务端最大返回条数（用于测试分页）", Requirement.NONE),
     CLEAR("clear", "清空屏幕", Requirement.NONE),

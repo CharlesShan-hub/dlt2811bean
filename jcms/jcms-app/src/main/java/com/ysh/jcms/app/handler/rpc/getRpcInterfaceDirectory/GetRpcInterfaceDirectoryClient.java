@@ -5,20 +5,25 @@ import com.ysh.jcms.pdu.rpc.CmsGetRpcInterfaceDirectoryError;
 import com.ysh.jcms.pdu.rpc.CmsGetRpcInterfaceDirectoryResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
+
 import java.io.IOException;
 
 public class GetRpcInterfaceDirectoryClient extends BaseClientHandler<GetRpcInterfaceDirectoryDao> {
+
     @Override
     public void execute(GetRpcInterfaceDirectoryDao dao) throws Exception {
         send(ServiceName.GET_RPC_INTERFACE_DIRECTORY, dao);
     }
+
     @Override
     protected void onError(Frame frame) throws IOException {
-        decodeErr(frame, new CmsGetRpcInterfaceDirectoryError());
-        throw new IOException("GetRpcInterfaceDirectory rejected");
+        CmsGetRpcInterfaceDirectoryError err = decodeErr(frame, new CmsGetRpcInterfaceDirectoryError());
+        throw new IOException("GetRpcInterfaceDirectory rejected: " + err.value());
     }
+
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
-        decodeResp(frame, new CmsGetRpcInterfaceDirectoryResponse());
+    protected void onSuccess(Frame frame, GetRpcInterfaceDirectoryDao dao) throws IOException {
+        CmsGetRpcInterfaceDirectoryResponse resp = decodeResp(frame, new CmsGetRpcInterfaceDirectoryResponse());
+        content().res(resp);
     }
 }

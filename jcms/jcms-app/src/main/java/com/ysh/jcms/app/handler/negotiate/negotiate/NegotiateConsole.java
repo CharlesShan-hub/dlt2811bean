@@ -1,57 +1,21 @@
 package com.ysh.jcms.app.handler.negotiate.negotiate;
 
-import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
+import com.ysh.jcms.utils.config.CmsConfig.Protocol.Negotiate;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-public class NegotiateConsole extends CommandHandler {
+public class NegotiateConsole extends CommandHandler<NegotiateClientDao, NegotiateClient> {
 
     public NegotiateConsole() {
         super(CommandInfo.NEGOTIATE);
-    }
-
-    @Override
-    public List<Param> params() {
-        com.ysh.jcms.utils.config.CmsConfig.Protocol.Negotiate cfg = CmsConfigLoader.load().protocol().negotiate();
-        return Arrays.asList(new Param("apduSize", "APDU 大小", String.valueOf(cfg.apduSize())),
-                new Param("asduSize", "ASDU 大小", String.valueOf(cfg.asduSize())),
-                new Param("protocolVersion", "协议版本", String.valueOf(cfg.protocolVersion())));
-    }
-
-    @Override
-    public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        // negotiate 只需 TCP 连接，无需已关联（connect 不带 --ap 后即可手动协商）
-        if (!console.requireTcpConnected(args))
-            return;
-
-        NegotiateClientDao dao = new NegotiateClientDao();
-        // 兼容两套参数名：CLI 用 apduSize/asduSize/protocolVersion，webui/connect 用
-        // apdu/asdu/version
-        String apduStr = firstNonEmpty(args.get("apduSize"), args.get("apdu"));
-        String asduStr = firstNonEmpty(args.get("asduSize"), args.get("asdu"));
-        String protoStr = firstNonEmpty(args.get("protocolVersion"), args.get("version"));
-        if (apduStr != null && !apduStr.isEmpty())
-            dao.apduSize(Integer.parseInt(apduStr));
-        if (asduStr != null && !asduStr.isEmpty())
-            dao.asduSize(Long.parseLong(asduStr));
-        if (protoStr != null && !protoStr.isEmpty())
-            dao.protocolVersion(Long.parseLong(protoStr));
-
-        console.getClient(NegotiateClient.class).execute(dao);
-
-        @SuppressWarnings("unchecked")
-        Map<String, Object> resultMap = (Map<String, Object>) dao.result();
-        ConsolePrinter.outputJson(resultMap);
-    }
-
-    private static String firstNonEmpty(String a, String b) {
-        return (a != null && !a.isEmpty()) ? a : b;
+        Negotiate cfg = CmsConfigLoader.load().protocol().negotiate();
+        Param p1 = Param.of("apduSize", String.valueOf(cfg.apduSize()), "apduSize", Integer.class, false);
+        param(p1, "APDU 大小（默认取自配置文件）");
+        Param p2 = Param.of("asduSize", String.valueOf(cfg.asduSize()), "asduSize", Long.class, false);
+        param(p2, "ASDU 大小（默认取自配置文件）");
+        Param p3 = Param.of("protocolVersion", String.valueOf(cfg.protocolVersion()), "protocolVersion", Long.class, false);
+        param(p3, "协议版本（默认取自配置文件）");
     }
 }

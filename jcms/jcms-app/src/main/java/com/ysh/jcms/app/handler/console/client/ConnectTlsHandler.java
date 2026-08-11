@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
+import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
@@ -22,11 +23,16 @@ public class ConnectTlsHandler extends CommandHandler<BaseDao, BaseClientHandler
 
     public ConnectTlsHandler() {
         super(CommandInfo.CONNECT_TLS);
-        param("host", "服务器地址（默认 127.0.0.1）", "127.0.0.1");
-        param("sap-ref", "ServerAccessPoint 引用（如 C_B5041X/S1）", "");
-        param("apduSize", "APDU 大小", "");
-        param("asduSize", "ASDU 大小", "");
-        param("protocolVersion", "协议版本", "");
+        Param p1 = Param.of("host", "127.0.0.1", null, String.class, false);
+        param(p1, "服务器地址（默认 127.0.0.1）");
+        Param p2 = Param.of("sap-ref", "", null, String.class, false);
+        param(p2, "ServerAccessPoint 引用（如 C_B5041X/S1）");
+        Param p3 = Param.of("apduSize", "", null, String.class, false);
+        param(p3, "APDU 大小");
+        Param p4 = Param.of("asduSize", "", null, String.class, false);
+        param(p4, "ASDU 大小");
+        Param p5 = Param.of("protocolVersion", "", null, String.class, false);
+        param(p5, "协议版本");
     }
 
     @Override

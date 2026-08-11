@@ -56,7 +56,7 @@ import com.ysh.jcms.app.handler.directory.getAllDataDefinition.AllDataDefServer;
 import com.ysh.jcms.app.handler.directory.getAllDataValues.AllDataValuesServer;
 import com.ysh.jcms.app.handler.console.server.ListHandler;
 import com.ysh.jcms.app.handler.console.server.MaxEntriesHandler;
-import com.ysh.jcms.app.handler.console.TracePduHandler;
+import com.ysh.jcms.app.handler.console.LogHandler;
 import com.ysh.jcms.app.handler.console.ClearHandler;
 import com.ysh.jcms.app.handler.rpc.getRpcInterfaceDirectory.GetRpcInterfaceDirectoryServer;
 import com.ysh.jcms.app.handler.rpc.getRpcMethodDirectory.GetRpcMethodDirectoryServer;
@@ -140,7 +140,7 @@ public class CmsServerConsole extends CmsConsole {
         registerServer(new RpcCallServer());
         register(new ClearHandler());
         register(new ListHandler());
-        register(new TracePduHandler());
+        register(new LogHandler());
         register(new MaxEntriesHandler());
     }
 

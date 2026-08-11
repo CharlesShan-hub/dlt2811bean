@@ -5,7 +5,9 @@ import com.ysh.jcms.pdu.msv.CmsSetMsvcbValuesError;
 import com.ysh.jcms.pdu.msv.CmsSetMsvcbValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
+
 import java.io.IOException;
+import java.util.Collections;
 
 public class SetMsvcbValuesClient extends BaseClientHandler<SetMsvcbValuesDao> {
 
@@ -16,12 +18,13 @@ public class SetMsvcbValuesClient extends BaseClientHandler<SetMsvcbValuesDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        decodeErr(frame, new CmsSetMsvcbValuesError());
-        throw new IOException("SetMSVCBValues rejected");
+        CmsSetMsvcbValuesError err = decodeErr(frame, new CmsSetMsvcbValuesError());
+        throw new IOException("SetMSVCBValues rejected: " + err);
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, SetMsvcbValuesDao dao) throws IOException {
         decodeResp(frame, new CmsSetMsvcbValuesResponse());
+        content().res(Collections.singletonList("MSVCB values set successfully"));
     }
 }

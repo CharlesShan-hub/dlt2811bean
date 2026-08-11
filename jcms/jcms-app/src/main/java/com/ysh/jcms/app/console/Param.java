@@ -56,8 +56,8 @@ public class Param {
      * Value mapping: user-friendly names → actual values.
      * <p>
      * When set, {@link #convert(String)} looks up the raw input in this map first.
-     * If found, the mapped value is used for type conversion. If not found, the
-     * raw input is used as-is (e.g. numeric inputs like {@code "3"} pass through
+     * If found, the mapped value is used for type conversion. If not found, the raw
+     * input is used as-is (e.g. numeric inputs like {@code "3"} pass through
      * directly for {@code Integer.class}).
      * <p>
      * Example: {@code .valueMap(Map.of("brcb", "3", "urcb", "4"))} allows
@@ -65,7 +65,8 @@ public class Param {
      */
     private Map<String, String> valueMap;
 
-    /** Delimiter regex used by {@link #convert(String)} to split a string into a
+    /**
+     * Delimiter regex used by {@link #convert(String)} to split a string into a
      * list. Defaults to {@code "\\s+"} (whitespace). Only effective when
      * {@link #type} is {@code List.class}.
      */

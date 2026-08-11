@@ -8,6 +8,7 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
+import java.util.Collections;
 
 public class SetUrcbValuesClient extends BaseClientHandler<SetUrcbValuesDao> {
 
@@ -31,7 +32,8 @@ public class SetUrcbValuesClient extends BaseClientHandler<SetUrcbValuesDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
-        CmsSetUrcbValuesResponse resp = decodeResp(frame, new CmsSetUrcbValuesResponse());
+    protected void onSuccess(Frame frame, SetUrcbValuesDao dao) throws IOException {
+        decodeResp(frame, new CmsSetUrcbValuesResponse());
+        content().res(Collections.singletonList("URCB values set successfully"));
     }
 }

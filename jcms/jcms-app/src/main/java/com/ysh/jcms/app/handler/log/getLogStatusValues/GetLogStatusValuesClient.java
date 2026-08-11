@@ -42,9 +42,9 @@ public class GetLogStatusValuesClient extends BaseClientHandler<GetLogStatusValu
             if (ch.choice() == CmsLogStatusValueChoice.VALUE) {
                 CmsLogStatusValue val = ch.altValue;
                 entries.add(new LogStatusEntry("oldEntrTm=" + val.oldEntrTm.msOfDay.value() + "/" + val.oldEntrTm.daysSince1984.value()
-                        + " newEntrTm=" + val.newEntrTm.msOfDay.value() + "/" + val.newEntrTm.daysSince1984.value()
-                        + " oldEntr=" + new String(val.oldEntr.value(), StandardCharsets.UTF_8)
-                        + " newEntr=" + new String(val.newEntr.value(), StandardCharsets.UTF_8)));
+                        + " newEntrTm=" + val.newEntrTm.msOfDay.value() + "/" + val.newEntrTm.daysSince1984.value() + " oldEntr="
+                        + new String(val.oldEntr.value(), StandardCharsets.UTF_8) + " newEntr="
+                        + new String(val.newEntr.value(), StandardCharsets.UTF_8)));
             } else {
                 entries.add(new LogStatusEntry("error=" + ch.altError.value()));
             }

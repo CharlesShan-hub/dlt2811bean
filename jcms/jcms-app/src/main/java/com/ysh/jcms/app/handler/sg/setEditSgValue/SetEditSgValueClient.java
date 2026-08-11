@@ -31,7 +31,7 @@ public class SetEditSgValueClient extends BaseClientHandler<SetEditSgValueDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, SetEditSgValueDao dao) throws IOException {
         decodeResp(frame, new CmsSetEditSgValueResponse());
     }
 }

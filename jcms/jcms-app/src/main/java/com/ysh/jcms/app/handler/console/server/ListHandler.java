@@ -1,9 +1,10 @@
 package com.ysh.jcms.app.handler.console.server;
 
 import com.ysh.jcms.app.console.CmsConsole;
-import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
+import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
@@ -16,8 +17,10 @@ public class ListHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseD
 
     public ListHandler() {
         super(CommandInfo.LIST_AP);
-        param("limit", "数量（不传则列出全部）", "");
-        param("offset", "起始索引", "0");
+        Param p1 = Param.of("limit", "", null, String.class, false);
+        param(p1, "数量（不传则列出全部）");
+        Param p2 = Param.of("offset", "0", null, String.class, false);
+        param(p2, "起始索引");
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.utils.config.CmsConfig;
@@ -23,9 +24,12 @@ public class NegCfgHandler extends CommandHandler<BaseDao, BaseClientHandler<Bas
 
     public NegCfgHandler() {
         super(CommandInfo.NEG_CFG);
-        param("apdu", "APDU 大小", "");
-        param("asdu", "ASDU 大小", "");
-        param("version", "协议版本", "");
+        Param p1 = Param.of("apdu", "", null, String.class, false);
+        param(p1, "APDU 大小");
+        Param p2 = Param.of("asdu", "", null, String.class, false);
+        param(p2, "ASDU 大小");
+        Param p3 = Param.of("version", "", null, String.class, false);
+        param(p3, "协议版本");
     }
 
     @Override
