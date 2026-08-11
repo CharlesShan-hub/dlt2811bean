@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.dataset.setDataSetValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.util.CmsDataUtil;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.dataset.CmsSetDataSetValuesError;
 import com.ysh.jcms.pdu.dataset.CmsSetDataSetValuesRequest;
@@ -54,7 +55,7 @@ public class SetDataSetValuesServer extends BaseServerHandler<CmsSetDataSetValue
             if (valueIdx >= req.value.size())
                 break;
 
-            String valueStr = req.value.get(valueIdx++).toValueString();
+            String valueStr = CmsDataUtil.toValueString(req.value.get(valueIdx++));
             if (valueStr == null)
                 continue;
 

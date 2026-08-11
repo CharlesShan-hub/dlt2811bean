@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.data.setDataValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.util.CmsDataUtil;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.data.CmsDataRefValueEntry;
@@ -40,7 +41,7 @@ public class SetDataValuesServer extends BaseServerHandler<CmsSetDataValuesReque
             if (ref == null)
                 continue;
 
-            String valueStr = entry.value.toValueString();
+            String valueStr = CmsDataUtil.toValueString(entry.value);
             if (valueStr == null)
                 continue;
 
@@ -67,5 +68,4 @@ public class SetDataValuesServer extends BaseServerHandler<CmsSetDataValuesReque
         }
         return ok(new CmsSetDataValuesResponse(), reqId);
     }
-
 }

@@ -2,6 +2,7 @@ package com.ysh.jcms.data.choice;
 
 import com.ysh.jcms.data.bitarray.CmsCheck;
 import com.ysh.jcms.data.bitarray.CmsQuality;
+import com.ysh.jcms.data.bitarray.CmsTimeQuality;
 import com.ysh.jcms.data.core.CmsChoice;
 import com.ysh.jcms.data.DefaultInnerOctetString;
 import com.ysh.jcms.data.DefaultInnerUtf8String;
@@ -537,6 +538,24 @@ public class CmsData extends CmsChoice {
                 return (String) alt_octet_string.toJsonValue();
             case CHOICE_BIT_STRING :
                 return new String(alt_bit_string, StandardCharsets.UTF_8);
+            case CHOICE_QUALITY : {
+                CmsQuality q = alt_quality;
+                return "{\"validity\":" + q.validity + ",\"overflow\":" + q.overflow + ",\"outOfRange\":" + q.outOfRange
+                        + ",\"badReference\":" + q.badReference + ",\"oscillatory\":" + q.oscillatory + ",\"failure\":" + q.failure
+                        + ",\"oldData\":" + q.oldData + ",\"inconsistent\":" + q.inconsistent + ",\"inaccurate\":" + q.inaccurate
+                        + ",\"substituted\":" + q.substituted + ",\"test\":" + q.test + ",\"operatorBlocked\":" + q.operatorBlocked + "}";
+            }
+            case CHOICE_UTC_TIME : {
+                CmsUtcTime t = alt_utc_time;
+                CmsTimeQuality tq = t.timeQuality;
+                return "{\"secondsSinceEpoch\":" + t.secondsSinceEpoch.value() + ",\"fractionOfSecond\":" + t.fractionOfSecond.value()
+                        + ",\"timeQuality\":{\"leap_seconds_known\":" + tq.leap_seconds_known + ",\"clock_failure\":" + tq.clock_failure
+                        + ",\"clock_not_synchronized\":" + tq.clock_not_synchronized + ",\"precision\":" + tq.precision + "}}";
+            }
+            case CHOICE_BINARY_TIME : {
+                CmsBinaryTime bt = alt_binary_time;
+                return "{\"msOfDay\":" + bt.msOfDay.value() + ",\"daysSince1984\":" + bt.daysSince1984.value() + "}";
+            }
             default :
                 return "(choice=" + ct + ")";
         }

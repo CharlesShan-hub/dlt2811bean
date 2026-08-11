@@ -1,6 +1,10 @@
 package com.ysh.jcms.utils.scl.convert;
 
+import com.ysh.jcms.data.V;
+import com.ysh.jcms.data.bitarray.CmsQuality;
 import com.ysh.jcms.data.choice.CmsData;
+import com.ysh.jcms.data.sequence.common.CmsBinaryTime;
+import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -47,6 +51,26 @@ public final class DataConverter {
                     return new CmsData().alt_float32(Float.parseFloat(val));
                 case "FLOAT64" :
                     return new CmsData().alt_float64(Double.parseDouble(val));
+                case "QUALITY" : {
+                    CmsQuality q = new CmsQuality();
+                    V.setVal(q.inner._v, val);
+                    q.syncFromInner();
+                    return new CmsData().alt_quality(q);
+                }
+                case "UTC-TIME" :
+                case "TIMESTAMP" : {
+                    CmsUtcTime t = new CmsUtcTime();
+                    V.setVal(t.inner._v, val);
+                    t.syncFromInner();
+                    return new CmsData().alt_utc_time(t);
+                }
+                case "BINARY-TIME" :
+                case "ENTRYTIME" : {
+                    CmsBinaryTime b = new CmsBinaryTime();
+                    V.setVal(b.inner._v, val);
+                    b.syncFromInner();
+                    return new CmsData().alt_binary_time(b);
+                }
                 default :
                     if (bType.startsWith("OCTET_STRING"))
                         return new CmsData().alt_octet_string(val.getBytes(StandardCharsets.UTF_8));
