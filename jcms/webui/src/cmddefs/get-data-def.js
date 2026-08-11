@@ -1,5 +1,4 @@
 // 8.4.4 读数据定义（GetDataDefinition）
-import { FC_OPTIONS } from './common.js'
 
 export default {
   title: '读数据定义 get-data-def (8.4.4)',
@@ -49,7 +48,6 @@ GetDataDefinition-ErrorPDU ::= ServiceError — 8.4.4`,
 3. 请求队列中的某一个数据无法访问时，应返回错误原因，并继续处理下一个数据。
 4. 数据不包含指定 \`fc\` 的内容时，应返回错误原因。`,
   params: [
-    { key: 'refs', label: '数据引用 refs', type: 'text', placeholder: 'LD/LN.DO[.DA] LD/LN.DO[.DA] ... 多个引用用空格分隔' },
-    { key: 'fc', label: '功能约束 fc', type: 'select', options: FC_OPTIONS },
+    { key: 'refs', label: '数据引用', type: 'refs-list', cascade: true },
   ],
 }

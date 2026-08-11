@@ -25,11 +25,55 @@ export function clearLnDirRefs() {
   allDefRefsKey = ''
   allCbRefs.splice(0)
   allCbRefsKey = ''
+  clearAllDefData()
 }
 
 /** all-def 响应引用缓存（供 all-data / all-def 的 after 下拉），key 为 "ln|fc"。 */
 export const allDefRefs = reactive([])
 let allDefRefsKey = ''
+
+/**
+ * all-def 完整数据结构缓存（含 DO 的 structure 及 DA 类型），key 为 lnRef。
+ * 值: { "DO名称": { cdcType, structure: [{name, fc, type}] } }
+ */
+const allDefData = {}
+
+/**
+ * 获取某 LN 的 all-def 完整数据（含 structure 类型信息），幂等。
+ * @param {string} lnRef 如 "LD0/LLN0"
+ * @returns {Promise<object>} DO 名 → 结构信息的 Map
+ */
+export async function ensureAllDefData(lnRef) {
+  if (!lnRef) return {}
+  if (allDefData[lnRef]) return allDefData[lnRef]
+  try {
+    const res = await executeJson(`all-def --ln ${lnRef} --fc XX --auto-pull true --json`)
+    const map = {}
+    if (res && Array.isArray(res.data)) {
+      for (const entry of res.data) {
+        if (entry.reference) {
+          map[entry.reference] = {
+            cdcType: entry.cdcType || '',
+            structure: (entry.definition?.structure || []).map(s => ({
+              name: s.name,
+              fc: s.fc,
+              type: s.type ? Object.keys(s.type)[0] || '' : '',
+            })),
+          }
+        }
+      }
+    }
+    allDefData[lnRef] = map
+  } catch {
+    allDefData[lnRef] = {}
+  }
+  return allDefData[lnRef]
+}
+
+/** 清空 all-def 数据缓存（断开连接时）。 */
+export function clearAllDefData() {
+  Object.keys(allDefData).forEach(k => delete allDefData[k])
+}
 
 /**
  * 拉取某 LN（或 LD）在指定 fc 过滤下的数据对象引用（经轻量的 all-def 查询，

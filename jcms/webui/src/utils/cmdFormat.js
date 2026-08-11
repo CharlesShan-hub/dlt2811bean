@@ -141,22 +141,31 @@ export function buildCmd(cmd, params, form, opts = {}) {
         }
       }
       if (refs.length) {
-        // set-data-values 后端要求 --pairs "ref1=val1 ref2=val2" 格式
+        // 自动选择分隔符：依次尝试常见分隔符，然后永无止境递增 |||...
+        const allVals = [...refs, ...values.filter(v => v), ...fcs.filter(f => f)]
+        const safeDelim = (candidates) => candidates.find(d => allVals.every(v => !v.includes(d)))
+        let delim = safeDelim([' ', ',', ';', '|', '::'])
+        if (!delim) {
+          let n = 2
+          while (!delim) {
+            const d = '|'.repeat(n)
+            if (allVals.every(v => !v.includes(d))) delim = d
+            else n++
+          }
+        }
+        if (delim !== ' ') {
+          parts.push('--delimiter', `"${delim}"`)
+        }
+        parts.push(`--${p.key}`, `"${refs.join(delim)}"`)
+        const hasFc = fcs.some(f => f)
+        if (hasFc) {
+          parts.push('--fc', `"${fcs.join(delim)}"`)
+        }
+        // set-data-values 额外输出 --values 列表
         if (cmd === 'set-data-values') {
-          const pairs = []
-          for (let i = 0; i < refs.length; i++) {
-            if (refs[i] && values[i]) {
-              pairs.push(`${refs[i]}=${values[i]}`)
-            }
-          }
-          if (pairs.length) {
-            parts.push('--pairs', `"${pairs.join(' ')}"`)
-          }
-        } else {
-          parts.push(`--${p.key}`, `"${refs.join(' ')}"`)
-          const hasFc = fcs.some(f => f)
-          if (hasFc) {
-            parts.push('--fc', `"${fcs.join(' ')}"`)
+          const nonEmptyValues = values.filter(v => v)
+          if (nonEmptyValues.length) {
+            parts.push('--values', `"${values.join(delim)}"`)
           }
         }
       }

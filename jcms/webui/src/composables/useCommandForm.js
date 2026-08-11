@@ -158,7 +158,7 @@ export function useCommandForm(form, opts = {}) {
         if (d.reference && d.fc) {
           // DA: 有 fc 属性
           const attr = d.reference.includes('.') ? d.reference.split('.').pop() : d.reference
-          das.push({ value: attr, fc: d.fc })
+          das.push({ value: attr, label: attr, fc: d.fc })
         } else if (d.reference) {
           // SDO: 无 fc 属性
           const attr = d.reference.includes('.') ? d.reference.split('.').pop() : d.reference
@@ -197,7 +197,7 @@ export function useCommandForm(form, opts = {}) {
         .filter(d => d.reference && d.fc)
         .map(d => {
           const attr = d.reference.includes('.') ? d.reference.split('.').pop() : d.reference
-          return { value: attr, fc: d.fc }
+          return { value: attr, label: attr, fc: d.fc }
         })
     } catch {
       rowDaRefs[key] = []
@@ -231,8 +231,10 @@ export function useCommandForm(form, opts = {}) {
 
       // 从 get-data-values 拿实际值类型
       // 新格式: {value: [{reference, value: {choice, "visible-string": ...}}]}
+      // 新格式(无choice): {value: [{"visible-string": "..."}]}
       // 旧格式: [{valueString, choiceType}]
       let valType = ''
+      let valTypeFromKey = false
       const valList = Array.isArray(valRes) ? valRes : (valRes?.value || [])
       if (valList.length > 0) {
         const item = valList[0]
@@ -243,12 +245,25 @@ export function useCommandForm(form, opts = {}) {
           } else if (item.valueString != null) {
             // 旧格式: valueString + choiceType
             valType = choiceTypeToType(item.choiceType)
+          } else {
+            // 新格式(无choice): 从 key 名推断类型（如 {"visible-string": "..."}）
+            const typeKeys = ['boolean','int8','int16','int32','int64','int8u','int16u','int32u','int64u',
+              'float32','float64','octet-string','visible-string','unicode-string',
+              'timestamp','quality','check']
+            for (const k of typeKeys) {
+              if (Object.prototype.hasOwnProperty.call(item, k)) {
+                valType = k
+                valTypeFromKey = true
+                break
+              }
+            }
           }
         }
       }
 
-      // 优先用定义类型；如果值类型不为 visible-string（说明值确实存在且类型正确），则用值类型
-      row._resolvedType = (valType && valType !== 'visible-string') ? valType : (defType || valType)
+      // 从 key 名检测到的类型（包括 visible-string）始终准确，优先使用
+      // 否则：优先用定义类型，但 visible-string 类型用值类型替代
+      row._resolvedType = valTypeFromKey ? valType : ((valType && valType !== 'visible-string') ? valType : (defType || valType))
     } catch {
       row._resolvedType = ''
     }

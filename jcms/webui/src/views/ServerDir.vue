@@ -76,7 +76,7 @@
 import { ref, reactive, watch } from 'vue'
 import { executeJson } from '../api/cms.js'
 import TreeNode from '../components/TreeNode.vue'
-import { ldCache, refreshLds } from '../ldCache.js'
+import { ldCache, refreshLds, ensureAllDefData } from '../ldCache.js'
 import { ACSI_DEFS } from '../acsiDefs.js'
 import { buildDoTree } from '../utils/treeBuilder.js'
 
@@ -132,10 +132,15 @@ async function onToggle(node) {
         const attrs = dirData
           .filter(d => d.reference && d.fc)
           .map(d => {
-            const attr = d.reference.startsWith(node.ref + '.')
-              ? d.reference.slice(node.ref.length + 1)
-              : d.reference
-            return { fc: d.fc, attr, fullRef: d.reference }
+            // d.reference 可能是短名（ctlModel）或长名（LD0/GGIO5.Mod.ctlModel）
+            // 统一转为完整引用
+            const fullRef = d.reference.includes('/')
+              ? d.reference
+              : node.ref + '.' + d.reference
+            const attr = fullRef.startsWith(node.ref + '.')
+              ? fullRef.slice(node.ref.length + 1)
+              : fullRef
+            return { fc: d.fc, attr, fullRef }
           })
 
         const refs = attrs.map(a => a.fullRef).join(' ')
@@ -149,10 +154,41 @@ async function onToggle(node) {
         // Handle both old format (array) and new format ({data: [...]})
         const defList = Array.isArray(defRes) ? defRes : (defRes?.data || [])
         const defMap = {}
+        const typeKeys = ['boolean','int8','int16','int32','int64','int8u','int16u','int32u','int64u',
+          'float32','float64','octet-string','visible-string','unicode-string',
+          'timestamp','quality','check']
         for (let i = 0; i < defList.length && i < attrs.length; i++) {
           const entry = defList[i]
-          if (entry && entry.cdcType) {
-            defMap[attrs[i].fullRef] = entry.cdcType
+          if (entry) {
+            if (entry.cdcType) {
+              // DO 级别: cdcType 表示类型（如 "INC"）
+              defMap[attrs[i].fullRef] = entry.cdcType
+            } else if (entry.definition && typeof entry.definition === 'object') {
+              // DA 级别: 从 definition 的 key 名推断（如 {"int32": null}）
+              for (const k of typeKeys) {
+                if (Object.prototype.hasOwnProperty.call(entry.definition, k)) {
+                  defMap[attrs[i].fullRef] = k
+                  break
+                }
+              }
+            }
+          }
+        }
+        // fallback: 从 all-def 缓存查 DA 类型（标准预定义属性，如 stVal→int32）
+        const doName = node.ref.split('.').pop()
+        const lnRef = node.ref.slice(0, node.ref.lastIndexOf('.'))
+        if (lnRef) {
+          const allDefData = await ensureAllDefData(lnRef)
+          const doInfo = allDefData[doName]
+          if (doInfo && doInfo.structure.length) {
+            for (const a of attrs) {
+              if (!defMap[a.fullRef]) {
+                const member = doInfo.structure.find(s => s.name === a.attr)
+                if (member && member.type) {
+                  defMap[a.fullRef] = member.type
+                }
+              }
+            }
           }
         }
 
@@ -162,13 +198,32 @@ async function onToggle(node) {
         for (let i = 0; i < valList.length && i < attrs.length; i++) {
           const item = valList[i]
           if (item) {
-            // New format: {choice: N, "visible-string": "..."} — extract value string
-            const choiceType = item.choice
-            const valueStr = Object.entries(item)
-              .filter(([k]) => k !== 'choice')
-              .map(([, v]) => v)
-              .join('')
-            valMap[attrs[i].fullRef] = { value: valueStr, type: choiceTypeToType(choiceType) }
+            // 新格式: {choice: N, "visible-string": "..."} 或 {"visible-string": "..."}
+            // 旧格式: {valueString, choiceType}
+            let valueStr = ''
+            let typeKey = ''
+            if (item.choice != null) {
+              // 新格式有 choice: 类型从 choice 取，值从余下字段取
+              typeKey = choiceTypeToType(item.choice)
+              valueStr = Object.entries(item)
+                .filter(([k]) => k !== 'choice')
+                .map(([, v]) => v)
+                .join('')
+            } else if (item.valueString != null) {
+              // 旧格式
+              valueStr = item.valueString
+              typeKey = choiceTypeToType(item.choiceType)
+            } else {
+              // 新格式无 choice: 从 key 名推断类型
+              for (const k of typeKeys) {
+                if (Object.prototype.hasOwnProperty.call(item, k)) {
+                  typeKey = k
+                  valueStr = String(item[k])
+                  break
+                }
+              }
+            }
+            valMap[attrs[i].fullRef] = { value: valueStr, type: typeKey }
           }
         }
 
