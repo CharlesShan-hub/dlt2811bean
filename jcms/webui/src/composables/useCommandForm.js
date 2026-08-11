@@ -149,27 +149,24 @@ export function useCommandForm(form, opts = {}) {
     if (!key || rowSdoRefs[key]) return
     try {
       const res = await executeJson(`data-dir --ref ${key} --json`)
-      if (Array.isArray(res)) {
-        // 只取不带 fc 的条目（SDO），带 fc 的是 DA
-        const sdos = []
-        const das = []
-        for (const d of res) {
-          if (d.reference && d.fc) {
-            // DA: 有 fc 属性
-            const attr = d.reference.includes('.') ? d.reference.split('.').pop() : d.reference
-            das.push({ value: attr, fc: d.fc })
-          } else if (d.reference) {
-            // SDO: 无 fc 属性
-            const attr = d.reference.includes('.') ? d.reference.split('.').pop() : d.reference
-            sdos.push(attr)
-          }
+      // 新格式: {dataAttribute: [...]}，旧格式: [...]
+      const dirList = Array.isArray(res) ? res : (res?.dataAttribute || [])
+      // 只取不带 fc 的条目（SDO），带 fc 的是 DA
+      const sdos = []
+      const das = []
+      for (const d of dirList) {
+        if (d.reference && d.fc) {
+          // DA: 有 fc 属性
+          const attr = d.reference.includes('.') ? d.reference.split('.').pop() : d.reference
+          das.push({ value: attr, fc: d.fc })
+        } else if (d.reference) {
+          // SDO: 无 fc 属性
+          const attr = d.reference.includes('.') ? d.reference.split('.').pop() : d.reference
+          sdos.push(attr)
         }
-        rowSdoRefs[key] = sdos
-        rowDaRefs[key] = das
-      } else {
-        rowSdoRefs[key] = []
-        rowDaRefs[key] = []
       }
+      rowSdoRefs[key] = sdos
+      rowDaRefs[key] = das
     } catch {
       rowSdoRefs[key] = []
       rowDaRefs[key] = []
@@ -194,16 +191,14 @@ export function useCommandForm(form, opts = {}) {
     if (!key || rowDaRefs[key]) return
     try {
       const res = await executeJson(`data-dir --ref ${key} --json`)
-      if (Array.isArray(res)) {
-        rowDaRefs[key] = res
-          .filter(d => d.reference && d.fc)
-          .map(d => {
-            const attr = d.reference.includes('.') ? d.reference.split('.').pop() : d.reference
-            return { value: attr, fc: d.fc }
-          })
-      } else {
-        rowDaRefs[key] = []
-      }
+      // 新格式: {dataAttribute: [...]}，旧格式: [...]
+      const dirList = Array.isArray(res) ? res : (res?.dataAttribute || [])
+      rowDaRefs[key] = dirList
+        .filter(d => d.reference && d.fc)
+        .map(d => {
+          const attr = d.reference.includes('.') ? d.reference.split('.').pop() : d.reference
+          return { value: attr, fc: d.fc }
+        })
     } catch {
       rowDaRefs[key] = []
     }
@@ -227,18 +222,29 @@ export function useCommandForm(form, opts = {}) {
       ])
 
       // 从 get-data-def 拿定义类型（SCL bType，始终准确）
+      // 新格式: {data: [{reference, cdcType}]}，旧格式: [{cdcType}]
       let defType = ''
-      if (Array.isArray(defRes) && defRes.length > 0) {
-        if (defRes[0] && defRes[0].cdcType) {
-          defType = defRes[0].cdcType
-        }
+      const defList = Array.isArray(defRes) ? defRes : (defRes?.data || [])
+      if (defList.length > 0 && defList[0] && defList[0].cdcType) {
+        defType = defList[0].cdcType
       }
 
       // 从 get-data-values 拿实际值类型
+      // 新格式: {value: [{reference, value: {choice, "visible-string": ...}}]}
+      // 旧格式: [{valueString, choiceType}]
       let valType = ''
-      if (Array.isArray(valRes) && valRes.length > 0) {
-        const item = valRes[0]
-        if (item && item.valueString != null) valType = choiceTypeToType(item.choiceType)
+      const valList = Array.isArray(valRes) ? valRes : (valRes?.value || [])
+      if (valList.length > 0) {
+        const item = valList[0]
+        if (item) {
+          if (item.choice != null) {
+            // 新格式: choice 字段直接表示类型
+            valType = choiceTypeToType(item.choice)
+          } else if (item.valueString != null) {
+            // 旧格式: valueString + choiceType
+            valType = choiceTypeToType(item.choiceType)
+          }
+        }
       }
 
       // 优先用定义类型；如果值类型不为 visible-string（说明值确实存在且类型正确），则用值类型

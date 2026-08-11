@@ -1,28 +1,15 @@
 package com.ysh.jcms.app.handler.data.getDataDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.sequence.data.CmsSubRefEntry;
-import com.ysh.jcms.info.FunctionalConstraint;
+import com.ysh.jcms.app.handler.CmsClientOperator;
 import com.ysh.jcms.pdu.data.CmsGetDataDirectoryError;
 import com.ysh.jcms.pdu.data.CmsGetDataDirectoryResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GetDataDirectoryClient extends BaseClientHandler<GetDataDirectoryDao> {
-
-    public static final class DirEntry {
-        public final String reference;
-        public final String fc;
-
-        public DirEntry(String reference, String fc) {
-            this.reference = reference;
-            this.fc = fc;
-        }
-    }
 
     @Override
     public void execute(GetDataDirectoryDao dao) throws Exception {
@@ -38,29 +25,11 @@ public class GetDataDirectoryClient extends BaseClientHandler<GetDataDirectoryDa
     @Override
     protected void onSuccess(Frame frame, GetDataDirectoryDao dao) throws IOException {
         CmsGetDataDirectoryResponse resp = decodeResp(frame, new CmsGetDataDirectoryResponse());
-
-        List<DirEntry> entries = new ArrayList<>();
-        for (CmsSubRefEntry e : resp.dataAttribute) {
-            entries.add(new DirEntry(e.reference.value(), fcCode(e)));
-        }
-        if (content() != null) {
-            content().res(entries);
-        }
+        CmsClientOperator.accumulatePage(content(), resp, "dataAttribute");
     }
 
     @Override
     protected void setPaginationCursor(GetDataDirectoryDao dao, String cursor) {
         dao.referenceAfter(cursor);
-    }
-
-    /** FC 码值转 2 字符码；条目无 fc 或为 XX 时返回 null。 */
-    private static String fcCode(CmsSubRefEntry e) {
-        if (!e.isPresent("fc"))
-            return null;
-        int v = e.fc.value();
-        if (v < 0 || v >= FunctionalConstraint.values().length)
-            return null;
-        String code = FunctionalConstraint.values()[v].name();
-        return "XX".equals(code) ? null : code;
     }
 }

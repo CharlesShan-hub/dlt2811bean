@@ -126,8 +126,10 @@ async function onToggle(node) {
       const dirRes = await executeJson(`data-dir --ref ${node.ref} --json`)
       detailRaw.value = JSON.stringify(dirRes, null, 2)
 
-      if (Array.isArray(dirRes) && dirRes.length) {
-        const attrs = dirRes
+      // Handle both old format (array) and new format ({dataAttribute: [...]})
+      const dirData = Array.isArray(dirRes) ? dirRes : (dirRes?.dataAttribute || [])
+      if (dirData.length) {
+        const attrs = dirData
           .filter(d => d.reference && d.fc)
           .map(d => {
             const attr = d.reference.startsWith(node.ref + '.')
@@ -144,25 +146,29 @@ async function onToggle(node) {
           executeJson(`get-data-def --refs "${refs}" --json`),
         ])
 
-        // Build type map from data-def: [{cdcType: "ASG", choiceType: N}, ...]
+        // Handle both old format (array) and new format ({data: [...]})
+        const defList = Array.isArray(defRes) ? defRes : (defRes?.data || [])
         const defMap = {}
-        if (Array.isArray(defRes)) {
-          for (let i = 0; i < defRes.length && i < attrs.length; i++) {
-            const entry = defRes[i]
-            if (entry && entry.cdcType) {
-              defMap[attrs[i].fullRef] = entry.cdcType
-            }
+        for (let i = 0; i < defList.length && i < attrs.length; i++) {
+          const entry = defList[i]
+          if (entry && entry.cdcType) {
+            defMap[attrs[i].fullRef] = entry.cdcType
           }
         }
 
-        // Build value map: [{choiceType: N, valueString: "..."}, ...]
+        // Handle both old format (array) and new format ({value: [...]})
+        const valList = Array.isArray(valRes) ? valRes : (valRes?.value || [])
         const valMap = {}
-        if (Array.isArray(valRes)) {
-          for (let i = 0; i < valRes.length && i < attrs.length; i++) {
-            const item = valRes[i]
-            if (item) {
-              valMap[attrs[i].fullRef] = { value: item.valueString, type: choiceTypeToType(item.choiceType) }
-            }
+        for (let i = 0; i < valList.length && i < attrs.length; i++) {
+          const item = valList[i]
+          if (item) {
+            // New format: {choice: N, "visible-string": "..."} — extract value string
+            const choiceType = item.choice
+            const valueStr = Object.entries(item)
+              .filter(([k]) => k !== 'choice')
+              .map(([, v]) => v)
+              .join('')
+            valMap[attrs[i].fullRef] = { value: valueStr, type: choiceTypeToType(choiceType) }
           }
         }
 

@@ -1,27 +1,14 @@
 package com.ysh.jcms.app.handler.data.getDataDefinition;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.sequence.data.CmsDataDefResultEntry;
 import com.ysh.jcms.pdu.data.CmsGetDataDefinitionError;
 import com.ysh.jcms.pdu.data.CmsGetDataDefinitionResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GetDataDefinitionClient extends BaseClientHandler<GetDataDefinitionDao> {
-
-    public static final class DefEntry {
-        public final String cdcType;
-        public final int choiceType;
-
-        public DefEntry(String cdcType, int choiceType) {
-            this.cdcType = cdcType;
-            this.choiceType = choiceType;
-        }
-    }
 
     @Override
     public void execute(GetDataDefinitionDao dao) throws Exception {
@@ -37,17 +24,8 @@ public class GetDataDefinitionClient extends BaseClientHandler<GetDataDefinition
     @Override
     protected void onSuccess(Frame frame, GetDataDefinitionDao dao) throws IOException {
         CmsGetDataDefinitionResponse resp = decodeResp(frame, new CmsGetDataDefinitionResponse());
-
-        List<DefEntry> entries = new ArrayList<>();
-        for (CmsDataDefResultEntry src : resp.data) {
-            int choice = src.definition.choice();
-            if (choice == 0)
-                continue;
-            String cdc = src.isPresent("cdcType") ? src.cdcType.value() : "";
-            entries.add(new DefEntry(cdc, choice));
-        }
         if (content() != null) {
-            content().res(entries);
+            content().res(resp.inner.toJsonValue());
         }
     }
 }

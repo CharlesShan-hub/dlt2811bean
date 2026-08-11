@@ -117,7 +117,13 @@ public final class CmsClientOperator {
         PaginationContext ctx = content.paginationContext();
         ctx.setLastMoreFollows(moreFollows);
         if (!pageList.isEmpty()) {
-            ctx.setLastReference((String) pageList.get(pageList.size() - 1));
+            Object lastItem = pageList.get(pageList.size() - 1);
+            if (lastItem instanceof String) {
+                ctx.setLastReference((String) lastItem);
+            } else if (lastItem instanceof Map) {
+                Object ref = ((Map<?, ?>) lastItem).get("reference");
+                ctx.setLastReference(ref != null ? ref.toString() : null);
+            }
         }
     }
 
