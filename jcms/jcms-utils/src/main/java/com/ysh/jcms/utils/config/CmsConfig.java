@@ -100,6 +100,7 @@ public class CmsConfig {
         @Accessors(fluent = true)
         public static class Console {
             private boolean tracePdu = false;
+            private boolean sessionTrace = false;
             private String autoExec = "";
             private boolean showAutoExec = true;
             private boolean showConnectHint = true;

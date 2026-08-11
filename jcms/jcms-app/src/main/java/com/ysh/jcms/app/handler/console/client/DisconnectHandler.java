@@ -6,6 +6,7 @@ import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.BaseHandler;
 import java.util.Map;
 
 public class DisconnectHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseDao>> {
@@ -21,6 +22,7 @@ public class DisconnectHandler extends CommandHandler<BaseDao, BaseClientHandler
             return;
         }
         console.close();
+        BaseHandler.traceSession("TCP Disconnected");
         ConsolePrinter.success("Disconnected.");
     }
 }

@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.negotiate.negotiate;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.BaseHandler;
 import com.ysh.jcms.pdu.negotiate.CmsNegotiateError;
 import com.ysh.jcms.pdu.negotiate.CmsNegotiateResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
@@ -37,6 +38,9 @@ public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
         session.connection().peerAsduSize((int) resp.asduSize.value());
 
         // 存储响应结果
+        BaseHandler.traceSession("Negotiated: apdu=" + resp.apduSize.value() + ", asdu=" + resp.asduSize.value() + ", version="
+                + resp.protocolVersion.value());
+
         Map<String, Object> resultMap = new LinkedHashMap<>();
         resultMap.put("apduSize", resp.apduSize.value());
         resultMap.put("asduSize", resp.asduSize.value());

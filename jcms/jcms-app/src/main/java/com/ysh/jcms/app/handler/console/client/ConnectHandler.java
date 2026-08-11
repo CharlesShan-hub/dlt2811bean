@@ -7,6 +7,7 @@ import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.BaseHandler;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
 import com.ysh.jcms.app.handler.connection.associate.AssociateDao;
 import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateClient;
@@ -78,9 +79,11 @@ public class ConnectHandler extends CommandHandler<BaseDao, BaseClientHandler<Ba
                 }
             }}, new SecureRandom());
             console.connectTls(host, port, sslContext);
+            BaseHandler.traceSession("TLS Connected: " + host + ":" + port);
         } else {
             ConsolePrinter.info("Connecting to " + host + ":" + port + " ...");
             console.connect(host, port);
+            BaseHandler.traceSession("TCP Connected: " + host + ":" + port);
         }
 
         // 只给了 host → 纯 connect，不做 negotiate/associate

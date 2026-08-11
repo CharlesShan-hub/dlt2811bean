@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.connection.abort;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.BaseHandler;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -20,6 +21,7 @@ public class AbortClient extends BaseClientHandler<AbortDao> {
 
     @Override
     protected void onSuccess(Frame frame) {
+        BaseHandler.traceSession("Aborted");
         node.client().close();
     }
 }

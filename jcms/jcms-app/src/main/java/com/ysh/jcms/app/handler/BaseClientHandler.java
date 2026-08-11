@@ -40,10 +40,14 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     /**
      * Returns the current {@link CmsContent} being executed. Available during
      * {@link #execute(BaseDao)} and its callbacks ({@code beforeAll},
-     * {@code onSuccess}, {@code afterAll}). Returns {@code null} outside of an
-     * {@code executeResult} call.
+     * {@code onSuccess}, {@code afterAll}). Returns a default empty instance when
+     * called outside of an {@code executeResult} call, so that callers can safely
+     * invoke {@code content().res(...)} without NPE.
      */
     protected CmsContent<D> content() {
+        if (currentContent == null) {
+            currentContent = new CmsContent<>(null);
+        }
         return currentContent;
     }
 

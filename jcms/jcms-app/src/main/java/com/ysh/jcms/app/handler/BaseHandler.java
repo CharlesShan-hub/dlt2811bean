@@ -26,4 +26,15 @@ public abstract class BaseHandler {
             ConsolePrinter.raw(msg);
         }
     }
+
+    /**
+     * Trace a session lifecycle event. Output is controlled by the
+     * {@code session-trace} config flag. When enabled, prints a gray
+     * {@code [SESSION]} line to the console.
+     */
+    public static void traceSession(String msg) {
+        if (CmsConfigLoader.load().client().console().sessionTrace()) {
+            ConsolePrinter.gray("[SESSION] " + msg);
+        }
+    }
 }

@@ -69,13 +69,24 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
         Type superClass = getClass().getGenericSuperclass();
         if (superClass instanceof ParameterizedType) {
             ParameterizedType type = (ParameterizedType) superClass;
-            this.daoClass = (Class<D>) type.getActualTypeArguments()[0];
-            this.clientClass = (Class<C>) type.getActualTypeArguments()[1];
+            this.daoClass = resolveRawClass(type.getActualTypeArguments()[0]);
+            this.clientClass = resolveRawClass(type.getActualTypeArguments()[1]);
         } else {
             // Raw type: local-only handler without a DAO/Client (e.g. help, connect).
             this.daoClass = null;
             this.clientClass = null;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> Class<T> resolveRawClass(Type type) {
+        if (type instanceof Class) {
+            return (Class<T>) type;
+        }
+        if (type instanceof ParameterizedType) {
+            return (Class<T>) ((ParameterizedType) type).getRawType();
+        }
+        return null;
     }
 
     // ── Precondition ──

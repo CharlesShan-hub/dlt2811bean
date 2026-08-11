@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.connection.release;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.BaseHandler;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.connection.CmsReleaseError;
 import com.ysh.jcms.pdu.connection.CmsReleaseResponse;
@@ -42,5 +43,6 @@ public class ReleaseClient extends BaseClientHandler<ReleaseDao> {
 
         node.client().session().clear();
         node.client().session().state(SessionState.CONNECTED);
+        BaseHandler.traceSession("Released");
     }
 }

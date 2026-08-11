@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.connection.associate;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.BaseHandler;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 import com.ysh.jcms.pdu.connection.CmsAssociateError;
@@ -60,6 +61,7 @@ public class AssociateClient extends BaseClientHandler<AssociateDao> {
 
         node.client().session().associationId(resp.associationId.value()).associatedApRef(dao.sapRef()).associatedSecure(dao.secure())
                 .state(SessionState.ASSOCIATED);
+        BaseHandler.traceSession("Associated: " + dao.sapRef());
     }
 
     @Override
