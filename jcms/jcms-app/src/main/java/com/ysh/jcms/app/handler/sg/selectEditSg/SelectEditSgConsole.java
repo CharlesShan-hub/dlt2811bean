@@ -10,7 +10,7 @@ public class SelectEditSgConsole extends CommandHandler<SelectEditSgDao, SelectE
         super(CommandInfo.SELECT_EDIT_SG, false);
         Param p1 = Param.of("ref", null, "sgcbReference", String.class, true);
         param(p1, "SGCB 引用，如 LD0/LLN0.SG1");
-        Param p2 = Param.of("num", null, "settingGroupNumber", Integer.class, true);
+        Param p2 = Param.of("num", null, "settingGroupNumber", int.class, true);
         param(p2, "定值组号（1~numOfSG）");
     }
 }

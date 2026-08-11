@@ -8,7 +8,7 @@ public class AbortConsole extends CommandHandler<AbortDao, AbortClient> {
 
     public AbortConsole() {
         super(CommandInfo.ABORT, false);
-        Param p = Param.of("reason", "0", "reason", Integer.class, false);
+        Param p = Param.of("reason", "0", "reason", int.class, false);
         param(p, "中止原因码");
     }
 }

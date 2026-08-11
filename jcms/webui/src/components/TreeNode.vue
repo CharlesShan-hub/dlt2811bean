@@ -3,7 +3,7 @@
     <div
       class="node-row"
       :class="{ leaf: isLeaf }"
-      :style="{ paddingLeft: depth * 16 + 12 + 'px' }"
+      :style="{ paddingLeft: depth * 16 + 12 + 'px', top: depth * 30 + 'px', zIndex: 100 - depth }"
       @click="handleClick"
     >
       <span v-if="isLeaf && !node.dotColor" class="node-icon leaf-icon">◌</span>
@@ -85,10 +85,17 @@ function onAcsiClick(acsi) {
   border-radius: 4px;
   margin: 1px 4px;
   transition: background 0.1s;
+  position: sticky;
+  background: var(--bg-primary);
 }
 
 .node-row:hover {
   background: var(--bg-hover);
+}
+
+.node-children {
+  position: relative;
+  z-index: 0;
 }
 
 .node-row.leaf {

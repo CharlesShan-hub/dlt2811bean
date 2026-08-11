@@ -26,7 +26,7 @@ public class LnDirConsole extends CommandHandler<LnDirDao, LnDirClient> {
         super(CommandInfo.LN_DIR);
         Param p = Param.of("ln", null, "ln", String.class, true);
         param(p, "逻辑节点引用，如 LD0 或 LD0/LTSM1");
-        Param p2 = Param.of("acsi", "data-object", "acsiClass", Integer.class, false).valueMap(ACSI_MAP);
+        Param p2 = Param.of("acsi", null, "acsiClass", int.class, true).valueMap(ACSI_MAP);
         param(p2, "ACSI 类型：data-object(1), data-set(2), brcb(3), urcb(4), lcb(5), log(6), sgcb(7), gocb(8), msvcb(10)");
         Param p3 = Param.of("after", null, "referenceAfter", String.class, false);
         param(p3, "起始引用（分页截取，不传则从头开始）");
