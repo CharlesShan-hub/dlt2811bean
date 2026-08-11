@@ -14,7 +14,6 @@ import java.util.List;
 
 public class AllCbValuesClient extends BaseClientHandler<AllCbValuesDao> {
 
-    /** Last response entries (accumulated across auto-pull pages). */
     public static final class CbEntry {
         public final String reference;
         public final int cbType;
@@ -31,11 +30,6 @@ public class AllCbValuesClient extends BaseClientHandler<AllCbValuesDao> {
     }
 
     @Override
-    protected void beforeAll(AllCbValuesDao dao) throws IOException {
-        CmsClientOperator.initResult(dao, "cbValue");
-    }
-
-    @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetAllCbValuesError err = decodeErr(frame, new CmsGetAllCbValuesError());
         throw new IOException("GetAllCBValues rejected: " + err.value());
@@ -49,10 +43,10 @@ public class AllCbValuesClient extends BaseClientHandler<AllCbValuesDao> {
         for (CmsCbValueEntry src : resp.cbValue) {
             String ref = src.reference.value();
             if (ref.isEmpty())
-                continue; // skip empty entries
+                continue;
             entries.add(new CbEntry(ref, src.value.choice()));
         }
-        CmsClientOperator.page(dao).add("cbValue", entries).moreFollows(resp.moreFollows.value()).lastRef(entries, e -> e.reference);
+        CmsClientOperator.page(content()).add("cbValue", entries).moreFollows(resp.moreFollows.value()).lastRef(entries, e -> e.reference);
         log.info("GetAllCBValues page: {} entries (moreFollows={})", entries.size(), resp.moreFollows.value());
     }
 

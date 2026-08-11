@@ -29,7 +29,6 @@ public class SetDataSetValuesClient extends BaseClientHandler<SetDataSetValuesDa
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsSetDataSetValuesResponse resp = new CmsSetDataSetValuesResponse();
-        resp.decode(frame.asduBytes());
+        decodeResp(frame, new CmsSetDataSetValuesResponse());
     }
 }

@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -17,20 +16,17 @@ import java.util.List;
 public class SetDataSetValuesDao extends BaseDao {
     private String datasetReference;
     private String referenceAfter;
-    private List<String> values = new ArrayList<>();
-
-    public SetDataSetValuesDao addValue(String v) {
-        values.add(v);
-        return this;
-    }
+    private List<String> values;
 
     @Override
     public CmsType toRequest() {
         CmsSetDataSetValuesRequest req = new CmsSetDataSetValuesRequest().datasetReference(datasetReference).referenceAfter(referenceAfter);
-        for (String val : values) {
-            CmsData data = new CmsData();
-            fillCmsData(data, val);
-            req.value.add(data);
+        if (values != null) {
+            for (String val : values) {
+                CmsData data = new CmsData();
+                fillCmsData(data, val);
+                req.value.add(data);
+            }
         }
         return req;
     }

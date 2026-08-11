@@ -12,10 +12,6 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class LnDirDao extends BaseDao {
 
-    public LnDirDao() {
-        paginationContext(new LnDirContext());
-    }
-
     /** ldName (e.g. "C1") — alternative to lnReference */
     private String ldName;
     /** lnReference (e.g. "C1/LLN0") — alternative to ldName */

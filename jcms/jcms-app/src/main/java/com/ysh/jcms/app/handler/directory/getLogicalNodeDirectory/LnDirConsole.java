@@ -5,11 +5,12 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.CmsContent;
 import com.ysh.jcms.data.enumerate.CmsAcsiClass;
 
 import java.util.*;
 
-public class LnDirConsole extends CommandHandler {
+public class LnDirConsole extends CommandHandler<LnDirDao, LnDirClient> {
 
     private static final Map<String, Integer> ACSI_MAP = new LinkedHashMap<>();
     static {
@@ -36,14 +37,14 @@ public class LnDirConsole extends CommandHandler {
 
     public LnDirConsole() {
         super(CommandInfo.LN_DIR);
-    }
-
-    @Override
-    public List<Param> params() {
-        return Arrays.asList(
-                new Param("ln", "ldName 或 lnReference（如 LD0 或 LD0/LTSM1）", null), new Param("acsi",
-                        "ACSI 类：data-object(1), data-set(2), brcb(3), urcb(4), lcb(5), log(6), sgcb(7), gocb(8), msvcb(10)", "data-object"),
-                new Param("after", "起始引用（分页截取）", ""), new Param("auto-pull", "自动续拉分页（true/false）", "false"));
+        Param p = Param.of("ln", null, null, String.class, true);
+        param(p, "逻辑节点引用，如 LD0 或 LD0/LTSM1");
+        Param p2 = Param.of("acsi", "data-object", null, String.class, false);
+        param(p2, "ACSI 类型：data-object(1), data-set(2), brcb(3), urcb(4), lcb(5), log(6), sgcb(7), gocb(8), msvcb(10)");
+        Param p3 = Param.of("after", "", "referenceAfter", String.class, false);
+        param(p3, "起始引用（分页截取，不传则从头开始）");
+        Param p4 = Param.of("auto-pull", "false", null, String.class, false);
+        param(p4, "自动续拉分页（true/false）");
     }
 
     @Override
@@ -75,14 +76,8 @@ public class LnDirConsole extends CommandHandler {
         }
 
         String autoPull = args.get("auto-pull");
-        if ("true".equalsIgnoreCase(autoPull)) {
-            dao.autoPull(true);
-        }
-
-        console.getClient(LnDirClient.class).execute(dao);
-        LnDirContext ctx = (LnDirContext) dao.paginationContext();
-        boolean moreFollows = ctx.isLastMoreFollows();
-        List<String> items = new ArrayList<>(ctx.getAccumulatedRefs());
-        CmsConsole.outputList("References (" + acsiStr + ")", items, s -> s, args, moreFollows);
+        CmsContent<LnDirDao> c = new CmsContent<>(dao, autoPull);
+        console.getClient(LnDirClient.class).executeResult(c);
+        ConsolePrinter.outputJson(c.res());
     }
 }

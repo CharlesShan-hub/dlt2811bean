@@ -21,9 +21,8 @@ public class AllDataValuesClient extends BaseClientHandler<AllDataValuesDao> {
     }
 
     @Override
-    protected void beforeAll(AllDataValuesDao dao) throws IOException {
-        CmsClientOperator.initResult(dao, "data");
-        node.contentManager().initAllData(new ArrayList<>()); // clear before fresh pull
+    protected void afterAll(AllDataValuesDao dao) throws IOException {
+        node.contentManager().initAllData(CmsClientOperator.getResultList(content(), "data"));
     }
 
     @Override
@@ -40,11 +39,10 @@ public class AllDataValuesClient extends BaseClientHandler<AllDataValuesDao> {
         for (CmsDataValueEntry e : resp.data) {
             CmsDataValueEntryWrap entry = new CmsDataValueEntryWrap(e);
             if (entry.choiceType == 0)
-                continue; // skip error/empty entries
+                continue;
             entries.add(new ContentManager.AllDataEntry(entry.reference, entry.choiceType, entry.valueString));
         }
-        node.contentManager().addAllData(entries);
-        CmsClientOperator.page(dao).add("data", entries).moreFollows(resp.moreFollows.value()).lastRef(entries, e -> e.reference);
+        CmsClientOperator.page(content()).add("data", entries).moreFollows(resp.moreFollows.value()).lastRef(entries, e -> e.reference);
         log.info("GetAllDataValues page: {} entries (moreFollows={})", entries.size(), resp.moreFollows.value());
     }
 
@@ -53,7 +51,6 @@ public class AllDataValuesClient extends BaseClientHandler<AllDataValuesDao> {
         dao.referenceAfter(cursor);
     }
 
-    /** Wraps CmsDataValueEntry to extract readable values after native decode. */
     private static class CmsDataValueEntryWrap {
         final String reference;
         final int choiceType;

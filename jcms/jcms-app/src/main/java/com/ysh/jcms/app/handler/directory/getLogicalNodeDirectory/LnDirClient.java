@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.CmsClientOperator;
-import com.ysh.jcms.data.scalar.CmsSubReference;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryError;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
@@ -10,7 +9,6 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class LnDirClient extends BaseClientHandler<LnDirDao> {
 
@@ -20,13 +18,8 @@ public class LnDirClient extends BaseClientHandler<LnDirDao> {
     }
 
     @Override
-    protected void beforeAll(LnDirDao dao) throws IOException {
-        CmsClientOperator.initResult(dao, "reference");
-    }
-
-    @Override
     protected void afterAll(LnDirDao dao) throws IOException {
-        List<String> refs = CmsClientOperator.getResultList(dao, "reference");
+        List<String> refs = CmsClientOperator.getResultList(content(), "reference");
         node.contentManager().initNodeDir(dao.acsiClass(), refs);
     }
 
@@ -39,10 +32,7 @@ public class LnDirClient extends BaseClientHandler<LnDirDao> {
     @Override
     protected void onSuccess(Frame frame, LnDirDao dao) throws IOException {
         CmsGetLogicalNodeDirectoryResponse resp = decodeResp(frame, new CmsGetLogicalNodeDirectoryResponse());
-        List<String> refs = resp.reference.stream().map(CmsSubReference::value).collect(Collectors.toList());
-        CmsClientOperator.page(dao).add("reference", refs).moreFollows(resp.moreFollows.value()).lastRef(resp.reference,
-                CmsSubReference::value);
-        log.info("GetLogicalNodeDirectory page: {} refs (moreFollows={})", resp.reference.size(), resp.moreFollows.value());
+        CmsClientOperator.accumulatePage(content(), resp, "reference");
     }
 
     @Override
