@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.log.getLcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.choice.CmsLcbValueChoice;
 import com.ysh.jcms.data.sequence.block.CmsLcb;
 import com.ysh.jcms.pdu.log.CmsGetLcbValuesError;
@@ -35,7 +34,6 @@ public class GetLcbValuesClient extends BaseClientHandler<GetLcbValuesDao> {
 
     @Override
     protected void onSuccess(Frame frame, GetLcbValuesDao dao) throws IOException {
-        PaginationContext ctx = dao.paginationContext();
         CmsGetLcbValuesResponse resp = decodeResp(frame, new CmsGetLcbValuesResponse());
 
         List<LcbEntry> entries = new ArrayList<>();
@@ -50,11 +48,13 @@ public class GetLcbValuesClient extends BaseClientHandler<GetLcbValuesDao> {
                 sb.append(" trgOps=dc:").append(b.trgOps.data_change()).append(",qc:").append(b.trgOps.quality_change()).append(",du:")
                         .append(b.trgOps.data_update()).append(",integrity:").append(b.trgOps.integrity()).append(",gi:")
                         .append(b.trgOps.general_interrogation());
+                sb.append(" optFlds=").append(b.optFlds != null && b.isPresent("optFlds") ? b.optFlds.bit0() : "-");
+                sb.append(" bufTm=").append(b.isPresent("bufTm") ? b.bufTm.value() : "-");
                 entries.add(new LcbEntry(sb.toString()));
             } else {
                 entries.add(new LcbEntry("error=" + choice.altError.value()));
             }
         }
-        ctx.setResult(entries);
+        content().res(entries);
     }
 }

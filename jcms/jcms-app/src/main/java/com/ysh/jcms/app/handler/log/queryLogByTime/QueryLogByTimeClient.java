@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.log.queryLogByTime;
 
-import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.sequence.log.CmsLogDataEntry;
+import com.ysh.jcms.data.sequence.log.CmsLogEntry;
 import com.ysh.jcms.pdu.log.CmsQueryLogByTimeError;
 import com.ysh.jcms.pdu.log.CmsQueryLogByTimeResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
@@ -13,8 +13,17 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
 public class QueryLogByTimeClient extends BaseClientHandler<QueryLogByTimeDao> {
+
+    public static final class LogEntryItem {
+        public final String desc;
+        public LogEntryItem(String desc) {
+            this.desc = desc;
+        }
+    }
 
     @Override
     public void execute(QueryLogByTimeDao dao) throws Exception {
@@ -37,9 +46,12 @@ public class QueryLogByTimeClient extends BaseClientHandler<QueryLogByTimeDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, QueryLogByTimeDao dao) throws IOException {
         CmsQueryLogByTimeResponse resp = decodeResp(frame, new CmsQueryLogByTimeResponse());
-        ConsolePrinter.list("Log entries (" + resp.logEntry.size() + " entries)", resp.logEntry, entry -> {
+
+        List<LogEntryItem> entries = new ArrayList<>();
+        for (int i = 0; i < resp.logEntry.size(); i++) {
+            CmsLogEntry entry = resp.logEntry.get(i);
             long epochMs = (long) entry.timeOfEntry.daysSince1984.value() * 86400000L + entry.timeOfEntry.msOfDay.value();
             LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMs), ZoneId.systemDefault());
             String timeStr = dt.toString().replace("T", " ");
@@ -50,11 +62,11 @@ public class QueryLogByTimeClient extends BaseClientHandler<QueryLogByTimeDao> {
                 CmsLogDataEntry de = entry.entryData.get(j);
                 String ref = de.reference.value();
                 int val = de.value.alt_int32.value();
-                sb.append("\n           ").append("\u001B[90m[\u001B[0m").append(j).append("\u001B[90m]\u001B[0m ").append(ref)
-                        .append("  value=").append(val);
+                sb.append(" [").append(j).append("] ").append(ref).append("  value=").append(val);
             }
-            return sb.toString();
-        });
+            entries.add(new LogEntryItem(sb.toString()));
+        }
+        content().res(entries);
         log.info("QueryLogByTime returned {} entries, moreFollows={}", resp.logEntry.size(), resp.moreFollows.value());
     }
 }

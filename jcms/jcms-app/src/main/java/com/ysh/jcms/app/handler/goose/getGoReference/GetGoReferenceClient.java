@@ -57,6 +57,6 @@ public class GetGoReferenceClient extends BaseClientHandler<GetGoReferenceDao> {
             members.add(new MemberDataEntry(ref, fc));
         }
 
-        dao.result(new GoRefResult(resp.gocbReference.value(), resp.confRev.value(), resp.datSet.value(), members));
+        content().res(new GoRefResult(resp.gocbReference.value(), resp.confRev.value(), resp.datSet.value(), members));
     }
 }

@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -16,18 +15,15 @@ import java.util.List;
 @Accessors(fluent = true)
 public class GetGoReferenceDao extends BaseDao {
     private String gocbReference;
-    private final List<Integer> memberOffsets = new ArrayList<>();
-
-    public GetGoReferenceDao addMemberOffset(int offset) {
-        memberOffsets.add(offset);
-        return this;
-    }
+    private List<String> memberOffsets;
 
     @Override
     public CmsType toRequest() {
         CmsGetGoReferenceRequest req = new CmsGetGoReferenceRequest().gocbReference(gocbReference);
-        for (int offset : memberOffsets) {
-            req.memberOfs.add(new CmsInt16U(offset));
+        if (memberOffsets != null) {
+            for (String s : memberOffsets) {
+                req.memberOfs.add(new CmsInt16U(Integer.parseInt(s)));
+            }
         }
         return req;
     }

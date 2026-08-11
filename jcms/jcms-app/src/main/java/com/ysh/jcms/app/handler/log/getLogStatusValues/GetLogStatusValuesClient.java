@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.log.getLogStatusValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.choice.CmsLogStatusValueChoice;
 import com.ysh.jcms.data.sequence.log.CmsLogStatusValue;
 import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesError;
@@ -10,6 +9,7 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +35,6 @@ public class GetLogStatusValuesClient extends BaseClientHandler<GetLogStatusValu
 
     @Override
     protected void onSuccess(Frame frame, GetLogStatusValuesDao dao) throws IOException {
-        PaginationContext ctx = dao.paginationContext();
         CmsGetLogStatusValuesResponse resp = decodeResp(frame, new CmsGetLogStatusValuesResponse());
 
         List<LogStatusEntry> entries = new ArrayList<>();
@@ -43,11 +42,13 @@ public class GetLogStatusValuesClient extends BaseClientHandler<GetLogStatusValu
             if (ch.choice() == CmsLogStatusValueChoice.VALUE) {
                 CmsLogStatusValue val = ch.altValue;
                 entries.add(new LogStatusEntry("oldEntrTm=" + val.oldEntrTm.msOfDay.value() + "/" + val.oldEntrTm.daysSince1984.value()
-                        + " newEntrTm=" + val.newEntrTm.msOfDay.value() + "/" + val.newEntrTm.daysSince1984.value()));
+                        + " newEntrTm=" + val.newEntrTm.msOfDay.value() + "/" + val.newEntrTm.daysSince1984.value()
+                        + " oldEntr=" + new String(val.oldEntr.value(), StandardCharsets.UTF_8)
+                        + " newEntr=" + new String(val.newEntr.value(), StandardCharsets.UTF_8)));
             } else {
                 entries.add(new LogStatusEntry("error=" + ch.altError.value()));
             }
         }
-        ctx.setResult(entries);
+        content().res(entries);
     }
 }

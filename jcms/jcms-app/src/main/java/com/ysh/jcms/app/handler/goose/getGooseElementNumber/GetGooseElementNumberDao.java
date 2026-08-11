@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -16,26 +15,19 @@ import java.util.List;
 @Accessors(fluent = true)
 public class GetGooseElementNumberDao extends BaseDao {
     private String gocbReference;
-    private final List<MemberSpec> members = new ArrayList<>();
-
-    @Setter
-    @Getter
-    @Accessors(fluent = true)
-    public static class MemberSpec {
-        private String reference;
-        private int fc;
-    }
-
-    public GetGooseElementNumberDao addMember(String reference, int fc) {
-        members.add(new MemberSpec().reference(reference).fc(fc));
-        return this;
-    }
+    private List<String> memberRefs;
+    private List<String> memberFcs;
 
     @Override
     public CmsType toRequest() {
         CmsGetGooseElementNumberRequest req = new CmsGetGooseElementNumberRequest().gocbReference(gocbReference);
-        for (MemberSpec spec : members) {
-            req.memberData.add(new CmsGoRefFcEntry().reference(spec.reference()).fc(spec.fc()));
+        if (memberRefs != null && memberFcs != null) {
+            int len = Math.min(memberRefs.size(), memberFcs.size());
+            for (int i = 0; i < len; i++) {
+                req.memberData.add(new CmsGoRefFcEntry()
+                        .reference(memberRefs.get(i))
+                        .fc(Integer.parseInt(memberFcs.get(i))));
+            }
         }
         return req;
     }

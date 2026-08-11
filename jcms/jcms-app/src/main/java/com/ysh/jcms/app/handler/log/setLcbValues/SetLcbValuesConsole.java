@@ -1,76 +1,28 @@
 package com.ysh.jcms.app.handler.log.setLcbValues;
 
-import com.ysh.jcms.app.console.CmsConsole;
-import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-public class SetLcbValuesConsole extends CommandHandler {
+public class SetLcbValuesConsole extends CommandHandler<SetLcbValuesDao, SetLcbValuesClient> {
 
     public SetLcbValuesConsole() {
         super(CommandInfo.SET_LCB_VALS);
-    }
-
-    // @Override
-    // public String description() {
-    // return "设置日志控制块值 (SetLCBValues)。\n" + " 案例:\n"
-    // + " set-lcb-vals --ref LD0/LLN0.lcb1 # 仅引用（无字段修改）\n"
-    // + " set-lcb-vals --ref LD0/LLN0.lcb1 --log-ena true # 启用日志\n"
-    // + " set-lcb-vals --ref LD0/LLN0.lcb1 --log-ena false # 停用日志\n"
-    // + " set-lcb-vals --ref LD0/LLN0.lcb1 --dat-set \"dsLog\" # 改数据集\n"
-    // + " set-lcb-vals --ref LD0/LLN0.lcb1 --intg-pd 10000 --buf-tm 2000 #
-    // 改完整性和缓存";
-    // }
-
-    @Override
-    public List<Param> params() {
-        return Arrays.asList(new Param("ref", "LCB 引用，如 LD0/LLN0.lcb1", null), new Param("log-ena", "日志使能 (true/false)", null),
-                new Param("dat-set", "数据集引用 (ObjectReference)", null), new Param("trg-ops", "触发条件 (bitmask)", null),
-                new Param("intg-pd", "完整性周期 (INT32U, 毫秒)", null), new Param("log-ref", "日志引用 (ObjectReference)", null),
-                new Param("opt-flds", "选项字段 (LCBOptFlds bitmask)", null), new Param("buf-tm", "缓存时间 (INT32U, 毫秒)", null));
-    }
-
-    @Override
-    public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireAssociated(args))
-            return;
-
-        if (!CmsConsole.requireParam(args, "ref", "Usage: set-lcb-vals --ref <lcbRef> [options]"))
-            return;
-
-        String ref = args.get("ref");
-        SetLcbValuesDao dao = new SetLcbValuesDao().ref(ref.trim());
-        String v;
-
-        v = args.get("log-ena");
-        if (v != null && !v.isEmpty())
-            dao.logEna(Boolean.parseBoolean(v));
-        v = args.get("dat-set");
-        if (v != null && !v.isEmpty())
-            dao.datSet(v);
-        v = args.get("trg-ops");
-        if (v != null && !v.isEmpty())
-            dao.trgOps(Integer.parseInt(v));
-        v = args.get("intg-pd");
-        if (v != null && !v.isEmpty())
-            dao.intgPd(Integer.parseInt(v));
-        v = args.get("log-ref");
-        if (v != null && !v.isEmpty())
-            dao.logRef(v);
-        v = args.get("opt-flds");
-        if (v != null && !v.isEmpty())
-            dao.optFlds(Integer.parseInt(v));
-        v = args.get("buf-tm");
-        if (v != null && !v.isEmpty())
-            dao.bufTm(Integer.parseInt(v));
-
-        ConsolePrinter.info("Setting LCB values: ref=" + ref);
-        console.getClient(SetLcbValuesClient.class).execute(dao);
-        ConsolePrinter.success("LCB values set for " + ref);
+        Param p1 = Param.of("ref", null, "ref", String.class, true);
+        param(p1, "LCB 引用，如 LD0/LLN0.lcb1");
+        Param p2 = Param.of("log-ena", null, "logEna", Boolean.class, false);
+        param(p2, "日志使能 (true/false)");
+        Param p3 = Param.of("dat-set", null, "datSet", String.class, false);
+        param(p3, "数据集引用 (ObjectReference)");
+        Param p4 = Param.of("trg-ops", null, "trgOps", Integer.class, false);
+        param(p4, "触发条件 (bitmask: 1=integrity,2=data_change,4=quality_change,8=data_update,16=gi)");
+        Param p5 = Param.of("intg-pd", null, "intgPd", Integer.class, false);
+        param(p5, "完整性周期 (INT32U, 毫秒)");
+        Param p6 = Param.of("log-ref", null, "logRef", String.class, false);
+        param(p6, "日志引用 (ObjectReference)");
+        Param p7 = Param.of("opt-flds", null, "optFlds", Integer.class, false);
+        param(p7, "选项字段 (LCBOptFlds bitmask)");
+        Param p8 = Param.of("buf-tm", null, "bufTm", Integer.class, false);
+        param(p8, "缓存时间 (INT32U, 毫秒)");
     }
 }

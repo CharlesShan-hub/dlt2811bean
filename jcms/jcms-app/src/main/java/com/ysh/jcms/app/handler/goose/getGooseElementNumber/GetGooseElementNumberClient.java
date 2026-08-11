@@ -46,6 +46,6 @@ public class GetGooseElementNumberClient extends BaseClientHandler<GetGooseEleme
             offsets.add(off.value());
         }
 
-        dao.result(new ElementNumberResult(resp.gocbReference.value(), resp.confRev.value(), resp.datSet.value(), offsets));
+        content().res(new ElementNumberResult(resp.gocbReference.value(), resp.confRev.value(), resp.datSet.value(), offsets));
     }
 }
