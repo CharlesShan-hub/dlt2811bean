@@ -17,5 +17,7 @@ public class SetEditSgValueConsole extends CommandHandler<SetEditSgValueDao, Set
         Param p3 = Param.of("type", "visible-string", "type", String.class, false);
         param(p3,
                 "数据类型，支持: visible-string(默认), int32, float32, boolean, int8, int16, int8u, int16u, int32u, int64, int64u, float64, octet-string");
+        Param p4 = Param.of("delimiter", null, null, String.class, false);
+        param(p4, "列表分隔符（默认空格，可指定逗号、竖线等）");
     }
 }

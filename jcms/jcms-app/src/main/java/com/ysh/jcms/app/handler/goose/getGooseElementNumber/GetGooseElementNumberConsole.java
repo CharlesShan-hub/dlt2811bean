@@ -16,5 +16,7 @@ public class GetGooseElementNumberConsole extends CommandHandler<GetGooseElement
         param(p2, "成员引用列表（空格分隔），如 \"LD0/LLN0.DO1\"");
         Param p3 = Param.of("fcs", null, "memberFcs", List.class, true);
         param(p3, "成员 FC 列表（空格分隔，与 refs 对应），如 \"1 6\"");
+        Param p4 = Param.of("delimiter", null, null, String.class, false);
+        param(p4, "列表分隔符（默认空格，可指定逗号、竖线等）");
     }
 }

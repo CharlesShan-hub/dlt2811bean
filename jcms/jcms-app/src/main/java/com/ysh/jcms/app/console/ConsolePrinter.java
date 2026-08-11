@@ -103,6 +103,25 @@ public final class ConsolePrinter {
         println(msg);
     }
 
+    /**
+     * Output text to the real console only, bypassing the API capture stream.
+     * <p>
+     * Used for debug/trace output (e.g. PDU trace, session trace) that should
+     * appear in the interactive CLI but NOT be included in HTTP API responses.
+     */
+    public static void consoleOnly(String msg) {
+        if (STDOUT != null) {
+            try {
+                STDOUT.write((msg + "\n").getBytes(StandardCharsets.UTF_8));
+                STDOUT.flush();
+            } catch (IOException ignored) {
+            }
+        } else {
+            System.out.println(msg);
+            System.out.flush();
+        }
+    }
+
     public static <T> void list(String title, List<T> items, Function<T, String> formatter) {
         if (items.isEmpty()) {
             gray(title + ": (empty)");

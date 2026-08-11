@@ -18,5 +18,7 @@ public class CreateDataSetConsole extends CommandHandler<CreateDataSetDao, Creat
         param(p3, "成员功能约束列表（空格分隔），与引用列表一一对应，如 ST ST");
         Param p4 = Param.of("after", null, "referenceAfter", String.class, false);
         param(p4, "追加到现有数据集后的最后一个成员引用");
+        Param p5 = Param.of("delimiter", null, null, String.class, false);
+        param(p5, "列表分隔符（默认空格，可指定逗号、竖线等）");
     }
 }

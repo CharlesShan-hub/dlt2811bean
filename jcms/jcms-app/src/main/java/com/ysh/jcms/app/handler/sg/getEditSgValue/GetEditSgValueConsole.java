@@ -14,5 +14,7 @@ public class GetEditSgValueConsole extends CommandHandler<GetEditSgValueDao, Get
         param(p1, "数据引用列表（空格分隔），如 LD0/LLN0.Mod LD0/LLN0.Beh");
         Param p2 = Param.of("fc", "SG", "fc", String.class, false);
         param(p2, "功能约束（SG 或 SE），默认 SG");
+        Param p3 = Param.of("delimiter", null, null, String.class, false);
+        param(p3, "列表分隔符（默认空格，可指定逗号、竖线等）");
     }
 }

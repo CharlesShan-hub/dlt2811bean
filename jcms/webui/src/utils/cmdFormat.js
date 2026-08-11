@@ -70,12 +70,10 @@ export function parseResult(text) {
  * @param {string} cmd - 命令名
  * @param {Array} params - 参数定义（CMD_DEFS 的 params）
  * @param {object} form - 表单值
- * @param {boolean} jsonMode - 是否追加 --json
  * @param {object} opts - 额外选项
- * @param {string} opts.isConnect - 是否连接管理页
  * @param {string} opts.cmdProp - 当前命令名（用于 ld-dir 等特殊判断）
  */
-export function buildCmd(cmd, params, form, jsonMode, opts = {}) {
+export function buildCmd(cmd, params, form, opts = {}) {
   const parts = [cmd]
   for (const p of params) {
     const v = form[p.key]
@@ -168,9 +166,6 @@ export function buildCmd(cmd, params, form, jsonMode, opts = {}) {
       parts.push(`--${p.key}`, String(v))
     }
   }
-  if (jsonMode) {
-    parts.push('--json')
-  }
   return parts.join(' ')
 }
 
@@ -180,11 +175,10 @@ export function buildCmd(cmd, params, form, jsonMode, opts = {}) {
  * @param {Array} params - 参数定义
  * @param {object} opts - 选项
  * @param {string} opts.cmdName - 命令名（可选，不传则从 cmdStr 提取）
- * @returns {{ form: object, jsonMode: boolean, valid: boolean, errors: string[] }}
+ * @returns {{ form: object, valid: boolean, errors: string[] }}
  */
 export function parseCmd(cmdStr, params, opts = {}) {
   const form = {}
-  let jsonMode = false
   const errors = []
 
   // 分词：支持引号包裹的值
@@ -201,11 +195,6 @@ export function parseCmd(cmdStr, params, opts = {}) {
 
   while (i < tokens.length) {
     const t = tokens[i]
-    if (t === '--json') {
-      jsonMode = true
-      i++
-      continue
-    }
     if (t.startsWith('--')) {
       const key = t.slice(2)
       const param = params.find((p) => p.key === key)
@@ -255,7 +244,7 @@ export function parseCmd(cmdStr, params, opts = {}) {
     }
   }
 
-  return { form, jsonMode, valid: errors.length === 0, errors }
+  return { form, valid: errors.length === 0, errors }
 }
 
 /** 剪贴板 SVG 图标 */

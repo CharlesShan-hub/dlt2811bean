@@ -12,5 +12,7 @@ public class GetMsvcbValuesConsole extends CommandHandler<GetMsvcbValuesDao, Get
         super(CommandInfo.GET_MSVCB_VALS, true);
         Param p = Param.of("refs", null, "refs", List.class, true);
         param(p, "MSVCB 引用列表（空格分隔），如 \"LD0/SV1.msvcb01 LD0/SV1.msvcb02\"");
+        Param p2 = Param.of("delimiter", null, null, String.class, false);
+        param(p2, "列表分隔符（默认空格，可指定逗号、竖线等）");
     }
 }

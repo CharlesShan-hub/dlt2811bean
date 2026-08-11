@@ -7,6 +7,18 @@ import { reactive, watch } from 'vue'
 import { ldCache, ldLns, allLnRefs, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs } from '../ldCache.js'
 import { executeJson } from '../api/cms.js'
 
+/** Map CMS choiceType to readable type name. */
+function choiceTypeToType(choiceType) {
+  const map = {
+    1: 'boolean', 2: 'int8', 3: 'int16', 4: 'int32', 5: 'int64',
+    6: 'int8u', 7: 'int16u', 8: 'int32u', 9: 'int64u',
+    10: 'float32', 11: 'float64',
+    12: 'octet-string', 13: 'visible-string', 14: 'unicode-string',
+    15: 'timestamp', 16: 'quality', 17: 'check',
+  }
+  return map[choiceType] || 'visible-string'
+}
+
 /**
  * @param {object}   form       - 响应式表单对象（reactive）
  * @param {object}   opts
@@ -77,7 +89,7 @@ export function useCommandForm(form, opts = {}) {
     const fc = String(form.fc || '').split(':')[0] || 'XX'
     try {
       const res = await executeJson(`all-def --ln ${row.ld}/${row.ln} --fc ${fc} --auto-pull true --json`)
-      rowDoRefs[key] = res.success && Array.isArray(res.data) ? res.data.map((d) => d.ref).filter(Boolean) : []
+      rowDoRefs[key] = res && Array.isArray(res.data) ? res.data.map((d) => d.reference).filter(Boolean) : []
     } catch {
       rowDoRefs[key] = []
     }
@@ -137,16 +149,19 @@ export function useCommandForm(form, opts = {}) {
     if (!key || rowSdoRefs[key]) return
     try {
       const res = await executeJson(`data-dir --ref ${key} --json`)
-      if (res.success && Array.isArray(res.data)) {
-        // 只取不带 [FC] 前缀的条目（SDO），带 [FC] 的是 DA
+      if (Array.isArray(res)) {
+        // 只取不带 fc 的条目（SDO），带 fc 的是 DA
         const sdos = []
         const das = []
-        for (const s of res.data) {
-          const m = String(s).match(/^\[(\w+)\]\s+(.+)$/)
-          if (m) {
-            das.push(m[2].trim())
-          } else {
-            sdos.push(String(s).trim())
+        for (const d of res) {
+          if (d.reference && d.fc) {
+            // DA: 有 fc 属性
+            const attr = d.reference.includes('.') ? d.reference.split('.').pop() : d.reference
+            das.push({ value: attr, fc: d.fc })
+          } else if (d.reference) {
+            // SDO: 无 fc 属性
+            const attr = d.reference.includes('.') ? d.reference.split('.').pop() : d.reference
+            sdos.push(attr)
           }
         }
         rowSdoRefs[key] = sdos
@@ -179,13 +194,13 @@ export function useCommandForm(form, opts = {}) {
     if (!key || rowDaRefs[key]) return
     try {
       const res = await executeJson(`data-dir --ref ${key} --json`)
-      if (res.success && Array.isArray(res.data)) {
-        rowDaRefs[key] = res.data
-          .map((s) => {
-            const m = String(s).match(/^\[(\w+)\]\s+(.+)$/)
-            return m ? { value: m[2].trim(), fc: m[1] } : null
+      if (Array.isArray(res)) {
+        rowDaRefs[key] = res
+          .filter(d => d.reference && d.fc)
+          .map(d => {
+            const attr = d.reference.includes('.') ? d.reference.split('.').pop() : d.reference
+            return { value: attr, fc: d.fc }
           })
-          .filter(Boolean)
       } else {
         rowDaRefs[key] = []
       }
@@ -213,16 +228,17 @@ export function useCommandForm(form, opts = {}) {
 
       // 从 get-data-def 拿定义类型（SCL bType，始终准确）
       let defType = ''
-      if (defRes.success && Array.isArray(defRes.data) && defRes.data.length > 0) {
-        const m = String(defRes.data[0]).match(/^\S+\s+\[(\w+)\]/)
-        if (m) defType = m[1]
+      if (Array.isArray(defRes) && defRes.length > 0) {
+        if (defRes[0] && defRes[0].cdcType) {
+          defType = defRes[0].cdcType
+        }
       }
 
       // 从 get-data-values 拿实际值类型
       let valType = ''
-      if (valRes.success && Array.isArray(valRes.data) && valRes.data.length > 0) {
-        const item = valRes.data[0]
-        if (item && item.type) valType = item.type
+      if (Array.isArray(valRes) && valRes.length > 0) {
+        const item = valRes[0]
+        if (item && item.valueString != null) valType = choiceTypeToType(item.choiceType)
       }
 
       // 优先用定义类型；如果值类型不为 visible-string（说明值确实存在且类型正确），则用值类型
@@ -250,10 +266,10 @@ export function useCommandForm(form, opts = {}) {
   async function loadNegotiateDefaults() {
     try {
       const neg = await executeJson('neg-cfg --json')
-      if (neg.success && neg.data) {
-        form.apdu = neg.data.apduSize
-        form.asdu = neg.data.asduSize
-        form.version = neg.data.protocolVersion
+      if (neg && typeof neg.apduSize === 'number') {
+        form.apdu = neg.apduSize
+        form.asdu = neg.asduSize
+        form.version = neg.protocolVersion
       }
     } catch {
       // 配置读取失败时保留默认值

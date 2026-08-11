@@ -46,7 +46,7 @@ export async function ensureAllDefRefs(lnRef, fc) {
   if (allDefRefsKey === key && allDefRefs.length > 0) return allDefRefs
   try {
     const res = await executeJson(`all-def --ln ${lnRef} --fc ${fc} --auto-pull true --json`)
-    allDefRefs.splice(0, allDefRefs.length, ...(res.success && Array.isArray(res.data) ? res.data.map((d) => d.ref).filter(Boolean) : []))
+    allDefRefs.splice(0, allDefRefs.length, ...(res && Array.isArray(res.data) ? res.data.map((d) => d.reference).filter(Boolean) : []))
     allDefRefsKey = key
   } catch {
     allDefRefs.splice(0)
@@ -74,7 +74,7 @@ export async function ensureAllCbRefs(lnRef, acsi) {
   if (allCbRefsKey === key && allCbRefs.length > 0) return allCbRefs
   try {
     const res = await executeJson(`all-cb --ln ${lnRef} --acsi ${acsi} --auto-pull true --json`)
-    allCbRefs.splice(0, allCbRefs.length, ...(res.success && Array.isArray(res.data) ? res.data.map((d) => d.reference).filter(Boolean) : []))
+    allCbRefs.splice(0, allCbRefs.length, ...(res && Array.isArray(res.cbValue) ? res.cbValue.map((d) => d.reference).filter(Boolean) : []))
     allCbRefsKey = key
   } catch {
     allCbRefs.splice(0)
@@ -97,7 +97,7 @@ export async function ensureLnDirRefs(lnRef, acsi) {
   if (lnDirRefsKey === key && lnDirRefs.length > 0) return lnDirRefs
   try {
     const res = await executeJson(`ln-dir --ln ${lnRef} --acsi ${acsi} --auto-pull true --json`)
-    lnDirRefs.splice(0, lnDirRefs.length, ...(res.success && Array.isArray(res.data) ? res.data : []))
+    lnDirRefs.splice(0, lnDirRefs.length, ...(res && Array.isArray(res.reference) ? res.reference : []))
     lnDirRefsKey = key
   } catch {
     lnDirRefs.splice(0)
@@ -118,10 +118,12 @@ export function setLds(list) {
 export async function refreshLds() {
   try {
     const res = await executeJson('server-dir --auto-pull true --json')
-    if (res.success && res.data) {
-      // 兼容两种格式：旧版 data 直接是数组；新版 data 为 { reference: [...], moreFollows }
-      const refs = Array.isArray(res.data) ? res.data : (res.data.reference || [])
-      setLds(refs)
+    // 新格式：直接返回 { reference: [...], moreFollows }
+    if (res.reference) {
+      setLds(res.reference)
+    } else if (res.success && res.data) {
+      // 旧格式：data 直接是数组
+      setLds(res.data)
     } else {
       setLds([])
     }
@@ -136,7 +138,7 @@ export async function ensureLdLns(ldName) {
   if (ldLns[ldName]) return ldLns[ldName]
   try {
     const res = await executeJson(`ld-dir --ld ${ldName} --auto-pull true --json`)
-    ldLns[ldName] = res.success && Array.isArray(res.data) ? res.data : []
+    ldLns[ldName] = res && Array.isArray(res.lnReference) ? res.lnReference : []
   } catch {
     ldLns[ldName] = []
   }

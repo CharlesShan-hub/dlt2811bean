@@ -16,5 +16,7 @@ public class SetDataValuesConsole extends CommandHandler<SetDataValuesDao, SetDa
         param(p2, "值列表（空格分隔），与引用列表一一对应");
         Param p3 = Param.of("fcs", null, "fcs", List.class, false);
         param(p3, "功能约束列表（空格分隔），与引用列表一一对应，如 1 0");
+        Param p4 = Param.of("delimiter", null, null, String.class, false);
+        param(p4, "列表分隔符（默认空格，可指定逗号、竖线等）");
     }
 }

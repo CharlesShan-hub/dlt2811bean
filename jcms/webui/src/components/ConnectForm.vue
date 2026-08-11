@@ -87,10 +87,10 @@ watch(form, () => emit('update:cmd', buildCmd()), { immediate: true, deep: true 
 async function loadConfig() {
   try {
     const neg = await executeJson('neg-cfg --json')
-    if (neg.success && neg.data) {
-      form.value.apdu = neg.data.apduSize
-      form.value.asdu = neg.data.asduSize
-      form.value.version = neg.data.protocolVersion
+    if (neg && typeof neg.apduSize === 'number') {
+      form.value.apdu = neg.apduSize
+      form.value.asdu = neg.asduSize
+      form.value.version = neg.protocolVersion
     }
   } catch {
     // 协商参数读取失败时保留默认值

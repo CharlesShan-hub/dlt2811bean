@@ -238,7 +238,9 @@ public abstract class CmsConsole extends CmsNode {
             // Build args: default values from params(), overridden by --name value
             Map<String, String> args = new LinkedHashMap<>();
             for (Param p : (List<Param>) handler.params()) {
-                args.put(p.cliName(), p.defaultValue() != null ? p.defaultValue() : "");
+                if (p.defaultValue() != null) {
+                    args.put(p.cliName(), p.defaultValue());
+                }
             }
             for (int i = 0; i < argTokens.size(); i++) {
                 String t = argTokens.get(i);

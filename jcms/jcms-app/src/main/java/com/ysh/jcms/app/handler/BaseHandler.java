@@ -18,23 +18,24 @@ public abstract class BaseHandler {
 
     /**
      * Trace a PDU string. Output is controlled by the {@code trace-pdu} config
-     * flag. When enabled, prints directly to the console (bypassing the log-level
-     * filter used by CLI mode).
+     * flag. When enabled, prints directly to the real console (bypassing the HTTP
+     * API capture stream so that trace output is never included in API responses).
      */
     protected static void trace(String msg) {
         if (CmsConfigLoader.load().client().console().tracePdu()) {
-            ConsolePrinter.raw(msg);
+            ConsolePrinter.consoleOnly(msg);
         }
     }
 
     /**
      * Trace a session lifecycle event. Output is controlled by the
      * {@code session-trace} config flag. When enabled, prints a gray
-     * {@code [SESSION]} line to the console.
+     * {@code [SESSION]} line to the real console (bypassing the HTTP API capture
+     * stream).
      */
     public static void traceSession(String msg) {
         if (CmsConfigLoader.load().client().console().sessionTrace()) {
-            ConsolePrinter.gray("[SESSION] " + msg);
+            ConsolePrinter.consoleOnly("[SESSION] " + msg);
         }
     }
 }

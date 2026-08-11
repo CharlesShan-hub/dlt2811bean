@@ -130,6 +130,15 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         if (!validateRequired(args))
             return;
+        // Apply custom delimiter to all List.class params
+        String delim = args.get("delimiter");
+        if (delim != null) {
+            for (Param p : params()) {
+                if (p.type() == List.class) {
+                    p.delimiter(delim);
+                }
+            }
+        }
         if (isQuery) {
             executeQuery(console, args);
         } else {

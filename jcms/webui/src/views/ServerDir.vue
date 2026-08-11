@@ -126,15 +126,17 @@ async function onToggle(node) {
       const dirRes = await executeJson(`data-dir --ref ${node.ref} --json`)
       detailRaw.value = JSON.stringify(dirRes, null, 2)
 
-      if (dirRes.success && dirRes.data.length) {
-        const attrs = dirRes.data
-          .map(s => {
-            const m = s.match(/^\[(\w+)\]\s+(.+)$/)
-            return m ? { fc: m[1], attr: m[2] } : null
+      if (Array.isArray(dirRes) && dirRes.length) {
+        const attrs = dirRes
+          .filter(d => d.reference && d.fc)
+          .map(d => {
+            const attr = d.reference.startsWith(node.ref + '.')
+              ? d.reference.slice(node.ref.length + 1)
+              : d.reference
+            return { fc: d.fc, attr, fullRef: d.reference }
           })
-          .filter(Boolean)
 
-        const refs = attrs.map(a => `${node.ref}.${a.attr}`).join(' ')
+        const refs = attrs.map(a => a.fullRef).join(' ')
 
         // Get values and definitions in parallel
         const [valRes, defRes] = await Promise.all([
@@ -142,32 +144,34 @@ async function onToggle(node) {
           executeJson(`get-data-def --refs "${refs}" --json`),
         ])
 
-        // Build type map from data-def: "ref  [type]" → { ref, type }
+        // Build type map from data-def: [{cdcType: "ASG", choiceType: N}, ...]
         const defMap = {}
-        if (defRes.success && defRes.data) {
-          for (const entry of defRes.data) {
-            const m = entry.match(/^(\S+)\s+\[(\w+)\]/)
-            if (m) defMap[m[1]] = m[2]
+        if (Array.isArray(defRes)) {
+          for (let i = 0; i < defRes.length && i < attrs.length; i++) {
+            const entry = defRes[i]
+            if (entry && entry.cdcType) {
+              defMap[attrs[i].fullRef] = entry.cdcType
+            }
           }
         }
 
-        // Build value map
+        // Build value map: [{choiceType: N, valueString: "..."}, ...]
         const valMap = {}
-        if (valRes.success && valRes.data) {
-          for (const item of valRes.data) {
-            valMap[item.ref] = item
+        if (Array.isArray(valRes)) {
+          for (let i = 0; i < valRes.length && i < attrs.length; i++) {
+            const item = valRes[i]
+            if (item) {
+              valMap[attrs[i].fullRef] = { value: item.valueString, type: choiceTypeToType(item.choiceType) }
+            }
           }
         }
 
         dirEntries.value = attrs.map(a => {
-          const fullRef = `${node.ref}.${a.attr}`
-          const v = valMap[fullRef]
+          const v = valMap[a.fullRef]
           const valType = v?.type
-          // Use definition type if value type is the generic fallback "visible-string"
-          const actualType = defMap[fullRef] && (valType === 'visible-string' || !valType)
-            ? defMap[fullRef]
-            : valType
-          return { ...a, value: v?.value, type: actualType || valType, fullRef }
+          const defType = defMap[a.fullRef]
+          const actualType = defType && (valType === 'visible-string' || !valType) ? defType : (valType || '')
+          return { ...a, value: v?.value, type: actualType, fullRef: a.fullRef }
         })
       }
     } finally {
@@ -209,12 +213,13 @@ async function onToggle(node) {
   try {
     if (node.type === 'ld') {
       const res = await executeJson(`ld-dir --ld ${node.name} --auto-pull true --json`)
-      if (res.success) {
-        node.children = res.data.map(name => {
+      if (res && Array.isArray(res.lnReference)) {
+        node.children = res.lnReference.map(name => {
+          const lnName = name.includes('/') ? name.split('/')[1] : name
           const lnNode = reactive({
-            name: `${node.name}/${name}`,
+            name: `${node.name}/${lnName}`,
             type: 'ln',
-            label: name,
+            label: lnName,
             parentLd: node.name,
             children: null,
             loading: false,
@@ -245,7 +250,7 @@ function preCheckLnAcsis(node) {
     for (let i = 0; i < ACSI_DEFS.length; i++) {
       const d = ACSI_DEFS[i]
       const res = results[i]
-      if (res.status === 'fulfilled' && res.value.success && res.value.data?.length > 0) {
+      if (res.status === 'fulfilled' && res.value && Array.isArray(res.value.reference) && res.value.reference.length > 0) {
         if (!node.contentAcsis.includes(d.key)) node.contentAcsis.push(d.key)
       } else {
         if (!node.emptyAcsis.includes(d.key)) node.emptyAcsis.push(d.key)
@@ -266,7 +271,7 @@ async function onToggleAcsi({ node, acsi }) {
   node.loading = true
   try {
     const res = await executeJson(`ln-dir --ln ${node.name} --acsi ${acsi} --auto-pull true --json`)
-    if (res.success && res.data.length > 0) {
+    if (res && Array.isArray(res.reference) && res.reference.length > 0) {
       // 有内容：记录到 contentAcsis
       if (!node.contentAcsis.includes(acsi)) {
         node.contentAcsis.push(acsi)
@@ -279,8 +284,8 @@ async function onToggleAcsi({ node, acsi }) {
       const acsiColor = acsiDef ? acsiDef.color : '#888'
       const childType = acsi === 'data-object' ? 'do' : acsi
       node.children = acsi === 'data-object'
-        ? addDotColor(buildDoTree(node.name, res.data), acsiColor)
-        : res.data.map(name => ({
+        ? addDotColor(buildDoTree(node.name, res.reference), acsiColor)
+        : res.reference.map(name => ({
             name: `${node.name}/${name}`,
             type: childType,
             label: name,
@@ -348,6 +353,30 @@ async function saveEdit(entry) {
 function cancelEdit() {
   editingRef.value = null
   editError.value = ''
+}
+
+/** Map CMS choiceType to readable type name. */
+function choiceTypeToType(choiceType) {
+  const map = {
+    1: 'boolean',
+    2: 'int8',
+    3: 'int16',
+    4: 'int32',
+    5: 'int64',
+    6: 'int8u',
+    7: 'int16u',
+    8: 'int32u',
+    9: 'int64u',
+    10: 'float32',
+    11: 'float64',
+    12: 'octet-string',
+    13: 'visible-string',
+    14: 'unicode-string',
+    15: 'timestamp',
+    16: 'quality',
+    17: 'check',
+  }
+  return map[choiceType] || 'visible-string'
 }
 </script>
 

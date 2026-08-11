@@ -9,9 +9,6 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.ClientSession;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
 
@@ -41,12 +38,7 @@ public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
         BaseHandler.traceSession("Negotiated: apdu=" + resp.apduSize.value() + ", asdu=" + resp.asduSize.value() + ", version="
                 + resp.protocolVersion.value());
 
-        Map<String, Object> resultMap = new LinkedHashMap<>();
-        resultMap.put("apduSize", resp.apduSize.value());
-        resultMap.put("asduSize", resp.asduSize.value());
-        resultMap.put("protocolVersion", resp.protocolVersion.value());
-        resultMap.put("modelVersion", resp.modelVersion.value());
-        content().res(Collections.singletonList(resultMap));
+        content().res(resp.inner.toJsonValue());
     }
 
     @Override

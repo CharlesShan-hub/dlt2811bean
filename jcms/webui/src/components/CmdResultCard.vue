@@ -1,10 +1,6 @@
 <template>
   <UiCard title="命令与返回" icon="🔄" fill class="cmd-result-card">
     <template #header>
-      <div class="json-opt">
-        <span class="json-opt-label">--json</span>
-        <UiSwitch :model-value="jsonMode" @update:model-value="$emit('update:jsonMode', $event)" />
-      </div>
     </template>
     <div class="cmd-preview">
       <code class="preview-line">
@@ -28,6 +24,14 @@
       <span class="term-time">{{ result.time }}</span>
       <span class="term-cmd"><span class="dollar">$</span> <span v-html="highlightedResultCmd"></span></span>
       <span class="term-title-actions">
+        <button
+          v-if="formattedJson"
+          type="button"
+          class="glass view-toggle-btn"
+          :class="{ active: jsonFormat }"
+          :title="jsonFormat ? '切换为原始输出' : '切换为格式化 JSON'"
+          @click="$emit('update:jsonFormat', !jsonFormat)"
+        ><span v-html="jsonFormat ? jsonIcon : termIcon"></span></button>
         <button type="button" class="glass copy-icon-btn copy-inline" :title="copiedCmdResult ? '已复制' : '复制命令'" @click="copyCmdResult" v-html="copiedCmdResult ? checkIcon : clipIcon"></button>
       </span>
     </div>
@@ -63,13 +67,16 @@
 <script setup>
 import { ref, watch, nextTick } from 'vue'
 import UiCard from './ui/UiCard.vue'
-import UiSwitch from './ui/UiSwitch.vue'
 import { parseAnsi } from '../terminalLog.js'
 import { clipIcon, checkIcon } from '../utils/cmdFormat.js'
 
+/** 格式化 JSON 视图图标：大括号 */
+const jsonIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h-.5a2.5 2.5 0 0 0-2.5 2.5v3.5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v3.5a2.5 2.5 0 0 0 2.5 2.5H7"/><path d="M17 4h.5a2.5 2.5 0 0 1 2.5 2.5v3.5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v3.5a2.5 2.5 0 0 1-2.5 2.5H17"/></svg>'
+/** 终端原始输出视图图标：终端符号 */
+const termIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>'
+
 const props = defineProps({
   result: { type: Object, default: null },
-  jsonMode: Boolean,
   jsonFormat: Boolean,
   highlightedCmd: { type: String, default: '' },
   highlightedResultCmd: { type: String, default: '' },
@@ -81,7 +88,7 @@ const props = defineProps({
   resultCmd: { type: String, default: '' },
 })
 
-const emit = defineEmits(['update:jsonMode', 'update:jsonFormat', 'edit'])
+const emit = defineEmits(['update:jsonFormat', 'edit'])
 
 const copied = ref(false)
 const copiedOutput = ref(false)
@@ -167,18 +174,6 @@ async function copyCmdResult() {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-}
-
-/* ── JSON 开关（卡片头部右侧） ── */
-.json-opt {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.json-opt-label {
-  font-size: 12px;
-  color: var(--text-muted);
 }
 
 /* ── 命令预览行 ── */
@@ -321,6 +316,26 @@ async function copyCmdResult() {
   align-items: center;
 }
 
+/* 视图切换按钮（JSON / 终端原始输出） */
+.view-toggle-btn {
+  padding: 5px;
+  border-radius: 5px;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+}
+.view-toggle-btn:hover {
+  color: var(--text-primary);
+}
+.view-toggle-btn.active {
+  color: var(--accent);
+  background: rgba(99, 143, 255, 0.1);
+}
+
 /* JSON 输出右上角叠加的复制按钮 */
 .copy-out-json {
   position: absolute;
@@ -372,11 +387,23 @@ async function copyCmdResult() {
   padding: 12px 14px;
   position: relative;
 }
+.json-body::before {
+  content: 'JSON';
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 1px 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
 .json-pre {
   margin: 0;
   font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.7;
   white-space: pre-wrap;
   word-break: break-all;
   color: #d4d4d4;

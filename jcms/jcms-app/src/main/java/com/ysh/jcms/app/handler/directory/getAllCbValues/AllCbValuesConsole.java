@@ -25,7 +25,7 @@ public class AllCbValuesConsole extends CommandHandler<AllCbValuesDao, AllCbValu
         param(p, "ldName 或 lnReference（如 LD0 或 LD0/LLN0）");
         Param p2 = Param.of("acsi", null, "acsiClass", Integer.class, true).valueMap(ACSI_MAP);
         param(p2, "ACSI 类型: brcb(3)/urcb(4)/lcb(5)/sgcb(7)/gocb(8)/msvcb(10)");
-        Param p3 = Param.of("after", "", "referenceAfter", String.class, false);
+        Param p3 = Param.of("after", null, "referenceAfter", String.class, false);
         param(p3, "起始引用（分页截取）");
         Param p4 = Param.of("auto-pull", "false", null, String.class, false);
         param(p4, "自动续拉分页（true/false）");

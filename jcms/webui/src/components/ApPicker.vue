@@ -52,8 +52,8 @@ const ap = computed({
 async function loadConfig() {
   try {
     const res = await executeJson('ap-cfg --json')
-    if (res.success && res.data) {
-      source.value = res.data.fromScd ? 'scd' : 'list'
+    if (res && typeof res.fromScd === 'boolean') {
+      source.value = res.fromScd ? 'scd' : 'list'
     }
   } catch {
     // 配置读取失败时保留默认值
@@ -68,16 +68,16 @@ async function refreshAps() {
   let options = []
   try {
     if (source.value === 'list') {
-      // list 模式：ap-cfg --json 返回 defaultAps
+      // list 模式：ap-cfg --json 返回 {fromScd, defaultAps}
       const res = await executeJson('ap-cfg --json')
-      if (res.success && res.data) {
-        options = res.data.defaultAps || []
+      if (res && Array.isArray(res.defaultAps)) {
+        options = res.defaultAps
       }
     } else {
-      // scd 模式：ap-dir --json 返回 [{ied, aps}]，拍平为 IED/AP 引用
+      // scd 模式：ap-dir --json 返回 {scd, accessPoints: ["IED/AP", ...]}
       const res = await executeJson('ap-dir --json')
-      if (res.success && Array.isArray(res.data)) {
-        options = res.data.flatMap((d) => (d.aps || []).map((ap) => `${d.ied}/${ap}`))
+      if (res && Array.isArray(res.accessPoints)) {
+        options = res.accessPoints
       }
     }
   } catch {

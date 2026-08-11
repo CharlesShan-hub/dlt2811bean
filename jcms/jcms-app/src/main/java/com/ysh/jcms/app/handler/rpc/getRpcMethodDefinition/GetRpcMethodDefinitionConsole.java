@@ -12,5 +12,7 @@ public class GetRpcMethodDefinitionConsole extends CommandHandler<GetRpcMethodDe
         super(CommandInfo.RPC_METHOD_DEF);
         Param p = Param.of("refs", null, "refs", List.class, true);
         param(p, "方法引用列表（空格分隔），如 \"SystemInfo.getServerVersion\"");
+        Param p2 = Param.of("delimiter", null, null, String.class, false);
+        param(p2, "列表分隔符（默认空格，可指定逗号、竖线等）");
     }
 }

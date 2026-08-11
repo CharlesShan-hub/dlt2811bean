@@ -203,14 +203,8 @@
         </template>
         <p v-if="!isConnect && simpleParams.length === 0" class="empty">该命令无需参数，直接执行。</p>
 
-        <!-- JSON 格式化开关：仅在 --json 模式开启时可用 -->
-        <div v-if="!isConnect && jsonMode" class="json-format-opt">
-          <span class="json-opt-label prettify-label">JSON 格式化</span>
-          <UiSwitch v-model="jsonFormat" />
-        </div>
-
         <div v-if="!isConnect" class="actions">
-          <UiButton variant="primary" :loading="busy" @click="run">执行 {{ cmd }}</UiButton>
+          <UiButton :variant="formValid ? 'primary' : 'danger'" :loading="busy" @click="run">执行 {{ cmd }}</UiButton>
         </div>
       </UiCard>
 
@@ -240,7 +234,6 @@
 
         <CmdResultCard
           :result="result"
-          :json-mode="jsonMode"
           :json-format="jsonFormat"
           :highlighted-cmd="highlightedCmd"
           :highlighted-result-cmd="highlightedResultCmd"
@@ -248,7 +241,6 @@
           :output-lines="outputLines"
           :preview-cmd="previewCmd"
           :result-cmd="result?.cmd ?? ''"
-          @update:json-mode="jsonMode = $event"
           @update:json-format="jsonFormat = $event"
           @edit="onCmdEdit"
         />
@@ -414,16 +406,52 @@ const {
   lnRequiredCmds: ['ln-dir', 'all-data', 'all-def', 'all-cb'],
 })
 
+/** 表单状态是否合理：蓝色=大概率能成功，红色=必错。 */
+const formValid = computed(() => {
+  if (isConnect.value) return true
+  const params = def.value.params || []
+  for (const p of params) {
+    const v = form[p.key]
+    // ln-cascade: ln 选了但 ld 没选 → 值被忽略，UI 误导，标红
+    if (p.type === 'ln-cascade') {
+      if (v && v.ln && !v.ld) return false
+      // ld-dir 的 after：ld 没选时，after 必须两层（LD+LN 都选），单层必错
+      if (props.cmd === 'ld-dir' && p.key === 'after' && !form.ld) {
+        if (v && v.ld && !v.ln) return false
+      }
+    }
+    // refs-list cascade: 某行有 ln 但没 ld → 同理
+    if (p.type === 'refs-list' && p.cascade) {
+      const rows = v || []
+      for (const r of rows) {
+        if (r && r.ln && !r.ld) return false
+      }
+    }
+    // required 参数为空 → 必错
+    if (!p.required) continue
+    if (p.type === 'ln-cascade') {
+      if (!v || !v.ld) return false
+    } else if (p.type === 'ld-select') {
+      if (!v) return false
+    } else if (p.type === 'refs-list') {
+      const rows = v || []
+      const hasValid = p.cascade
+        ? rows.some(r => r && r.ld && r.ln)
+        : rows.some(r => r && typeof r === 'string' && r)
+      if (!hasValid) return false
+    } else if (v === '' || v === null || v === undefined) {
+      return false
+    }
+  }
+  return true
+})
+
 /** 连接管理页：执行 connect/disconnect 的结果消息。 */
 const connMsg = ref('')
 const connMsgOk = ref(true)
 
-/** 全局 JSON 输出开关：命令自动追加 --json（localStorage 持久化，各子页面共享）。 */
-const jsonMode = ref(localStorage.getItem('cms-json-mode') === '1')
-watch(jsonMode, (v) => localStorage.setItem('cms-json-mode', v ? '1' : '0'))
-
-/** JSON 格式化显示开关：将输出中的 JSON 部分漂亮打印并高亮。 */
-const jsonFormat = ref(localStorage.getItem('cms-json-format') === '1')
+/** JSON 格式化显示开关：将输出中的 JSON 部分漂亮打印并高亮（默认开启）。 */
+const jsonFormat = ref(localStorage.getItem('cms-json-format') !== '0')
 watch(jsonFormat, (v) => localStorage.setItem('cms-json-format', v ? '1' : '0'))
 
 /** 将结果输出中的 JSON 提取并格式化为语法高亮的 HTML。 */
@@ -454,7 +482,7 @@ const previewCmd = computed(() => {
   if (isConnect.value) {
     return connectCmd.value
   }
-  return buildCmd(props.cmd, def.value.params, form, jsonMode.value, { cmdProp: props.cmd })
+  return buildCmd(props.cmd, def.value.params, form, { cmdProp: props.cmd })
 })
 
 const highlightedCmd = computed(() => highlightCmdStr(previewCmd.value))
@@ -483,7 +511,7 @@ watch(() => props.cmd, async () => {
 }, { immediate: true })
 
 async function run() {
-  await runCmd(buildCmd(props.cmd, def.value.params, form, jsonMode.value, { cmdProp: props.cmd }))
+  await runCmd(buildCmd(props.cmd, def.value.params, form, { cmdProp: props.cmd }))
 }
 
 /** @type {function} 双击命令预览编辑后，尝试同步回左侧表单 */
@@ -502,9 +530,6 @@ function onCmdEdit(cmdStr) {
       pushTerminal(['⚠ 双击编辑未同步：' + err])
     }
     return
-  }
-  if (parsed.jsonMode !== undefined) {
-    jsonMode.value = parsed.jsonMode
   }
   // 逐字段更新表单
   for (const key of Object.keys(parsed.form)) {
@@ -530,8 +555,7 @@ function onCmdEdit(cmdStr) {
 async function runCmd(cmdLine) {
   busy.value = true
   try {
-    // 连接管理页：按 --json 开关决定是否补 --json（开关开才解析结构化消息）
-    const final = isConnect.value && jsonMode.value && !cmdLine.includes('--json') ? `${cmdLine} --json` : cmdLine
+    const final = cmdLine
     const text = await executeCommand(final)
     result.value = {
       cmd: final,
@@ -546,7 +570,7 @@ async function runCmd(cmdLine) {
         connMsg.value = res.success ? (res.message || '操作成功') : (res.error || '操作失败')
         connMsgOk.value = !!res.success
       } else {
-        connMsg.value = '命令已执行（未启用 --json）'
+        connMsg.value = '命令已执行'
         connMsgOk.value = true
       }
     }
@@ -1142,23 +1166,6 @@ async function releaseAp() {
   margin-top: 20px;
 }
 
-/* ── JSON 格式化选项（左栏） ── */
-.json-format-opt {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 16px;
-  padding: 10px 14px;
-  background: rgba(229, 185, 85, 0.08);
-  border: 1px solid rgba(229, 185, 85, 0.2);
-  border-radius: 8px;
-}
-
-.json-format-opt .json-opt-label {
-  font-size: 13px;
-  font-weight: 500;
-}
-
 .empty {
   color: var(--text-muted);
   font-size: 13px;
@@ -1195,15 +1202,4 @@ async function releaseAp() {
   color: var(--accent);
 }
 
-/* ── JSON 格式化开关 ── */
-.json-opt-sep {
-  width: 1px;
-  height: 16px;
-  background: var(--border);
-  margin: 0 6px;
-}
-
-.prettify-label {
-  color: var(--yellow) !important;
-}
 </style>
