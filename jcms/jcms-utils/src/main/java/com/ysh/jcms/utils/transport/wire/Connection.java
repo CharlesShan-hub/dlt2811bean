@@ -10,6 +10,7 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Arrays;
 
 /**
  * Connection — a single TCP connection for the CMS protocol.
@@ -27,7 +28,10 @@ public class Connection {
     private final ConnectionListener listener;
     private final FrameAssembler assembler = new FrameAssembler();
 
-    private volatile int maxFrameSize = Frame.MAX_PAYLOAD_SIZE;
+    /** Max accepted frame length (FL): APCH(4) + ReqID(2) + payload. */
+    private static final int MAX_FRAME_LENGTH = Frame.MAX_PAYLOAD_SIZE + FrameHeader.HEADER_SIZE + FrameCodec.REQID_SIZE;
+
+    private volatile int maxFrameSize = MAX_FRAME_LENGTH;
     private volatile int peerAsduSize = Frame.MAX_PAYLOAD_SIZE;
     private volatile boolean fragmentationSupported = true;
     private volatile boolean running;
@@ -76,18 +80,20 @@ public class Connection {
      */
     private Frame readFrame() throws IOException {
         int fl = dis.readUnsignedShort();
-        if (fl < FrameHeader.HEADER_SIZE || fl > maxFrameSize) {
+        if (fl < FrameHeader.HEADER_SIZE + FrameCodec.REQID_SIZE || fl > maxFrameSize) {
             throw new IOException("Invalid frame length: " + fl);
         }
 
         byte[] header = new byte[FrameHeader.HEADER_SIZE];
         dis.readFully(header);
+        FrameHeader fh = FrameHeader.decode(header, 0);
 
-        int asduLen = fl - FrameHeader.HEADER_SIZE;
-        byte[] asduBytes = new byte[asduLen];
+        byte[] asduBytes = new byte[fl - FrameHeader.HEADER_SIZE]; // includes ReqID
         dis.readFully(asduBytes);
+        int reqId = (asduBytes[0] & 0xFF) | ((asduBytes[1] & 0xFF) << 8); // little-endian
+        byte[] data = Arrays.copyOfRange(asduBytes, FrameCodec.REQID_SIZE, asduBytes.length);
 
-        Frame segment = FrameCodec.decode(concatFrames(header, asduBytes, fl), 0);
+        Frame segment = new Frame(fh, data, reqId);
         try {
             return assembler.addSegment(segment);
         } catch (FrameAssembler.FrameFormatException e) {
@@ -95,18 +101,9 @@ public class Connection {
         }
     }
 
-    private static byte[] concatFrames(byte[] header, byte[] asdu, int fl) {
-        byte[] wire = new byte[2 + fl];
-        wire[0] = (byte) ((fl >> 8) & 0xFF);
-        wire[1] = (byte) (fl & 0xFF);
-        System.arraycopy(header, 0, wire, 2, header.length);
-        System.arraycopy(asdu, 0, wire, 2 + header.length, asdu.length);
-        return wire;
-    }
-
     /** Send a Frame over the connection. */
     public void send(Frame frame) throws IOException {
-        // 检查：如果需要对端不支持的分帧，抛出异常
+        // Reject if the peer cannot handle fragmentation and the ASDU exceeds its size
         if (!fragmentationSupported && frame.asduBytes().length > peerAsduSize) {
             throw new IOException("Fragmentation not supported: ASDU size (" + frame.asduBytes().length + ") exceeds peer asduSize ("
                     + peerAsduSize + ")");
@@ -133,7 +130,7 @@ public class Connection {
         this.fragmentationSupported = fragmentationSupported;
         return this;
     }
-    public boolean isConnected() {
+    public boolean connected() {
         return running && !socket.isClosed();
     }
     public Socket socket() {

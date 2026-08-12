@@ -124,13 +124,13 @@ public class ServerAcceptor {
         connections.clear();
     }
 
-    public boolean isRunning() {
+    public boolean running() {
         return running;
     }
-    public int getPort() {
+    public int port() {
         return port;
     }
-    public java.util.List<Connection> getConnections() {
+    public java.util.List<Connection> connections() {
         return new java.util.ArrayList<>(connections);
     }
 }

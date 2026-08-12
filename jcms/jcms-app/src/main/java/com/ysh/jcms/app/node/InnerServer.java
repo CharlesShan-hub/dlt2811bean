@@ -149,7 +149,7 @@ public class InnerServer implements ConnectionListener {
     }
 
     public boolean running() {
-        return acceptor.isRunning();
+        return acceptor.running();
     }
 
     /* ====== accessors ====== */

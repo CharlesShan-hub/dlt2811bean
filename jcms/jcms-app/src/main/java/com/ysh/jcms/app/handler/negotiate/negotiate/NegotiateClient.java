@@ -23,13 +23,10 @@ public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
 
         ClientSession session = node.client().session();
         session.negotiatedApduSize(resp.apduSize.value());
-        session.peerAsduSize((int) resp.asduSize.value());
-        session.peerProtocolVersion((int) resp.protocolVersion.value());
         session.negotiated(true);
 
-        // 标准 b)：apduSize > asduSize → 支持分帧
+        // Standard b): apduSize > asduSize -> fragmentation supported
         boolean fragSupported = resp.apduSize.value() > resp.asduSize.value();
-        session.fragmentationSupported(fragSupported);
         session.connection().fragmentationSupported(fragSupported);
         session.connection().maxFrameSize(resp.apduSize.value());
         session.connection().peerAsduSize((int) resp.asduSize.value());

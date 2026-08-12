@@ -31,7 +31,7 @@ public class Dispatcher {
      *            the session
      * @param request
      *            the incoming request frame
-     * @return a DispatchResult containing the outcome and optional response
+     * @return a DispatchOutcome containing the outcome and optional response
      */
     public DispatchOutcome dispatch(Session session, Frame request) {
         CmsServiceInfo sc = request.header().serviceCode();

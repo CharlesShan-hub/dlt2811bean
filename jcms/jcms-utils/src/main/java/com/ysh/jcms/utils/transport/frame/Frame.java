@@ -12,13 +12,10 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 public class Frame {
 
-    public static final int MAX_PAYLOAD_SIZE = 65531;
+    /** Max ASDU payload bytes in a single frame: 65535 - APCH(4) - ReqID(2). */
+    public static final int MAX_PAYLOAD_SIZE = 65535 - FrameHeader.HEADER_SIZE - 2;
 
     private final FrameHeader header;
     private final byte[] asduBytes;
     private final int reqId;
-
-    public int getWireSize() {
-        return 2 + FrameHeader.HEADER_SIZE + 2 + asduBytes.length; // FL + APCH + ReqID + Data
-    }
 }

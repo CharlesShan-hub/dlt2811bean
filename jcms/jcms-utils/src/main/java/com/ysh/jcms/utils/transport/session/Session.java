@@ -25,9 +25,6 @@ public abstract class Session {
 
     private volatile boolean negotiated;
     private volatile int negotiatedApduSize = 65535;
-    private volatile int peerAsduSize;
-    private volatile int peerProtocolVersion;
-    private volatile boolean fragmentationSupported = true;
 
     /**
      * Sole state entry point. Manual (release/abort) and passive (TCP disconnect)
@@ -55,7 +52,6 @@ public abstract class Session {
         this.associationId = null;
         this.associatedApRef = null;
         this.associatedSecure = false;
-        this.fragmentationSupported = true;
     }
 
     /**
@@ -66,8 +62,6 @@ public abstract class Session {
         clearAssociation();
         this.negotiated = false;
         this.negotiatedApduSize = 65535;
-        this.peerAsduSize = 0;
-        this.peerProtocolVersion = 0;
         if (connection != null) {
             connection.close();
         }
@@ -78,8 +72,8 @@ public abstract class Session {
         this.connection = connection;
     }
 
-    public boolean isConnected() {
-        return connection != null && connection.isConnected();
+    public boolean connected() {
+        return connection != null && connection.connected();
     }
 
     public boolean isAssociated() {

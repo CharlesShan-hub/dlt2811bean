@@ -68,7 +68,7 @@ public class InnerClient implements ConnectionListener {
     /* ====== request / response ====== */
 
     public Frame sendRequest(CmsServiceInfo serviceCode, byte[] asduBytes, long timeoutMs) throws IOException {
-        if (session == null || !session.isConnected()) {
+        if (session == null || !session.connected()) {
             throw new IOException("Not connected");
         }
         int reqId = session.nextReqId();
@@ -97,7 +97,7 @@ public class InnerClient implements ConnectionListener {
     }
 
     public boolean connected() {
-        return session != null && session.isConnected();
+        return session != null && session.connected();
     }
 
     /* ====== accessors ====== */

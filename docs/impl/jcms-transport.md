@@ -28,13 +28,13 @@ jcms-transport 提供 CMS 协议传输层的核心抽象，涵盖 **TCP/TLS 连�
 │  ▼ frame          — 协议帧层                         │   │
 │  │  FrameHeader  (4 字节协议头)                       │   │
 │  │  Frame        (Header + ASDU + ReqId)             │   │
-│  │  FrameCodec   (编解码 + 分段/重组)                 │   │
-│  │  FrameAssembler (分片帧组装)                       │   │
+│  │  FrameCodec   (encode/split/merge)                │   │
+│  │  FrameAssembler (分片帧组装，带内存预算)            │   │
 │  └─────────────────────────────────────────────────┘   │
 │                          │                              │
 │  ┌─────────────────────────────────────────────────┐   │
 │  ▼ session       — 会话层                           │   │
-│  │  Session         (抽象基类)                        │   │
+│  │  Session         (抽象基类，state() 驱动清理)       │   │
 │  │  ClientSession   (客户端：ReqID + 等待响应)        │   │
 │  │  SessionState    (生命周期：DISCONNECTED→ASSOCIATED)│   │
 │  │  PendingRequest  (待处理请求，支持超时等待)         │   │
@@ -43,14 +43,16 @@ jcms-transport 提供 CMS 协议传输层的核心抽象，涵盖 **TCP/TLS 连�
 │                          │                              │
 │  ┌─────────────────────────────────────────────────┐   │
 │  ▼ service       — 服务分发层                        │   │
-│  │  Dispatcher      (服务名→Handler 路由)             │   │
+│  │  Dispatcher      (CmsServiceInfo→Handler 路由)     │   │
 │  │  ServiceHandler  (Handler 接口)                    │   │
 │  │  DispatchResult  (分发结果枚举)                    │   │
 │  └─────────────────────────────────────────────────┘   │
 │                                                          │
-│  ServiceName  — 服务代码枚举 (线网协议值)                 │
+│  服务代码定义统一收敛到 jcms-core 的 CmsServiceInfo        │
 └─────────────────────────────────────────────────────────┘
 ```
+
+依赖方向：`wire → frame ← session ← service`，单向无环。
 
 ## 子包详解
 
@@ -64,11 +66,16 @@ jcms-transport 提供 CMS 协议传输层的核心抽象，涵盖 **TCP/TLS 连�
 
 - **拥有 Socket** + `DataInputStream`/`DataOutputStream`
 - **后台读线程**：启动一个 daemon 线程 `readLoop()`，持续从网络读帧，通过 `FrameAssembler` 组装完整帧后回调 `ConnectionListener`
-- **发送**：`send(Frame)` 自动调用 `FrameCodec.split()` 分片（当 ASDU 超过 `maxFrameSize` 时）
+- **接收**：`readFrame()` 直接解出 4 字节 `FrameHeader` + ReqID + ASDU，构造 `Frame`（不再走整包重解码）
+- **发送**：`send(Frame)` 按 `peerAsduSize` 自动分片；若对端不支持分帧（`fragmentationSupported=false`）且 ASDU 超限，直接抛异常
+- **协商参数**（协商服务写入，单一事实来源）：
+  - `maxFrameSize` — 接收端 FL 上限（默认 65535）
+  - `peerAsduSize` — 对端 ASDU 分片上限（默认 65529）
+  - `fragmentationSupported` — 对端是否支持分帧
 - **关闭**：`close()` 设置 `running=false` 并关闭 socket，读线程自动退出并回调 `onDisconnected`
 
 ```
-接收: [FL:2][Header:4][ASDU:FL-4] → FrameAssembler → 完整帧 → listener.onFrameReceived()
+接收: [FL:2][APCH:4][ReqID:2][Data:FL-6] → FrameAssembler → 完整帧 → listener.onFrameReceived()
 发送: Frame → FrameCodec.split() → 分片 → write()
 ```
 
@@ -87,7 +94,7 @@ acceptor.start();               // 启动监听线程
 
 - 支持 TCP 和 TLS（通过 `SSLContext`）两种模式
 - 每个接受连接自动创建 `Connection` + 启动读线程
-- 使用 `CopyOnWriteArrayList` 管理活跃连接，线程安全
+- 使用 `CopyOnWriteArrayList` 管理活跃连接，连接断开时自动从清单移除
 
 #### `ClientConnector`
 
@@ -121,13 +128,15 @@ public interface ConnectionListener {
 #### Wire Format
 
 ```
-[FL:2][CC:1][SC:1][FL-hi:1][FL-lo:1][ASDU:FL-4]
-│      │      │      │         │         └── 应用层数据单元
-│      │      │      └─────────┴────────────── 帧长度（大端）
-│      │      └──────────────────────────────── 服务代码（Service Code）
-│      └────────────────────────────────────── 控制字节（Control Code）
-└───────────────────────────────────────────── 帧长度（Frame Length）
+[FL:2][APCH:4][ReqID:2][Data:FL-6]
+│       │      │        └── 应用层数据单元（ASDU）
+│       │      └─────────── 请求 ID（小端）
+│       └────────────────── 协议头（APCH，4 字节）
+└────────────────────────── 帧长度（Frame Length，大端，含 APCH+ReqID+Data）
 ```
+
+- FL 字段为 16 位，最大 65535；单帧 ASDU（不含 ReqID）上限 65529
+- APCH 即 `FrameHeader`，4 字节：CC + SC + FL-hi + FL-lo
 
 #### `FrameHeader` — 4 字节协议头
 
@@ -143,8 +152,8 @@ CC 字节:
 | 字段 | 偏移 | 大小 | 说明 |
 |------|------|------|------|
 | CC | 0 | 1B | 控制字节（Next + Resp + Err + PI） |
-| SC | 1 | 1B | 服务代码，对应 `ServiceName` 枚举 |
-| FL | 2-3 | 2B | 帧长度（Header + ASDU 总长） |
+| SC | 1 | 1B | 服务代码，对应 `CmsServiceInfo` 枚举 |
+| FL | 2-3 | 2B | 帧长度（APCH + ReqID + Data 总长） |
 
 #### `Frame` — 协议帧
 
@@ -153,25 +162,31 @@ CC 字节:
 ```java
 public class Frame {
     FrameHeader header;      // 4 字节协议头
-    byte[] asduBytes;        // ASDU 负载
-    int reqId;               // 从 ASDU 前 2 字节提取的请求 ID
+    byte[] asduBytes;        // ASDU 负载（不含 ReqID）
+    int reqId;               // 请求 ID
 }
 ```
 
-#### `FrameCodec` — 帧编解码器
+#### `FrameCodec` — 帧编解码工具
 
 无状态静态工具类：
 
 | 方法 | 说明 |
 |------|------|
 | `encode(Frame)` | 帧 → 完整线网字节（含 FL 前缀） |
-| `decode(byte[], offset)` | 线网字节 → Frame |
 | `split(Frame, maxPayload)` | 大帧分片（Next 位标记） |
 | `merge(List<Frame>)` | 分片重组为完整帧 |
 
+> 解码不再走整包重解析：`Connection.readFrame()` 直接解 header + ReqID 构造 Frame。
+
 #### `FrameAssembler` — 分片组装器
 
-处理 `Next=1` 的分片帧，缓存分片直到收到 `Next=0` 的最后一帧，然后合并为完整帧交付。
+处理 `Next=1` 的分片帧，按 ReqID 缓存分片直到收到 `Next=0` 的最后一帧，然后合并为完整帧交付。
+
+防滥用预算（恶意对端无法靠挂起分片耗尽内存）：
+- 最多 **1024** 个挂起 ReqID
+- 累计挂起 **8MB** 上限
+- 超限或同一 ReqID 复用 → 抛 `FrameFormatException` 断连
 
 ---
 
@@ -182,15 +197,19 @@ public class Frame {
 包路径：`com.ysh.jcms.utils.transport.session.Session`
 
 ```java
-SessionState: DISCONNECTED → CONNECTED → ASSOCIATED ⇄ RELEASING
+SessionState: DISCONNECTED → CONNECTED → ASSOCIATED
 ```
 
 维护会话级别状态：
 - `sessionId` / `connection` — 会话标识与底层连接
-- `state` — 会话状态（DISCONNECTED / CONNECTED / ASSOCIATED / RELEASING）
+- `state` — 会话状态（DISCONNECTED / CONNECTED / ASSOCIATED）
 - `associationId` — 关联 ID（Associate 服务分配）
-- 协商参数：`negotiatedApduSize`、`peerAsduSize`、`peerProtocolVersion`
-- `clear()` — 清理关联状态（含 `RcbStateManager.clear()`）
+- `negotiated` / `negotiatedApduSize` — 协商结果
+
+**状态驱动清理**：`state(SessionState)` 是唯一状态入口，手动（release/abort）与被动（TCP 断开）切换都走这里，按 旧→新 状态对自动派发清理：
+
+- **Hook 1 `clearAssociation()`** — 离开 `ASSOCIATED` 时清理关联级状态；子类可覆写补充业务状态
+- **Hook 2 `clearConnection()`** — 进入 `DISCONNECTED` 时做完整拆卸（含关闭连接）；幂等
 
 #### `ClientSession` — 客户端会话
 
@@ -203,17 +222,16 @@ SessionState: DISCONNECTED → CONNECTED → ASSOCIATED ⇄ RELEASING
   - `send → addPendingRequest(reqId)` 注册等待
   - `receive → tryDispatchResponse(frame)` 匹配响应
   - `waitForPendingRequest(reqId, timeout)` 阻塞等待
+- 覆写 `clearConnection()`：断开时唤醒所有 pending 等待者并清空表，防止 map 无限增长
 
 #### `PendingRequest` — 待处理请求
 
-支持超时等待的请求-响应同步原语，内部使用 `CountDownLatch` 或 `synchronized + wait/notify` 实现阻塞等待。
+支持超时等待的请求-响应同步原语，内部使用 `synchronized + wait/notify` 实现阻塞等待，`setResult` 唤醒等待线程。
 
 #### `SessionState` — 会话状态枚举
 
 ```java
 DISCONNECTED → CONNECTED → ASSOCIATED
-                 ↓             ↓
-              (断开)        RELEASING → DISCONNECTED
 ```
 
 ---
@@ -234,13 +252,13 @@ DispatchOutcome outcome = dispatcher.dispatch(session, request);
 // outcome.response → 响应帧
 ```
 
-通过 `ServiceName`（服务代码）查找已注册的 `ServiceHandler`，调用 `handleRequest()` 获取响应。
+通过 `CmsServiceInfo`（服务代码）查找已注册的 `ServiceHandler`，调用 `handleRequest()` 获取响应。未知服务码（含解码出的 `null`）统一返回 `NOT_REGISTERED`。
 
 #### `ServiceHandler` — 处理器接口
 
 ```java
 public interface ServiceHandler {
-    ServiceName getServiceName();
+    CmsServiceInfo getServiceName();
     Frame handleRequest(Session session, Frame request);
 }
 ```
@@ -255,28 +273,13 @@ ERROR_OCCURRED    — Handler 抛出异常
 
 ---
 
-### 5. `ServiceName` — 服务代码枚举
+### 5. 服务代码枚举
 
-包路径：`com.ysh.jcms.utils.transport.ServiceName`
+线网层的服务代码定义已统一收敛到 `com.ysh.jcms.core.info.CmsServiceInfo`（jcms-core 的 info 包），不再在 transport 层维护第二份：
 
-线网协议层的服务代码定义（区别于 `CmsServiceInfo`——那是信息层的元数据枚举），涵盖所有 CMS 服务：
-
-| 服务 | 代码 | 说明 |
-|------|------|------|
-| ASSOCIATE | 0x01 | 关联 |
-| ABORT | 0x02 | 中止 |
-| RELEASE | 0x03 | 释放 |
-| GET_SERVER_DIRECTORY ~ GET_ALL_CB_VALUES | 0x50~0x9C | 目录服务 |
-| GET_DATA_VALUES ~ GET_DATA_DEFINITION | 0x30~0x33 | 数据访问 |
-| GET_DATA_SET_VALUES ~ GET_DATA_SET_DIRECTORY | 0x3A~0x39 | 数据集 |
-| SELECT_ACTIVE_SG ~ GET_SGCB_VALUES | 0x54~0x59 | 定值组 |
-| REPORT ~ SET_URCB_VALUES | 0x5A~0x5E | 报告 |
-| GET_LCB_VALUES ~ GET_LOG_STATUS_VALUES | 0x5F~0x63 | 日志 |
-| SELECT ~ COMMAND_TERMINATION | 0x70~0x76 | 控制 |
-| GET_FILE ~ GET_FILE_ATTRIBUTE_VALUES | 0x7A~0x7E | 文件 |
-| TEST | 0x80 | 测试 |
-| ASSOCIATE_NEGOTIATE | 0x90 | 协商 |
-| GET_RPC_INTERFACE_DIRECTORY ~ RPC_CALL | 0xA0~0xA4 | RPC |
+- 常量名即协议服务名（如 `ASSOCIATE`、`GET_DATA_VALUES`）
+- `byCode(int)` / `byName(String)` 反向查找；未分配服务码的未确认服务（GOOSE/SV，code=0）不参与 byCode 查找
+- 完整服务与码值清单见 `jcms-info.md`
 
 ---
 
@@ -331,5 +334,5 @@ tryDispatchResponse(frame) → PendingRequest.setResult()
 | **jcms-app/server** | `ServerAcceptor` 监听端口，`Dispatcher` 分发请求到各 Handler |
 | **jcms-app/client** | `ClientConnector` 建立连接，`ClientSession` 管理请求/响应 |
 | **jcms-app/handler** | 各 Handler 实现 `ServiceHandler` 接口，注册到 `Dispatcher` |
-| **jcms-svc** | Handler 中使用 svc PDU 类型编解码请求/响应帧的 ASDU |
+| **jcms-core/info** | `CmsServiceInfo` 提供服务代码枚举（transport 引用，无本地重复定义） |
 | **jcms-utils/security** | `GmSslContext` 构建的 `SSLContext` 注入 `ServerAcceptor` / `ClientConnector` |

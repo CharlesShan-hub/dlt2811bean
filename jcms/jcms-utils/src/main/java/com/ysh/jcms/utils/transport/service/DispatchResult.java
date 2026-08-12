@@ -9,7 +9,5 @@ public enum DispatchResult {
     /** No handler registered for this service code. */
     NOT_REGISTERED,
     /** Handler threw an exception. */
-    ERROR_OCCURRED,
-    /** Session state does not allow this service. */
-    SESSION_INVALID
+    ERROR_OCCURRED
 }

@@ -2,9 +2,9 @@ package com.ysh.jcms.utils.transport.frame;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Arrays;
 
 /**
  * FrameCodec — stateless frame encoding, decoding, and splitting.
@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class FrameCodec {
 
-    private static final int REQID_SIZE = 2;
+    public static final int REQID_SIZE = 2;
 
     private FrameCodec() {
     }
@@ -37,23 +37,6 @@ public class FrameCodec {
         bos.write((reqId >> 8) & 0xFF);
         bos.write(frame.asduBytes());
         return bos.toByteArray();
-    }
-
-    public static Frame decode(byte[] data, int offset) {
-        if (data.length - offset < 6)
-            throw new IllegalArgumentException("Frame too short");
-
-        int fl = ((data[offset] & 0xFF) << 8) | (data[offset + 1] & 0xFF);
-        FrameHeader header = FrameHeader.decode(data, offset + 2);
-        int asduOff = offset + 2 + FrameHeader.HEADER_SIZE;
-        int asduLen = fl - FrameHeader.HEADER_SIZE; // includes ReqID
-
-        if (asduLen < REQID_SIZE || asduOff + asduLen > data.length) {
-            throw new IllegalArgumentException("Invalid frame: fl=" + fl + ", dataLen=" + data.length);
-        }
-        int reqId = (data[asduOff] & 0xFF) | ((data[asduOff + 1] & 0xFF) << 8);
-        byte[] asdu = Arrays.copyOfRange(data, asduOff + REQID_SIZE, asduOff + asduLen);
-        return new Frame(header, asdu, reqId);
     }
 
     public static List<Frame> split(Frame frame, int maxPayloadSize) {

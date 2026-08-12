@@ -44,12 +44,9 @@ public class NegotiateServer extends BaseServerHandler<CmsNegotiateRequest, CmsN
 
     private void applyNegotiation(Session session, CmsNegotiateRequest req, int negotiatedApduSize) {
         boolean fragSupported = negotiatedApduSize > req.asduSize.value();
-        session.fragmentationSupported(fragSupported);
         session.connection().fragmentationSupported(fragSupported);
 
         session.negotiatedApduSize(negotiatedApduSize);
-        session.peerAsduSize((int) req.asduSize.value());
-        session.peerProtocolVersion((int) req.protocolVersion.value());
         session.negotiated(true);
         session.connection().maxFrameSize(negotiatedApduSize);
         session.connection().peerAsduSize((int) req.asduSize.value());
