@@ -250,6 +250,7 @@ const {
   onRowSdo,
   rowSdoOptions,
   rowDaOptions,
+  onRowDa,
   loadNegotiateDefaults,
   setupFcWatch,
   setupLnRequiredWatch,
@@ -651,7 +652,7 @@ async function releaseAp() {
 }
 
 .doc-md :deep(strong) {
-  color: #ffc163;
+  color: var(--doc-strong);
   font-weight: 600;
 }
 
@@ -712,7 +713,7 @@ async function releaseAp() {
 }
 
 .doc-md :deep(tbody tr:nth-child(even)) {
-  background: rgba(255, 255, 255, 0.025);
+  background: var(--glass-bg);
 }
 
 .doc-md :deep(tbody tr:hover) {

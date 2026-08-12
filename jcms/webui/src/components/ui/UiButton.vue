@@ -29,8 +29,8 @@ defineEmits(['click'])
   gap: 6px;
   padding: 9px 22px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
   color: var(--text-primary);
   font-size: 13px;
   font-weight: 500;
@@ -42,8 +42,8 @@ defineEmits(['click'])
 }
 
 .ui-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--glass-hover-bg);
+  border-color: var(--glass-hover-border);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
@@ -56,7 +56,7 @@ defineEmits(['click'])
 .ui-btn--primary {
   background: rgba(91, 141, 239, 0.18);
   border-color: rgba(91, 141, 239, 0.3);
-  color: #b8d0ff;
+  color: var(--btn-primary-fg);
   box-shadow: 0 4px 20px rgba(91, 141, 239, 0.15);
 }
 
@@ -64,7 +64,7 @@ defineEmits(['click'])
   background: rgba(91, 141, 239, 0.28);
   border-color: rgba(91, 141, 239, 0.5);
   box-shadow: 0 6px 28px rgba(91, 141, 239, 0.25);
-  color: #d6e4ff;
+  color: var(--btn-primary-fg-hover);
 }
 
 .ui-btn--danger {
@@ -82,15 +82,15 @@ defineEmits(['click'])
 .ui-btn__spinner {
   width: 12px;
   height: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  border-top-color: #fff;
+  border: 2px solid var(--glass-border);
+  border-top-color: var(--text-primary);
   border-radius: 50%;
   animation: ui-spin 0.7s linear infinite;
 }
 
 .ui-btn--ghost .ui-btn__spinner,
 .ui-btn--danger .ui-btn__spinner {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--glass-border);
   border-top-color: var(--text-primary);
 }
 

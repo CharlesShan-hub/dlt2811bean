@@ -51,7 +51,9 @@ public final class SclAllValuesService {
     // ==================== 全部数据值（8.3.4） ====================
 
     /**
-     * 获取全部数据值。
+     * 获取全部数据值（展开到 DA 级别）。
+     * <p>
+     * 按标准 8.3.4，返回指定 LN 下所有 DA 的值（不含功能约束 SE）， 而非 DO 级别的单一值。
      *
      * @param doc
      *            SCL 文档
@@ -68,32 +70,59 @@ public final class SclAllValuesService {
         List<CmsDataValueEntry> entries = new ArrayList<>();
         for (SclLN ln : lns) {
             String ldInst = Navigator.findLdInst(ied, ln);
-            if (ldInst == null)
+            if (ldInst == null || templates == null)
                 continue;
-
-            List<String> doNames = getDoNames(ln, templates);
-            for (String doName : doNames) {
-                String fullRef = ied.name() + "/" + ldInst + "/" + ln.getFullName() + "." + doName;
-                DataValueEntry dv = DataValueResolver.resolve(doc, fullRef, fc);
-                if (dv != null && dv.val() != null && !dv.val().isEmpty() && dv.bType() != null && !dv.bType().isEmpty()) {
-                    entries.add(new CmsDataValueEntry().reference(fullRef).value(DataConverter.toCmsData(dv)));
-                }
-            }
+            String base = ied.name() + "/" + ldInst + "/" + ln.getFullName() + ".";
+            collectDoDaEntries(doc, ln, templates, base, fc, entries);
         }
         return entries;
     }
 
-    private static List<String> getDoNames(SclLN ln, SclDataTypeTemplates templates) {
-        List<String> names = new ArrayList<>();
-        if (templates == null || ln.lnType() == null || ln.lnType().isEmpty())
-            return names;
+    /** 展开 LN 下所有 DO 的 DA，递归处理 SDO。 */
+    private static void collectDoDaEntries(SclDocument doc, SclLN ln, SclDataTypeTemplates templates, String base, String fc,
+            List<CmsDataValueEntry> entries) {
+        if (ln.lnType() == null || ln.lnType().isEmpty())
+            return;
         SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
         if (lnt == null)
-            return names;
+            return;
         for (SclDO doDef : lnt.dos()) {
-            names.add(doDef.name());
+            String doTypeId = doDef.type();
+            if (doTypeId == null || doTypeId.isEmpty())
+                continue;
+            SclDOType doType = templates.findDoTypeById(doTypeId);
+            if (doType == null)
+                continue;
+            String doPrefix = base + doDef.name();
+            collectDaEntries(doc, ln, doPrefix, doType, fc, entries, templates);
         }
-        return names;
+    }
+
+    /** 收集 DO 下所有 DA 的值（含 SDO 递归）。 */
+    private static void collectDaEntries(SclDocument doc, SclLN ln, String doPrefix, SclDOType doType, String fc,
+            List<CmsDataValueEntry> entries, SclDataTypeTemplates templates) {
+        // 普通 DA
+        for (SclDA da : doType.das()) {
+            if (fc != null && !fc.isEmpty() && !"XX".equalsIgnoreCase(fc)) {
+                if (!fc.equalsIgnoreCase(da.fc()))
+                    continue;
+            }
+            String fullRef = doPrefix + "." + da.name();
+            DataValueEntry dv = DataValueResolver.resolve(doc, fullRef);
+            if (dv != null && dv.val() != null && !dv.val().isEmpty() && dv.bType() != null && !dv.bType().isEmpty()) {
+                entries.add(new CmsDataValueEntry().reference(fullRef).value(DataConverter.toCmsData(dv)));
+            }
+        }
+        // SDO 递归
+        for (SclSDO sdo : doType.sdos()) {
+            String sdoTypeId = sdo.type();
+            if (sdoTypeId == null || sdoTypeId.isEmpty())
+                continue;
+            SclDOType sdoDoType = templates.findDoTypeById(sdoTypeId);
+            if (sdoDoType != null) {
+                collectDaEntries(doc, ln, doPrefix + "." + sdo.name(), sdoDoType, fc, entries, templates);
+            }
+        }
     }
 
     // ==================== 全部数据定义（8.3.5） ====================

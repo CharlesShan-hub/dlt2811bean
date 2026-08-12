@@ -24,17 +24,23 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="entry in dirEntries" :key="entry.attr">
+            <tr
+              v-for="entry in dirEntries"
+              :key="entry.attr"
+              :class="{ 'row-selected': selectedAttr === entry.attr }"
+              @click="selectRow(entry)"
+            >
               <td><span class="fc-badge">{{ entry.fc }}</span></td>
               <td class="cell-attr">{{ entry.attr }}</td>
               <td class="cell-value">
                 <button
                   type="button"
                   class="val-btn"
-                  :class="{ 'val-btn--has': entry.value }"
-                  @click="$emit('edit-entry', entry)"
+                  :class="{ 'val-btn--has': entry.value, 'val-btn--long': isLongValue(entry.value) }"
+                  @click.stop="$emit('edit-entry', entry)"
                 >
-                  {{ entry.value ?? '—' }}
+                  <span class="val-text">{{ truncateValue(entry.value) }}</span>
+                  <EyeIcon v-if="isLongValue(entry.value)" class="val-view-icon" :size="14" />
                 </button>
                 <span v-if="editError && editingRef === entry.fullRef" class="edit-err">{{ editError }}</span>
               </td>
@@ -42,6 +48,22 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Selected entry detail -->
+      <div v-if="selectedEntry" class="entry-detail">
+        <h4 class="section-title">值详情 — {{ selectedEntry.attr }}</h4>
+        <div class="entry-detail-meta">
+          <span class="entry-detail-tag">FC: {{ selectedEntry.fc }}</span>
+          <span class="entry-detail-tag">类型: {{ selectedEntry.type }}</span>
+          <span class="entry-detail-tag">引用: {{ selectedEntry.fullRef }}</span>
+        </div>
+      </div>
+
+      <!-- JSON block -->
+      <div v-if="selectedEntry" class="json-block">
+        <h4 class="section-title">JSON</h4>
+        <pre class="json-block-content">{{ formatEntryValue(selectedEntry.value) }}</pre>
       </div>
 
       <!-- Raw JSON for debugging -->
@@ -54,7 +76,12 @@
 </template>
 
 <script setup>
-defineProps({
+import { ref, computed } from 'vue'
+import EyeIcon from '@lucide/vue/dist/esm/icons/eye.mjs'
+
+const MAX_VAL_LEN = 40
+
+const props = defineProps({
   selected: { type: Object, default: null },
   detailLoading: Boolean,
   dirEntries: { type: Array, default: () => [] },
@@ -63,7 +90,39 @@ defineProps({
   editingRef: { type: String, default: '' },
 })
 
-defineEmits(['edit-entry'])
+const emit = defineEmits(['edit-entry'])
+
+const selectedAttr = ref(null)
+
+/** The currently selected entry (for detail block below table). */
+const selectedEntry = computed(() => {
+  if (!selectedAttr.value) return null
+  return props.dirEntries.find(e => e.attr === selectedAttr.value) || null
+})
+
+function selectRow(entry) {
+  selectedAttr.value = selectedAttr.value === entry.attr ? null : entry.attr
+}
+
+function isLongValue(val) {
+  return val && val.length > MAX_VAL_LEN
+}
+
+function truncateValue(val) {
+  if (!val) return '—'
+  if (val.length <= MAX_VAL_LEN) return val
+  return val.slice(0, MAX_VAL_LEN) + '…'
+}
+
+function formatEntryValue(val) {
+  if (!val) return '(空)'
+  try {
+    const parsed = JSON.parse(val)
+    return JSON.stringify(parsed, null, 2)
+  } catch {
+    return val
+  }
+}
 </script>
 
 <style scoped>
@@ -140,8 +199,19 @@ defineEmits(['edit-entry'])
   color: var(--text-secondary);
 }
 
+.data-table tbody tr {
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
 .data-table tbody tr:hover {
   background: var(--bg-hover);
+}
+
+.data-table tbody tr.row-selected {
+  background: var(--accent-muted);
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
 }
 
 .fc-badge {
@@ -161,7 +231,6 @@ defineEmits(['edit-entry'])
 
 .cell-value {
   color: var(--text-primary);
-  cursor: pointer;
 }
 
 .val-btn {
@@ -176,9 +245,9 @@ defineEmits(['edit-entry'])
   width: 100%;
   text-align: left;
   transition: border-color 0.12s, color 0.12s, background 0.12s;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .val-btn:hover {
@@ -191,6 +260,25 @@ defineEmits(['edit-entry'])
   color: var(--text-primary);
 }
 
+.val-btn--long .val-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.val-view-icon {
+  flex-shrink: 0;
+  color: var(--accent);
+  opacity: 0.6;
+  transition: opacity 0.12s;
+}
+
+.val-btn:hover .val-view-icon {
+  opacity: 1;
+}
+
 .edit-err {
   font-size: 11px;
   color: var(--red);
@@ -200,6 +288,51 @@ defineEmits(['edit-entry'])
 .cell-type {
   font-size: 12px;
   color: var(--text-muted);
+}
+
+/* ── Selected entry detail block ── */
+.entry-detail {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.entry-detail-meta {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.entry-detail-tag {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* ── JSON block ── */
+.json-block {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.json-block-content {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  background: var(--bg-tertiary);
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  max-height: 400px;
+  overflow: auto;
+  margin: 0;
 }
 
 .raw-toggle {

@@ -15,6 +15,15 @@
         <span class="lock">{{ apSecure ? '🔒' : '🔓' }}</span>
         {{ ap || '未关联' }}
       </span>
+      <!-- 深色/浅色模式切换 -->
+      <button
+        class="topbar-btn mode-btn"
+        :class="{ active: !darkMode }"
+        :title="darkMode ? '切换到浅色模式' : '切换到深色模式'"
+        @click="$emit('toggle-mode')"
+      >
+        <span class="tb-icon">{{ darkMode ? '☀️' : '🌙' }}</span>
+      </button>
       <!-- 主题切换 -->
       <div class="theme-wrap" ref="themeWrapRef">
         <button class="topbar-btn theme-btn" :title="'主题：' + themeLabel" @click="toggleThemeMenu">
@@ -58,9 +67,11 @@ const props = defineProps({
   terminalOpen: Boolean,
   /** 当前主题 id */
   theme: { type: String, default: 'blue' },
+  /** 是否深色模式 */
+  darkMode: { type: Boolean, default: true },
 })
 
-const emit = defineEmits(['toggle-terminal', 'set-theme'])
+const emit = defineEmits(['toggle-terminal', 'set-theme', 'toggle-mode'])
 
 const themes = [
   { id: 'blue', label: '蓝色', color: '#5b8def' },
@@ -241,7 +252,7 @@ if (typeof window !== 'undefined') {
   height: 14px;
   border-radius: 50%;
   flex-shrink: 0;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--glass-border);
   transition: transform 0.12s;
 }
 
@@ -250,7 +261,7 @@ if (typeof window !== 'undefined') {
 }
 
 .theme-option.active .theme-dot {
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: var(--glass-hover-border);
 }
 
 .theme-name {

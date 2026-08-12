@@ -206,7 +206,11 @@ export function useCommandForm(form, opts = {}) {
 
   // ── 自动解析字段类型（供 set-data-values 显示） ──
 
+  let _typeReqId = 0
+
   async function loadRowType(row) {
+    // 捕获当前请求 ID，用于忽略过期响应（竞态条件防护）
+    const reqId = ++_typeReqId
     if (!row.ld || !row.ln || !row.do) {
       row._resolvedType = ''
       return
@@ -221,26 +225,35 @@ export function useCommandForm(form, opts = {}) {
     let defType = ''
     try {
       const defRes = await executeJson(`get-data-def --refs "${ref}" --json`)
+      if (reqId !== _typeReqId) return
       const defList = Array.isArray(defRes) ? defRes : (defRes?.data || [])
       if (defList.length > 0 && defList[0]) {
         const entry = defList[0]
-        if (entry.cdcType) {
-          defType = entry.cdcType
-        } else if (entry.definition && typeof entry.definition === 'object') {
-          // DA 级别：definition 是一个单 key 的 map，如 {"int32": null}
-          const keys = Object.keys(entry.definition)
-          if (keys.length === 1 && keys[0] !== 'structure') {
-            defType = keys[0]
+        // DA 级别：跳过 cdcType，只从 definition 的 key 名获取
+        if (row.da || row.sdo) {
+          if (entry.definition && typeof entry.definition === 'object') {
+            const keys = Object.keys(entry.definition)
+            if (keys.length === 1 && keys[0] !== 'structure') {
+              defType = keys[0]
+            }
+          }
+        } else {
+          // DO 级别：使用 CDC 类型
+          if (entry.cdcType) {
+            defType = entry.cdcType
           }
         }
       }
     } catch { /* ignore */ }
+
+    if (reqId !== _typeReqId) return
 
     // 2. 如果 get-data-def 没拿到，从 all-def 缓存拿（处理 stVal、q、t 等预定义 DA）
     if (!defType && row.do) {
       try {
         const lnRef = `${row.ld}/${row.ln}`
         const allDef = await ensureAllDefData(lnRef)
+        if (reqId !== _typeReqId) return
         const doEntry = allDef[row.do]
         if (doEntry && doEntry.structure) {
           const daName = row.da || row.sdo || ''
@@ -255,24 +268,28 @@ export function useCommandForm(form, opts = {}) {
       } catch { /* ignore */ }
     }
 
+    if (reqId !== _typeReqId) return
+
     // 3. 从 get-data-values 拿实际值类型（仅辅助，优先级低于 defType）
     let valType = ''
     let valFromChoice = false
     try {
       const valRes = await executeJson(`get-data-values --refs "${ref}" --json`)
+      if (reqId !== _typeReqId) return
       const valList = Array.isArray(valRes) ? valRes : (valRes?.value || [])
       if (valList.length > 0) {
         const item = valList[0]
         if (item) {
-          if (item.choice != null) {
-            // 新格式: choice 字段直接表示类型
+          if (typeof item === 'string') {
+            // 新格式：简单字符串值，无类型信息
+          } else if (typeof item === 'object') {
+            // 新格式：结构化 JSON 对象（quality 等），无类型 key 名
+          } else if (item.choice != null) {
             valType = choiceTypeToType(item.choice)
             valFromChoice = true
           } else if (item.valueString != null) {
-            // 旧格式: valueString + choiceType
             valType = choiceTypeToType(item.choiceType)
           } else {
-            // 新格式(无choice): 从 key 名推断（兜底，不可靠）
             const typeKeys = ['boolean','int8','int16','int32','int64','int8u','int16u','int32u','int64u',
               'float32','float64','octet-string','visible-string','unicode-string',
               'timestamp','quality','check']
@@ -286,6 +303,8 @@ export function useCommandForm(form, opts = {}) {
         }
       }
     } catch { /* ignore */ }
+
+    if (reqId !== _typeReqId) return
 
     // 优先级：defType（get-data-def / all-def 缓存）> choice 字段 > 值 key 名
     row._resolvedType = defType || (valFromChoice ? valType : '') || (valType !== 'visible-string' ? valType : '') || ''

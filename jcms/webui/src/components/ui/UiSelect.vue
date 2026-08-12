@@ -187,7 +187,7 @@ onBeforeUnmount(close)
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 4px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
   max-height: 240px;
   overflow-y: auto;
 }

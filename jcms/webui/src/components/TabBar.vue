@@ -339,6 +339,6 @@ function onDrop(e, index) {
 .ctx-divider {
   height: 1px;
   margin: 4px 8px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--border);
 }
 </style>

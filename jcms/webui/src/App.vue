@@ -7,8 +7,10 @@
       :ap-secure="apSecure"
       :terminal-open="showTerminal"
       :theme="theme"
+      :dark-mode="darkMode"
       @toggle-terminal="showTerminal = !showTerminal"
       @set-theme="setTheme"
+      @toggle-mode="setMode(!darkMode)"
     />
     <div class="app-body">
       <Sidebar
@@ -150,6 +152,16 @@ function setTheme(id) {
   localStorage.setItem('cms-theme', id)
 }
 
+// 深浅模式（默认深色，存 localStorage 持久化）
+const savedMode = localStorage.getItem('cms-mode')
+const darkMode = ref(savedMode !== 'light')
+
+function setMode(dark) {
+  darkMode.value = dark
+  document.documentElement.setAttribute('data-mode', dark ? 'dark' : 'light')
+  localStorage.setItem('cms-mode', dark ? 'dark' : 'light')
+}
+
 // 当前年份（空状态版权）
 const currentYear = new Date().getFullYear()
 
@@ -260,8 +272,9 @@ async function pollStatus() {
 }
 
 onMounted(() => {
-  // 初始化主题
+  // 初始化主题与深浅模式
   document.documentElement.setAttribute('data-theme', theme.value)
+  document.documentElement.setAttribute('data-mode', darkMode.value ? 'dark' : 'light')
   pollStatus()
   timer = setInterval(pollStatus, 3000)
 })
@@ -339,6 +352,14 @@ onUnmounted(() => {
   animation: glowFloat 12s ease-in-out infinite reverse;
 }
 
+/* 浅色模式下光晕加深一点，保持氛围感 */
+[data-mode="light"] .glow-spot-1 {
+  background: radial-gradient(circle, rgba(91, 141, 239, 0.2), transparent 70%);
+}
+[data-mode="light"] .glow-spot-2 {
+  background: radial-gradient(circle, rgba(91, 141, 239, 0.14), transparent 70%);
+}
+
 @keyframes glowFloat {
   0%, 100% { transform: translate(0, 0) scale(1); }
   50% { transform: translate(20px, -15px) scale(1.05); }
@@ -354,11 +375,11 @@ onUnmounted(() => {
   gap: 0;
   padding: 44px 56px 40px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  box-shadow: 0 12px 64px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 64px rgba(0, 0, 0, 0.4), inset 0 1px 0 var(--glass-border);
   user-select: none;
   max-width: 440px;
   width: 100%;
@@ -366,8 +387,8 @@ onUnmounted(() => {
 }
 
 .glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 16px 72px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-color: var(--glass-hover-border);
+  box-shadow: 0 16px 72px rgba(0, 0, 0, 0.45), inset 0 1px 0 var(--glass-hover-border);
 }
 
 .glass-icon {
@@ -380,7 +401,7 @@ onUnmounted(() => {
 .glass-title {
   font-size: 19px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--text-primary);
   margin: 0;
   letter-spacing: 0.8px;
   white-space: nowrap;
@@ -440,8 +461,8 @@ onUnmounted(() => {
 
 .badge-label {
   padding: 4px 8px;
-  background: rgba(255, 255, 255, 0.09);
-  color: rgba(255, 255, 255, 0.65);
+  background: var(--glass-hover-bg);
+  color: var(--text-secondary);
   letter-spacing: 0.3px;
 }
 
@@ -465,7 +486,7 @@ onUnmounted(() => {
   width: 48px;
   height: 1px;
   margin: 22px 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
 }
 
 .glass-info {
@@ -483,7 +504,7 @@ onUnmounted(() => {
 
 .info-label {
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 1.2px;
   font-weight: 500;
@@ -491,7 +512,7 @@ onUnmounted(() => {
 
 .info-value {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--text-primary);
   font-weight: 500;
 }
 
@@ -528,7 +549,7 @@ onUnmounted(() => {
 
 .glass-footer {
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.18);
+  color: var(--text-muted);
   margin: 18px 0 0;
   letter-spacing: 0.5px;
   font-weight: 400;

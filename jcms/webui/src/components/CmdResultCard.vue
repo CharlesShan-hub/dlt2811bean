@@ -346,12 +346,12 @@ async function copyCmdResult() {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 .copy-out-json:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--glass-hover-bg);
+  border-color: var(--glass-hover-border);
 }
 
 .term-line:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--glass-bg);
 }
 
 .term-ln {
@@ -394,7 +394,7 @@ async function copyCmdResult() {
   font-weight: 600;
   letter-spacing: 0.5px;
   color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--glass-bg);
   padding: 1px 8px;
   border-radius: 4px;
   margin-bottom: 10px;

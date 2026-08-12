@@ -1,187 +1,248 @@
-# jcms-data — §7 数据结构 Java 封装
+# jcms-data — §7 数据结构 Java 封装（csasn1 自动生成）
 
 ## 职责
 
-jcms-data 是 DL/T 2811 标准第 7 章定义的**所有数据结构**在 Java 侧的实现，继承自 jcms-core 的 `CmsType` 基类体系，每个 Java 类对应一个 ASN.1 类型。
+jcms-data（Maven `artifactId: inner-data`）是 DL/T 2811 标准第 7 章**所有数据结构**在 Java 侧的自动生成镜像：**每个 Java 类对应一个 ASN.1 类型**，类名统一为 `Inner*`，全部位于单个包 `com.ysh.jcms.data`。
 
-一句话概括：**§7 数据结构的 Java 镜像，每个类 = 一个 ASN.1 类型**。
+> 与旧版（手写 Java 类镜像 C 结构体）不同，本模块不再手写。所有类由 Rust 工具链 **csasn1** 从 ASN.1 规约 `csasn1/specs/dlt2811.asn` 生成；编解码逻辑不在 Java 侧，而是委托 `asn1.dll`（Rust `rasn` 实现）执行，Java 与原生层之间用 **JSON 中间表示**交换数据。
 
-> 不是AI写的总结：设计这一部分的时候的主要思路是，（1）做的更薄，不考虑编码（具体编码在ccms实现了，连接java和c的桥梁在jcms-core实现了）jcms-data只考虑数据结构的定义本身。（2）更贴近使用：很多枚举类型都是采用一个整数进行编码的，但是具体使用的时候大家更希望用某一个名字，而不关心这个名字对应哪一个整数。另外很多bit string也是，用户应该去考虑每一个flag是true还是false，而不应该考虑这个flag是biestring的第几个bit。
+一句话概括：**§7 数据结构的自动生成 Java 镜像，编码委托 Rust 原生库，JSON 为中间表示。**
 
-## 与 ccms-data 的关系
+## 生成管线
 
-| 层面   | ccms-data（C）      | jcms-data（Java）                     |
-| ---- | ----------------- | ----------------------------------- |
-| 角色   | PER 编解码执行者        | 类型声明 + 编解码编排者                       |
-| 内存   | C 结构体（stack/heap） | 通过 JNA 持有 native 内存                 |
-| 编解码  | C 函数直接操作字节流       | 委托 `NativeBridge.Codec` 调用 C 函数     |
-| 字段定义 | `.h` 头文件中的 struct | Java 类中的 `public` 字段 + `children()` |
+```
+csasn1/specs/dlt2811.asn   ← 唯一数据源（只改这个）
+      │
+      ├─ cargo build（build.rs 调 rasn-compiler）
+      │    ├─ src/generated.rs   （Rust 类型）
+      │    ├─ src/ffi_auto.rs    （FFI 分发，导出 4 个 C 函数）
+      │    └─ target/release/asn1.dll
+      │
+      └─ csasn1 CLI（--lang java）
+           └─ jcms-data/src/main/java/com/ysh/jcms/data/Inner*.java
+```
 
-简言之：Java 侧不重复实现 PER 编解码逻辑，而是通过 `CmsType.write()/read()` 与 C 侧同步内存，编解码回调 C 动态库。
+常用命令（在 `csasn1/` 下）：
+
+```powershell
+just build      # 编译 Rust：重新生成 asn1.dll + generated.rs + ffi_auto.rs
+just gen-java   # 重新生成 Java 类
+just test-java  # 生成 Java + 运行 Maven 测试
+```
+
+## 与旧架构的关系
+
+| 维度     | 旧版（已废弃）                        | 新版（当前）                                   |
+| ------ | ------------------------------- | ---------------------------------------- |
+| 类来源   | 手写                             | csasn1（Rust）自动生成                          |
+| 基类     | 继承 jcms-core 的 `CmsType`        | 继承 `InnerBase`（本模块内）                       |
+| 数据存放  | 公开 Java 字段 + `children()` 树    | 统一 `_v` Map（见下）                            |
+| 原生编解码 | 委托 ccms-data（C 结构体）            | 委托 `asn1.dll`（Rust `rasn`）                 |
+| 中间表示  | C 内存直操作                         | JSON（Jackson / Rust JER）                    |
+| 依赖方向  | jcms-data → jcms-core             | jcms-data 独立；jcms-core → jcms-data（包装 Inner*） |
 
 ## 包结构
 
+单包平铺，无子包：
+
 ```
 data/
-├── scalar/       # §7.1 基础数值类型
-├── string/       # §7.1.5 字符串类型
-├── time/         # §7.2 时间类型
-├── common/       # §7.3 公共基础类型
-├── fc/           # §7.4 功能约束
-├── control/      # §7.5 控制相关类型
-├── block/        # §7.6 控制块
-├── choice/       # §7.7 数据 union / §7.8 数据定义
-└── extended/     # (预留) §7.9 扩展类型
+├── InnerBase          # 抽象基类：_v 统一存储 + 序列化 + hex 工具
+├── InnerNative        # JNA 桥：调用 asn1.dll（ping/encode/decode/free）
+├── V                  # _v 语义助手（标量 / CHOICE / OPTIONAL 标记）
+├── InnerEmpty         # 占位类型（无 ASN.1 定义）
+├── DefaultInner*      # 内建 ASN.1 类型包装（VisibleString/UTF8String/OctetString）
+├── Inner*             # 一个 ASN.1 类型一个类（标量 / 位串 / 控制块 / PDU / CHOICE…）
+└── InnerAnonymous*    # PDU 内联的匿名 SEQUENCE
 ```
 
-***
+每个生成的类，Javadoc 内嵌对应 ASN.1 定义（从规约提取），便于追溯标准条款。
 
-## 子包详解
+## 核心架构：`_v` 统一数据存储
 
-### 1. `scalar` — 基础数值类型（§7.1）
+**所有 Inner\* 类没有 Java 数据字段。** 数据全部存在 `InnerBase._v`（`LinkedHashMap<String, Object>`）里，且 `_v` 里只有 Map / List / 基本类型（String、Integer、Boolean、byte[]），**没有任何 Inner\* 对象**。
 
-| 类            | ASN.1 类型 | native 大小 | PER 说明                                  |
-| ------------ | -------- | --------- | --------------------------------------- |
-| `CmsBoolean` | BOOLEAN  | 4B        | INTEGER (0..1)，1 bit                    |
-| `CmsInt8`    | INT8     | 4B        | INTEGER (-128..127)，8 bits aligned      |
-| `CmsInt16`   | INT16    | 4B        | INTEGER (-32768..32767)，16 bits aligned |
-| `CmsInt32`   | INT32    | 4B        | INTEGER (-2^31..2^31-1)，32 bits aligned |
-| `CmsInt64`   | INT64    | 8B        | INTEGER，length + content bytes          |
-| `CmsInt8U`   | INT8U    | 4B        | INTEGER (0..255)，8 bits aligned         |
-| `CmsInt16U`  | INT16U   | 4B        | INTEGER (0..65535)，16 bits aligned      |
-| `CmsInt24U`  | INT24U   | 4B        | INTEGER (0..16777215)，24 bits aligned   |
-| `CmsInt32U`  | INT32U   | 4B        | INTEGER (0..2^32-1)，32 bits aligned     |
-| `CmsInt64U`  | INT64U   | 8B        | INTEGER，length + content bytes          |
-| `CmsFloat32` | FLOAT32  | 4B        | OCTET STRING (SIZE(4))                  |
-| `CmsFloat64` | FLOAT64  | 8B        | OCTET STRING (SIZE(8))                  |
+### 元字段命名规则
 
-每个类都是一个**叶节点**（`children()` 返回空列表），直接管理 `nativePtr` 的读写。模式统一：
+| key | 用途 |
+|-----|------|
+| `"_"` | 标量值（如 `{"_": 42}`） |
+| `"_choice"` | CHOICE 当前选中的 variant 名 |
+| `"_present_<name>"` | OPTIONAL 字段显式出现标记（`V.isPresent` / `V.setPresent`） |
+| 其他 | ASN.1 字段名，直接作为 key |
 
-- 私有 `value` 字段 + 公开 getter/setter
-- `write()` 将 Java value 写入 native 内存
-- `read()` 从 native 内存读取到 Java value
-- `calcNativeSize()` 返回 C 结构体大小
+### 三类结构的 `_v` 形态
 
-***
+| 结构 | `_v` 内容 | 序列化结果 |
+|------|----------|-----------|
+| 标量（InnerInt32） | `{"_": 42}` | `42` |
+| CHOICE（InnerData） | `{"_choice": "int32", "int32": 42}` | `{"int32": 42}` |
+| SEQUENCE（InnerBRCB） | `{"rptID": {...}, "rptEna": {...}}` | `{"rptID": "x", "rptEna": 1}` |
 
-### 2. `string` — 字符串类型（§7.1.5）
+- **标量**：值存 `"_"` 下，`toJsonValue()` 展开为裸值。
+- **CHOICE**：`"_choice"` 记录当前 variant，选中值存对应 key；未选中的 variant 不在 `_v`。
+- **SEQUENCE**：每个字段一个 key；字段值是子类型（Inner\*）的 `_v`（Map）或基本类型。
+- **OPTIONAL 字段**：构造器默认不放入 `_v`（无 ASN.1 DEFAULT 的 OPTIONAL 字段被跳过），所以未赋值就不会出现在 JSON/编码结果中；要包含它，直接向 `_v` 放入该字段即可。
 
-| 类                  | ASN.1 类型      | 基类              | 说明                     |
-| ------------------ | ------------- | --------------- | ---------------------- |
-| `CmsUint8Array`    | OCTET STRING  | `CmsType`       | 字节数组的通用容器，也是其他字符串类型的基类 |
-| `CmsVisibleString` | VisibleString | `CmsUint8Array` | ISO-646 可见字符串          |
-| `CmsUtf8String`    | UTF8String    | `CmsUint8Array` | UTF-8 字符串              |
-| `CmsOctetString`   | OCTET STRING  | `CmsUint8Array` | 原始字节串                  |
-| `CmsBitString`     | BIT STRING    | `CmsUint8Array` | 比特串，`len` 存储 bit 数     |
+### V 语义助手
 
-`CmsUint8Array` 是核心，提供 `value()`/`value(byte[])` 方法，管理 `data` 指针 + `len` 长度。其余子类基本只是标记类型，编码解码行为相同。
+`V.java` 提供对 `_v` 的类型安全操作，避免手写魔法字符串：
 
-***
+- 标量：`V.getVal(m)` / `V.setVal(m, v)` / `V.isScalarWrapper(v)` / `V.wrapScalar(v)` / `V.unwrapScalar(v)`
+- CHOICE：`V.choice(m)` / `V.setChoice(m, name)`
+- OPTIONAL：`V.isPresent(m, field)` / `V.setPresent(m, field, bool)`
+- 字段：`V.field(m, name)` / `V.setField(m, name, v)` / `V.removeField(m, name)`
 
-### 3. `time` — 时间类型（§7.2）
+## 编解码流：JSON 中间表示 + JNA
 
-| 类                | ASN.1 类型    | 说明                                   |
-| ---------------- | ----------- | ------------------------------------ |
-| `CmsUtcTime`     | UtcTime     | UTC 时间，OCTET STRING (SIZE(8))，以毫秒为单位 |
-| `CmsBinaryTime`  | BinaryTime  | 二进制时间，OCTET STRING (SIZE(6))         |
-| `CmsTimeQuality` | TimeQuality | 时间品质，BIT STRING (SIZE(8))            |
+`InnerBase.DEFAULT_ENCODING = "aper"`（Aligned Packed Encoding Rules，生成时固定）。
 
-***
+```
+encode(): _v → toJsonValue() → Jackson JSON → InnerNative.encode() → asn1.dll → APER 字节
+decode(): APER 字节 → InnerNative.decode() → JSON → Jackson → _v
+```
 
-### 4. `common` — 公共基础类型（§7.3）
+### InnerNative（JNA 桥）
 
-| 类                    | ASN.1 类型        | 说明                                                           |
-| -------------------- | --------------- | ------------------------------------------------------------ |
-| `CmsObjectName`      | ObjectName      | VisibleString (SIZE(0..64))，对象名称                             |
-| `CmsObjectReference` | ObjectReference | VisibleString (SIZE(0..129))，对象引用（完整路径）                      |
-| `CmsSubReference`    | SubReference    | VisibleString (SIZE(0..129))，子引用（路径片段）                       |
-| `CmsEntryId`         | EntryID         | OCTET STRING (SIZE(8))，日志条目标识                                |
-| `CmsEntryTime`       | EntryTime       | BinaryTime 别名，日志时间                                           |
-| `CmsTimeStamp`       | TimeStamp       | UtcTime 别名，时间戳                                               |
-| `CmsQuality`         | Quality         | BIT STRING (SIZE(13))，品质（含有效性、来源等标志）                         |
-| `CmsDbpos`           | Dbpos           | BIT STRING (SIZE(2))，双点位置（0=中间/1=分/2=合/3=无效）                 |
-| `CmsTcmd`            | Tcmd            | BIT STRING (SIZE(2))，命令类型                                    |
-| `CmsServiceError`    | ServiceError    | INTEGER (0..12)，服务错误码                                        |
-| `CmsPhyComAddr`      | PhyComAddr      | SEQUENCE，物理通信地址（addr + priority + vid + appid）               |
-| `CmsFileEntry`       | FileEntry       | SEQUENCE，文件条目（fileName + fileSize + lastModified + checkSum） |
+`InnerNative` 通过 JNA 加载 `asn1.dll`（`Native.load("asn1", …)`），只暴露 4 个函数：
 
-***
+```c
+const char* csasn1_ping();                                        // 自检
+Buffer      csasn1_encode(const char* type, const char* enc, const char* json);
+Buffer      csasn1_decode(const char* type, const char* enc, const uint8_t* data, size_t len);
+void        csasn1_free_string(const char* s);                    // 释放 Rust 分配的内存
+```
 
-### 5. `fc` — 功能约束（§7.4）
+- 原生函数返回 JSON 字符串（`{"ok": true, "bytes": …}` / `{"ok": false, "error": …}`）。
+- 封套中二进制以 base64 编码；`_v` 中的 `byte[]` 字段值序列化为**大写 hex 字符串**，与 Rust JER 输出格式一致（`InnerBase.hex`/`unhex` 负责转换）。
+- 所有从 Rust 返回的字符串由 Java 侧 `readAndFree()` 统一释放，无内存泄漏。
 
-| 类       | 说明                                                       |
-| ------- | -------------------------------------------------------- |
-| `CmsFC` | FunctionalConstraint 的 Java 数据表示，VisibleString (SIZE(2)) |
+## 类分类详解
 
-注意区分：
+### 1. 标量（§7.1）
 
-- `data.fc.CmsFC` — 运行时数据类型，参与编解码
-- `info.FunctionalConstraint` — 纯枚举，提供 FC 的语义文档
+| 类 | ASN.1 类型 | 说明 |
+| --- | --- | --- |
+| `InnerBoolean` | `INTEGER (0..1)` | 布尔，1 bit |
+| `InnerInt8` / `InnerInt8U` | `INTEGER` | 8 位有/无符号 |
+| `InnerInt16` / `InnerInt16U` | `INTEGER` | 16 位有/无符号 |
+| `InnerInt24U` | `INTEGER (0..16777215)` | 24 位无符号 |
+| `InnerInt32` / `InnerInt32U` | `INTEGER` | 32 位有/无符号 |
+| `InnerInt64` / `InnerInt64U` | `INTEGER` | 64 位有/无符号（length + content） |
+| `InnerFloat32` / `InnerFloat64` | `OCTET STRING (SIZE(4/8))` | 浮点 |
 
-***
+所有标量 `_v` 形态一致：`{"_": value}`。
 
-### 6. `control` — 控制相关类型（§7.5）
+### 2. 字符串与对象引用（§7.1.5 / §7.3）
 
-| 类               | ASN.1 类型   | 说明                                                |
-| --------------- | ---------- | ------------------------------------------------- |
-| `CmsOriginator` | Originator | SEQUENCE { orCat, orIdent }，控制操作发起方               |
-| `CmsOrCat`      | —          | Originator 中的 orCat 字段，INTEGER (0..8)             |
-| `CmsCheck`      | Check      | BIT STRING { syncheck, interlock } (SIZE(2))，校验标志 |
-| `CmsAddCause`   | AddCause   | INTEGER (0..27)，附加原因码                             |
+| 类 | 说明 |
+| --- | --- |
+| `DefaultInnerVisibleString` / `DefaultInnerUtf8String` / `DefaultInnerOctetString` | 内建字符串类型包装（无独立 ASN.1 定义，作为字段值容器） |
+| `InnerObjectName` | ObjectName，VisibleString (0..64) |
+| `InnerObjectReference` | ObjectReference，VisibleString (0..129) |
+| `InnerSubReference` | SubReference，VisibleString (0..129) |
+| `InnerACSIClass` | ACSI 类标识 |
 
-***
+### 3. 时间（§7.2）
 
-### 7. `block` — 控制块（§7.6）
+| 类 | 说明 |
+| --- | --- |
+| `InnerUtcTime` | UTC 时间，OCTET STRING (SIZE(8))，毫秒 |
+| `InnerBinaryTime` | 二进制时间，OCTET STRING (SIZE(6)) |
+| `InnerTimeQuality` | 时间品质，BIT STRING (SIZE(8)) |
+| `InnerTimeStamp` | UtcTime 别名 |
+| `InnerEntryID` / `InnerEntryTime` | 日志条目标识 / 时间 |
 
-| 类                      | 对应标准              | 说明                               |
-| ---------------------- | ----------------- | -------------------------------- |
-| `CmsBrcb`              | BRCB              | 缓存报告控制块（15 个字段含 OPTIONAL）        |
-| `CmsUrcb`              | URCB              | 非缓存报告控制块                         |
-| `CmsLcb`               | LCB               | 日志控制块                            |
-| `CmsSgcb`              | SGCB              | 定值组控制块（numOfSG + actSG + editSG） |
-| `CmsGoCb`              | GoCB              | GOOSE 控制块                        |
-| `CmsMsvcb`             | MSVCB             | 多播采样值控制块                         |
-| `CmsRcbOptFlds`        | RcbOptFlds        | BIT STRING (SIZE(10))，报告可选域      |
-| `CmsLcbOptFlds`        | LcbOptFlds        | BIT STRING (SIZE(1))，日志可选域       |
-| `CmsMsvcbOptFlds`      | MsvcbOptFlds      | BIT STRING (SIZE(5))，采样值可选域      |
-| `CmsReasonCode`        | ReasonCode        | BIT STRING (SIZE(7))，原因码         |
-| `CmsTriggerConditions` | TriggerConditions | BIT STRING (SIZE(6))，触发条件        |
-| `CmsSmpMod`            | SmpMod            | INTEGER (0..2)，采样模式              |
+### 4. 位串与枚举（§7.3 / §7.5 / §7.6 辅助）
 
-控制块类是典型的**容器类型**：`children()` 返回所有字段列表，`write()/read()` 由 `CmsType` 基类自动递归处理。
+| 类 | 说明 |
+| --- | --- |
+| `InnerQuality` | 品质，BIT STRING (SIZE(13)) |
+| `InnerDbpos` / `InnerTcmd` | 双点位置 / 命令类型，BIT STRING (SIZE(2)) |
+| `InnerCheck` | 校验标志，BIT STRING (SIZE(2)) |
+| `InnerReasonCode` | 原因码，BIT STRING (SIZE(7)) |
+| `InnerTriggerConditions` | 触发条件，BIT STRING (SIZE(6)) |
+| `InnerRcbOptFlds` / `InnerLcbOptFlds` / `InnerMsvcbOptFlds` | 报告/日志/采样值可选域 |
+| `InnerSmpMod` | 采样模式，INTEGER (0..2) |
+| `InnerServiceError` | 服务错误码，INTEGER (0..12)（枚举以整数编码，`_v` 结构与标量一致） |
+| `InnerAddCause` / `InnerControlCode` / `InnerFunctionalConstraint` | 附加原因 / 控制码 / 功能约束 |
+| `InnerOriginator` / `InnerPhyComAddr` / `InnerFileEntry` | 简单 SEQUENCE 结构 |
 
-***
+### 5. 控制块（§7.6）
 
-### 8. `choice` — 数据 union 与数据定义（§7.7 / §7.8）
+| 类 | 对应标准 | 说明 |
+| --- | --- | --- |
+| `InnerBRCB` | BRCB | 缓存报告控制块（15 字段，含 2 个 OPTIONAL：resvTms/owner） |
+| `InnerURCB` | URCB | 非缓存报告控制块 |
+| `InnerLCB` | LCB | 日志控制块 |
+| `InnerSGCB` | SGCB | 定值组控制块 |
+| `InnerGoCB` | GoCB | GOOSE 控制块 |
+| `InnerMSVCB` | MSVCB | 多播采样值控制块 |
 
-| 类                             | ASN.1 类型       | 说明                              |
-| ----------------------------- | -------------- | ------------------------------- |
-| `CmsData`                     | Data           | CHOICE of 24 种类型，核心的通用数据载体      |
-| `CmsDataDefinition`           | DataDefinition | CHOICE of 24 种类型，数据定义描述         |
-| `CmsDataDefinitionArray`      | —              | SEQUENCE OF DataDefinition，定义数组 |
-| `CmsDataDefinitionStructElem` | —              | SEQUENCE，定义中的结构体元素（name + type） |
+### 6. 数据与数据定义（§7.7 / §7.8）
 
-#### CmsData
+| 类 | 说明 |
+| --- | --- |
+| `InnerData` | 核心 CHOICE，24 种 variant（error/array/structure/各标量/各字符串/时间/品质…） |
+| `InnerDataDefinition` | 数据定义描述 CHOICE |
+| `InnerDataDefinitionArray` / `InnerDataDefinitionStructure` | 定义数组 / 结构体元素 |
 
-这是最重要的类之一——它用 CHOICE 表达"一个数据可以是 24 种类型中的任意一种"，类似于 union。包含：
+CHOICE 类为每个 variant 生成 `@JsonSetter` 选择方法（如 `setInt32(...)`），方法内部自动维护 `_choice`。
 
-- `choice` 选择器（0..23）
-- 24 个 alternative 字段，覆盖所有标量、字符串、时间、品质、控制类型
-- `alt_sequence`（`CmsArray<CmsData>`）用于表达 ARRAY 和 STRUCTURE 类型
+### 7. 服务 PDU 与匿名序列（第 8 章）
 
-关键设计：
+- **PDU 类型**：`InnerApdu` / `InnerApch` / `InnerAsdu`，以及每个服务的 `InnerXxxRequestPDU` / `InnerXxxResponsePDU` / `InnerXxxErrorPDU`（覆盖关联、报告、控制、定值组、数据集、文件、RPC、GOOSE/MSV 等全部服务）。
+- **匿名序列**：`InnerAnonymous*` 是 PDU 内联的匿名 SEQUENCE/CHOICE 的生成命名（如 `InnerAnonymousSetBRCBValuesRequestPDUBrcb`），避免为无名字段建单独类型。
 
-- `resizeList()` 只返回选中的 alternative，避免未选中分支的无效扩容
-- `allocSize = 0` 防止嵌套 `CmsData` 时的递归栈溢出
+## 使用示例
 
-***
+```java
+import com.ysh.jcms.data.*;
 
-## 与 ccms-data 的对应关系
+// 构造 SEQUENCE，字段值通过子类型的 _v 赋值
+InnerBRCB brcb = new InnerBRCB();
+V.setField((Map) brcb._v.get("rptID"), "_", "LD0/LLN0$BR$myReport"); // VisibleString 包装
+V.setField((Map) brcb._v.get("rptEna"), "_", 1);                     // Boolean
+// OPTIONAL 字段：默认不在 _v，需要时直接放入
+brcb._v.put("resvTms", V.wrapScalar(60));
 
-所有类的字段布局、`nativeSize` 计算均与 C 结构体严格对齐：
+byte[] apdu = brcb.encode();          // → asn1.dll（APER）
+InnerBRCB back = InnerBRCB.decode(apdu);
 
-- 标量：`sizeof = 4`（JNA int 宽度）或 8（long 宽度）
-- 容器：`children().size() * 8`（每个子节点一个 `Pointer` 槽位）
-- `CmsArray`：固定 16 字节（`elements + count`）
-- `CmsData`：固定 192 字节（24 个 alternative × 8）
+// CHOICE：用生成的 @JsonSetter 或直接操作 _v
+InnerData data = new InnerData();
+data.setInt32(42);                    // 等价于 V.setChoice(_v,"int32") + put("int32",42)
+```
 
+- `encode()` 为严格编码；`encodeTest()` 为测试用宽松/调试编码（打印中间 JSON）。
+- `toString()` / `equals()` / `hashCode()` 均基于 `_v` 的结构化 JSON，天然支持数据相等比较。
+
+## 与 jcms-core 的关系
+
+依赖方向已反转：**jcms-core 依赖 jcms-data**，不再是 jcms-data 依赖 jcms-core。
+
+- `com.ysh.jcms.core.data.core.CmsType` 是 `Inner*` 的**薄包装**：持有 `public InnerBase inner`，PDU 类型通过 `super(new InnerXxx())` 绑定对应 Inner 类。
+- `CmsBrcb extends CmsSequence` → `super(new InnerBRCB())`，在 `inner` 之上叠加类型化字段（`@CmsField` 标注 + `@CbField` 生命周期标注）与业务方法。
+- 数据唯一来源是 `Inner*._v`；编解码编排（写读、帧组装、状态 overlay）在 jcms-core/jcms-app，jcms-data 只承载数据结构与原生编码委托。
+
+## 测试
+
+- 生成器为每个类型生成 `src/test/java/.../InnerXxxTest`。
+- `pom.xml` 的 surefire 配置：`-Djava.library.path=${project.basedir}/src/main/resources`，保证测试加载 `asn1.dll`。
+
+## 重新生成
+
+只改 `csasn1/specs/dlt2811.asn`，其余全自动：
+
+```powershell
+just build        # 重新编译 asn1.dll（并更新 generated.rs / ffi_auto.rs）
+just gen-java     # 重新生成 jcms-data 的 Inner*.java（含测试）并拷贝 asn1.dll 到 resources/
+```
+
+等价 CLI：
+
+```powershell
+cargo run --release -- --lang java --src specs/dlt2811.asn --dest <jcms-data 根目录> --prefix Inner --enc aper --package com.ysh.jcms.data
+```
+
+生成的 `asn1.dll` 会被拷贝到 `src/main/resources/` 与 `src/main/resources/win32-x86-64/`（JNA 平台目录）。

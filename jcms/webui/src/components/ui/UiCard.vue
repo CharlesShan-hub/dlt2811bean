@@ -40,11 +40,16 @@ function toggle() {
 
 <style scoped>
 .ui-card {
-  background: var(--bg-tertiary);
+  background: linear-gradient(180deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.ui-card:hover {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.16);
 }
 
 .ui-card__header {

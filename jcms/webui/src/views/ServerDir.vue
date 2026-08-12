@@ -150,7 +150,12 @@ async function onToggle(node) {
           if (item) {
             let valueStr = ''
             let typeKey = ''
-            if (item.choice != null) {
+            if (typeof item === 'string') {
+              valueStr = item
+            } else if (typeof item === 'object') {
+              // 新格式：结构化 JSON 对象（quality、utc-time 等）
+              valueStr = JSON.stringify(item)
+            } else if (item.choice != null) {
               typeKey = choiceTypeToType(item.choice)
               valueStr = Object.entries(item)
                 .filter(([k]) => k !== 'choice')

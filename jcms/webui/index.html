@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CMS Console</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+    <script>
+      // 首屏前恢复主题与深浅模式，避免样式闪烁（FOUC）
+      ;(function () {
+        var theme = localStorage.getItem('cms-theme') || 'blue'
+        var mode = localStorage.getItem('cms-mode') || 'dark'
+        document.documentElement.setAttribute('data-theme', theme)
+        document.documentElement.setAttribute('data-mode', mode)
+      })()
+    </script>
   </head>
   <body>
     <div id="app"></div>

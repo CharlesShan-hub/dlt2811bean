@@ -19,6 +19,18 @@
   --topbar-height: 48px;
   /* 编程等宽字体栈（命令/终端/代码均使用） */
   --font-mono: 'Cascadia Code', 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  /* 毛玻璃通用效果变量（原硬编码白色半透明，浅色模式下覆盖为深色半透明） */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-hover-bg: rgba(255, 255, 255, 0.08);
+  --glass-hover-border: rgba(255, 255, 255, 0.15);
+  --glass-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --glass-hover-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  /* primary 按钮文字色（深色下为浅蓝，浅色下用主题色保证对比度） */
+  --btn-primary-fg: #b8d0ff;
+  --btn-primary-fg-hover: #d6e4ff;
+  /* 文档强调文字色（浅色下加深保证对比度） */
+  --doc-strong: #ffc163;
 }
 
 /* ── 色彩主题（data-theme 属性切换） ── */
@@ -93,6 +105,86 @@
   --accent-muted: rgba(255, 126, 182, 0.15);
 }
 
+/* ── 深浅模式（data-mode 属性切换） ──
+   浅色模式下背景带淡主题色调（由下方 [data-mode="light"][data-theme="…"] 定义），
+   避免纯白刺眼；此处仅保留通用文字与玻璃效果变量。 */
+[data-mode="light"] {
+  --text-primary: #1a2230;
+  --text-secondary: #49536a;
+  --text-muted: #7e8a9e;
+  --red-bg: rgba(229, 85, 90, 0.08);
+  --green-bg: rgba(76, 175, 125, 0.1);
+  --btn-primary-fg: var(--accent);
+  --btn-primary-fg-hover: var(--accent-hover);
+  --doc-strong: #b0861a;
+  /* 毛玻璃在浅色下改用深色半透明 */
+  --glass-bg: rgba(15, 17, 23, 0.05);
+  --glass-border: rgba(15, 17, 23, 0.1);
+  --glass-hover-bg: rgba(15, 17, 23, 0.09);
+  --glass-hover-border: rgba(15, 17, 23, 0.18);
+  --glass-shadow: 0 2px 8px rgba(15, 17, 23, 0.07);
+  --glass-hover-shadow: 0 4px 14px rgba(15, 17, 23, 0.12);
+}
+
+/* ── 浅色配色：背景约 25 档、区域块约 10 档（0=白 100=黑），避免死白 ── */
+
+/* 浅色 × 蓝色 */
+[data-mode="light"][data-theme="blue"] {
+  --bg-primary: #c6d3e8;
+  --bg-secondary: #cfd9eb;
+  --bg-tertiary: #e3e9f3;
+  --bg-hover: #b8c9e2;
+  --border: #a2b6d4;
+}
+/* 浅色 × 绿色 */
+[data-mode="light"][data-theme="green"] {
+  --bg-primary: #c4e4d3;
+  --bg-secondary: #cfe9db;
+  --bg-tertiary: #e2f1e9;
+  --bg-hover: #b5dcc5;
+  --border: #9dc9b1;
+}
+/* 浅色 × 橙色 */
+[data-mode="light"][data-theme="orange"] {
+  --bg-primary: #f0e2cf;
+  --bg-secondary: #f3e7d7;
+  --bg-tertiary: #faf3e9;
+  --bg-hover: #e7d4ba;
+  --border: #d8c09e;
+}
+/* 浅色 × 红色 */
+[data-mode="light"][data-theme="red"] {
+  --bg-primary: #e6c6c7;
+  --bg-secondary: #eacfcf;
+  --bg-tertiary: #f4e4e4;
+  --bg-hover: #dcb6b8;
+  --border: #c9a0a3;
+}
+/* 浅色 × 紫色 */
+[data-mode="light"][data-theme="purple"] {
+  --bg-primary: #d3c6e8;
+  --bg-secondary: #dccfea;
+  --bg-tertiary: #eae3f3;
+  --bg-hover: #c4b3e0;
+  --border: #af9bd3;
+}
+/* 浅色 × 青色 */
+[data-mode="light"][data-theme="cyan"] {
+  --bg-primary: #c2dbe3;
+  --bg-secondary: #cde0e7;
+  --bg-tertiary: #e1eef2;
+  --bg-hover: #b0d0db;
+  --border: #97bec9;
+}
+/* 浅色 × 粉色 */
+[data-mode="light"][data-theme="pink"] {
+  --bg-primary: #e6c6d1;
+  --bg-secondary: #eacfd8;
+  --bg-tertiary: #f4e4e9;
+  --bg-hover: #dcb6c4;
+  --border: #c99fa9;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -130,17 +222,17 @@ body {
 /* ── 毛玻璃通用工具类 ── */
 /* 使用：在元素上同时添加 .glass 和组件自身的尺寸/定位类 */
 .glass {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--glass-shadow);
   transition: all 0.2s ease;
 }
 .glass:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  background: var(--glass-hover-bg);
+  border-color: var(--glass-hover-border);
+  box-shadow: var(--glass-hover-shadow);
 }
 /* 删除按钮（红色）hover 变体 */
 .glass-danger:hover {
