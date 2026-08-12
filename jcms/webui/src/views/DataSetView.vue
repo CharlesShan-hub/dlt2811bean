@@ -4,13 +4,13 @@
     <header class="page-head">
       <div class="title-row">
         <div class="title-left">
-          <span class="sec-badge"><Section :size="12" /> 8.9</span>
-          <h1 class="page-title">GOOSE</h1>
+          <span class="sec-badge"><Section :size="12" /> 8.5</span>
+          <h1 class="page-title">数据集</h1>
         </div>
         <div class="title-right">
-          <code class="glass cmd-chip">GOOSE</code>
+          <code class="glass cmd-chip">DataSet</code>
           <span class="sep">·</span>
-          <span class="desc-text">GOOSE 控制块读写与发布订阅</span>
+          <span class="desc-text">数据集读写、创建、删除与目录查询</span>
         </div>
       </div>
     </header>

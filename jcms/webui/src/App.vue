@@ -17,7 +17,7 @@
     <div class="app-body">
       <Sidebar
         :items="navItems"
-        :active="activeView"
+        :active="sidebarActive"
         :collapsed="sidebarCollapsed"
         @select="onSidebarSelect($event, false)"
         @select-duplicate="onSidebarSelect($event, true)"
@@ -93,6 +93,14 @@
             <CommandDebug v-if="tab.viewId === 'connect-root'" cmd="connect" :connected="connected" :tcp-connected="tcpConnected" />
             <CommandDebug v-else-if="cmdViews.includes(tab.viewId)" :cmd="tab.viewId" />
             <ServerDir v-else-if="tab.viewId === 'dir-tree'" :connected="connected" />
+            <DataSetView v-else-if="tab.viewId === 'dataset-view'" />
+            <SgView v-else-if="tab.viewId === 'sg-view'" />
+            <ReportView v-else-if="tab.viewId === 'report-view'" />
+            <LogView v-else-if="tab.viewId === 'log-view'" />
+            <GooseView v-else-if="tab.viewId === 'goose-view'" />
+            <MsvView v-else-if="tab.viewId === 'msv-view'" />
+            <FileView v-else-if="tab.viewId === 'file-view'" />
+            <RpcView v-else-if="tab.viewId === 'rpc-view'" />
           </div>
         </div>
 
@@ -111,7 +119,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import TerminalIcon from '@lucide/vue/dist/esm/icons/terminal.mjs'
 import TopBar from './components/TopBar.vue'
 import Sidebar from './components/Sidebar.vue'
@@ -119,6 +127,14 @@ import TabBar from './components/TabBar.vue'
 import CommandDebug from './views/CommandDebug.vue'
 import Terminal from './views/Terminal.vue'
 import ServerDir from './views/ServerDir.vue'
+import DataSetView from './views/DataSetView.vue'
+import SgView from './views/SgView.vue'
+import ReportView from './views/ReportView.vue'
+import LogView from './views/LogView.vue'
+import GooseView from './views/GooseView.vue'
+import MsvView from './views/MsvView.vue'
+import FileView from './views/FileView.vue'
+import RpcView from './views/RpcView.vue'
 import { getStatus } from './api/cms.js'
 import { CMD_IDS } from './cmddefs/index.js'
 import { refreshLds, setLds } from './ldCache.js'
@@ -213,8 +229,26 @@ function resetTerminalHeight() {
 // 当前年份（空状态版权）
 const currentYear = new Date().getFullYear()
 
+// ── 服务视图路由：侧边栏大块（含其子命令）→ 对应的服务视图 ──
+const SVC_VIEWS = {
+  dataset: 'dataset-view',
+  sg: 'sg-view',
+  report: 'report-view',
+  log: 'log-view',
+  goose: 'goose-view',
+  msv: 'msv-view',
+  file: 'file-view',
+  rpc: 'rpc-view',
+}
+// 反向：服务视图 viewId → 侧边栏分组 id（用于侧边栏高亮）
+const VIEW_TO_GROUP = Object.fromEntries(Object.entries(SVC_VIEWS).map(([k, v]) => [v, k]))
+const sidebarActive = computed(() => VIEW_TO_GROUP[activeView.value] || activeView.value)
+
+/** 子命令不在此路由：直接打开 CommandDebug（各命令的"卷子"页面） */
 function onSidebarSelect(viewId, forceNew) {
-  openTab(viewId, forceNew)
+  // 大块分组 → 服务视图；其余（含子命令）→ 按自身 viewId 打开
+  const svcView = SVC_VIEWS[viewId]
+  openTab(svcView || viewId, forceNew)
 }
 
 // ── 导航配置 ──
@@ -253,13 +287,13 @@ const navItems = [
     { id: 'get-edit-sg', label: cnTitle('get-edit-sg'), done: false },
     { id: 'sgcb-vals', label: cnTitle('sgcb-vals'), done: false },
   ] },
-  { id: 'report', label: '报告', icon: 'FileText', done: false, children: [
+  { id: 'report', label: '报告服务', icon: 'FileText', done: false, children: [
     { id: 'get-brcb-vals', label: cnTitle('get-brcb-vals'), done: false },
     { id: 'set-brcb-vals', label: cnTitle('set-brcb-vals'), done: false },
     { id: 'get-urcb-vals', label: cnTitle('get-urcb-vals'), done: false },
     { id: 'set-urcb-vals', label: cnTitle('set-urcb-vals'), done: false },
   ] },
-  { id: 'log', label: '日志', icon: 'Scroll', done: false, children: [
+  { id: 'log', label: '日志服务', icon: 'Scroll', done: false, children: [
     { id: 'get-lcb-vals', label: cnTitle('get-lcb-vals'), done: false },
     { id: 'set-lcb-vals', label: cnTitle('set-lcb-vals'), done: false },
     { id: 'query-log-by-time', label: cnTitle('query-log-by-time'), done: false },
@@ -276,7 +310,7 @@ const navItems = [
     { id: 'get-msvcb-vals', label: cnTitle('get-msvcb-vals'), done: false },
     { id: 'set-msvcb-vals', label: cnTitle('set-msvcb-vals'), done: false },
   ] },
-  { id: 'file', label: '文件', icon: 'Folder', done: false, children: [
+  { id: 'file', label: '文件服务', icon: 'Folder', done: false, children: [
     { id: 'get-file', label: cnTitle('get-file'), done: false },
     { id: 'set-file', label: cnTitle('set-file'), done: false },
     { id: 'delete-file', label: cnTitle('delete-file'), done: false },

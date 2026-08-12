@@ -4,27 +4,24 @@
     <header class="page-head">
       <div class="title-row">
         <div class="title-left">
-          <span class="sec-badge">✦ 定值组服务</span>
+          <span class="sec-badge"><Section :size="12" /> 8.6</span>
           <h1 class="page-title">定值组</h1>
         </div>
         <div class="title-right">
           <code class="glass cmd-chip">Setting Group</code>
           <span class="sep">·</span>
-          <span class="desc-text">选择激活/编辑定值组、读写定值、确认提交（DL/T 2811 §8.6）</span>
+          <span class="desc-text">选择激活/编辑定值组、读写定值、确认提交</span>
         </div>
       </div>
     </header>
 
-    <!-- 三块空白面板（后续填充内容） -->
-    <div class="svc-panels">
-      <section class="svc-panel"></section>
-      <section class="svc-panel"></section>
-      <section class="svc-panel"></section>
-    </div>
+    <!-- 空白内容区（后续填充，形如连接管理界面） -->
+    <div class="svc-body"></div>
   </div>
 </template>
 
 <script setup>
+import Section from '@lucide/vue/dist/esm/icons/section.mjs'
 </script>
 
 <style scoped>
@@ -110,19 +107,9 @@
   color: var(--text-secondary);
 }
 
-/* 三块空白面板 */
-.svc-panels {
+/* 空白内容区 */
+.svc-body {
   flex: 1;
   min-height: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
-}
-
-.svc-panel {
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 </style>

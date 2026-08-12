@@ -3,21 +3,17 @@
     <header class="page-head">
       <div class="title-row">
         <div class="title-left">
-          <span v-if="def.doc" class="sec-badge doc-badge" title="协议说明" @click="docOpen = true">✦ {{ section }}</span>
-          <span v-else-if="section" class="sec-badge">✦ {{ section }}</span>
+          <span v-if="isConnect" class="sec-badge"><Section :size="12" /> 8.2</span>
+          <span v-else-if="def.doc" class="sec-badge doc-badge" title="协议说明" @click="docOpen = true"><Section :size="12" /> {{ section }}</span>
+          <span v-else-if="section" class="sec-badge"><Section :size="12" /> {{ section }}</span>
           <h1 class="page-title">{{ isConnect ? '连接管理' : shortTitle }}</h1>
         </div>
         <div class="title-right">
-          <button v-if="!isPlaceholder" type="button" class="glass asn1-toggle-header-btn" :title="showAsn1 ? '隐藏 ASN.1' : '显示 ASN.1'" @click="showAsn1 = !showAsn1">𝔄</button>
+          <button type="button" class="glass asn1-toggle-header-btn" :title="showAsn1 ? '隐藏 ASN.1' : '显示 ASN.1'" @click="showAsn1 = !showAsn1">𝔄</button>
           <template v-if="isConnect">
-            <code class="glass cmd-chip">connect</code>
-            <span class="desc-text">TCP → 协商 → 关联</span>
+            <code class="glass cmd-chip">Connection</code>
             <span class="sep">·</span>
-            <code class="glass cmd-chip">disconnect</code>
-            <span class="desc-text">断开 TCP</span>
-            <span class="sep">·</span>
-            <code class="glass cmd-chip">release</code>
-            <span class="desc-text">断开 AP</span>
+            <span class="desc-text">建立 TCP 连接、参数协商、关联、释放与中止</span>
           </template>
           <template v-else>
             <code class="glass cmd-chip">{{ props.cmd }}</code>
@@ -36,24 +32,7 @@
       </template>
     </UiModal>
 
-    <!-- ── 未实现服务：三面板骨架（头部标题 + 参数/结果面板空壳，待实现） ── -->
-    <div v-if="isPlaceholder" class="debug-grid" ref="gridRef" :style="{ gridTemplateColumns: leftColWidth + 'px 6px 1fr' }">
-      <!-- 左栏：参数面板（空壳） -->
-      <UiCard title="参数" icon="⚙" fill>
-        <p class="skeleton-note">参数界面待实现，将在后续版本提供。</p>
-      </UiCard>
-      <!-- 垂直拖拽手柄 -->
-      <div class="drag-v" @mousedown.prevent="startVDrag"></div>
-      <!-- 右栏：命令与返回（空壳） -->
-      <UiCard title="命令与返回" icon="🔄" fill>
-        <div class="skeleton-result">
-          <TerminalIcon :size="30" stroke-width="1.5" class="skeleton-result-icon" />
-          <p>执行后在此显示返回结果</p>
-        </div>
-      </UiCard>
-    </div>
-
-    <div v-else class="debug-grid" ref="gridRef" :style="{ gridTemplateColumns: leftColWidth + 'px 6px 1fr' }">
+    <div class="debug-grid" ref="gridRef" :style="{ gridTemplateColumns: leftColWidth + 'px 6px 1fr' }">
       <!-- ── 左栏：参数 ── -->
       <CommandParamsPanel
         :def="def"
@@ -139,12 +118,11 @@
 
 <script setup>
 import { computed, reactive, ref, watch } from 'vue'
-import TerminalIcon from '@lucide/vue/dist/esm/icons/terminal.mjs'
+import Section from '@lucide/vue/dist/esm/icons/section.mjs'
 import { debugShared } from '../stores/debugShared.js'
 import CommandParamsPanel from '../components/CommandParamsPanel.vue'
 import CommandResultPanel from '../components/CommandResultPanel.vue'
 import ComplexValueEditor from '../components/ComplexValueEditor.vue'
-import UiCard from '../components/ui/UiCard.vue'
 import UiModal from '../components/ui/UiModal.vue'
 import { executeCommand, executeJson } from '../api/cms.js'
 import { marked } from 'marked'
@@ -165,7 +143,11 @@ const props = defineProps({
 
 const connectFlow = CONNECT_FLOW
 
-const def = computed(() => CMD_DEFS[props.cmd] || { title: props.cmd, desc: '', params: [] })
+const def = computed(() => {
+  const d = CMD_DEFS[props.cmd] || {}
+  // params/asn1 等未定义时兜底为空值，保证未出题的命令页不崩
+  return { title: d.title || props.cmd, desc: d.desc || '', params: d.params || [], asn1: d.asn1, doc: d.doc, note: d.note }
+})
 
 const activeState = computed(() => {
   if (props.connected) return 'assoc'
@@ -181,13 +163,6 @@ const shortTitle = computed(() => titleParts.value.name)
 const section = computed(() => titleParts.value.section)
 const isConnect = computed(() => props.cmd === 'connect')
 const simpleParams = computed(() => def.value.params)
-
-// 未实现服务：仅 title/desc 而无参数、ASN.1、协议说明的命令 → 渲染占位框架页
-const isPlaceholder = computed(() => {
-  if (isConnect.value) return false
-  const d = def.value
-  return !(d.params || []).length && !d.asn1 && !d.doc
-})
 
 const paramRows = computed(() => {
   const rows = []
@@ -832,30 +807,6 @@ async function releaseAp() {
   grid-template-columns: 380px 6px 1fr;
   grid-auto-rows: minmax(0, 1fr);
   gap: 12px;
-}
-
-/* ── 未实现服务：三面板骨架 ── */
-.skeleton-note {
-  font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.7;
-  padding: 12px 0;
-}
-.skeleton-result {
-  height: 100%;
-  min-height: 200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: var(--text-muted);
-  font-size: 13px;
-  user-select: none;
-}
-.skeleton-result-icon {
-  opacity: 0.5;
-  margin-bottom: 6px;
 }
 
 .drag-v {
