@@ -1,6 +1,6 @@
 package com.ysh.jcms.utils.transport;
 
-import com.ysh.jcms.info.CmsServiceInfo;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;

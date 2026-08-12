@@ -5,7 +5,7 @@ import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.app.handler.sg.SgSessionState.SgcState;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.sequence.sg.CmsSgRefFcEntry;
-import com.ysh.jcms.info.CmsFCInfo;
+import com.ysh.jcms.core.info.CmsFCInfo;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueError;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueRequest;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueResponse;

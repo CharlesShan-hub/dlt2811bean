@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler;
 import com.ysh.jcms.app.node.InnerServer;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
-import com.ysh.jcms.info.CmsFCInfo;
+import com.ysh.jcms.core.info.CmsFCInfo;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.transport.ServiceName;
