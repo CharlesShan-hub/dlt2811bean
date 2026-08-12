@@ -18,9 +18,7 @@ import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.ref.SclRefParser;
-import com.ysh.jcms.utils.scl.state.GoCbCache;
-import com.ysh.jcms.utils.scl.state.MsvcbCache;
-import com.ysh.jcms.utils.scl.state.RcbStateManager;
+import com.ysh.jcms.utils.scl.state.CbStateManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,20 +51,7 @@ public class SclControlBlockService {
      * @return BRCB 对象，若未找到则返回 {@code null}
      */
     public static CmsBrcb resolveBrcb(SclIED ied, SclAccessPoint ap, String ref) {
-        SclReportControl rc = findReportControl(ap, ref, true);
-        if (rc == null)
-            return null;
-
-        CmsBrcb brcb = new CmsBrcb();
-        applySclDefaults(brcb, rc);
-
-        // Overlay runtime state if present
-        CmsBrcb runtime = RcbStateManager.get(ref);
-        if (runtime != null) {
-            applyRuntimeState(brcb, runtime);
-        }
-
-        return brcb;
+        return buildBrcb(findReportControl(ied, ap, ref, true), ref);
     }
 
     /**
@@ -79,7 +64,10 @@ public class SclControlBlockService {
      * @return BRCB 对象，若未找到则返回 {@code null}
      */
     public static CmsBrcb resolveBrcb(SclIED ied, String ref) {
-        SclReportControl rc = findReportControl(ied, ref, true);
+        return buildBrcb(findReportControl(ied, null, ref, true), ref);
+    }
+
+    private static CmsBrcb buildBrcb(SclReportControl rc, String ref) {
         if (rc == null)
             return null;
 
@@ -87,7 +75,7 @@ public class SclControlBlockService {
         applySclDefaults(brcb, rc);
 
         // Overlay runtime state if present
-        CmsBrcb runtime = RcbStateManager.get(ref);
+        CmsBrcb runtime = CbStateManager.RCB.get(ref);
         if (runtime != null) {
             applyRuntimeState(brcb, runtime);
         }
@@ -111,11 +99,7 @@ public class SclControlBlockService {
      * @return URCB 对象，若未找到则返回 {@code null}
      */
     public static CmsUrcb resolveUrcb(SclIED ied, SclAccessPoint ap, String ref) {
-        SclReportControl rc = findReportControl(ap, ref, false);
-        if (rc == null)
-            return null;
-
-        return buildUrcb(rc, ref);
+        return buildUrcb(findReportControl(ied, ap, ref, false), ref);
     }
 
     /**
@@ -128,11 +112,7 @@ public class SclControlBlockService {
      * @return URCB 对象，若未找到则返回 {@code null}
      */
     public static CmsUrcb resolveUrcb(SclIED ied, String ref) {
-        SclReportControl rc = findReportControl(ied, ref, false);
-        if (rc == null)
-            return null;
-
-        return buildUrcb(rc, ref);
+        return buildUrcb(findReportControl(ied, null, ref, false), ref);
     }
 
     private static CmsUrcb buildUrcb(SclReportControl rc, String ref) {
@@ -165,39 +145,46 @@ public class SclControlBlockService {
         urcb.setPresent("owner", false);
 
         // Overlay runtime state if present
-        CmsBrcb runtime = RcbStateManager.get(ref);
+        CmsBrcb runtime = CbStateManager.RCB.get(ref);
         if (runtime != null) {
-            if (runtime.rptID.value() != null && !runtime.rptID.value().isEmpty()) {
-                urcb.rptID(runtime.rptID.value());
-            }
-            urcb.rptEna(runtime.rptEna.value());
-            if (runtime.datSet.value() != null && !runtime.datSet.value().isEmpty()) {
-                urcb.datSet(runtime.datSet.value());
-            }
-            if (runtime.optFlds != null) {
-                urcb.optFlds(runtime.optFlds);
-            }
-            if (runtime.bufTm != null) {
-                urcb.bufTm(runtime.bufTm.value());
-            }
-            if (runtime.sqNum != null) {
-                urcb.sqNum(runtime.sqNum.value());
-            }
-            if (runtime.trgOps != null) {
-                urcb.trgOps(runtime.trgOps);
-            }
-            if (runtime.intgPd != null) {
-                urcb.intgPd(runtime.intgPd.value());
-            }
-            urcb.gi(runtime.gi.value());
-            if (runtime.isPresent("owner")) {
-                if (runtime.owner.value() != null && runtime.owner.value().length > 0) {
-                    urcb.owner(runtime.owner.value());
-                }
-            }
+            overlayUrcbRuntime(urcb, runtime);
         }
 
         return urcb;
+    }
+
+    /**
+     * Overlay URCB runtime state (carried by CmsBrcb) onto an SCL-built CmsUrcb.
+     */
+    public static void overlayUrcbRuntime(CmsUrcb urcb, CmsBrcb runtime) {
+        if (runtime.rptID.value() != null && !runtime.rptID.value().isEmpty()) {
+            urcb.rptID(runtime.rptID.value());
+        }
+        urcb.rptEna(runtime.rptEna.value());
+        if (runtime.datSet.value() != null && !runtime.datSet.value().isEmpty()) {
+            urcb.datSet(runtime.datSet.value());
+        }
+        if (runtime.optFlds != null) {
+            urcb.optFlds(runtime.optFlds);
+        }
+        if (runtime.bufTm != null) {
+            urcb.bufTm(runtime.bufTm.value());
+        }
+        if (runtime.sqNum != null) {
+            urcb.sqNum(runtime.sqNum.value());
+        }
+        if (runtime.trgOps != null) {
+            urcb.trgOps(runtime.trgOps);
+        }
+        if (runtime.intgPd != null) {
+            urcb.intgPd(runtime.intgPd.value());
+        }
+        urcb.gi(runtime.gi.value());
+        if (runtime.isPresent("owner")) {
+            if (runtime.owner.value() != null && runtime.owner.value().length > 0) {
+                urcb.owner(runtime.owner.value());
+            }
+        }
     }
 
     // ==================== LCB（8.8.2） ====================
@@ -212,20 +199,7 @@ public class SclControlBlockService {
      * @return LCB 对象，若未找到则返回 {@code null}
      */
     public static CmsLcb resolveLcb(SclIED ied, String ref) {
-        if (!SclRefParser.isValid(ref))
-            return null;
-        SclRef sclRef = SclRefParser.parse(ref);
-        String ldName = sclRef.ldInst();
-        String lnName = sclRef.lnName();
-        String cbName = sclRef.doName();
-        if (cbName == null)
-            return null;
-
-        SclLN ln = findLn(ied, ldName, lnName);
-        if (ln == null)
-            return null;
-
-        return buildLcb(ln, cbName);
+        return resolveLcb(ied, null, ref);
     }
 
     /**
@@ -234,7 +208,7 @@ public class SclControlBlockService {
      * @param ied
      *            IED 模型
      * @param ap
-     *            当前关联的访问点
+     *            当前关联的访问点；为 {@code null} 时在全 IED 范围内查找
      * @param ref
      *            引用字符串
      * @return LCB 对象，若未找到则返回 {@code null}
@@ -249,7 +223,7 @@ public class SclControlBlockService {
         if (cbName == null)
             return null;
 
-        SclLN ln = findLn(ap, ldName, lnName);
+        SclLN ln = (ap != null) ? findLn(ap, ldName, lnName) : findLn(ied, ldName, lnName);
         if (ln == null)
             return null;
 
@@ -268,33 +242,7 @@ public class SclControlBlockService {
      * @return GoCB 对象，若未找到则返回 {@code null}
      */
     public static CmsGoCb resolveGocb(SclIED ied, String ref) {
-        // Check in-memory cache first (written by SetGoCBValues)
-        CmsGoCb cached = GoCbCache.get(ref);
-        if (cached != null) {
-            log.debug("resolveGocb: cache hit for '{}'", ref);
-            return cached;
-        }
-
-        if (!SclRefParser.isValid(ref)) {
-            log.warn("resolveGocb: invalid ref format '{}'", ref);
-            return null;
-        }
-        SclRef sclRef = SclRefParser.parse(ref);
-        String ldName = sclRef.ldInst();
-        String lnPart = sclRef.lnName();
-        String cbName = sclRef.doName();
-        if (cbName == null) {
-            log.warn("resolveGocb: invalid ref format '{}' (no CB name)", ref);
-            return null;
-        }
-
-        SclLDevice device = findLd(ied, ldName);
-        if (device == null) {
-            log.warn("resolveGocb: LD '{}' not found", ldName);
-            return null;
-        }
-
-        return findGocbInDevice(device, lnPart, cbName, ref);
+        return resolveGocb(ied, null, ref);
     }
 
     /**
@@ -305,14 +253,14 @@ public class SclControlBlockService {
      * @param ied
      *            IED 模型
      * @param ap
-     *            当前关联的访问点
+     *            当前关联的访问点；为 {@code null} 时在全 IED 范围内查找
      * @param ref
      *            引用字符串
      * @return GoCB 对象，若未找到则返回 {@code null}
      */
     public static CmsGoCb resolveGocb(SclIED ied, SclAccessPoint ap, String ref) {
         // Check in-memory cache first (written by SetGoCBValues)
-        CmsGoCb cached = GoCbCache.get(ref);
+        CmsGoCb cached = CbStateManager.GOCB.get(ref);
         if (cached != null) {
             log.debug("resolveGocb: cache hit for '{}'", ref);
             return cached;
@@ -331,9 +279,9 @@ public class SclControlBlockService {
             return null;
         }
 
-        SclLDevice device = findLd(ap, ldName);
+        SclLDevice device = (ap != null) ? findLd(ap, ldName) : findLd(ied, ldName);
         if (device == null) {
-            log.warn("resolveGocb: LD '{}' not found in AP scope", ldName);
+            log.warn("resolveGocb: LD '{}' not found{}", ldName, ap != null ? " in AP scope" : "");
             return null;
         }
 
@@ -352,33 +300,7 @@ public class SclControlBlockService {
      * @return MSVCB 对象，若未找到则返回 {@code null}
      */
     public static CmsMsvcb resolveMsvcb(SclIED ied, String ref) {
-        // Check in-memory cache first (written by SetMSVCBValues)
-        CmsMsvcb cached = MsvcbCache.get(ref);
-        if (cached != null) {
-            log.debug("resolveMsvcb: cache hit for '{}'", ref);
-            return cached;
-        }
-
-        if (!SclRefParser.isValid(ref)) {
-            log.warn("resolveMsvcb: invalid ref format '{}'", ref);
-            return null;
-        }
-        SclRef sclRef = SclRefParser.parse(ref);
-        String ldName = sclRef.ldInst();
-        String lnPart = sclRef.lnName();
-        String cbName = sclRef.doName();
-        if (cbName == null) {
-            log.warn("resolveMsvcb: invalid ref format '{}' (no CB name)", ref);
-            return null;
-        }
-
-        SclLDevice device = findLd(ied, ldName);
-        if (device == null) {
-            log.warn("resolveMsvcb: LD '{}' not found", ldName);
-            return null;
-        }
-
-        return findMsvcbInDevice(device, lnPart, cbName, ref);
+        return resolveMsvcb(ied, null, ref);
     }
 
     /**
@@ -389,14 +311,14 @@ public class SclControlBlockService {
      * @param ied
      *            IED 模型
      * @param ap
-     *            当前关联的访问点
+     *            当前关联的访问点；为 {@code null} 时在全 IED 范围内查找
      * @param ref
      *            引用字符串
      * @return MSVCB 对象，若未找到则返回 {@code null}
      */
     public static CmsMsvcb resolveMsvcb(SclIED ied, SclAccessPoint ap, String ref) {
         // Check in-memory cache first (written by SetMSVCBValues)
-        CmsMsvcb cached = MsvcbCache.get(ref);
+        CmsMsvcb cached = CbStateManager.MSVCB.get(ref);
         if (cached != null) {
             log.debug("resolveMsvcb: cache hit for '{}'", ref);
             return cached;
@@ -415,9 +337,9 @@ public class SclControlBlockService {
             return null;
         }
 
-        SclLDevice device = findLd(ap, ldName);
+        SclLDevice device = (ap != null) ? findLd(ap, ldName) : findLd(ied, ldName);
         if (device == null) {
-            log.warn("resolveMsvcb: LD '{}' not found in AP scope", ldName);
+            log.warn("resolveMsvcb: LD '{}' not found{}", ldName, ap != null ? " in AP scope" : "");
             return null;
         }
 
@@ -428,8 +350,10 @@ public class SclControlBlockService {
 
     /**
      * 查找 buffered (buffered=true) 或 unbuffered (buffered=false) 的 ReportControl。
+     * <p>
+     * 在指定 AP 作用域内查找；ap 为 {@code null} 时在全 IED 范围内查找。
      */
-    private static SclReportControl findReportControl(SclIED ied, String ref, boolean buffered) {
+    private static SclReportControl findReportControl(SclIED ied, SclAccessPoint ap, String ref, boolean buffered) {
         if (!SclRefParser.isValid(ref))
             return null;
         SclRef sclRef = SclRefParser.parse(ref);
@@ -439,28 +363,7 @@ public class SclControlBlockService {
         if (cbName == null)
             return null;
 
-        SclLN ln = findLn(ied, ldName, lnName);
-        if (ln == null)
-            return null;
-
-        return findReportControlInLn(ln, cbName, buffered);
-    }
-
-    /**
-     * 查找 buffered (buffered=true) 或 unbuffered (buffered=false) 的 ReportControl（AP
-     * 作用域）。
-     */
-    private static SclReportControl findReportControl(SclAccessPoint ap, String ref, boolean buffered) {
-        if (!SclRefParser.isValid(ref))
-            return null;
-        SclRef sclRef = SclRefParser.parse(ref);
-        String ldName = sclRef.ldInst();
-        String lnName = sclRef.lnName();
-        String cbName = sclRef.doName();
-        if (cbName == null)
-            return null;
-
-        SclLN ln = findLn(ap, ldName, lnName);
+        SclLN ln = (ap != null) ? findLn(ap, ldName, lnName) : findLn(ied, ldName, lnName);
         if (ln == null)
             return null;
 
@@ -658,7 +561,7 @@ public class SclControlBlockService {
     }
 
     /** Overlay runtime-modified BRCB fields onto the base instance. */
-    private static void applyRuntimeState(CmsBrcb brcb, CmsBrcb runtime) {
+    public static void applyRuntimeState(CmsBrcb brcb, CmsBrcb runtime) {
         if (runtime.rptID.value() != null && !runtime.rptID.value().isEmpty())
             brcb.rptID(runtime.rptID.value());
         if (runtime.datSet.value() != null && !runtime.datSet.value().isEmpty())

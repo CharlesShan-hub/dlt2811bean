@@ -37,34 +37,49 @@ import com.ysh.jcms.core.data.sequence.common.CmsBinaryTime;
  */
 public class CmsBrcb extends CmsSequence {
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsString rptID;
     @CmsField
+    @CbField(scope = CbFieldScope.RUNTIME)
     public CmsBoolean rptEna;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsObjectReference datSet;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsInt32U confRev;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsRcbOptFlds optFlds;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsInt32U bufTm;
     @CmsField
+    @CbField(scope = CbFieldScope.RUNTIME)
     public CmsInt16U sqNum;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsTriggerConditions trgOps;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsInt32U intgPd;
     @CmsField
+    @CbField(scope = CbFieldScope.RUNTIME)
     public CmsBoolean gi;
     @CmsField
+    @CbField(scope = CbFieldScope.RUNTIME)
     public CmsBoolean purgeBuf;
     @CmsField
+    @CbField(scope = CbFieldScope.RUNTIME)
     public CmsEntryId entryID;
     @CmsField
+    @CbField(scope = CbFieldScope.RUNTIME)
     public CmsBinaryTime timeOfEntry;
     @CmsField(optional = true)
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsInt16 resvTms;
     @CmsField(optional = true)
+    @CbField(scope = CbFieldScope.RUNTIME)
     public CmsOctetString owner;
 
     public CmsBrcb() {

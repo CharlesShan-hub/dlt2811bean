@@ -34,8 +34,8 @@ jcms-scl 负责解析 **SCD（Substation Configuration Description）** 和 **IC
                           └──────────────┘
          ┌──────────────────────────────────────────────┐
          │              state 系                         │
-         │  RcbStateManager / SgcbState                 │
-         │  (BRCB/URCB/SGCB 运行时状态)                   │
+         │  CbStateManager (CbStateStore / Association) │
+         │  (六种控制块运行时状态，分层存储)              │
          └──────────────────────────────────────────────┘
 ```
 
@@ -90,10 +90,10 @@ scl/
 │   ├── DataSetResolver.java         — 数据集解析
 │   └── CbConverter.java             — 控制块转换
 │
-└── state/                  — 运行时状态
-    ├── RcbStateManager.java — BRCB/URCB 运行时状态管理器
-    ├── RcbState.java        — RCB 状态
-    └── SgcbState.java       — SGCB 定值组运行时状态
+└── state/                  — 运行时状态（六种控制块分层存储）
+    ├── CbStateManager.java      — 统一门面（RCB/LCB/GOCB/MSVCB + ASSOCIATION）
+    ├── CbStateStore.java        — RUNTIME 层泛型存储（进程内，按 ref）
+    └── CbAssociationStore.java  — ASSOCIATION 层泛型存储（按会话隔离）
 ```
 
 ---
@@ -274,14 +274,19 @@ CmsData data = DataConverter.toCmsData(dv);
 
 ---
 
-### 8. State 系 — 运行时状态
+### 8. State 系 — 控制块运行时状态
 
-| 类 | 职责 |
-|----|------|
-| **`RcbStateManager`** | BRCB/URCB 运行时状态的线程安全存储。`SetBRCBValues/SetURCBValues` 写入，`GetBRCBValues/GetURCBValues` 优先读取此状态 |
-| **`SgcbState`** | SGCB 定值组的运行时状态（numOfSG, actSG, editSG, 各组的定值） |
+标准 7.6.1 定义六种控制块：BRCB、URCB、LCB、SGCB、GoCB、MSVCB。运行时状态按字段生命周期分三层存储（`@CbField` 标注在 jcms-core 的控制块类上）：
 
-状态存储覆盖 SCL 静态默认值，使得运行时对控制块的修改能够持久化到服务端生命周期结束。
+| 层 | 类 | 生命周期 | 说明 |
+|----|----|---------|------|
+| ENGINEERING | 无存储（读 SCL 模型） | 跨重启 | 只读基底，Set 覆盖值写 RUNTIME 层 |
+| RUNTIME | `CbStateStore` | 进程内 | `CbStateManager.RCB/LCB/GOCB/MSVCB`，Set 写入、Get 优先读取 |
+| ASSOCIATION | `CbAssociationStore` | 本次连接 | `CbStateManager.ASSOCIATION`，URCB per-association，连接断开清除 |
+
+- `CbStateManager.RCB` 同时承载 BRCB/URCB；URCB 的 `rptEna`/`sqNum`/`gi` 走 ASSOCIATION 层（8.7.4 每个关联一个实例）
+- SGCB 是会话级状态，由 jcms-app 的 `SgSessionState` 管理，字段生命周期已标注在 `CmsSgcb`
+- 状态覆盖 SCL 静态默认值，运行时修改生效到服务端生命周期结束
 
 ---
 

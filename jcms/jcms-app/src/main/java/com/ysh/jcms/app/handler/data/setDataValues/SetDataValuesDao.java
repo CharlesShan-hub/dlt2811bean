@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.handler.data.setDataValues;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.core.data.bitarray.CmsQuality;
@@ -13,7 +14,6 @@ import com.ysh.jcms.core.pdu.data.CmsSetDataValuesRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +33,10 @@ public class SetDataValuesDao extends BaseDao {
 
     @Override
     public CmsType toRequest() {
+        // gray("LOG4 toRequest: refs=" + references + ", values=" + values + ", fcs=" +
+        // fcs + ", pairCount="
+        // + (references != null && values != null ? Math.min(references.size(),
+        // values.size()) : 0));
         CmsSetDataValuesRequest req = new CmsSetDataValuesRequest();
         if (references != null && values != null) {
             int size = Math.min(references.size(), values.size());
@@ -57,30 +61,48 @@ public class SetDataValuesDao extends BaseDao {
         return req;
     }
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper().configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 
     private static void fillCmsData(CmsData data, String value) {
+        // gray("LOG5 fillCmsData: rawValue=\"" + value + "\"");
+
         // 尝试 JSON 解析 → 复杂类型
         if (value != null && value.startsWith("{")) {
             try {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> map = MAPPER.readValue(value, Map.class);
-                if (tryParseQuality(data, map))
+                if (tryParseQuality(data, map)) {
+                    // gray("LOG6 fillCmsData: parsed as QUALITY, choice=" + data.choice() + ",
+                    // value=" + value);
                     return;
-                if (tryParseUtcTime(data, map))
+                }
+                if (tryParseUtcTime(data, map)) {
+                    // gray("LOG6 fillCmsData: parsed as UTC_TIME, choice=" + data.choice() + ",
+                    // value=" + value);
                     return;
-                if (tryParseBinaryTime(data, map))
+                }
+                if (tryParseBinaryTime(data, map)) {
+                    // gray("LOG6 fillCmsData: parsed as BINARY_TIME, choice=" + data.choice() + ",
+                    // value=" + value);
                     return;
+                }
+                // gray("LOG6 fillCmsData: JSON object but no matching complex type, falling
+                // back to string: " + value);
             } catch (Exception e) {
-                // 不是有效 JSON，fall through 到字符串
+                // gray("LOG6 fillCmsData: JSON parse failed, falling back to string: " + value
+                // + " (" + e.getMessage() + ")");
             }
         }
 
         // 默认：字符串值
         if (containsNonAscii(value)) {
             data.alt_unicode_string(value);
+            // gray("LOG6 fillCmsData: stored as UNICODE_STRING, choice=" + data.choice() +
+            // ", value=" + value);
         } else {
             data.alt_visible_string(value);
+            // gray("LOG6 fillCmsData: stored as VISIBLE_STRING, choice=" + data.choice() +
+            // ", value=" + value);
         }
     }
 

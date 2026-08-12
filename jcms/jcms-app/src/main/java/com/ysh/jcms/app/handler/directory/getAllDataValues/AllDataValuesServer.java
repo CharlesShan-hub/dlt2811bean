@@ -13,7 +13,7 @@ import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
-import com.ysh.jcms.utils.scl.service.SclDirectoryService;
+import com.ysh.jcms.utils.scl.service.SclAllValuesService;
 import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -48,7 +48,7 @@ public class AllDataValuesServer extends BaseServerHandler<CmsGetAllDataValuesRe
         String fcFilter = fcCode(req.isPresent("fc") ? req.fc.value() : -1);
 
         // Get all entries from service
-        List<CmsDataValueEntry> allEntries = SclDirectoryService.getAllDataValues(doc, ied, lns, fcFilter);
+        List<CmsDataValueEntry> allEntries = SclAllValuesService.getAllDataValues(doc, ied, lns, fcFilter);
 
         // Apply referenceAfter pagination
         List<CmsDataValueEntry> entries = afterEntries(allEntries, refAfter, reqId);

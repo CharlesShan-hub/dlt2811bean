@@ -11,6 +11,7 @@ import com.ysh.jcms.core.pdu.log.CmsGetLcbValuesResponse;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.service.SclControlBlockService;
+import com.ysh.jcms.utils.scl.state.CbStateManager;
 import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -33,7 +34,11 @@ public class GetLcbValuesServer extends BaseServerHandler<CmsGetLcbValuesRequest
         for (CmsObjectReference refObj : req.reference) {
             String ref = str(refObj);
             CmsLcbValueChoice choice;
-            CmsLcb lcb = SclControlBlockService.resolveLcb(ied, ap, ref);
+            // Runtime state layer first, fall back to SCL
+            CmsLcb lcb = CbStateManager.LCB.get(ref);
+            if (lcb == null) {
+                lcb = SclControlBlockService.resolveLcb(ied, ap, ref);
+            }
             if (lcb != null) {
                 choice = new CmsLcbValueChoice().altValue(lcb);
             } else {

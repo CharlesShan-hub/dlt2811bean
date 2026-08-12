@@ -1,0 +1,327 @@
+package com.ysh.jcms.utils.scl.service;
+
+import com.ysh.jcms.core.data.choice.CmsCbValueChoice;
+import com.ysh.jcms.core.data.choice.CmsDataDefinition;
+import com.ysh.jcms.core.data.enumerate.CmsAcsiClass;
+import com.ysh.jcms.core.data.scalar.CmsFC;
+import com.ysh.jcms.core.data.sequence.block.CmsBrcb;
+import com.ysh.jcms.core.data.sequence.block.CmsGoCb;
+import com.ysh.jcms.core.data.sequence.block.CmsLcb;
+import com.ysh.jcms.core.data.sequence.block.CmsMsvcb;
+import com.ysh.jcms.core.data.sequence.common.CmsDataDefinitionStructElem;
+import com.ysh.jcms.core.data.sequence.directory.CmsCbValueEntry;
+import com.ysh.jcms.core.data.sequence.directory.CmsDataDefinitionEntry;
+import com.ysh.jcms.core.data.sequence.directory.CmsDataValueEntry;
+import com.ysh.jcms.utils.scl.SclDocument;
+import com.ysh.jcms.utils.scl.convert.CbConverter;
+import com.ysh.jcms.utils.scl.convert.DataConverter;
+import com.ysh.jcms.utils.scl.convert.DataDefinitionResolver;
+import com.ysh.jcms.utils.scl.convert.DataValueResolver;
+import com.ysh.jcms.utils.scl.convert.DataValueEntry;
+import com.ysh.jcms.utils.scl.model.control.SclGSEControl;
+import com.ysh.jcms.utils.scl.model.control.SclLogControl;
+import com.ysh.jcms.utils.scl.model.control.SclReportControl;
+import com.ysh.jcms.utils.scl.model.control.SclSampledValueControl;
+import com.ysh.jcms.utils.scl.model.ied.SclIED;
+import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl.model.ied.SclLN;
+import com.ysh.jcms.utils.scl.model.template.SclDA;
+import com.ysh.jcms.utils.scl.model.template.SclDOType;
+import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.scl.model.template.SclDO;
+import com.ysh.jcms.utils.scl.model.template.SclLNodeType;
+import com.ysh.jcms.utils.scl.model.template.SclSDO;
+import com.ysh.jcms.utils.scl.navigate.Navigator;
+import com.ysh.jcms.utils.scl.state.CbStateManager;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * "读所有" 值服务 —— 全部数据值（8.3.4）/ 全部数据定义（8.3.5）/ 全部控制块值（8.3.6）。
+ * <p>
+ * 各方法返回完整结果列表，分页（referenceAfter / pageSize）由 handler 层处理。 控制块值（8.3.6）会 overlay
+ * 运行时状态，与 GetXxxCBValues 行为对齐。
+ */
+public final class SclAllValuesService {
+
+    private SclAllValuesService() {
+    }
+
+    // ==================== 全部数据值（8.3.4） ====================
+
+    /**
+     * 获取全部数据值。
+     *
+     * @param doc
+     *            SCL 文档
+     * @param ied
+     *            当前关联的 IED
+     * @param lns
+     *            已解析的 LN 列表
+     * @param fc
+     *            FC 过滤码（null 或空表示不过滤）
+     * @return 数据值条目列表
+     */
+    public static List<CmsDataValueEntry> getAllDataValues(SclDocument doc, SclIED ied, List<SclLN> lns, String fc) {
+        SclDataTypeTemplates templates = doc.dataTypeTemplates();
+        List<CmsDataValueEntry> entries = new ArrayList<>();
+        for (SclLN ln : lns) {
+            String ldInst = Navigator.findLdInst(ied, ln);
+            if (ldInst == null)
+                continue;
+
+            List<String> doNames = getDoNames(ln, templates);
+            for (String doName : doNames) {
+                String fullRef = ied.name() + "/" + ldInst + "/" + ln.getFullName() + "." + doName;
+                DataValueEntry dv = DataValueResolver.resolve(doc, fullRef, fc);
+                if (dv != null && dv.val() != null && !dv.val().isEmpty() && dv.bType() != null && !dv.bType().isEmpty()) {
+                    entries.add(new CmsDataValueEntry().reference(fullRef).value(DataConverter.toCmsData(dv)));
+                }
+            }
+        }
+        return entries;
+    }
+
+    private static List<String> getDoNames(SclLN ln, SclDataTypeTemplates templates) {
+        List<String> names = new ArrayList<>();
+        if (templates == null || ln.lnType() == null || ln.lnType().isEmpty())
+            return names;
+        SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
+        if (lnt == null)
+            return names;
+        for (SclDO doDef : lnt.dos()) {
+            names.add(doDef.name());
+        }
+        return names;
+    }
+
+    // ==================== 全部数据定义（8.3.5） ====================
+
+    /**
+     * 获取全部数据定义。
+     *
+     * @param doc
+     *            SCL 文档
+     * @param lns
+     *            已解析的 LN 列表
+     * @param fc
+     *            FC 过滤码（null 或空表示不过滤）
+     * @return 数据定义条目列表
+     */
+    public static List<CmsDataDefinitionEntry> getAllDataDefinition(SclDocument doc, List<SclLN> lns, String fc) {
+        SclDataTypeTemplates templates = doc.dataTypeTemplates();
+        List<CmsDataDefinitionEntry> entries = new ArrayList<>();
+        for (SclLN ln : lns) {
+            if (templates == null || ln.lnType() == null)
+                continue;
+            SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
+            if (lnt == null)
+                continue;
+
+            for (SclDO doDef : lnt.dos()) {
+                // FC 过滤
+                if (fc != null) {
+                    SclDOType doType = doDef.type() != null ? templates.findDoTypeById(doDef.type()) : null;
+                    if (doType == null)
+                        continue;
+                    boolean hasFc = false;
+                    for (SclDA da : doType.das()) {
+                        if (fc.equalsIgnoreCase(da.fc())) {
+                            hasFc = true;
+                            break;
+                        }
+                    }
+                    if (!hasFc)
+                        continue;
+                }
+
+                CmsDataDefinition def = buildDoDefinition(templates, doDef);
+                if (def == null)
+                    continue;
+
+                SclDOType doType2 = doDef.type() != null ? templates.findDoTypeById(doDef.type()) : null;
+                String cdc = doType2 != null ? doType2.cdc() : null;
+
+                CmsDataDefinitionEntry entry = new CmsDataDefinitionEntry().reference(doDef.name());
+                if (cdc != null)
+                    entry.cdcType(cdc);
+                entry.definition = def;
+                entries.add(entry);
+            }
+        }
+        return entries;
+    }
+
+    private static CmsDataDefinition buildDoDefinition(SclDataTypeTemplates templates, SclDO doDef) {
+        if (doDef.type() == null)
+            return null;
+        SclDOType doType = templates.findDoTypeById(doDef.type());
+        if (doType == null)
+            return null;
+
+        List<CmsDataDefinitionStructElem> arr = new ArrayList<>();
+        for (SclDA da : doType.das()) {
+            String bType = da.bType();
+            if (bType == null)
+                bType = "BOOLEAN";
+            CmsDataDefinitionStructElem elem = new CmsDataDefinitionStructElem().name(da.name())
+                    .fc(da.fc() != null ? CmsFC.fromCodeOr(da.fc(), CmsFC.XX) : 0).type(DataDefinitionResolver.toDataDefinition(bType));
+            arr.add(elem);
+        }
+        for (SclSDO sdo : doType.sdos()) {
+            CmsDataDefinitionStructElem elem = new CmsDataDefinitionStructElem().name(sdo.name());
+            elem.type(DataDefinitionResolver.toDataDefinition(null));
+            arr.add(elem);
+        }
+
+        CmsDataDefinition def = new CmsDataDefinition();
+        def.choice(CmsDataDefinition.CHOICE_STRUCTURE);
+        def.alt_structure = arr;
+        return def;
+    }
+
+    // ==================== 全部控制块值（8.3.6） ====================
+
+    /**
+     * 获取全部控制块值。
+     *
+     * @param lns
+     *            已解析的 LN 列表
+     * @param acsiClass
+     *            ACSI 类（BRCB/URCB/LCB/GOCB/MSVCB）
+     * @return 控制块值条目列表
+     */
+    public static List<CmsCbValueEntry> getAllCbValues(List<SclLN> lns, int acsiClass) {
+        List<CmsCbValueEntry> entries = new ArrayList<>();
+        for (SclLN ln : lns) {
+            List<CbPair> cbPairs = collectCbValues(ln, acsiClass);
+            for (CbPair cb : cbPairs) {
+                entries.add(new CmsCbValueEntry().reference(ln.getFullName() + "." + cb.ref).value(cb.value));
+            }
+        }
+        return entries;
+    }
+
+    private static List<CbPair> collectCbValues(SclLN ln, int acsiClass) {
+        List<CbPair> result = new ArrayList<>();
+        switch (acsiClass) {
+            case CmsAcsiClass.BRCB :
+                for (SclReportControl rc : ln.reportControls()) {
+                    if ("true".equals(rc.buffered())) {
+                        result.add(new CbPair(rc.name(), overlayBrcb(ln, rc.name(), CbConverter.brcbFrom(rc))));
+                    }
+                }
+                break;
+            case CmsAcsiClass.URCB :
+                for (SclReportControl rc : ln.reportControls()) {
+                    if (!"true".equals(rc.buffered())) {
+                        result.add(new CbPair(rc.name(), overlayUrcb(ln, rc.name(), CbConverter.urcbFrom(rc))));
+                    }
+                }
+                break;
+            case CmsAcsiClass.LCB :
+                for (SclLogControl lc : ln.logControls()) {
+                    result.add(new CbPair(lc.name(), overlayLcb(ln, lc.name(), CbConverter.lcbFrom(lc))));
+                }
+                break;
+            case CmsAcsiClass.GOCB :
+                for (SclGSEControl gc : ln.gseControls()) {
+                    result.add(new CbPair(gc.name(), overlayGocb(ln, gc.name(), CbConverter.gocbFrom(gc))));
+                }
+                break;
+            case CmsAcsiClass.MSVCB :
+                for (SclSampledValueControl sv : ln.svControls()) {
+                    result.add(new CbPair(sv.name(), overlayMsvcb(ln, sv.name(), CbConverter.msvcbFrom(sv))));
+                }
+                break;
+            default :
+                break;
+        }
+        return result;
+    }
+
+    // ==================== 运行时状态 overlay（8.3.6 与 GetXxxCBValues 行为对齐）
+    // ====================
+
+    /** 完整控制块引用：{@code ldInst/lnName.cbName}（与 Set 服务使用的引用格式一致）。 */
+    private static String fullRef(SclLN ln, String cbName) {
+        SclLDevice ld = ln.parentLd();
+        if (ld == null || ld.inst() == null) {
+            return null;
+        }
+        return ld.inst() + "/" + ln.getFullName() + "." + cbName;
+    }
+
+    private static CmsCbValueChoice overlayBrcb(SclLN ln, String cbName, CmsCbValueChoice choice) {
+        String ref = fullRef(ln, cbName);
+        if (ref == null) {
+            return choice;
+        }
+        CmsBrcb rt = CbStateManager.RCB.get(ref);
+        if (rt != null) {
+            SclControlBlockService.applyRuntimeState(choice.altBrcb, rt);
+        }
+        return choice;
+    }
+
+    private static CmsCbValueChoice overlayUrcb(SclLN ln, String cbName, CmsCbValueChoice choice) {
+        String ref = fullRef(ln, cbName);
+        if (ref == null) {
+            return choice;
+        }
+        CmsBrcb rt = CbStateManager.RCB.get(ref);
+        if (rt != null) {
+            SclControlBlockService.overlayUrcbRuntime(choice.altUrcb, rt);
+        }
+        return choice;
+    }
+
+    private static CmsCbValueChoice overlayLcb(SclLN ln, String cbName, CmsCbValueChoice choice) {
+        String ref = fullRef(ln, cbName);
+        if (ref == null) {
+            return choice;
+        }
+        CmsLcb rt = CbStateManager.LCB.get(ref);
+        if (rt != null) {
+            choice.altLcb = rt;
+        }
+        return choice;
+    }
+
+    private static CmsCbValueChoice overlayGocb(SclLN ln, String cbName, CmsCbValueChoice choice) {
+        String ref = fullRef(ln, cbName);
+        if (ref == null) {
+            return choice;
+        }
+        CmsGoCb rt = CbStateManager.GOCB.get(ref);
+        if (rt != null) {
+            choice.altGocb = rt;
+        }
+        return choice;
+    }
+
+    private static CmsCbValueChoice overlayMsvcb(SclLN ln, String cbName, CmsCbValueChoice choice) {
+        String ref = fullRef(ln, cbName);
+        if (ref == null) {
+            return choice;
+        }
+        CmsMsvcb rt = CbStateManager.MSVCB.get(ref);
+        if (rt != null) {
+            choice.altMsvcb = rt;
+        }
+        return choice;
+    }
+
+    // ==================== 内部数据结构 ====================
+
+    private static final class CbPair {
+        final String ref;
+        final CmsCbValueChoice value;
+
+        CbPair(String ref, CmsCbValueChoice value) {
+            this.ref = ref;
+            this.value = value;
+        }
+    }
+}

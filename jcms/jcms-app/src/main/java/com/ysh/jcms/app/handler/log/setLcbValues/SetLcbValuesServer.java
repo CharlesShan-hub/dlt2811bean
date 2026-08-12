@@ -3,6 +3,7 @@ package com.ysh.jcms.app.handler.log.setLcbValues;
 import com.ysh.jcms.app.handler.SetCbValuesServer;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.data.sequence.block.CmsLcb;
 import com.ysh.jcms.core.data.sequence.log.CmsSetLcbEntry;
 import com.ysh.jcms.core.data.sequence.log.CmsSetLcbResult;
 import com.ysh.jcms.core.pdu.log.CmsSetLcbValuesError;
@@ -12,6 +13,8 @@ import com.ysh.jcms.utils.scl.model.control.SclLogControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.ref.SclRef;
+import com.ysh.jcms.utils.scl.service.SclControlBlockService;
+import com.ysh.jcms.utils.scl.state.CbStateManager;
 import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -79,6 +82,16 @@ public class SetLcbValuesServer extends SetCbValuesServer<CmsSetLcbValuesRequest
             return result;
         }
 
+        // Runtime state layer: SCL baseline first, then runtime overlay.
+        // Never mutate the SCL model (static configuration stays clean).
+        CmsLcb rtState = CbStateManager.LCB.get(ref);
+        if (rtState == null) {
+            rtState = SclControlBlockService.resolveLcb(ied, ref);
+            if (rtState == null) {
+                rtState = new CmsLcb();
+            }
+        }
+
         // 8.8.3.2.b) logEna ordering:
         // - logEna=false: set logEna FIRST, then others
         // - logEna=true: set others FIRST, then logEna
@@ -87,31 +100,32 @@ public class SetLcbValuesServer extends SetCbValuesServer<CmsSetLcbValuesRequest
 
         if (hasLogEna && !logEnaVal) {
             // logEna=false → set logEna first
-            lc.logEna("false");
+            rtState.logEna(false);
             result.setPresent("logEna", false);
-            setOtherLcbFields(result, entry, lc);
+            setOtherLcbFields(result, entry, rtState);
         } else if (hasLogEna && logEnaVal) {
             // logEna=true → set others first, then logEna
-            setOtherLcbFields(result, entry, lc);
+            setOtherLcbFields(result, entry, rtState);
             if (!result.hasAnyPresent()) {
-                lc.logEna("true");
+                rtState.logEna(true);
                 result.setPresent("logEna", false);
             }
         } else {
             // No logEna in entry
-            setOtherLcbFields(result, entry, lc);
+            setOtherLcbFields(result, entry, rtState);
         }
 
+        CbStateManager.LCB.put(ref, rtState);
         log.info("SetLCBValues: applied fields to ref={}", ref);
         return result;
     }
 
-    private void setOtherLcbFields(CmsSetLcbResult result, CmsSetLcbEntry entry, SclLogControl lc) {
+    private void setOtherLcbFields(CmsSetLcbResult result, CmsSetLcbEntry entry, CmsLcb rtState) {
         // datSet
         if (entry.isPresent("datSet")) {
             String val = entry.datSet.value();
             if (val != null && val.length() > 0) {
-                lc.datSet(val);
+                rtState.datSet(val);
                 result.setPresent("datSet", false);
             } else {
                 result.datSet(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
@@ -119,20 +133,19 @@ public class SetLcbValuesServer extends SetCbValuesServer<CmsSetLcbValuesRequest
         }
         // trgOps
         if (entry.isPresent("trgOps")) {
-            lc.trgOps(entry.trgOps.data_change() + "," + entry.trgOps.quality_change() + "," + entry.trgOps.data_update() + ","
-                    + entry.trgOps.integrity());
+            rtState.trgOps(entry.trgOps);
             result.setPresent("trgOps", false);
         }
         // intgPd
         if (entry.isPresent("intgPd")) {
-            lc.intgPd(String.valueOf(entry.intgPd.value()));
+            rtState.intgPd(entry.intgPd.value());
             result.setPresent("intgPd", false);
         }
         // logRef
         if (entry.isPresent("logRef")) {
             String val = entry.logRef.value();
             if (val != null && val.length() > 0) {
-                lc.logName(val);
+                rtState.logRef(val);
                 result.setPresent("logRef", false);
             } else {
                 result.logRef(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
@@ -140,10 +153,12 @@ public class SetLcbValuesServer extends SetCbValuesServer<CmsSetLcbValuesRequest
         }
         // optFlds
         if (entry.isPresent("optFlds")) {
+            rtState.optFlds(entry.optFlds);
             result.setPresent("optFlds", false);
         }
         // bufTm
         if (entry.isPresent("bufTm")) {
+            rtState.bufTm(entry.bufTm.value());
             result.setPresent("bufTm", false);
         }
     }

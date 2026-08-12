@@ -14,7 +14,7 @@ import com.ysh.jcms.utils.scl.model.control.SclReportControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.ref.SclRef;
-import com.ysh.jcms.utils.scl.state.RcbStateManager;
+import com.ysh.jcms.utils.scl.state.CbStateManager;
 import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -84,7 +84,7 @@ public class SetUrcbValuesServer
             return result;
         }
 
-        CmsBrcb rtState = RcbStateManager.getOrCreate(ref);
+        CmsBrcb rtState = CbStateManager.ASSOCIATION.getOrCreate(session.sessionId(), ref, CmsBrcb::new);
 
         // 8.7.5.2.b) rptEna ordering
         boolean hasRptEna = entry.isPresent("rptEna");

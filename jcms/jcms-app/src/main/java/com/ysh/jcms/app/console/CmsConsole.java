@@ -221,7 +221,9 @@ public abstract class CmsConsole extends CmsNode {
     // ── command parsing ──
 
     public boolean executeLine(String raw) {
+        // ConsolePrinter.gray("LOG1 executeLine: cmd=\"" + raw + "\"");
         List<String> tokens = tokenize(raw);
+        // ConsolePrinter.gray("LOG2 executeLine: tokens=" + tokens);
         if (tokens.isEmpty())
             return true;
 
@@ -253,6 +255,7 @@ public abstract class CmsConsole extends CmsNode {
                     }
                 }
             }
+            // ConsolePrinter.gray("LOG3 executeLine: args=" + args);
 
             Requirement req = handler.requirement();
             if (req == Requirement.ASSOCIATED && !connected()) {
@@ -281,7 +284,11 @@ public abstract class CmsConsole extends CmsNode {
         boolean inQuote = false;
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
-            if (c == '"') {
+            if (c == '\\' && i + 1 < s.length() && s.charAt(i + 1) == '"') {
+                // escaped quote \" → append literal " and skip the \
+                buf.append('"');
+                i++;
+            } else if (c == '"') {
                 inQuote = !inQuote;
             } else if (Character.isWhitespace(c) && !inQuote) {
                 if (buf.length() > 0) {
@@ -305,6 +312,10 @@ public abstract class CmsConsole extends CmsNode {
         boolean inQuote = false;
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
+            if (c == '\\' && i + 1 < s.length() && s.charAt(i + 1) == '"') {
+                i++; // skip escaped quote
+                continue;
+            }
             if (c == '"') {
                 inQuote = !inQuote;
                 continue;

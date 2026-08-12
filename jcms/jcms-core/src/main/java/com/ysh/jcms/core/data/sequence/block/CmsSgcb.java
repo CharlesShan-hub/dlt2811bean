@@ -21,14 +21,19 @@ import com.ysh.jcms.core.data.sequence.common.CmsUtcTime;
  */
 public class CmsSgcb extends CmsSequence {
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsInt8U numOfSG;
     @CmsField
+    @CbField(scope = CbFieldScope.RUNTIME)
     public CmsInt8U actSG;
     @CmsField
+    @CbField(scope = CbFieldScope.ASSOCIATION)
     public CmsInt8U editSG;
     @CmsField
+    @CbField(scope = CbFieldScope.RUNTIME)
     public CmsUtcTime tActEdt; // TimeStamp ::= UtcTime
     @CmsField(optional = true)
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsInt16U resvTms;
 
     public CmsSgcb() {

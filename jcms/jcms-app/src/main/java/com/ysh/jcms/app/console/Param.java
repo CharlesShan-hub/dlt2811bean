@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Describes a single CLI parameter of a command.
@@ -114,8 +115,13 @@ public class Param {
             return Float.parseFloat(value);
         if (type == Double.class || type == double.class)
             return Double.parseDouble(value);
-        if (type == List.class)
-            return Arrays.asList(value.split(delimiter));
+        if (type == List.class) {
+            // Default delimiter "\\s+" is already a regex; user-specified delimiters
+            // (e.g. "|", ",") are literal strings and must be quoted to avoid regex
+            // metacharacter issues.
+            String splitRegex = "\\s+".equals(delimiter) ? delimiter : Pattern.quote(delimiter);
+            return Arrays.asList(value.split(splitRegex));
+        }
         throw new IllegalArgumentException("Unsupported type: " + type);
     }
 }

@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.goose.setGoCbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.utils.scl.service.SclControlBlockService;
-import com.ysh.jcms.utils.scl.state.GoCbCache;
+import com.ysh.jcms.utils.scl.state.CbStateManager;
 import com.ysh.jcms.core.data.sequence.block.CmsGoCb;
 import com.ysh.jcms.core.data.sequence.goose.CmsSetGoCbEntry;
 import com.ysh.jcms.core.pdu.goose.CmsSetGoCbValuesError;
@@ -40,7 +40,7 @@ public class SetGoCbValuesServer extends BaseServerHandler<CmsSetGoCbValuesReque
             log.debug("SetGoCBValues: processing entry[{}] ref={}", i, ref);
 
             // Get baseline from cache or SCL
-            CmsGoCb baseline = GoCbCache.get(ref);
+            CmsGoCb baseline = CbStateManager.GOCB.get(ref);
             if (baseline == null && ied != null && ap != null) {
                 baseline = SclControlBlockService.resolveGocb(ied, ap, ref);
             }
@@ -65,7 +65,7 @@ public class SetGoCbValuesServer extends BaseServerHandler<CmsSetGoCbValuesReque
             }
 
             // Store updated GoCB in cache
-            GoCbCache.put(ref, baseline);
+            CbStateManager.GOCB.put(ref, baseline);
             log.info("SetGoCBValues: updated '{}' in cache", ref);
         }
 

@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.node;
 
 import com.ysh.jcms.app.handler.sg.SgSessionState;
+import com.ysh.jcms.utils.scl.state.CbStateManager;
 import com.ysh.jcms.app.handler.report.report.ReportEngine;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
@@ -327,11 +328,15 @@ public class InnerServer implements ConnectionListener {
             this.sclDataTypeTemplates = templates;
         }
 
-        /** Hook 1: clear setting-group session state and report subscriptions. */
+        /**
+         * Hook 1: clear setting-group session state, association-scoped CB state and
+         * report subscriptions.
+         */
         @Override
         protected void clearAssociation() {
             super.clearAssociation();
             SgSessionState.clear(sessionId());
+            CbStateManager.clearAssociation(sessionId());
             ReportEngine engine = ReportEngine.getInstance();
             if (engine != null) {
                 engine.unsubscribeAll(this);

@@ -24,11 +24,13 @@ public class SclLDevice {
 
     public SclLDevice addLn(SclLN ln) {
         this.lns.add(ln);
+        ln.parentLd(this);
         return this;
     }
 
     public SclLDevice addSubLn(SclLN subLn) {
         this.subLns.add(subLn);
+        subLn.parentLd(this);
         return this;
     }
 

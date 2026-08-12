@@ -25,18 +25,25 @@ import com.ysh.jcms.core.data.scalar.CmsObjectReference;
  */
 public class CmsLcb extends CmsSequence {
     @CmsField
+    @CbField(scope = CbFieldScope.RUNTIME)
     public CmsBoolean logEna;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsObjectReference datSet;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsTriggerConditions trgOps;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsInt32U intgPd;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsObjectReference logRef;
     @CmsField(optional = true)
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsLcbOptFlds optFlds;
     @CmsField(optional = true)
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsInt32U bufTm;
 
     public CmsLcb() {

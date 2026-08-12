@@ -27,6 +27,9 @@ public class SclLNBase {
     private String desc;
     private String lnType;
 
+    /** 所属逻辑设备（解析时由 SclLDevice.addLn 建立，用于推导完整控制块引用）。 */
+    private transient SclLDevice parentLd;
+
     private final List<SclDOI> dois = new ArrayList<>();
     private final List<SclDataSet> dataSets = new ArrayList<>();
     private final List<SclReportControl> reportControls = new ArrayList<>();

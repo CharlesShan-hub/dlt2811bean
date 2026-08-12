@@ -41,9 +41,6 @@ public class SclManager {
     public String source() {
         return source;
     }
-    public String getSource() {
-        return source;
-    }
 
     private boolean isAbsolutePath(String path) {
         if (path.length() >= 3 && Character.isLetter(path.charAt(0)) && path.charAt(1) == ':'
@@ -68,20 +65,11 @@ public class SclManager {
     public SclDocument document() {
         return document;
     }
-    public SclDocument getDocument() {
-        return document;
-    }
     public java.util.List<com.ysh.jcms.utils.scl.model.ied.SclIED> ieds() {
-        return document != null ? document.ieds() : java.util.Collections.emptyList();
-    }
-    public java.util.List<com.ysh.jcms.utils.scl.model.ied.SclIED> getIeds() {
         return document != null ? document.ieds() : java.util.Collections.emptyList();
     }
 
     public boolean loaded() {
-        return document != null;
-    }
-    public boolean isLoaded() {
         return document != null;
     }
 }

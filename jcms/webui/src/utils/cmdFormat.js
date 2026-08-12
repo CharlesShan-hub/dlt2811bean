@@ -169,10 +169,12 @@ export function buildCmd(cmd, params, form, opts = {}) {
           parts.push('--fc', `"${fcs.join(delim)}"`)
         }
         // set-data-values 额外输出 --values 列表
+        // 注意：JSON 值中的 " 需要转义为 \"，否则 tokenizer 会误判引号边界
         if (cmd === 'set-data-values') {
           const nonEmptyValues = values.filter(v => v)
           if (nonEmptyValues.length) {
-            parts.push('--values', `"${values.join(delim)}"`)
+            const escapedVals = values.join(delim).replace(/"/g, '\\"')
+            parts.push('--values', `"${escapedVals}"`)
           }
         }
         // data-dir: SDO/DA 作为 --after 分页游标
@@ -253,7 +255,7 @@ export function parseCmd(cmdStr, params, opts = {}) {
           errors.push(`参数 --${key} 缺少值`)
           i++
         } else {
-          const raw = val.startsWith('"') && val.endsWith('"') ? val.slice(1, -1) : val
+          const raw = val.startsWith('"') && val.endsWith('"') ? val.slice(1, -1).replace(/\\"/g, '"') : val
           form[key] = raw
           i += 2
         }

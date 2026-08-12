@@ -28,20 +28,28 @@ import com.ysh.jcms.core.data.scalar.CmsString;
  */
 public class CmsMsvcb extends CmsSequence {
     @CmsField
+    @CbField(scope = CbFieldScope.RUNTIME)
     public CmsBoolean svEna;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsString msvID;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsObjectReference datSet;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsInt32U confRev;
     @CmsField(optional = true)
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsSmpMod smpMod;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsInt16U smpRate;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsMsvcbOptFlds optFlds;
     @CmsField(optional = true)
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsPhyComAddr dstAddress;
 
     public CmsMsvcb() {

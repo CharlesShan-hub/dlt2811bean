@@ -32,28 +32,40 @@ import com.ysh.jcms.core.data.scalar.CmsString;
  */
 public class CmsUrcb extends CmsSequence {
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsString rptID;
     @CmsField
+    @CbField(scope = CbFieldScope.ASSOCIATION)
     public CmsBoolean rptEna;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsObjectReference datSet;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsInt32U confRev;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsRcbOptFlds optFlds;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsInt32U bufTm;
     @CmsField
+    @CbField(scope = CbFieldScope.ASSOCIATION)
     public CmsInt16U sqNum;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsTriggerConditions trgOps;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsInt32U intgPd;
     @CmsField
+    @CbField(scope = CbFieldScope.ASSOCIATION)
     public CmsBoolean gi;
     @CmsField
+    @CbField(scope = CbFieldScope.RUNTIME)
     public CmsBoolean resv;
     @CmsField(optional = true)
+    @CbField(scope = CbFieldScope.RUNTIME)
     public CmsOctetString owner;
 
     public CmsUrcb() {

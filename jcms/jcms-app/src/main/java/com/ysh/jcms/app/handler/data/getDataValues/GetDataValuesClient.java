@@ -1,14 +1,22 @@
 package com.ysh.jcms.app.handler.data.getDataValues;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.core.data.choice.CmsData;
 import com.ysh.jcms.core.pdu.data.CmsGetDataValuesError;
 import com.ysh.jcms.core.pdu.data.CmsGetDataValuesResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GetDataValuesClient extends BaseClientHandler<GetDataValuesDao> {
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Override
     public void execute(GetDataValuesDao dao) throws Exception {
@@ -25,7 +33,24 @@ public class GetDataValuesClient extends BaseClientHandler<GetDataValuesDao> {
     protected void onSuccess(Frame frame, GetDataValuesDao dao) throws IOException {
         CmsGetDataValuesResponse resp = decodeResp(frame, new CmsGetDataValuesResponse());
         if (content() != null) {
-            content().res(resp.inner.toJsonValue());
+            List<Object> structuredValues = new ArrayList<>();
+            for (CmsData data : resp.value) {
+                String jsonStr = data.toValueString();
+                // Complex types (quality, utc-time, binary-time) return JSON strings
+                if (jsonStr.startsWith("{")) {
+                    try {
+                        structuredValues.add(MAPPER.readValue(jsonStr, Object.class));
+                    } catch (Exception e) {
+                        structuredValues.add(jsonStr);
+                    }
+                } else {
+                    structuredValues.add(jsonStr);
+                }
+            }
+            Map<String, Object> result = new LinkedHashMap<>();
+            result.put("value", structuredValues);
+            result.put("moreFollows", resp.moreFollows.value() ? 1 : 0);
+            content().res(result);
         }
     }
 }

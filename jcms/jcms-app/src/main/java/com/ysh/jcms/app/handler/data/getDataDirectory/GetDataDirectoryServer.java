@@ -13,7 +13,7 @@ import com.ysh.jcms.utils.scl.model.instance.SclDOI;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.ref.SclRefParser;
-import com.ysh.jcms.utils.scl.service.SclDirectoryService;
+import com.ysh.jcms.utils.scl.service.SclDataDirectoryService;
 import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -53,7 +53,7 @@ public class GetDataDirectoryServer extends BaseServerHandler<CmsGetDataDirector
         String sdoName = parsed.daName();
 
         // Get all entries from service
-        List<CmsSubRefEntry> allEntries = SclDirectoryService.getDataDirectory(doc, ln, doName, sdoName, doi);
+        List<CmsSubRefEntry> allEntries = SclDataDirectoryService.getDataDirectory(doc, ln, doName, sdoName, doi);
         if (allEntries == null) {
             log.debug("GetDataDirectory: '{}' is not an SDO, returning empty", sdoName);
             allEntries = new ArrayList<>();

@@ -14,7 +14,7 @@ import com.ysh.jcms.utils.scl.model.control.SclReportControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.ref.SclRef;
-import com.ysh.jcms.utils.scl.state.RcbStateManager;
+import com.ysh.jcms.utils.scl.state.CbStateManager;
 import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -86,7 +86,7 @@ public class SetBrcbValuesServer
         }
 
         // Get or create runtime state
-        CmsBrcb rtState = RcbStateManager.getOrCreate(ref);
+        CmsBrcb rtState = CbStateManager.RCB.getOrCreate(ref, CmsBrcb::new);
 
         // 8.7.3.2.b) rptEna ordering:
         // - rptEna=false: set rptEna FIRST, then others

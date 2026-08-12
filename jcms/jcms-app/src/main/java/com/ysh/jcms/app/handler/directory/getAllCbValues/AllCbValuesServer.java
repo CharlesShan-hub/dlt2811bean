@@ -13,7 +13,7 @@ import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
-import com.ysh.jcms.utils.scl.service.SclDirectoryService;
+import com.ysh.jcms.utils.scl.service.SclAllValuesService;
 import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -56,7 +56,7 @@ public class AllCbValuesServer extends BaseServerHandler<CmsGetAllCbValuesReques
         }
 
         // Get all entries from service
-        List<CmsCbValueEntry> allEntries = SclDirectoryService.getAllCbValues(lns, acsiClass);
+        List<CmsCbValueEntry> allEntries = SclAllValuesService.getAllCbValues(lns, acsiClass);
 
         // Apply referenceAfter pagination
         List<CmsCbValueEntry> entries = afterEntries(allEntries, refAfter, reqId);

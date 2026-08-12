@@ -378,6 +378,27 @@ Connection 断开（正常/异常/close()）
 
 ---
 
+## 性能与健壮性
+
+### handler 线程池（jcms-app/InnerServer）
+
+读线程只做帧解码，业务 handler 在 `dispatchExecutor`（线程池）执行：
+
+```
+读线程 → onFrameReceived → dispatchExecutor.submit(handleFrame)   // 不阻塞读
+```
+
+慢服务不再拖住同连接后续请求的读取；响应乱序返回由 ReqID 匹配（标准 6.2.1 b：按服务请求序号匹配，乱序响应合法）。`stop()` 时 `shutdownNow()` 兜底。
+
+### 输入缓冲与 TCP 选项（transport/wire/Connection）
+
+- `BufferedInputStream(socket.getInputStream(), 64KB)` — 大帧（>8KB）一次填充，减少系统调用次数
+- `setTcpNoDelay(true)` — 禁用 Nagle 聚合，小报文（Test 探针、确认帧）低延迟
+
+### FrameHeader 编码 fail-fast
+
+`serviceCode == null` 时 `encode()` 抛 `IllegalStateException`，防止静默写出 SC=0x00 的非法帧（服务码 0x00 无定义）。
+
 ## 与上层模块的关系
 
 | 模块 | 使用方式 |

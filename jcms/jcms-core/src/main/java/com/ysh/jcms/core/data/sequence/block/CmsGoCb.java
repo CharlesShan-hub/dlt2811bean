@@ -24,16 +24,22 @@ import com.ysh.jcms.core.data.scalar.CmsString;
  */
 public class CmsGoCb extends CmsSequence {
     @CmsField
+    @CbField(scope = CbFieldScope.RUNTIME)
     public CmsBoolean goEna;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsString goID;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsObjectReference datSet;
     @CmsField
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsInt32U confRev;
     @CmsField
+    @CbField(scope = CbFieldScope.RUNTIME)
     public CmsBoolean ndsCom;
     @CmsField(optional = true)
+    @CbField(scope = CbFieldScope.ENGINEERING)
     public CmsPhyComAddr dstAddress;
 
     public CmsGoCb() {
