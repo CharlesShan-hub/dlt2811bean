@@ -15,7 +15,7 @@ import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.state.RcbStateManager;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.session.Session;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class SetBrcbValuesServer
             SetCbValuesServer<CmsSetBrcbValuesRequest, CmsSetBrcbValuesError, CmsSetBrcbEntry, CmsSetBrcbResult> {
 
     public SetBrcbValuesServer() {
-        super(ServiceName.SET_BRCB_VALUES, CmsSetBrcbValuesRequest.class, CmsSetBrcbValuesError.class);
+        super(CmsServiceInfo.SET_BRCB_VALUES, CmsSetBrcbValuesRequest.class, CmsSetBrcbValuesError.class);
     }
 
     @Override

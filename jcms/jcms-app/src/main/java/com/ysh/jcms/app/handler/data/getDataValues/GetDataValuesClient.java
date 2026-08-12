@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.data.getDataValues;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.data.CmsGetDataValuesError;
 import com.ysh.jcms.core.pdu.data.CmsGetDataValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class GetDataValuesClient extends BaseClientHandler<GetDataValuesDao> {
 
     @Override
     public void execute(GetDataValuesDao dao) throws Exception {
-        send(ServiceName.GET_DATA_VALUES, dao);
+        send(CmsServiceInfo.GET_DATA_VALUES, dao);
     }
 
     @Override

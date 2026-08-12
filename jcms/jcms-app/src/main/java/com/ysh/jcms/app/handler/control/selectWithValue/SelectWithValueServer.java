@@ -7,7 +7,7 @@ import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.pdu.control.CmsSelectWithValueError;
 import com.ysh.jcms.core.pdu.control.CmsSelectWithValueRequest;
 import com.ysh.jcms.core.pdu.control.CmsSelectWithValueResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -20,7 +20,7 @@ import com.ysh.jcms.utils.transport.session.Session;
 public class SelectWithValueServer extends BaseServerHandler<CmsSelectWithValueRequest, CmsSelectWithValueError> {
 
     public SelectWithValueServer() {
-        super(ServiceName.SELECT_WITH_VALUE, CmsSelectWithValueRequest.class, CmsSelectWithValueError.class);
+        super(CmsServiceInfo.SELECT_WITH_VALUE, CmsSelectWithValueRequest.class, CmsSelectWithValueError.class);
     }
 
     @Override

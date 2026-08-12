@@ -7,14 +7,14 @@ import com.ysh.jcms.core.pdu.sg.CmsSelectEditSgError;
 import com.ysh.jcms.core.pdu.sg.CmsSelectEditSgRequest;
 import com.ysh.jcms.core.pdu.sg.CmsSelectEditSgResponse;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class SelectEditSgServer extends BaseServerHandler<CmsSelectEditSgRequest, CmsSelectEditSgError> {
 
     public SelectEditSgServer() {
-        super(ServiceName.SELECT_EDIT_SG, CmsSelectEditSgRequest.class, CmsSelectEditSgError.class);
+        super(CmsServiceInfo.SELECT_EDIT_SG, CmsSelectEditSgRequest.class, CmsSelectEditSgError.class);
     }
 
     @Override

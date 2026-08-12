@@ -7,7 +7,7 @@ import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDefinitionError;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDefinitionRequest;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDefinitionResponse;
 import com.ysh.jcms.core.data.sequence.rpc.CmsRpcMethodEntry;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -15,7 +15,8 @@ public class GetRpcInterfaceDefinitionServer
         extends
             BaseServerHandler<CmsGetRpcInterfaceDefinitionRequest, CmsGetRpcInterfaceDefinitionError> {
     public GetRpcInterfaceDefinitionServer() {
-        super(ServiceName.GET_RPC_INTERFACE_DEFINITION, CmsGetRpcInterfaceDefinitionRequest.class, CmsGetRpcInterfaceDefinitionError.class);
+        super(CmsServiceInfo.GET_RPC_INTERFACE_DEFINITION, CmsGetRpcInterfaceDefinitionRequest.class,
+                CmsGetRpcInterfaceDefinitionError.class);
     }
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetRpcInterfaceDefinitionRequest req, int reqId) {

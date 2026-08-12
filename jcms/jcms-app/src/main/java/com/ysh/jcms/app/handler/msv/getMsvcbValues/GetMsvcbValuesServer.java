@@ -11,7 +11,7 @@ import com.ysh.jcms.core.pdu.msv.CmsGetMsvcbValuesResponse;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.service.SclControlBlockService;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -25,7 +25,7 @@ import com.ysh.jcms.utils.transport.session.Session;
 public class GetMsvcbValuesServer extends BaseServerHandler<CmsGetMsvcbValuesRequest, CmsGetMsvcbValuesError> {
 
     public GetMsvcbValuesServer() {
-        super(ServiceName.GET_MSVCB_VALUES, CmsGetMsvcbValuesRequest.class, CmsGetMsvcbValuesError.class);
+        super(CmsServiceInfo.GET_MSVCB_VALUES, CmsGetMsvcbValuesRequest.class, CmsGetMsvcbValuesError.class);
     }
 
     @Override

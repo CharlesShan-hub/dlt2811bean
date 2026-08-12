@@ -5,7 +5,7 @@ import com.ysh.jcms.core.data.sequence.log.CmsLogDataEntry;
 import com.ysh.jcms.core.data.sequence.log.CmsLogEntry;
 import com.ysh.jcms.core.pdu.log.CmsQueryLogAfterError;
 import com.ysh.jcms.core.pdu.log.CmsQueryLogAfterResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class QueryLogAfterClient extends BaseClientHandler<QueryLogAfterDao> {
 
     @Override
     public void execute(QueryLogAfterDao dao) throws Exception {
-        send(ServiceName.QUERY_LOG_AFTER, dao);
+        send(CmsServiceInfo.QUERY_LOG_AFTER, dao);
     }
 
     @Override

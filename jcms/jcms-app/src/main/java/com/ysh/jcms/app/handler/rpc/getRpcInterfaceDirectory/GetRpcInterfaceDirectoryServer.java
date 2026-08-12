@@ -6,7 +6,7 @@ import com.ysh.jcms.core.data.scalar.CmsString;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDirectoryError;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDirectoryRequest;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDirectoryResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -14,7 +14,7 @@ public class GetRpcInterfaceDirectoryServer
         extends
             BaseServerHandler<CmsGetRpcInterfaceDirectoryRequest, CmsGetRpcInterfaceDirectoryError> {
     public GetRpcInterfaceDirectoryServer() {
-        super(ServiceName.GET_RPC_INTERFACE_DIRECTORY, CmsGetRpcInterfaceDirectoryRequest.class, CmsGetRpcInterfaceDirectoryError.class);
+        super(CmsServiceInfo.GET_RPC_INTERFACE_DIRECTORY, CmsGetRpcInterfaceDirectoryRequest.class, CmsGetRpcInterfaceDirectoryError.class);
     }
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetRpcInterfaceDirectoryRequest req, int reqId) {

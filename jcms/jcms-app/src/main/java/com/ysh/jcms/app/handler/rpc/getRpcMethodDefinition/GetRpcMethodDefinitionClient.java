@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.rpc.getRpcMethodDefinition;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcMethodDefinitionError;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcMethodDefinitionResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class GetRpcMethodDefinitionClient extends BaseClientHandler<GetRpcMethod
 
     @Override
     public void execute(GetRpcMethodDefinitionDao dao) throws Exception {
-        send(ServiceName.GET_RPC_METHOD_DEFINITION, dao);
+        send(CmsServiceInfo.GET_RPC_METHOD_DEFINITION, dao);
     }
 
     @Override

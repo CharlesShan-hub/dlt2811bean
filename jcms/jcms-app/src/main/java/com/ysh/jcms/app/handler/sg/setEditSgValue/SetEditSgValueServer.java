@@ -8,14 +8,14 @@ import com.ysh.jcms.core.data.sequence.sg.CmsSgRefValueEntry;
 import com.ysh.jcms.core.pdu.sg.CmsSetEditSgValueError;
 import com.ysh.jcms.core.pdu.sg.CmsSetEditSgValueRequest;
 import com.ysh.jcms.core.pdu.sg.CmsSetEditSgValueResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class SetEditSgValueServer extends BaseServerHandler<CmsSetEditSgValueRequest, CmsSetEditSgValueError> {
 
     public SetEditSgValueServer() {
-        super(ServiceName.SET_EDIT_SG_VALUE, CmsSetEditSgValueRequest.class, CmsSetEditSgValueError.class);
+        super(CmsServiceInfo.SET_EDIT_SG_VALUE, CmsSetEditSgValueRequest.class, CmsSetEditSgValueError.class);
     }
 
     @Override

@@ -10,7 +10,7 @@ import com.ysh.jcms.core.pdu.goose.CmsSetGoCbValuesRequest;
 import com.ysh.jcms.core.pdu.goose.CmsSetGoCbValuesResponse;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -24,7 +24,7 @@ import com.ysh.jcms.utils.transport.session.Session;
 public class SetGoCbValuesServer extends BaseServerHandler<CmsSetGoCbValuesRequest, CmsSetGoCbValuesError> {
 
     public SetGoCbValuesServer() {
-        super(ServiceName.SET_GOCB_VALUES, CmsSetGoCbValuesRequest.class, CmsSetGoCbValuesError.class);
+        super(CmsServiceInfo.SET_GOCB_VALUES, CmsSetGoCbValuesRequest.class, CmsSetGoCbValuesError.class);
     }
 
     @Override

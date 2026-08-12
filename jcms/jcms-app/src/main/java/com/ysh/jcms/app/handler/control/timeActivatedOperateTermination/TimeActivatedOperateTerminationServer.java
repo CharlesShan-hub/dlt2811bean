@@ -3,14 +3,14 @@ package com.ysh.jcms.app.handler.control.timeActivatedOperateTermination;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.pdu.control.CmsTimeActivatedOperateTermination;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class TimeActivatedOperateTerminationServer extends BaseServerHandler<CmsTimeActivatedOperateTermination, CmsType> {
 
     public TimeActivatedOperateTerminationServer() {
-        super(ServiceName.TIME_ACTIVATED_OPERATE_TERMINATION, CmsTimeActivatedOperateTermination.class);
+        super(CmsServiceInfo.TIME_ACTIVATED_OPERATE_TERMINATION, CmsTimeActivatedOperateTermination.class);
     }
 
     @Override

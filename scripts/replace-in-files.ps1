@@ -5,12 +5,13 @@
 
 .DESCRIPTION
     Recursively walks -Path, and in every file whose name matches -FileFilter,
-    replaces every occurrence of -Old with -New (case-sensitive, plain text).
+    replaces every occurrence of -Old with -New. Plain text by default;
+    pass -Regex to treat -Old as a .NET regular expression.
 
     Without -Apply only prints what WOULD change:
         <file>:<line>: <old line>  ==>  <new line>
     With -Apply rewrites the files in place (UTF-8, no BOM; CRLF preserved)
-    and prints the same report. Lines not containing -Old are untouched.
+    and prints the same report. Lines not matching are untouched.
 
     BACK UP YOUR FILES BEFORE USING -Apply.
 
@@ -18,10 +19,14 @@
     Root folder to scan recursively.
 
 .PARAMETER Old
-    Literal string to find (case-sensitive, NOT a regular expression).
+    String to find (case-sensitive). Plain text unless -Regex is given.
 
 .PARAMETER New
-    Literal replacement string.
+    Replacement string. With -Regex, supports $1-style backreferences.
+
+.PARAMETER Regex
+    Treat -Old as a .NET regular expression (e.g. "\bServiceName\b" for
+    word-boundary matching, which avoids hitting "getServiceName").
 
 .PARAMETER FileFilter
     File name filter, default "*.java".
@@ -52,6 +57,8 @@ param(
 
     [string]$FileFilter = "*.java",
 
+    [switch]$Regex,
+
     [switch]$Apply,
 
     [string]$OutputFile
@@ -78,7 +85,13 @@ foreach ($file in $files) {
     $lineNo = 0
     foreach ($line in [System.IO.File]::ReadLines($file.FullName)) {
         $lineNo++
-        if ($line.Contains($Old)) {
+        if ($Regex) {
+            if (-not [regex]::IsMatch($line, $Old)) {
+                $lines.Add($line)
+                continue
+            }
+            $newLine = [regex]::Replace($line, $Old, $New)
+        } elseif ($line.Contains($Old)) {
             $newLine = $line.Replace($Old, $New)
             $report.Add(("{0}:{1}: {2}  ==>  {3}" -f $file.FullName, $lineNo, $line.Trim(), $newLine.Trim()))
             $lines.Add($newLine)

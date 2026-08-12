@@ -12,14 +12,14 @@ import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.convert.DataWriterResolver;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class SetDataValuesServer extends BaseServerHandler<CmsSetDataValuesRequest, CmsSetDataValuesError> {
 
     public SetDataValuesServer() {
-        super(ServiceName.SET_DATA_VALUES, CmsSetDataValuesRequest.class, CmsSetDataValuesError.class);
+        super(CmsServiceInfo.SET_DATA_VALUES, CmsSetDataValuesRequest.class, CmsSetDataValuesError.class);
     }
 
     @Override

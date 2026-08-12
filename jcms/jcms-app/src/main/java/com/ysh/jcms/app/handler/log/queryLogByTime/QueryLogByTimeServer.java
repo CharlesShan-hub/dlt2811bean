@@ -7,7 +7,7 @@ import com.ysh.jcms.core.pdu.log.CmsQueryLogByTimeRequest;
 import com.ysh.jcms.core.pdu.log.CmsQueryLogByTimeResponse;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.log.LogStorage;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -21,7 +21,7 @@ public class QueryLogByTimeServer extends BaseServerHandler<CmsQueryLogByTimeReq
     private final LogStorage logStorage;
 
     public QueryLogByTimeServer() {
-        super(ServiceName.QUERY_LOG_BY_TIME, CmsQueryLogByTimeRequest.class, CmsQueryLogByTimeError.class);
+        super(CmsServiceInfo.QUERY_LOG_BY_TIME, CmsQueryLogByTimeRequest.class, CmsQueryLogByTimeError.class);
         this.logStorage = new LogStorage(CmsConfigLoader.load().protocol().log().rootPath());
     }
 

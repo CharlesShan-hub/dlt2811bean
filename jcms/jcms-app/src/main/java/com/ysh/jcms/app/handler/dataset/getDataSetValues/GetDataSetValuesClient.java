@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.CmsClientOperator;
 import com.ysh.jcms.core.pdu.dataset.CmsGetDataSetValuesError;
 import com.ysh.jcms.core.pdu.dataset.CmsGetDataSetValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -13,7 +13,7 @@ public class GetDataSetValuesClient extends BaseClientHandler<GetDataSetValuesDa
 
     @Override
     public void execute(GetDataSetValuesDao dao) throws Exception {
-        send(ServiceName.GET_DATA_SET_VALUES, dao);
+        send(CmsServiceInfo.GET_DATA_SET_VALUES, dao);
     }
 
     @Override

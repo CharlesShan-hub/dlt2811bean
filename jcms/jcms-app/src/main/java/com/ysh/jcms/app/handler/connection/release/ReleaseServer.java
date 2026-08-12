@@ -5,7 +5,7 @@ import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.pdu.connection.CmsReleaseError;
 import com.ysh.jcms.core.pdu.connection.CmsReleaseRequest;
 import com.ysh.jcms.core.pdu.connection.CmsReleaseResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 import com.ysh.jcms.utils.transport.session.SessionState;
@@ -16,7 +16,7 @@ import com.ysh.jcms.utils.transport.session.SessionState;
 public class ReleaseServer extends BaseServerHandler<CmsReleaseRequest, CmsReleaseError> {
 
     public ReleaseServer() {
-        super(ServiceName.RELEASE, CmsReleaseRequest.class, CmsReleaseError.class);
+        super(CmsServiceInfo.RELEASE, CmsReleaseRequest.class, CmsReleaseError.class);
     }
 
     @Override

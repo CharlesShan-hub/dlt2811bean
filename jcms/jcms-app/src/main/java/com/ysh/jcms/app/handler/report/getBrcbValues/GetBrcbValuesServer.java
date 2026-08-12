@@ -10,14 +10,14 @@ import com.ysh.jcms.core.pdu.report.CmsGetBrcbValuesResponse;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.service.SclControlBlockService;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class GetBrcbValuesServer extends BaseServerHandler<CmsGetBrcbValuesRequest, CmsGetBrcbValuesError> {
 
     public GetBrcbValuesServer() {
-        super(ServiceName.GET_BRCB_VALUES, CmsGetBrcbValuesRequest.class, CmsGetBrcbValuesError.class);
+        super(CmsServiceInfo.GET_BRCB_VALUES, CmsGetBrcbValuesRequest.class, CmsGetBrcbValuesError.class);
     }
 
     @Override

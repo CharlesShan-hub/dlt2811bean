@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.CmsClientOperator;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllCbValuesError;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllCbValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -13,7 +13,7 @@ public class AllCbValuesClient extends BaseClientHandler<AllCbValuesDao> {
 
     @Override
     public void execute(AllCbValuesDao dao) throws Exception {
-        send(ServiceName.GET_ALL_CB_VALUES, dao);
+        send(CmsServiceInfo.GET_ALL_CB_VALUES, dao);
     }
 
     @Override

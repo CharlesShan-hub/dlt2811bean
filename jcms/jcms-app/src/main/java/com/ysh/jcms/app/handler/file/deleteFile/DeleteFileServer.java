@@ -6,7 +6,7 @@ import com.ysh.jcms.core.pdu.file.CmsDeleteFileError;
 import com.ysh.jcms.core.pdu.file.CmsDeleteFileRequest;
 import com.ysh.jcms.core.pdu.file.CmsDeleteFileResponse;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 public class DeleteFileServer extends BaseServerHandler<CmsDeleteFileRequest, CmsDeleteFileError> {
 
     public DeleteFileServer() {
-        super(ServiceName.DELETE_FILE, CmsDeleteFileRequest.class, CmsDeleteFileError.class);
+        super(CmsServiceInfo.DELETE_FILE, CmsDeleteFileRequest.class, CmsDeleteFileError.class);
     }
 
     @Override

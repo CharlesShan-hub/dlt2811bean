@@ -5,7 +5,7 @@ import com.ysh.jcms.core.data.sequence.log.CmsLogDataEntry;
 import com.ysh.jcms.core.data.sequence.log.CmsLogEntry;
 import com.ysh.jcms.core.pdu.log.CmsQueryLogByTimeError;
 import com.ysh.jcms.core.pdu.log.CmsQueryLogByTimeResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class QueryLogByTimeClient extends BaseClientHandler<QueryLogByTimeDao> {
 
     @Override
     public void execute(QueryLogByTimeDao dao) throws Exception {
-        send(ServiceName.QUERY_LOG_BY_TIME, dao);
+        send(CmsServiceInfo.QUERY_LOG_BY_TIME, dao);
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.data.scalar.CmsInt16U;
 import com.ysh.jcms.core.pdu.goose.CmsGetGooseElementNumberError;
 import com.ysh.jcms.core.pdu.goose.CmsGetGooseElementNumberResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -28,7 +28,7 @@ public class GetGooseElementNumberClient extends BaseClientHandler<GetGooseEleme
 
     @Override
     public void execute(GetGooseElementNumberDao dao) throws Exception {
-        send(ServiceName.GET_GOOSE_ELEMENT_NUMBER, dao);
+        send(CmsServiceInfo.GET_GOOSE_ELEMENT_NUMBER, dao);
     }
 
     @Override

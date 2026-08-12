@@ -8,7 +8,7 @@ import com.ysh.jcms.core.pdu.file.CmsGetFileDirectoryError;
 import com.ysh.jcms.core.pdu.file.CmsGetFileDirectoryRequest;
 import com.ysh.jcms.core.pdu.file.CmsGetFileDirectoryResponse;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -25,7 +25,7 @@ import java.util.zip.CRC32;
 public class GetFileDirectoryServer extends BaseServerHandler<CmsGetFileDirectoryRequest, CmsGetFileDirectoryError> {
 
     public GetFileDirectoryServer() {
-        super(ServiceName.GET_FILE_DIRECTORY, CmsGetFileDirectoryRequest.class, CmsGetFileDirectoryError.class);
+        super(CmsServiceInfo.GET_FILE_DIRECTORY, CmsGetFileDirectoryRequest.class, CmsGetFileDirectoryError.class);
     }
 
     @Override

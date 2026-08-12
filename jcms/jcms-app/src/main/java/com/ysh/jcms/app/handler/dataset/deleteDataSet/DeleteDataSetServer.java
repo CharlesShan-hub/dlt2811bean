@@ -10,14 +10,14 @@ import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.service.SclDatasetService;
 import com.ysh.jcms.utils.scl.service.SclDatasetService.DataSetResolution;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class DeleteDataSetServer extends BaseServerHandler<CmsDeleteDataSetRequest, CmsDeleteDataSetError> {
 
     public DeleteDataSetServer() {
-        super(ServiceName.DELETE_DATA_SET, CmsDeleteDataSetRequest.class, CmsDeleteDataSetError.class);
+        super(CmsServiceInfo.DELETE_DATA_SET, CmsDeleteDataSetRequest.class, CmsDeleteDataSetError.class);
     }
 
     @Override

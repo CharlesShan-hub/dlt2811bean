@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.CmsClientOperator;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllDataValuesError;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllDataValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -13,7 +13,7 @@ public class AllDataValuesClient extends BaseClientHandler<AllDataValuesDao> {
 
     @Override
     public void execute(AllDataValuesDao dao) throws Exception {
-        send(ServiceName.GET_ALL_DATA_VALUES, dao);
+        send(CmsServiceInfo.GET_ALL_DATA_VALUES, dao);
     }
 
     @Override

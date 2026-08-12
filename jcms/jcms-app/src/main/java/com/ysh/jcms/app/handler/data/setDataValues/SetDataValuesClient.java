@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.data.setDataValues;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.data.CmsSetDataValuesError;
 import com.ysh.jcms.core.pdu.data.CmsSetDataValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class SetDataValuesClient extends BaseClientHandler<SetDataValuesDao> {
 
     @Override
     public void execute(SetDataValuesDao dao) throws Exception {
-        send(ServiceName.SET_DATA_VALUES, dao);
+        send(CmsServiceInfo.SET_DATA_VALUES, dao);
     }
 
     @Override

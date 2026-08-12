@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.file.getFileAttributeValues;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.file.CmsGetFileAttributeValuesError;
 import com.ysh.jcms.core.pdu.file.CmsGetFileAttributeValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class GetFileAttributeValuesClient extends BaseClientHandler<GetFileAttri
 
     @Override
     public void execute(GetFileAttributeValuesDao dao) throws Exception {
-        send(ServiceName.GET_FILE_ATTRIBUTE_VALUES, dao);
+        send(CmsServiceInfo.GET_FILE_ATTRIBUTE_VALUES, dao);
     }
 
     @Override

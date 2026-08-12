@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.report.getBrcbValues;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.report.CmsGetBrcbValuesError;
 import com.ysh.jcms.core.pdu.report.CmsGetBrcbValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class GetBrcbValuesClient extends BaseClientHandler<GetBrcbValuesDao> {
 
     @Override
     public void execute(GetBrcbValuesDao dao) throws Exception {
-        send(ServiceName.GET_BRCB_VALUES, dao);
+        send(CmsServiceInfo.GET_BRCB_VALUES, dao);
     }
 
     @Override

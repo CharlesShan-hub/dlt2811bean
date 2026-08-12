@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.file.deleteFile;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.file.CmsDeleteFileError;
 import com.ysh.jcms.core.pdu.file.CmsDeleteFileResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class DeleteFileClient extends BaseClientHandler<DeleteFileDao> {
 
     @Override
     public void execute(DeleteFileDao dao) throws Exception {
-        send(ServiceName.DELETE_FILE, dao);
+        send(CmsServiceInfo.DELETE_FILE, dao);
     }
 
     @Override

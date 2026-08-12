@@ -10,14 +10,14 @@ import com.ysh.jcms.core.pdu.goose.CmsGetGoCbValuesResponse;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.service.SclControlBlockService;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class GetGoCbValuesServer extends BaseServerHandler<CmsGetGoCbValuesRequest, CmsGetGoCbValuesError> {
 
     public GetGoCbValuesServer() {
-        super(ServiceName.GET_GOCB_VALUES, CmsGetGoCbValuesRequest.class, CmsGetGoCbValuesError.class);
+        super(CmsServiceInfo.GET_GOCB_VALUES, CmsGetGoCbValuesRequest.class, CmsGetGoCbValuesError.class);
     }
 
     @Override

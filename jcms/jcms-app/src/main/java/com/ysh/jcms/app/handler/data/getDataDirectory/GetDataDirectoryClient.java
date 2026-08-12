@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.CmsClientOperator;
 import com.ysh.jcms.core.pdu.data.CmsGetDataDirectoryError;
 import com.ysh.jcms.core.pdu.data.CmsGetDataDirectoryResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -13,7 +13,7 @@ public class GetDataDirectoryClient extends BaseClientHandler<GetDataDirectoryDa
 
     @Override
     public void execute(GetDataDirectoryDao dao) throws Exception {
-        send(ServiceName.GET_DATA_DIRECTORY, dao);
+        send(CmsServiceInfo.GET_DATA_DIRECTORY, dao);
     }
 
     @Override

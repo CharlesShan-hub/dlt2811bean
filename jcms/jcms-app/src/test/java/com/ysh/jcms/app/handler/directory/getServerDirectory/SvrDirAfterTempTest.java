@@ -7,7 +7,7 @@ import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.core.pdu.directory.CmsGetServerDirectoryRequest;
 import com.ysh.jcms.core.pdu.directory.CmsGetServerDirectoryResponse;
 import com.ysh.jcms.core.data.scalar.CmsObjectReference;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import org.junit.Test;
 
@@ -32,7 +32,7 @@ public class SvrDirAfterTempTest extends BaseLoopbackTest {
     public void debug_resp() throws Exception {
         associate();
         CmsGetServerDirectoryRequest req = new CmsGetServerDirectoryRequest().objectClass(1);
-        Frame f = clientNode().sendRequest(ServiceName.GET_SERVER_DIRECTORY, req.encode());
+        Frame f = clientNode().sendRequest(CmsServiceInfo.GET_SERVER_DIRECTORY, req.encode());
         CmsGetServerDirectoryResponse resp = new CmsGetServerDirectoryResponse();
         resp.decode(f.asduBytes());
         System.out.println("REF_COUNT=" + resp.reference.size());

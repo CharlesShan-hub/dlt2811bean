@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.data.sequence.common.CmsFileEntry;
 import com.ysh.jcms.core.pdu.file.CmsGetFileDirectoryError;
 import com.ysh.jcms.core.pdu.file.CmsGetFileDirectoryResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class GetFileDirectoryClient extends BaseClientHandler<GetFileDirectoryDa
 
     @Override
     public void execute(GetFileDirectoryDao dao) throws Exception {
-        send(ServiceName.GET_FILE_DIRECTORY, dao);
+        send(CmsServiceInfo.GET_FILE_DIRECTORY, dao);
     }
 
     @Override

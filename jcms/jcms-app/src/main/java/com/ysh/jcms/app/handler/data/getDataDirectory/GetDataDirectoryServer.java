@@ -14,7 +14,7 @@ import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.scl.service.SclDirectoryService;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -24,7 +24,7 @@ import java.util.List;
 public class GetDataDirectoryServer extends BaseServerHandler<CmsGetDataDirectoryRequest, CmsGetDataDirectoryError> {
 
     public GetDataDirectoryServer() {
-        super(ServiceName.GET_DATA_DIRECTORY, CmsGetDataDirectoryRequest.class, CmsGetDataDirectoryError.class);
+        super(CmsServiceInfo.GET_DATA_DIRECTORY, CmsGetDataDirectoryRequest.class, CmsGetDataDirectoryError.class);
     }
 
     @Override

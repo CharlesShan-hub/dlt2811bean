@@ -5,7 +5,7 @@ import com.ysh.jcms.core.data.choice.CmsGocbValueChoice;
 import com.ysh.jcms.core.data.sequence.block.CmsGoCb;
 import com.ysh.jcms.core.pdu.goose.CmsGetGoCbValuesError;
 import com.ysh.jcms.core.pdu.goose.CmsGetGoCbValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class GetGoCbValuesClient extends BaseClientHandler<GetGoCbValuesDao> {
 
     @Override
     public void execute(GetGoCbValuesDao dao) throws Exception {
-        send(ServiceName.GET_GOCB_VALUES, dao);
+        send(CmsServiceInfo.GET_GOCB_VALUES, dao);
     }
 
     @Override

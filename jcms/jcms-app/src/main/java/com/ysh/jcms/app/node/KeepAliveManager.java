@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.node;
 
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;
 import com.ysh.jcms.utils.transport.session.SessionState;
@@ -91,7 +91,7 @@ public class KeepAliveManager {
                     ss.incrementKeepaliveRetries();
                     try {
                         ss.connection()
-                                .send(new Frame(new FrameHeader().serviceCode(ServiceName.TEST).resp(false).err(false), new byte[0], 0));
+                                .send(new Frame(new FrameHeader().serviceCode(CmsServiceInfo.TEST).resp(false).err(false), new byte[0], 0));
                         log.debug("Keepalive: sent TEST probe to session {} (retry={})", ss.sessionId(), retries + 1);
                     } catch (IOException e) {
                         log.warn("Keepalive: TEST probe failed for session {}", ss.sessionId());

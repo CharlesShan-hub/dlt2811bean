@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.control.operate;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.control.CmsOperateError;
 import com.ysh.jcms.core.pdu.control.CmsOperateResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ public class OperateClient extends BaseClientHandler<OperateDao> {
 
     @Override
     public void execute(OperateDao dao) throws Exception {
-        send(ServiceName.OPERATE, dao);
+        send(CmsServiceInfo.OPERATE, dao);
     }
 
     @Override

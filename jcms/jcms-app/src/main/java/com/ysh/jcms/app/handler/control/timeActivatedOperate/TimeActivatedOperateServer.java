@@ -5,14 +5,14 @@ import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.pdu.control.CmsTimeActivatedOperateError;
 import com.ysh.jcms.core.pdu.control.CmsTimeActivatedOperateRequest;
 import com.ysh.jcms.core.pdu.control.CmsTimeActivatedOperateResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class TimeActivatedOperateServer extends BaseServerHandler<CmsTimeActivatedOperateRequest, CmsTimeActivatedOperateError> {
 
     public TimeActivatedOperateServer() {
-        super(ServiceName.TIME_ACTIVATED_OPERATE, CmsTimeActivatedOperateRequest.class, CmsTimeActivatedOperateError.class);
+        super(CmsServiceInfo.TIME_ACTIVATED_OPERATE, CmsTimeActivatedOperateRequest.class, CmsTimeActivatedOperateError.class);
     }
 
     @Override

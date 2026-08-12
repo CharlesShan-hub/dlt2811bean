@@ -5,7 +5,7 @@ import com.ysh.jcms.core.data.choice.CmsLogStatusValueChoice;
 import com.ysh.jcms.core.data.sequence.log.CmsLogStatusValue;
 import com.ysh.jcms.core.pdu.log.CmsGetLogStatusValuesError;
 import com.ysh.jcms.core.pdu.log.CmsGetLogStatusValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class GetLogStatusValuesClient extends BaseClientHandler<GetLogStatusValu
 
     @Override
     public void execute(GetLogStatusValuesDao dao) throws Exception {
-        send(ServiceName.GET_LOG_STATUS_VALUES, dao);
+        send(CmsServiceInfo.GET_LOG_STATUS_VALUES, dao);
     }
 
     @Override

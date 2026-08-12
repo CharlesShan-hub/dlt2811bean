@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.CmsClientOperator;
 import com.ysh.jcms.core.pdu.directory.CmsGetLogicalDeviceDirectoryError;
 import com.ysh.jcms.core.pdu.directory.CmsGetLogicalDeviceDirectoryResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ public class LdDirClient extends BaseClientHandler<LdDirDao> {
 
     @Override
     public void execute(LdDirDao dao) throws Exception {
-        send(ServiceName.GET_LOGIC_DEVICE_DIRECTORY, dao);
+        send(CmsServiceInfo.GET_LOGIC_DEVICE_DIRECTORY, dao);
     }
 
     @Override

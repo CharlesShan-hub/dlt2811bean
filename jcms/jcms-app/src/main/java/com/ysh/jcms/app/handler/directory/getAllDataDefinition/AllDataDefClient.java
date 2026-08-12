@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.CmsClientOperator;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllDataDefinitionError;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllDataDefinitionResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -13,7 +13,7 @@ public class AllDataDefClient extends BaseClientHandler<AllDataDefDao> {
 
     @Override
     public void execute(AllDataDefDao dao) throws Exception {
-        send(ServiceName.GET_ALL_DATA_DEFINITION, dao);
+        send(CmsServiceInfo.GET_ALL_DATA_DEFINITION, dao);
     }
 
     @Override

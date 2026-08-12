@@ -13,14 +13,14 @@ import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.input.SclFCDA;
 import com.ysh.jcms.utils.scl.service.SclDatasetService;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class CreateDataSetServer extends BaseServerHandler<CmsCreateDataSetRequest, CmsCreateDataSetError> {
 
     public CreateDataSetServer() {
-        super(ServiceName.CREATE_DATA_SET, CmsCreateDataSetRequest.class, CmsCreateDataSetError.class);
+        super(CmsServiceInfo.CREATE_DATA_SET, CmsCreateDataSetRequest.class, CmsCreateDataSetError.class);
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.report.CmsSetBrcbResult;
 import com.ysh.jcms.core.pdu.report.CmsSetBrcbValuesError;
 import com.ysh.jcms.core.pdu.report.CmsSetBrcbValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ public class SetBrcbValuesClient extends BaseClientHandler<SetBrcbValuesDao> {
 
     @Override
     public void execute(SetBrcbValuesDao dao) throws Exception {
-        send(ServiceName.SET_BRCB_VALUES, dao);
+        send(CmsServiceInfo.SET_BRCB_VALUES, dao);
     }
 
     @Override

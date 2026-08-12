@@ -9,7 +9,7 @@ import com.ysh.jcms.core.pdu.directory.CmsGetLogicalDeviceDirectoryResponse;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.service.SclDirectoryService;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -18,7 +18,8 @@ import java.util.List;
 public class LdDirServer extends BaseServerHandler<CmsGetLogicalDeviceDirectoryRequest, CmsGetLogicalDeviceDirectoryError> {
 
     public LdDirServer() {
-        super(ServiceName.GET_LOGIC_DEVICE_DIRECTORY, CmsGetLogicalDeviceDirectoryRequest.class, CmsGetLogicalDeviceDirectoryError.class);
+        super(CmsServiceInfo.GET_LOGIC_DEVICE_DIRECTORY, CmsGetLogicalDeviceDirectoryRequest.class,
+                CmsGetLogicalDeviceDirectoryError.class);
     }
 
     @Override

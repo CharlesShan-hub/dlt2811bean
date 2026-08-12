@@ -14,7 +14,7 @@ import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.scl.service.SclDirectoryService;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -23,7 +23,7 @@ import java.util.List;
 public class AllCbValuesServer extends BaseServerHandler<CmsGetAllCbValuesRequest, CmsGetAllCbValuesError> {
 
     public AllCbValuesServer() {
-        super(ServiceName.GET_ALL_CB_VALUES, CmsGetAllCbValuesRequest.class, CmsGetAllCbValuesError.class);
+        super(CmsServiceInfo.GET_ALL_CB_VALUES, CmsGetAllCbValuesRequest.class, CmsGetAllCbValuesError.class);
     }
 
     @Override

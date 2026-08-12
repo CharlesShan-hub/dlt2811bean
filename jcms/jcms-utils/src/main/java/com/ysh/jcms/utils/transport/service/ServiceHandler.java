@@ -1,6 +1,6 @@
 package com.ysh.jcms.utils.transport.service;
 
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -9,7 +9,7 @@ import com.ysh.jcms.utils.transport.session.Session;
  */
 public interface ServiceHandler {
 
-    ServiceName getServiceName();
+    CmsServiceInfo getServiceName();
 
     /**
      * Handle an incoming request.

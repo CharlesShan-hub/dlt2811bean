@@ -3,14 +3,14 @@ package com.ysh.jcms.app.handler.control.commandTermination;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.pdu.control.CmsCommandTermination;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class CommandTerminationServer extends BaseServerHandler<CmsCommandTermination, CmsType> {
 
     public CommandTerminationServer() {
-        super(ServiceName.COMMAND_TERMINATION, CmsCommandTermination.class);
+        super(CmsServiceInfo.COMMAND_TERMINATION, CmsCommandTermination.class);
     }
 
     @Override

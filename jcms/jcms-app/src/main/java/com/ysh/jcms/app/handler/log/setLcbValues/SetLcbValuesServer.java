@@ -12,7 +12,7 @@ import com.ysh.jcms.utils.scl.model.control.SclLogControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.ref.SclRef;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.session.Session;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
 public class SetLcbValuesServer extends SetCbValuesServer<CmsSetLcbValuesRequest, CmsSetLcbValuesError, CmsSetLcbEntry, CmsSetLcbResult> {
 
     public SetLcbValuesServer() {
-        super(ServiceName.SET_LCB_VALUES, CmsSetLcbValuesRequest.class, CmsSetLcbValuesError.class);
+        super(CmsServiceInfo.SET_LCB_VALUES, CmsSetLcbValuesRequest.class, CmsSetLcbValuesError.class);
     }
 
     @Override

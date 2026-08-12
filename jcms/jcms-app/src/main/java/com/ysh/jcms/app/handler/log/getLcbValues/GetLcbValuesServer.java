@@ -11,14 +11,14 @@ import com.ysh.jcms.core.pdu.log.CmsGetLcbValuesResponse;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.service.SclControlBlockService;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class GetLcbValuesServer extends BaseServerHandler<CmsGetLcbValuesRequest, CmsGetLcbValuesError> {
 
     public GetLcbValuesServer() {
-        super(ServiceName.GET_LCB_VALUES, CmsGetLcbValuesRequest.class, CmsGetLcbValuesError.class);
+        super(CmsServiceInfo.GET_LCB_VALUES, CmsGetLcbValuesRequest.class, CmsGetLcbValuesError.class);
     }
 
     @Override

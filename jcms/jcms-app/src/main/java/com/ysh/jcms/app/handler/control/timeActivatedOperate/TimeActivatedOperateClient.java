@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.control.timeActivatedOperate;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.control.CmsTimeActivatedOperateError;
 import com.ysh.jcms.core.pdu.control.CmsTimeActivatedOperateResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ public class TimeActivatedOperateClient extends BaseClientHandler<TimeActivatedO
 
     @Override
     public void execute(TimeActivatedOperateDao dao) throws Exception {
-        send(ServiceName.TIME_ACTIVATED_OPERATE, dao);
+        send(CmsServiceInfo.TIME_ACTIVATED_OPERATE, dao);
     }
 
     @Override

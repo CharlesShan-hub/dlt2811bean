@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.connection.abort;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.BaseHandler;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 /**
@@ -16,7 +16,7 @@ public class AbortClient extends BaseClientHandler<AbortDao> {
 
     @Override
     public void execute(AbortDao dao) throws Exception {
-        sendOneWay(ServiceName.ABORT, dao.toRequest());
+        sendOneWay(CmsServiceInfo.ABORT, dao.toRequest());
     }
 
     @Override

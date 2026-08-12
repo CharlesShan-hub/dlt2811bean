@@ -10,7 +10,7 @@ import com.ysh.jcms.core.data.enumerate.CmsObjectClass;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.service.SclDirectoryService;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -19,7 +19,7 @@ import java.util.List;
 public class SvrDirServer extends BaseServerHandler<CmsGetServerDirectoryRequest, CmsGetServerDirectoryError> {
 
     public SvrDirServer() {
-        super(ServiceName.GET_SERVER_DIRECTORY, CmsGetServerDirectoryRequest.class, CmsGetServerDirectoryError.class);
+        super(CmsServiceInfo.GET_SERVER_DIRECTORY, CmsGetServerDirectoryRequest.class, CmsGetServerDirectoryError.class);
     }
 
     @Override

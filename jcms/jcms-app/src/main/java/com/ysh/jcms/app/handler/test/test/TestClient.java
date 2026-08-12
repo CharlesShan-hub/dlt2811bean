@@ -1,12 +1,12 @@
 package com.ysh.jcms.app.handler.test.test;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 
 public class TestClient extends BaseClientHandler<TestDao> {
 
     @Override
     public void execute(TestDao dao) throws Exception {
-        send(ServiceName.TEST, new byte[0]);
+        send(CmsServiceInfo.TEST, new byte[0]);
     }
 }

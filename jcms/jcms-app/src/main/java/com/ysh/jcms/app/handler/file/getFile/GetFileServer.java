@@ -6,7 +6,7 @@ import com.ysh.jcms.core.pdu.file.CmsGetFileError;
 import com.ysh.jcms.core.pdu.file.CmsGetFileRequest;
 import com.ysh.jcms.core.pdu.file.CmsGetFileResponse;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -20,7 +20,7 @@ public class GetFileServer extends BaseServerHandler<CmsGetFileRequest, CmsGetFi
     private static final int CHUNK_SIZE = 64000;
 
     public GetFileServer() {
-        super(ServiceName.GET_FILE, CmsGetFileRequest.class, CmsGetFileError.class);
+        super(CmsServiceInfo.GET_FILE, CmsGetFileRequest.class, CmsGetFileError.class);
     }
 
     @Override

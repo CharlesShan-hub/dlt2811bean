@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.rpc.getRpcInterfaceDirectory;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDirectoryError;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDirectoryResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class GetRpcInterfaceDirectoryClient extends BaseClientHandler<GetRpcInte
 
     @Override
     public void execute(GetRpcInterfaceDirectoryDao dao) throws Exception {
-        send(ServiceName.GET_RPC_INTERFACE_DIRECTORY, dao);
+        send(CmsServiceInfo.GET_RPC_INTERFACE_DIRECTORY, dao);
     }
 
     @Override

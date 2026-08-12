@@ -16,7 +16,7 @@ import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.input.SclFCDA;
 import com.ysh.jcms.utils.scl.model.instance.SclDAI;
 import com.ysh.jcms.utils.scl.model.instance.SclDOI;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -157,8 +157,9 @@ public class ReportEngine {
                     log.error("Failed to encode report for ref={}", rcb.getRef(), e);
                     return;
                 }
-                Frame frame = new Frame(new FrameHeader().serviceCode(ServiceName.REPORT).resp(true).err(false), asduBytes, 0 // reqId=0 for
-                                                                                                                              // unsolicited
+                Frame frame = new Frame(new FrameHeader().serviceCode(CmsServiceInfo.REPORT).resp(true).err(false), asduBytes, 0 // reqId=0
+                                                                                                                                 // for
+                                                                                                                                 // unsolicited
                 );
 
                 int sent = 0;

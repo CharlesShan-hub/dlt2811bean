@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.node;
 
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;
 import com.ysh.jcms.utils.transport.session.ClientSession;
@@ -67,7 +67,7 @@ public class InnerClient implements ConnectionListener {
 
     /* ====== request / response ====== */
 
-    public Frame sendRequest(ServiceName serviceCode, byte[] asduBytes, long timeoutMs) throws IOException {
+    public Frame sendRequest(CmsServiceInfo serviceCode, byte[] asduBytes, long timeoutMs) throws IOException {
         if (session == null || !session.isConnected()) {
             throw new IOException("Not connected");
         }
@@ -82,7 +82,7 @@ public class InnerClient implements ConnectionListener {
         }
     }
 
-    public Frame sendRequest(ServiceName serviceCode, byte[] asduBytes) throws IOException {
+    public Frame sendRequest(CmsServiceInfo serviceCode, byte[] asduBytes) throws IOException {
         return sendRequest(serviceCode, asduBytes, 5000);
     }
 
@@ -126,10 +126,10 @@ public class InnerClient implements ConnectionListener {
             if (session.tryDispatchResponse(frame))
                 return;
 
-            if (frame.header().serviceCode() == ServiceName.TEST && !frame.header().resp()) {
+            if (frame.header().serviceCode() == CmsServiceInfo.TEST && !frame.header().resp()) {
                 try {
-                    connection.send(
-                            new Frame(new FrameHeader().serviceCode(ServiceName.TEST).resp(true).err(false), new byte[0], frame.reqId()));
+                    connection.send(new Frame(new FrameHeader().serviceCode(CmsServiceInfo.TEST).resp(true).err(false), new byte[0],
+                            frame.reqId()));
                     log.debug("Responded to server TEST probe");
                 } catch (IOException e) {
                     log.warn("Failed to respond to server TEST probe", e);
@@ -137,7 +137,7 @@ public class InnerClient implements ConnectionListener {
                 return;
             }
 
-            if (frame.header().serviceCode() == ServiceName.REPORT && reportHandler != null) {
+            if (frame.header().serviceCode() == CmsServiceInfo.REPORT && reportHandler != null) {
                 try {
                     reportHandler.accept(frame);
                 } catch (Exception e) {

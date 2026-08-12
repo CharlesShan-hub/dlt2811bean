@@ -5,7 +5,7 @@ import com.ysh.jcms.core.data.choice.CmsMsvcbValueChoice;
 import com.ysh.jcms.core.data.sequence.block.CmsMsvcb;
 import com.ysh.jcms.core.pdu.msv.CmsGetMsvcbValuesError;
 import com.ysh.jcms.core.pdu.msv.CmsGetMsvcbValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class GetMsvcbValuesClient extends BaseClientHandler<GetMsvcbValuesDao> {
 
     @Override
     public void execute(GetMsvcbValuesDao dao) throws Exception {
-        send(ServiceName.GET_MSVCB_VALUES, dao);
+        send(CmsServiceInfo.GET_MSVCB_VALUES, dao);
     }
 
     @Override

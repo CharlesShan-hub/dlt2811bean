@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.sg.getEditSgValue;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.sg.CmsGetEditSgValueError;
 import com.ysh.jcms.core.pdu.sg.CmsGetEditSgValueResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class GetEditSgValueClient extends BaseClientHandler<GetEditSgValueDao> {
 
     @Override
     public void execute(GetEditSgValueDao dao) throws Exception {
-        send(ServiceName.GET_EDIT_SG_VALUE, dao);
+        send(CmsServiceInfo.GET_EDIT_SG_VALUE, dao);
     }
 
     @Override

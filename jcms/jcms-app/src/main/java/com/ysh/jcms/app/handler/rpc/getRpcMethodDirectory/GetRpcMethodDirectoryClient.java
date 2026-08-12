@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.rpc.getRpcMethodDirectory;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcMethodDirectoryError;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcMethodDirectoryResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class GetRpcMethodDirectoryClient extends BaseClientHandler<GetRpcMethodD
 
     @Override
     public void execute(GetRpcMethodDirectoryDao dao) throws Exception {
-        send(ServiceName.GET_RPC_METHOD_DIRECTORY, dao);
+        send(CmsServiceInfo.GET_RPC_METHOD_DIRECTORY, dao);
     }
 
     @Override

@@ -9,7 +9,7 @@ import com.ysh.jcms.core.pdu.log.CmsGetLogStatusValuesRequest;
 import com.ysh.jcms.core.pdu.log.CmsGetLogStatusValuesResponse;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.log.LogStorage;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -21,7 +21,7 @@ public class GetLogStatusValuesServer extends BaseServerHandler<CmsGetLogStatusV
     private final LogStorage logStorage;
 
     public GetLogStatusValuesServer() {
-        super(ServiceName.GET_LOG_STATUS_VALUES, CmsGetLogStatusValuesRequest.class, CmsGetLogStatusValuesError.class);
+        super(CmsServiceInfo.GET_LOG_STATUS_VALUES, CmsGetLogStatusValuesRequest.class, CmsGetLogStatusValuesError.class);
         this.logStorage = new LogStorage(CmsConfigLoader.load().protocol().log().rootPath());
     }
 

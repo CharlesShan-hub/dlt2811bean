@@ -7,7 +7,7 @@ import com.ysh.jcms.core.pdu.log.CmsQueryLogAfterRequest;
 import com.ysh.jcms.core.pdu.log.CmsQueryLogAfterResponse;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.log.LogStorage;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -22,7 +22,7 @@ public class QueryLogAfterServer extends BaseServerHandler<CmsQueryLogAfterReque
     private final LogStorage logStorage;
 
     public QueryLogAfterServer() {
-        super(ServiceName.QUERY_LOG_AFTER, CmsQueryLogAfterRequest.class, CmsQueryLogAfterError.class);
+        super(CmsServiceInfo.QUERY_LOG_AFTER, CmsQueryLogAfterRequest.class, CmsQueryLogAfterError.class);
         this.logStorage = new LogStorage(CmsConfigLoader.load().protocol().log().rootPath());
     }
 

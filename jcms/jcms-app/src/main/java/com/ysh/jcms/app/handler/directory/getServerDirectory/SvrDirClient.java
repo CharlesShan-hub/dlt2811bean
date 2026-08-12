@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.CmsClientOperator;
 import com.ysh.jcms.core.pdu.directory.CmsGetServerDirectoryError;
 import com.ysh.jcms.core.pdu.directory.CmsGetServerDirectoryResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ public class SvrDirClient extends BaseClientHandler<SvrDirDao> {
 
     @Override
     public void execute(SvrDirDao dao) throws Exception {
-        send(ServiceName.GET_SERVER_DIRECTORY, dao);
+        send(CmsServiceInfo.GET_SERVER_DIRECTORY, dao);
     }
 
     @Override

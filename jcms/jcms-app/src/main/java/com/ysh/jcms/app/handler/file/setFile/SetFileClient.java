@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.file.CmsSetFileError;
 import com.ysh.jcms.core.pdu.file.CmsSetFileRequest;
 import com.ysh.jcms.core.pdu.file.CmsSetFileResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -54,7 +54,7 @@ public class SetFileClient extends BaseClientHandler<SetFileDao> {
 
             CmsSetFileRequest req = new CmsSetFileRequest().filename(remoteFile).startPosition(position).fileData(chunk).endOfFile(isLast);
 
-            Frame frame = send(ServiceName.SET_FILE, req);
+            Frame frame = send(CmsServiceInfo.SET_FILE, req);
             CmsSetFileResponse resp = decodeFrame(frame, new CmsSetFileResponse());
             chunks++;
 

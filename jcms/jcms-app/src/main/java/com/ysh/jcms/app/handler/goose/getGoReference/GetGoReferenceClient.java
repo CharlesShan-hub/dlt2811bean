@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.data.sequence.goose.CmsGoRefFcEntry;
 import com.ysh.jcms.core.pdu.goose.CmsGetGoReferenceError;
 import com.ysh.jcms.core.pdu.goose.CmsGetGoReferenceResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class GetGoReferenceClient extends BaseClientHandler<GetGoReferenceDao> {
 
     @Override
     public void execute(GetGoReferenceDao dao) throws Exception {
-        send(ServiceName.GET_GO_REFERENCE, dao);
+        send(CmsServiceInfo.GET_GO_REFERENCE, dao);
     }
 
     @Override

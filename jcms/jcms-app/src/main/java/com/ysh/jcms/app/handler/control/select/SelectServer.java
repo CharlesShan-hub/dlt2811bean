@@ -7,7 +7,7 @@ import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.pdu.control.CmsSelectError;
 import com.ysh.jcms.core.pdu.control.CmsSelectRequest;
 import com.ysh.jcms.core.pdu.control.CmsSelectResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -20,7 +20,7 @@ import com.ysh.jcms.utils.transport.session.Session;
 public class SelectServer extends BaseServerHandler<CmsSelectRequest, CmsSelectError> {
 
     public SelectServer() {
-        super(ServiceName.SELECT, CmsSelectRequest.class, CmsSelectError.class);
+        super(CmsServiceInfo.SELECT, CmsSelectRequest.class, CmsSelectError.class);
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.CmsClientOperator;
 import com.ysh.jcms.core.pdu.directory.CmsGetLogicalNodeDirectoryError;
 import com.ysh.jcms.core.pdu.directory.CmsGetLogicalNodeDirectoryResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ public class LnDirClient extends BaseClientHandler<LnDirDao> {
 
     @Override
     public void execute(LnDirDao dao) throws Exception {
-        send(ServiceName.GET_LOGIC_NODE_DIRECTORY, dao);
+        send(CmsServiceInfo.GET_LOGIC_NODE_DIRECTORY, dao);
     }
 
     @Override

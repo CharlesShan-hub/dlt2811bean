@@ -5,7 +5,7 @@ import com.ysh.jcms.core.data.choice.CmsLcbValueChoice;
 import com.ysh.jcms.core.data.sequence.block.CmsLcb;
 import com.ysh.jcms.core.pdu.log.CmsGetLcbValuesError;
 import com.ysh.jcms.core.pdu.log.CmsGetLcbValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class GetLcbValuesClient extends BaseClientHandler<GetLcbValuesDao> {
 
     @Override
     public void execute(GetLcbValuesDao dao) throws Exception {
-        send(ServiceName.GET_LCB_VALUES, dao);
+        send(CmsServiceInfo.GET_LCB_VALUES, dao);
     }
 
     @Override

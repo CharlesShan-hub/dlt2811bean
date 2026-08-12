@@ -12,14 +12,14 @@ import com.ysh.jcms.core.pdu.sg.CmsGetSgcbValuesRequest;
 import com.ysh.jcms.core.pdu.sg.CmsGetSgcbValuesResponse;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class GetSgcbValuesServer extends BaseServerHandler<CmsGetSgcbValuesRequest, CmsGetSgcbValuesError> {
 
     public GetSgcbValuesServer() {
-        super(ServiceName.GET_SGCB_VALUES, CmsGetSgcbValuesRequest.class, CmsGetSgcbValuesError.class);
+        super(CmsServiceInfo.GET_SGCB_VALUES, CmsGetSgcbValuesRequest.class, CmsGetSgcbValuesError.class);
     }
 
     @Override

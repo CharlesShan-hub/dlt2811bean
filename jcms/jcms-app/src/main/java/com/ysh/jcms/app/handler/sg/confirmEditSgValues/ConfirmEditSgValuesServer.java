@@ -7,14 +7,14 @@ import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.pdu.sg.CmsConfirmEditSgValuesError;
 import com.ysh.jcms.core.pdu.sg.CmsConfirmEditSgValuesRequest;
 import com.ysh.jcms.core.pdu.sg.CmsConfirmEditSgValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class ConfirmEditSgValuesServer extends BaseServerHandler<CmsConfirmEditSgValuesRequest, CmsConfirmEditSgValuesError> {
 
     public ConfirmEditSgValuesServer() {
-        super(ServiceName.CONFIRM_EDIT_SG_VALUES, CmsConfirmEditSgValuesRequest.class, CmsConfirmEditSgValuesError.class);
+        super(CmsServiceInfo.CONFIRM_EDIT_SG_VALUES, CmsConfirmEditSgValuesRequest.class, CmsConfirmEditSgValuesError.class);
     }
 
     @Override

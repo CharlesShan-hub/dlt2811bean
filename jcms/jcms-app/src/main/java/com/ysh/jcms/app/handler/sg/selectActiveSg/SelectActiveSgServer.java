@@ -7,14 +7,14 @@ import com.ysh.jcms.core.pdu.sg.CmsSelectActiveSgError;
 import com.ysh.jcms.core.pdu.sg.CmsSelectActiveSgRequest;
 import com.ysh.jcms.core.pdu.sg.CmsSelectActiveSgResponse;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class SelectActiveSgServer extends BaseServerHandler<CmsSelectActiveSgRequest, CmsSelectActiveSgError> {
 
     public SelectActiveSgServer() {
-        super(ServiceName.SELECT_ACTIVE_SG, CmsSelectActiveSgRequest.class, CmsSelectActiveSgError.class);
+        super(CmsServiceInfo.SELECT_ACTIVE_SG, CmsSelectActiveSgRequest.class, CmsSelectActiveSgError.class);
     }
 
     @Override

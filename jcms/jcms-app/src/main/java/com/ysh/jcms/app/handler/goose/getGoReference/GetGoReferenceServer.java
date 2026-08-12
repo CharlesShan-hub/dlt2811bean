@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.pdu.goose.CmsGetGoReferenceError;
 import com.ysh.jcms.core.pdu.goose.CmsGetGoReferenceRequest;
 import com.ysh.jcms.core.pdu.goose.CmsGetGoReferenceResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -18,7 +18,7 @@ import com.ysh.jcms.utils.transport.session.Session;
 public class GetGoReferenceServer extends BaseServerHandler<CmsGetGoReferenceRequest, CmsGetGoReferenceError> {
 
     public GetGoReferenceServer() {
-        super(ServiceName.GET_GO_REFERENCE, CmsGetGoReferenceRequest.class, CmsGetGoReferenceError.class);
+        super(CmsServiceInfo.GET_GO_REFERENCE, CmsGetGoReferenceRequest.class, CmsGetGoReferenceError.class);
     }
 
     @Override

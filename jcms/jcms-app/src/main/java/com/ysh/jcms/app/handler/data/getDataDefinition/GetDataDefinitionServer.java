@@ -11,14 +11,14 @@ import com.ysh.jcms.utils.scl.convert.DataDefinitionEntry;
 import com.ysh.jcms.utils.scl.convert.DataDefinitionResolver;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class GetDataDefinitionServer extends BaseServerHandler<CmsGetDataDefinitionRequest, CmsGetDataDefinitionError> {
 
     public GetDataDefinitionServer() {
-        super(ServiceName.GET_DATA_DEFINITION, CmsGetDataDefinitionRequest.class, CmsGetDataDefinitionError.class);
+        super(CmsServiceInfo.GET_DATA_DEFINITION, CmsGetDataDefinitionRequest.class, CmsGetDataDefinitionError.class);
     }
 
     @Override

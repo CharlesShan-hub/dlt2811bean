@@ -2,15 +2,15 @@ package com.ysh.jcms.app.handler.report.report;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.core.pdu.report.CmsReport;
-import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class ReportServer extends BaseServerHandler<CmsReport, CmsType> {
 
     public ReportServer() {
-        super(ServiceName.REPORT, CmsReport.class, null);
+        super(CmsServiceInfo.REPORT, CmsReport.class, null);
     }
 
     @Override

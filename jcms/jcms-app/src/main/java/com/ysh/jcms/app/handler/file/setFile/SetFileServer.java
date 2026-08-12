@@ -6,7 +6,7 @@ import com.ysh.jcms.core.pdu.file.CmsSetFileError;
 import com.ysh.jcms.core.pdu.file.CmsSetFileRequest;
 import com.ysh.jcms.core.pdu.file.CmsSetFileResponse;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -18,7 +18,7 @@ import java.nio.file.StandardOpenOption;
 public class SetFileServer extends BaseServerHandler<CmsSetFileRequest, CmsSetFileError> {
 
     public SetFileServer() {
-        super(ServiceName.SET_FILE, CmsSetFileRequest.class, CmsSetFileError.class);
+        super(CmsServiceInfo.SET_FILE, CmsSetFileRequest.class, CmsSetFileError.class);
     }
 
     @Override

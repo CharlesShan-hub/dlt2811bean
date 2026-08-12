@@ -10,7 +10,7 @@ import com.ysh.jcms.core.data.sequence.connection.CmsAuthenticationParameter;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.security.*;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.SessionState;
 
@@ -24,7 +24,7 @@ public class AssociateClient extends BaseClientHandler<AssociateDao> {
 
     @Override
     public void execute(AssociateDao dao) throws Exception {
-        send(ServiceName.ASSOCIATE, dao);
+        send(CmsServiceInfo.ASSOCIATE, dao);
     }
 
     @Override

@@ -32,7 +32,7 @@ public abstract class SetCbValuesServer<R extends CmsType, E extends CmsType, En
         extends
             BaseServerHandler<R, E> {
 
-    protected SetCbValuesServer(com.ysh.jcms.utils.transport.ServiceName serviceName, Class<R> requestType, Class<E> errorType) {
+    protected SetCbValuesServer(com.ysh.jcms.core.info.CmsServiceInfo serviceName, Class<R> requestType, Class<E> errorType) {
         super(serviceName, requestType, errorType);
     }
 

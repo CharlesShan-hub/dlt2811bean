@@ -7,7 +7,7 @@ import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.pdu.rpc.CmsRpcCallError;
 import com.ysh.jcms.core.pdu.rpc.CmsRpcCallRequest;
 import com.ysh.jcms.core.pdu.rpc.CmsRpcCallResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -25,7 +25,7 @@ public class RpcCallServer extends BaseServerHandler<CmsRpcCallRequest, CmsRpcCa
     }
 
     public RpcCallServer() {
-        super(ServiceName.RPC_CALL, CmsRpcCallRequest.class, CmsRpcCallError.class);
+        super(CmsServiceInfo.RPC_CALL, CmsRpcCallRequest.class, CmsRpcCallError.class);
     }
 
     @Override

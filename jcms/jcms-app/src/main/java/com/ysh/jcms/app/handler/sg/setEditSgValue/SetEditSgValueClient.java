@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.pdu.sg.CmsSetEditSgValueError;
 import com.ysh.jcms.core.pdu.sg.CmsSetEditSgValueResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -13,7 +13,7 @@ public class SetEditSgValueClient extends BaseClientHandler<SetEditSgValueDao> {
 
     @Override
     public void execute(SetEditSgValueDao dao) throws Exception {
-        send(ServiceName.SET_EDIT_SG_VALUE, dao);
+        send(CmsServiceInfo.SET_EDIT_SG_VALUE, dao);
     }
 
     @Override

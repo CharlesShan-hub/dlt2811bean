@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.report.getUrcbValues;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.report.CmsGetUrcbValuesError;
 import com.ysh.jcms.core.pdu.report.CmsGetUrcbValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class GetUrcbValuesClient extends BaseClientHandler<GetUrcbValuesDao> {
 
     @Override
     public void execute(GetUrcbValuesDao dao) throws Exception {
-        send(ServiceName.GET_URCB_VALUES, dao);
+        send(CmsServiceInfo.GET_URCB_VALUES, dao);
     }
 
     @Override

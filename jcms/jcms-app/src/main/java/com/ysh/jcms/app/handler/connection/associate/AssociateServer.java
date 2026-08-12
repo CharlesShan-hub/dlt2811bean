@@ -10,7 +10,7 @@ import com.ysh.jcms.core.pdu.connection.CmsAssociateRequest;
 import com.ysh.jcms.core.pdu.connection.CmsAssociateResponse;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.service.SclAccessPointService;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.AssociationIdGenerator;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -21,7 +21,7 @@ public class AssociateServer extends BaseServerHandler<CmsAssociateRequest, CmsA
     private final AssociateSecurity security = new AssociateSecurity();
 
     public AssociateServer() {
-        super(ServiceName.ASSOCIATE, CmsAssociateRequest.class, CmsAssociateError.class);
+        super(CmsServiceInfo.ASSOCIATE, CmsAssociateRequest.class, CmsAssociateError.class);
     }
 
     @Override

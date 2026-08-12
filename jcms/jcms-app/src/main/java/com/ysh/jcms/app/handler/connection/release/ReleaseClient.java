@@ -5,7 +5,7 @@ import com.ysh.jcms.app.handler.BaseHandler;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.pdu.connection.CmsReleaseError;
 import com.ysh.jcms.core.pdu.connection.CmsReleaseResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.SessionState;
 
@@ -15,7 +15,7 @@ public class ReleaseClient extends BaseClientHandler<ReleaseDao> {
 
     @Override
     public void execute(ReleaseDao dao) throws Exception {
-        send(ServiceName.RELEASE, dao);
+        send(CmsServiceInfo.RELEASE, dao);
     }
 
     @Override

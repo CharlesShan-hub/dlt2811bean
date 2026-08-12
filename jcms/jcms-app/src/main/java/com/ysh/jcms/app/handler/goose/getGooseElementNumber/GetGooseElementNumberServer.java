@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.pdu.goose.CmsGetGooseElementNumberError;
 import com.ysh.jcms.core.pdu.goose.CmsGetGooseElementNumberRequest;
 import com.ysh.jcms.core.pdu.goose.CmsGetGooseElementNumberResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -18,7 +18,7 @@ import com.ysh.jcms.utils.transport.session.Session;
 public class GetGooseElementNumberServer extends BaseServerHandler<CmsGetGooseElementNumberRequest, CmsGetGooseElementNumberError> {
 
     public GetGooseElementNumberServer() {
-        super(ServiceName.GET_GOOSE_ELEMENT_NUMBER, CmsGetGooseElementNumberRequest.class, CmsGetGooseElementNumberError.class);
+        super(CmsServiceInfo.GET_GOOSE_ELEMENT_NUMBER, CmsGetGooseElementNumberRequest.class, CmsGetGooseElementNumberError.class);
     }
 
     @Override

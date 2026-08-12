@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.sg.selectActiveSg;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.sg.CmsSelectActiveSgError;
 import com.ysh.jcms.core.pdu.sg.CmsSelectActiveSgResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class SelectActiveSgClient extends BaseClientHandler<SelectActiveSgDao> {
 
     @Override
     public void execute(SelectActiveSgDao dao) throws Exception {
-        send(ServiceName.SELECT_ACTIVE_SG, dao);
+        send(CmsServiceInfo.SELECT_ACTIVE_SG, dao);
     }
 
     @Override

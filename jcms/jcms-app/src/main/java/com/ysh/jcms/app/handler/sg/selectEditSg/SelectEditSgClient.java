@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.sg.selectEditSg;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.sg.CmsSelectEditSgError;
 import com.ysh.jcms.core.pdu.sg.CmsSelectEditSgResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class SelectEditSgClient extends BaseClientHandler<SelectEditSgDao> {
 
     @Override
     public void execute(SelectEditSgDao dao) throws Exception {
-        send(ServiceName.SELECT_EDIT_SG, dao);
+        send(CmsServiceInfo.SELECT_EDIT_SG, dao);
     }
 
     @Override

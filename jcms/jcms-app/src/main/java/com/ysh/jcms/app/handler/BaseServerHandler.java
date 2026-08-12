@@ -4,9 +4,9 @@ import com.ysh.jcms.app.node.InnerServer;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.info.CmsFCInfo;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.SclDocument;
-import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;
 import com.ysh.jcms.utils.transport.service.ServiceHandler;
@@ -36,29 +36,29 @@ import java.util.List;
  */
 public abstract class BaseServerHandler<R extends CmsType, E extends CmsType> extends BaseHandler implements ServiceHandler {
 
-    private final ServiceName serviceName;
+    private final CmsServiceInfo serviceName;
     private final Class<R> requestType;
     private final Class<E> errorType;
 
     /** Full constructor: request PDU + error PDU. */
-    protected BaseServerHandler(ServiceName serviceName, Class<R> requestType, Class<E> errorType) {
+    protected BaseServerHandler(CmsServiceInfo serviceName, Class<R> requestType, Class<E> errorType) {
         this.serviceName = serviceName;
         this.requestType = requestType;
         this.errorType = errorType;
     }
 
     /** For services with a request PDU but no distinct error PDU. */
-    protected BaseServerHandler(ServiceName serviceName, Class<R> requestType) {
+    protected BaseServerHandler(CmsServiceInfo serviceName, Class<R> requestType) {
         this(serviceName, requestType, null);
     }
 
     /** For services without a request PDU (e.g. TestServer). */
-    protected BaseServerHandler(ServiceName serviceName) {
+    protected BaseServerHandler(CmsServiceInfo serviceName) {
         this(serviceName, null, null);
     }
 
     @Override
-    public final ServiceName getServiceName() {
+    public final CmsServiceInfo getServiceName() {
         return serviceName;
     }
 

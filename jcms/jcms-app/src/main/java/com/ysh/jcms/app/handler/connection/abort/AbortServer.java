@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.connection.abort;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.pdu.connection.CmsAbort;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 import com.ysh.jcms.utils.transport.session.SessionState;
@@ -14,7 +14,7 @@ import com.ysh.jcms.utils.transport.session.SessionState;
 public class AbortServer extends BaseServerHandler<CmsAbort, CmsType> {
 
     public AbortServer() {
-        super(ServiceName.ABORT, CmsAbort.class, null);
+        super(CmsServiceInfo.ABORT, CmsAbort.class, null);
     }
 
     @Override

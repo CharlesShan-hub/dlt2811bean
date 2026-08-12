@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.rpc.getRpcInterfaceDefinition;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDefinitionError;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDefinitionResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class GetRpcInterfaceDefinitionClient extends BaseClientHandler<GetRpcInt
 
     @Override
     public void execute(GetRpcInterfaceDefinitionDao dao) throws Exception {
-        send(ServiceName.GET_RPC_INTERFACE_DEFINITION, dao);
+        send(CmsServiceInfo.GET_RPC_INTERFACE_DEFINITION, dao);
     }
 
     @Override

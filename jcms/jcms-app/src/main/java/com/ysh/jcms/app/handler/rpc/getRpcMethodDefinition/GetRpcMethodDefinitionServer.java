@@ -6,13 +6,13 @@ import com.ysh.jcms.core.data.choice.CmsRpcMethodDefChoice;
 import com.ysh.jcms.core.data.scalar.CmsString;
 import com.ysh.jcms.core.data.sequence.rpc.CmsRpcMethodDef;
 import com.ysh.jcms.core.pdu.rpc.*;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class GetRpcMethodDefinitionServer extends BaseServerHandler<CmsGetRpcMethodDefinitionRequest, CmsGetRpcMethodDefinitionError> {
     public GetRpcMethodDefinitionServer() {
-        super(ServiceName.GET_RPC_METHOD_DEFINITION, CmsGetRpcMethodDefinitionRequest.class, CmsGetRpcMethodDefinitionError.class);
+        super(CmsServiceInfo.GET_RPC_METHOD_DEFINITION, CmsGetRpcMethodDefinitionRequest.class, CmsGetRpcMethodDefinitionError.class);
     }
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetRpcMethodDefinitionRequest req, int reqId) {

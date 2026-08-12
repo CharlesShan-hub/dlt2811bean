@@ -13,14 +13,14 @@ import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.convert.DataConverter;
 import com.ysh.jcms.utils.scl.convert.DataValueResolver;
 import com.ysh.jcms.utils.scl.convert.DataValueEntry;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class GetEditSgValueServer extends BaseServerHandler<CmsGetEditSgValueRequest, CmsGetEditSgValueError> {
 
     public GetEditSgValueServer() {
-        super(ServiceName.GET_EDIT_SG_VALUE, CmsGetEditSgValueRequest.class, CmsGetEditSgValueError.class);
+        super(CmsServiceInfo.GET_EDIT_SG_VALUE, CmsGetEditSgValueRequest.class, CmsGetEditSgValueError.class);
     }
 
     @Override

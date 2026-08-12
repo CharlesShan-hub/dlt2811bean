@@ -12,14 +12,14 @@ import com.ysh.jcms.utils.scl.convert.DataValueResolver;
 import com.ysh.jcms.utils.scl.convert.DataValueEntry;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class GetDataValuesServer extends BaseServerHandler<CmsGetDataValuesRequest, CmsGetDataValuesError> {
 
     public GetDataValuesServer() {
-        super(ServiceName.GET_DATA_VALUES, CmsGetDataValuesRequest.class, CmsGetDataValuesError.class);
+        super(CmsServiceInfo.GET_DATA_VALUES, CmsGetDataValuesRequest.class, CmsGetDataValuesError.class);
     }
 
     @Override

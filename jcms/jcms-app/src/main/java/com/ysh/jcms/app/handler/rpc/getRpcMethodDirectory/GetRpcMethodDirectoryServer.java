@@ -7,13 +7,13 @@ import com.ysh.jcms.core.data.scalar.CmsString;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcMethodDirectoryError;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcMethodDirectoryRequest;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcMethodDirectoryResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class GetRpcMethodDirectoryServer extends BaseServerHandler<CmsGetRpcMethodDirectoryRequest, CmsGetRpcMethodDirectoryError> {
     public GetRpcMethodDirectoryServer() {
-        super(ServiceName.GET_RPC_METHOD_DIRECTORY, CmsGetRpcMethodDirectoryRequest.class, CmsGetRpcMethodDirectoryError.class);
+        super(CmsServiceInfo.GET_RPC_METHOD_DIRECTORY, CmsGetRpcMethodDirectoryRequest.class, CmsGetRpcMethodDirectoryError.class);
     }
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetRpcMethodDirectoryRequest req, int reqId) {

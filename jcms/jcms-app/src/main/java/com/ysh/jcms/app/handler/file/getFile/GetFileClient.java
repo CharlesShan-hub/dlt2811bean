@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.file.CmsGetFileError;
 import com.ysh.jcms.core.pdu.file.CmsGetFileRequest;
 import com.ysh.jcms.core.pdu.file.CmsGetFileResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class GetFileClient extends BaseClientHandler<GetFileDao> {
         while (true) {
             CmsGetFileRequest req = new CmsGetFileRequest().filename(remoteFile).startPosition(position);
 
-            Frame frame = send(ServiceName.GET_FILE, req);
+            Frame frame = send(CmsServiceInfo.GET_FILE, req);
 
             // Decode response from the returned frame
             CmsGetFileResponse resp = decodeFrame(frame, new CmsGetFileResponse());

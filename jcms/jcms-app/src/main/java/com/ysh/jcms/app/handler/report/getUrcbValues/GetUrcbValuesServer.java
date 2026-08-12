@@ -10,14 +10,14 @@ import com.ysh.jcms.core.pdu.report.CmsGetUrcbValuesResponse;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.service.SclControlBlockService;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class GetUrcbValuesServer extends BaseServerHandler<CmsGetUrcbValuesRequest, CmsGetUrcbValuesError> {
 
     public GetUrcbValuesServer() {
-        super(ServiceName.GET_URCB_VALUES, CmsGetUrcbValuesRequest.class, CmsGetUrcbValuesError.class);
+        super(CmsServiceInfo.GET_URCB_VALUES, CmsGetUrcbValuesRequest.class, CmsGetUrcbValuesError.class);
     }
 
     @Override

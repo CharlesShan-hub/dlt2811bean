@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.data.getDataDefinition;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.data.CmsGetDataDefinitionError;
 import com.ysh.jcms.core.pdu.data.CmsGetDataDefinitionResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class GetDataDefinitionClient extends BaseClientHandler<GetDataDefinition
 
     @Override
     public void execute(GetDataDefinitionDao dao) throws Exception {
-        send(ServiceName.GET_DATA_DEFINITION, dao);
+        send(CmsServiceInfo.GET_DATA_DEFINITION, dao);
     }
 
     @Override

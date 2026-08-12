@@ -1,6 +1,6 @@
 package com.ysh.jcms.utils.transport.frame;
 
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -28,7 +28,7 @@ public class FrameHeader {
     private boolean next;
     private boolean resp;
     private boolean err;
-    private ServiceName serviceCode;
+    private CmsServiceInfo serviceCode;
     private int frameLength;
 
     /** Encode header to 4 bytes: CC, SC, FL(hi), FL(lo). */
@@ -41,7 +41,7 @@ public class FrameHeader {
         if (err)
             cc |= 0x20;
 
-        int sc = serviceCode != null ? serviceCode.getCode() : 0;
+        int sc = serviceCode != null ? serviceCode.serviceCode() : 0;
         return new byte[]{cc, (byte) sc, (byte) ((frameLength >> 8) & 0xFF), (byte) (frameLength & 0xFF)};
     }
 
@@ -52,7 +52,7 @@ public class FrameHeader {
         }
         byte cc = data[offset];
         return new FrameHeader().next((cc & 0x80) != 0).resp((cc & 0x40) != 0).err((cc & 0x20) != 0)
-                .serviceCode(ServiceName.fromCode(data[offset + 1] & 0xFF))
+                .serviceCode(CmsServiceInfo.byCode(data[offset + 1] & 0xFF))
                 .frameLength(((data[offset + 2] & 0xFF) << 8) | (data[offset + 3] & 0xFF));
     }
 }

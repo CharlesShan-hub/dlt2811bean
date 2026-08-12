@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.sg.getSgcbValues;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.sg.CmsGetSgcbValuesError;
 import com.ysh.jcms.core.pdu.sg.CmsGetSgcbValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class GetSgcbValuesClient extends BaseClientHandler<GetSgcbValuesDao> {
 
     @Override
     public void execute(GetSgcbValuesDao dao) throws Exception {
-        send(ServiceName.GET_SGCB_VALUES, dao);
+        send(CmsServiceInfo.GET_SGCB_VALUES, dao);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.ysh.jcms.utils.transport.service;
 
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 import lombok.AllArgsConstructor;
@@ -18,7 +18,7 @@ public class Dispatcher {
 
     private static final Logger log = LoggerFactory.getLogger(Dispatcher.class);
 
-    private final Map<ServiceName, ServiceHandler> handlers = new HashMap<>();
+    private final Map<CmsServiceInfo, ServiceHandler> handlers = new HashMap<>();
 
     public void register(ServiceHandler handler) {
         handlers.put(handler.getServiceName(), handler);
@@ -34,7 +34,7 @@ public class Dispatcher {
      * @return a DispatchResult containing the outcome and optional response
      */
     public DispatchOutcome dispatch(Session session, Frame request) {
-        ServiceName sc = request.header().serviceCode();
+        CmsServiceInfo sc = request.header().serviceCode();
         if (sc == null) {
             return new DispatchOutcome(DispatchResult.NOT_REGISTERED, null);
         }

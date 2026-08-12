@@ -7,7 +7,7 @@ import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.pdu.control.CmsOperateError;
 import com.ysh.jcms.core.pdu.control.CmsOperateRequest;
 import com.ysh.jcms.core.pdu.control.CmsOperateResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -21,7 +21,7 @@ import com.ysh.jcms.utils.transport.session.Session;
 public class OperateServer extends BaseServerHandler<CmsOperateRequest, CmsOperateError> {
 
     public OperateServer() {
-        super(ServiceName.OPERATE, CmsOperateRequest.class, CmsOperateError.class);
+        super(CmsServiceInfo.OPERATE, CmsOperateRequest.class, CmsOperateError.class);
     }
 
     @Override

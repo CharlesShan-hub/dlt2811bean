@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.report.CmsSetUrcbResult;
 import com.ysh.jcms.core.pdu.report.CmsSetUrcbValuesError;
 import com.ysh.jcms.core.pdu.report.CmsSetUrcbValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ public class SetUrcbValuesClient extends BaseClientHandler<SetUrcbValuesDao> {
 
     @Override
     public void execute(SetUrcbValuesDao dao) throws Exception {
-        send(ServiceName.SET_URCB_VALUES, dao);
+        send(CmsServiceInfo.SET_URCB_VALUES, dao);
     }
 
     @Override

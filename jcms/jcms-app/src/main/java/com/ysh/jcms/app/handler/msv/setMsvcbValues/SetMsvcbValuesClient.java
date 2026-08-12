@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.msv.setMsvcbValues;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.msv.CmsSetMsvcbValuesError;
 import com.ysh.jcms.core.pdu.msv.CmsSetMsvcbValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -13,7 +13,7 @@ public class SetMsvcbValuesClient extends BaseClientHandler<SetMsvcbValuesDao> {
 
     @Override
     public void execute(SetMsvcbValuesDao dao) throws Exception {
-        send(ServiceName.SET_MSVCB_VALUES, dao);
+        send(CmsServiceInfo.SET_MSVCB_VALUES, dao);
     }
 
     @Override

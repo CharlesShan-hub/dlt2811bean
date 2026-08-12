@@ -7,7 +7,7 @@ import com.ysh.jcms.core.pdu.file.CmsGetFileAttributeValuesError;
 import com.ysh.jcms.core.pdu.file.CmsGetFileAttributeValuesRequest;
 import com.ysh.jcms.core.pdu.file.CmsGetFileAttributeValuesResponse;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -20,7 +20,7 @@ import java.util.zip.CRC32;
 public class GetFileAttributeValuesServer extends BaseServerHandler<CmsGetFileAttributeValuesRequest, CmsGetFileAttributeValuesError> {
 
     public GetFileAttributeValuesServer() {
-        super(ServiceName.GET_FILE_ATTRIBUTE_VALUES, CmsGetFileAttributeValuesRequest.class, CmsGetFileAttributeValuesError.class);
+        super(CmsServiceInfo.GET_FILE_ATTRIBUTE_VALUES, CmsGetFileAttributeValuesRequest.class, CmsGetFileAttributeValuesError.class);
     }
 
     @Override

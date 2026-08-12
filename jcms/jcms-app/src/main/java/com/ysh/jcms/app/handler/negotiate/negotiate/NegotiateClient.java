@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.BaseHandler;
 import com.ysh.jcms.core.pdu.negotiate.CmsNegotiateError;
 import com.ysh.jcms.core.pdu.negotiate.CmsNegotiateResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.ClientSession;
 
@@ -14,7 +14,7 @@ public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
 
     @Override
     public void execute(NegotiateClientDao dao) throws Exception {
-        send(ServiceName.ASSOCIATE_NEGOTIATE, dao);
+        send(CmsServiceInfo.ASSOCIATE_NEGOTIATE, dao);
     }
 
     @Override

@@ -7,7 +7,7 @@ import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.pdu.control.CmsCancelError;
 import com.ysh.jcms.core.pdu.control.CmsCancelRequest;
 import com.ysh.jcms.core.pdu.control.CmsCancelResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -20,7 +20,7 @@ import com.ysh.jcms.utils.transport.session.Session;
 public class CancelServer extends BaseServerHandler<CmsCancelRequest, CmsCancelError> {
 
     public CancelServer() {
-        super(ServiceName.CANCEL, CmsCancelRequest.class, CmsCancelError.class);
+        super(CmsServiceInfo.CANCEL, CmsCancelRequest.class, CmsCancelError.class);
     }
 
     @Override

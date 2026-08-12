@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.control.cancel;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.control.CmsCancelError;
 import com.ysh.jcms.core.pdu.control.CmsCancelResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ public class CancelClient extends BaseClientHandler<CancelDao> {
 
     @Override
     public void execute(CancelDao dao) throws Exception {
-        send(ServiceName.CANCEL, dao);
+        send(CmsServiceInfo.CANCEL, dao);
     }
 
     @Override

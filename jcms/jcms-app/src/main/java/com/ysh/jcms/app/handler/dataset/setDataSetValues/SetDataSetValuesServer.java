@@ -15,14 +15,14 @@ import com.ysh.jcms.utils.scl.model.input.SclFCDA;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.scl.service.SclDatasetService;
 import com.ysh.jcms.utils.scl.service.SclDatasetService.DataSetResolution;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class SetDataSetValuesServer extends BaseServerHandler<CmsSetDataSetValuesRequest, CmsSetDataSetValuesError> {
 
     public SetDataSetValuesServer() {
-        super(ServiceName.SET_DATA_SET_VALUES, CmsSetDataSetValuesRequest.class, CmsSetDataSetValuesError.class);
+        super(CmsServiceInfo.SET_DATA_SET_VALUES, CmsSetDataSetValuesRequest.class, CmsSetDataSetValuesError.class);
     }
 
     @Override

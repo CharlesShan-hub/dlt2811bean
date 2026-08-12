@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler;
 
 import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.core.data.core.CmsType;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;
 
@@ -85,7 +85,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
      * {@link PaginationContext#setLastReference} inside their
      * {@link #onSuccess(Frame, BaseDao)} override for auto-pull to work.
      */
-    protected Frame send(ServiceName sc, D dao) throws IOException {
+    protected Frame send(CmsServiceInfo sc, D dao) throws IOException {
         CmsContent<D> content = content();
         PaginationContext ctx = content != null ? content.paginationContext() : null;
         beforeAll(dao);
@@ -112,7 +112,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
      * accumulated results. Calls {@link #onSuccess(Frame, BaseDao)} for each page,
      * and {@link #setPaginationCursor(BaseDao, String)} to advance the cursor.
      */
-    private Frame sendWithPagination(ServiceName sc, D dao, CmsContent<D> content) throws IOException {
+    private Frame sendWithPagination(CmsServiceInfo sc, D dao, CmsContent<D> content) throws IOException {
         PaginationContext ctx = content.paginationContext();
         ctx.setLastMoreFollows(false);
         ctx.setLastReference(null);
@@ -164,9 +164,9 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
 
     /**
      * Send a request (encoded bytes). Subclasses should prefer
-     * {@link #send(ServiceName, CmsType)} for automatic PDU tracing.
+     * {@link #send(CmsServiceInfo, CmsType)} for automatic PDU tracing.
      */
-    protected Frame send(ServiceName sc, byte[] pduBytes) throws IOException {
+    protected Frame send(CmsServiceInfo sc, byte[] pduBytes) throws IOException {
         if (node == null)
             throw new IOException("BaseClientHandler node not set");
         Frame frame = node.sendRequest(sc, pduBytes);
@@ -181,7 +181,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     /**
      * Encode and send a request (object form), with PDU trace when enabled.
      */
-    protected Frame send(ServiceName sc, CmsType requestObject) throws IOException {
+    protected Frame send(CmsServiceInfo sc, CmsType requestObject) throws IOException {
         trace(">>>\n" + requestObject);
         return send(sc, requestObject.encode());
     }
@@ -189,7 +189,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     /**
      * Send a one-way (fire-and-forget) frame. No response expected.
      */
-    protected void sendOneWay(ServiceName sc, byte[] pduBytes) throws IOException {
+    protected void sendOneWay(CmsServiceInfo sc, byte[] pduBytes) throws IOException {
         if (node == null)
             throw new IOException("BaseClientHandler node not set");
         trace(">>> " + sc + " (one-way)");
@@ -198,7 +198,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     }
 
     /** Send a one-way (fire-and-forget) request object. */
-    protected void sendOneWay(ServiceName sc, CmsType requestObject) throws IOException {
+    protected void sendOneWay(CmsServiceInfo sc, CmsType requestObject) throws IOException {
         trace(">>>\n" + requestObject);
         sendOneWay(sc, requestObject.encode());
     }
@@ -228,8 +228,8 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
 
     /**
      * Callback invoked after each successful response when using
-     * {@link #send(ServiceName, BaseDao)}. Provides both the response frame and the
-     * DAO so subclasses can store decoded results directly on the DAO.
+     * {@link #send(CmsServiceInfo, BaseDao)}. Provides both the response frame and
+     * the DAO so subclasses can store decoded results directly on the DAO.
      * <p>
      * For paginated requests, the {@link PaginationContext} is available via
      * {@link CmsContent#paginationContext()}. Default implementation delegates to

@@ -12,7 +12,7 @@ import com.ysh.jcms.core.data.core.CmsType;
  * <p>
  * Subclasses <b>must</b> override {@link #toRequest()} to build the
  * corresponding request object, enabling
- * {@code send(ServiceName.XXX, dao.toRequest())} in client handlers.
+ * {@code send(CmsServiceInfo.XXX, dao.toRequest())} in client handlers.
  *
  * <p>
  * This class is intentionally minimal — only request-building logic lives here.

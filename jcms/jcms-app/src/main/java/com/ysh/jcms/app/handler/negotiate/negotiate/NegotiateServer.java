@@ -7,14 +7,14 @@ import com.ysh.jcms.core.pdu.negotiate.CmsNegotiateRequest;
 import com.ysh.jcms.core.pdu.negotiate.CmsNegotiateResponse;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class NegotiateServer extends BaseServerHandler<CmsNegotiateRequest, CmsNegotiateError> {
 
     public NegotiateServer() {
-        super(ServiceName.ASSOCIATE_NEGOTIATE, CmsNegotiateRequest.class, CmsNegotiateError.class);
+        super(CmsServiceInfo.ASSOCIATE_NEGOTIATE, CmsNegotiateRequest.class, CmsNegotiateError.class);
     }
 
     @Override

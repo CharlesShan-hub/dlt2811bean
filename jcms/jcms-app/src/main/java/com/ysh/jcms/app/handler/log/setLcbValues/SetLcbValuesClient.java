@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.data.sequence.log.CmsSetLcbResult;
 import com.ysh.jcms.core.pdu.log.CmsSetLcbValuesError;
 import com.ysh.jcms.core.pdu.log.CmsSetLcbValuesResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -13,7 +13,7 @@ public class SetLcbValuesClient extends BaseClientHandler<SetLcbValuesDao> {
 
     @Override
     public void execute(SetLcbValuesDao dao) throws Exception {
-        send(ServiceName.SET_LCB_VALUES, dao);
+        send(CmsServiceInfo.SET_LCB_VALUES, dao);
     }
 
     @Override

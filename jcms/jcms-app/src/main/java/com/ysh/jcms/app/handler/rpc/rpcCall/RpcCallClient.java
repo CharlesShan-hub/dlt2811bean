@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.rpc.rpcCall;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.core.pdu.rpc.CmsRpcCallError;
 import com.ysh.jcms.core.pdu.rpc.CmsRpcCallResponse;
-import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class RpcCallClient extends BaseClientHandler<RpcCallDao> {
 
     @Override
     public void execute(RpcCallDao dao) throws Exception {
-        send(ServiceName.RPC_CALL, dao);
+        send(CmsServiceInfo.RPC_CALL, dao);
     }
 
     @Override
