@@ -8,16 +8,20 @@
       :terminal-open="showTerminal"
       :theme="theme"
       :dark-mode="darkMode"
+      :collapsed="sidebarCollapsed"
       @toggle-terminal="showTerminal = !showTerminal"
       @set-theme="setTheme"
       @toggle-mode="setMode(!darkMode)"
+      @toggle-sidebar="toggleSidebar"
     />
     <div class="app-body">
       <Sidebar
         :items="navItems"
         :active="activeView"
+        :collapsed="sidebarCollapsed"
         @select="onSidebarSelect($event, false)"
         @select-duplicate="onSidebarSelect($event, true)"
+        @toggle-collapse="toggleSidebar"
       />
       <div class="app-main">
         <TabBar
@@ -92,10 +96,11 @@
           </div>
         </div>
 
-        <!-- 底部终端面板 -->
-        <div v-show="showTerminal" class="terminal-panel">
+        <!-- 底部终端面板（顶部手柄拖拽调高，双击还原） -->
+        <div v-show="showTerminal" class="terminal-panel" :style="{ height: terminalHeight + 'px' }">
+          <div class="terminal-drag" title="拖拽调整高度 · 双击还原" @mousedown.prevent="startTerminalDrag" @dblclick="resetTerminalHeight"></div>
           <div class="terminal-panel-head">
-            <span class="terminal-panel-title">⊢ 终端</span>
+            <span class="terminal-panel-title"><TerminalIcon :size="13" /> 终端</span>
             <button class="terminal-panel-close" title="关闭终端" @click="showTerminal = false">✕</button>
           </div>
           <Terminal embedded class="terminal-panel-body" />
@@ -106,7 +111,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
+import TerminalIcon from '@lucide/vue/dist/esm/icons/terminal.mjs'
 import TopBar from './components/TopBar.vue'
 import Sidebar from './components/Sidebar.vue'
 import TabBar from './components/TabBar.vue'
@@ -162,6 +168,48 @@ function setMode(dark) {
   localStorage.setItem('cms-mode', dark ? 'dark' : 'light')
 }
 
+// 侧边栏折叠状态（存 localStorage 持久化）
+const sidebarCollapsed = ref(localStorage.getItem('cms-sidebar-collapsed') === '1')
+
+function toggleSidebar() {
+  sidebarCollapsed.value = !sidebarCollapsed.value
+  localStorage.setItem('cms-sidebar-collapsed', sidebarCollapsed.value ? '1' : '0')
+}
+
+// 终端面板高度（顶部手柄拖拽调整，双击还原，存 localStorage）
+const DEFAULT_TERMINAL_H = 300
+const terminalHeight = ref(Number(localStorage.getItem('cms-terminal-height')) || DEFAULT_TERMINAL_H)
+watch(terminalHeight, (v) => localStorage.setItem('cms-terminal-height', String(v)))
+
+let terminalDrag = null
+
+function startTerminalDrag(e) {
+  terminalDrag = { startY: e.clientY, startH: terminalHeight.value }
+  document.addEventListener('mousemove', onTerminalDrag)
+  document.addEventListener('mouseup', stopTerminalDrag)
+  document.body.style.cursor = 'row-resize'
+  document.body.style.userSelect = 'none'
+}
+
+function onTerminalDrag(e) {
+  if (!terminalDrag) return
+  // 向上拖（clientY 减小）→ 面板变高
+  const dy = terminalDrag.startY - e.clientY
+  terminalHeight.value = Math.max(100, Math.min(600, terminalDrag.startH + dy))
+}
+
+function stopTerminalDrag() {
+  terminalDrag = null
+  document.removeEventListener('mousemove', onTerminalDrag)
+  document.removeEventListener('mouseup', stopTerminalDrag)
+  document.body.style.cursor = ''
+  document.body.style.userSelect = ''
+}
+
+function resetTerminalHeight() {
+  terminalHeight.value = DEFAULT_TERMINAL_H
+}
+
 // 当前年份（空状态版权）
 const currentYear = new Date().getFullYear()
 
@@ -190,8 +238,8 @@ const navItems = [
     { id: 'data-dir', label: cnTitle('data-dir'), done: true },
     { id: 'get-data-def', label: cnTitle('get-data-def'), done: true },
   ] },
-  { id: 'dataset', label: '数据集', icon: 'Table', done: false, children: [
-    { id: 'get-dataset-values', label: cnTitle('get-dataset-values'), done: false },
+  { id: 'dataset', label: '数据集', icon: 'Table', children: [
+    { id: 'get-dataset-values', label: cnTitle('get-dataset-values'), done: true },
     { id: 'set-dataset-values', label: cnTitle('set-dataset-values'), done: false },
     { id: 'create-dataset', label: cnTitle('create-dataset'), done: false },
     { id: 'delete-dataset', label: cnTitle('delete-dataset'), done: false },
@@ -557,12 +605,25 @@ onUnmounted(() => {
 
 /* ── 底部终端面板 ── */
 .terminal-panel {
-  height: 300px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--border);
   background: var(--bg-secondary);
+}
+
+/* 顶部拖拽手柄 */
+.terminal-drag {
+  height: 6px;
+  flex-shrink: 0;
+  cursor: row-resize;
+  position: relative;
+  z-index: 5;
+  transition: background 0.15s;
+}
+.terminal-drag:hover,
+.terminal-drag:active {
+  background: var(--accent);
 }
 
 .terminal-panel-head {
@@ -575,6 +636,9 @@ onUnmounted(() => {
 }
 
 .terminal-panel-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 12px;
   font-weight: 600;
   color: var(--text-secondary);

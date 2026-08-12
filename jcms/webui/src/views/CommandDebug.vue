@@ -8,7 +8,7 @@
           <h1 class="page-title">{{ isConnect ? '连接管理' : shortTitle }}</h1>
         </div>
         <div class="title-right">
-          <button type="button" class="glass asn1-toggle-header-btn" :title="showAsn1 ? '隐藏 ASN.1' : '显示 ASN.1'" @click="showAsn1 = !showAsn1">𝔄</button>
+          <button v-if="!isPlaceholder" type="button" class="glass asn1-toggle-header-btn" :title="showAsn1 ? '隐藏 ASN.1' : '显示 ASN.1'" @click="showAsn1 = !showAsn1">𝔄</button>
           <template v-if="isConnect">
             <code class="glass cmd-chip">connect</code>
             <span class="desc-text">TCP → 协商 → 关联</span>
@@ -36,7 +36,24 @@
       </template>
     </UiModal>
 
-    <div class="debug-grid" ref="gridRef" :style="{ gridTemplateColumns: leftColWidth + 'px 6px 1fr' }">
+    <!-- ── 未实现服务：三面板骨架（头部标题 + 参数/结果面板空壳，待实现） ── -->
+    <div v-if="isPlaceholder" class="debug-grid" ref="gridRef" :style="{ gridTemplateColumns: leftColWidth + 'px 6px 1fr' }">
+      <!-- 左栏：参数面板（空壳） -->
+      <UiCard title="参数" icon="⚙" fill>
+        <p class="skeleton-note">参数界面待实现，将在后续版本提供。</p>
+      </UiCard>
+      <!-- 垂直拖拽手柄 -->
+      <div class="drag-v" @mousedown.prevent="startVDrag"></div>
+      <!-- 右栏：命令与返回（空壳） -->
+      <UiCard title="命令与返回" icon="🔄" fill>
+        <div class="skeleton-result">
+          <TerminalIcon :size="30" stroke-width="1.5" class="skeleton-result-icon" />
+          <p>执行后在此显示返回结果</p>
+        </div>
+      </UiCard>
+    </div>
+
+    <div v-else class="debug-grid" ref="gridRef" :style="{ gridTemplateColumns: leftColWidth + 'px 6px 1fr' }">
       <!-- ── 左栏：参数 ── -->
       <CommandParamsPanel
         :def="def"
@@ -51,6 +68,7 @@
         :ref-options="refOptions"
         :fc-row-options="fcRowOptions"
         :refs-list-options="refsListOptions"
+        :dataset-options="datasetOptions"
         :ln-ref="lnRef"
         :conn-msg="connMsg"
         :conn-msg-ok="connMsgOk"
@@ -77,8 +95,8 @@
         @open-value-editor="openValueEditor"
       />
 
-      <!-- 垂直拖拽手柄 -->
-      <div class="drag-v" @mousedown.prevent="startVDrag"></div>
+      <!-- 垂直拖拽手柄（双击还原默认宽度） -->
+      <div class="drag-v" title="拖拽调整 · 双击还原" @mousedown.prevent="startVDrag" @dblclick="resetSplit"></div>
 
       <!-- ── 右栏：流程 + 命令与返回 ── -->
       <CommandResultPanel
@@ -92,6 +110,11 @@
         :top-height="topHeight"
         :json-format="jsonFormat"
         :formatted-json="formattedJson"
+        :display-json="displayJsonHtml"
+        :json-truncated="jsonTruncated"
+        :json-expanded="jsonExpanded"
+        :json-total-lines="jsonTotalLines"
+        :json-fold-lines="JSON_FOLD_LINES"
         :output-lines="outputLines"
         :highlighted-cmd="highlightedCmd"
         :highlighted-result-cmd="highlightedResultCmd"
@@ -100,6 +123,8 @@
         @update:json-format="jsonFormat = $event"
         @edit="onCmdEdit"
         @start-h-drag="startHDrag"
+        @expand-json="jsonExpanded = true"
+        @collapse-json="jsonExpanded = false"
       />
     </div>
   </div>
@@ -114,17 +139,19 @@
 
 <script setup>
 import { computed, reactive, ref, watch } from 'vue'
+import TerminalIcon from '@lucide/vue/dist/esm/icons/terminal.mjs'
 import { debugShared } from '../stores/debugShared.js'
 import CommandParamsPanel from '../components/CommandParamsPanel.vue'
 import CommandResultPanel from '../components/CommandResultPanel.vue'
 import ComplexValueEditor from '../components/ComplexValueEditor.vue'
+import UiCard from '../components/ui/UiCard.vue'
 import UiModal from '../components/ui/UiModal.vue'
 import { executeCommand, executeJson } from '../api/cms.js'
 import { marked } from 'marked'
 import { CMD_DEFS } from '../cmddefs/index.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
 import { pushTerminal } from '../terminalLog.js'
-import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs } from '../ldCache.js'
+import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, datasetRefs, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs, ensureDatasetRefs } from '../ldCache.js'
 import { buildCmd, highlightCmdStr, syntaxHighlightJson, parseResult, parseCmd } from '../utils/cmdFormat.js'
 import { FC_OPTIONS } from '../cmddefs/common.js'
 import { useSplitPane } from '../composables/useSplitPane.js'
@@ -154,6 +181,13 @@ const shortTitle = computed(() => titleParts.value.name)
 const section = computed(() => titleParts.value.section)
 const isConnect = computed(() => props.cmd === 'connect')
 const simpleParams = computed(() => def.value.params)
+
+// 未实现服务：仅 title/desc 而无参数、ASN.1、协议说明的命令 → 渲染占位框架页
+const isPlaceholder = computed(() => {
+  if (isConnect.value) return false
+  const d = def.value
+  return !(d.params || []).length && !d.asn1 && !d.doc
+})
 
 const paramRows = computed(() => {
   const rows = []
@@ -199,6 +233,16 @@ const refOptions = computed(() => {
   return allDefRefs
 })
 
+const datasetOptions = computed(() => {
+  const p = def.value.params.find((x) => x.type === 'dataset-select')
+  if (!p) return []
+  const lnKey = p.dependsOn || 'ln'
+  const o = form[lnKey]
+  if (!o || !o.ld || !o.ln) return []
+  const lnRef = `${o.ld}/${o.ln}`
+  return datasetRefs[lnRef] || []
+})
+
 const refsListOptions = computed(() => allLnRefs)
 
 const fcRowOptions = computed(() => FC_OPTIONS)
@@ -237,6 +281,7 @@ const {
   showAsn1,
   startVDrag,
   startHDrag,
+  resetSplit,
 } = useSplitPane()
 
 const {
@@ -262,7 +307,7 @@ const {
   getDef: () => def.value,
   getCmd: () => props.cmd,
   getLnRef: () => lnRef.value,
-  lnRequiredCmds: ['ln-dir', 'all-data', 'all-def', 'all-cb'],
+  lnRequiredCmds: ['ln-dir', 'all-data', 'all-def', 'all-cb', 'get-dataset-values'],
 })
 
 const formValid = computed(() => {
@@ -286,6 +331,9 @@ const formValid = computed(() => {
     if (p.type === 'ln-cascade') {
       if (!v || !v.ld) return false
     } else if (p.type === 'ld-select') {
+      if (!v) return false
+    } else if (p.type === 'dataset-select') {
+      // dataset-select 需要在 ln-cascade 有完整 LD/LN 时才有值
       if (!v) return false
     } else if (p.type === 'refs-list') {
       const rows = v || []
@@ -319,6 +367,24 @@ const formattedJson = computed(() => {
   }
 })
 
+// ── 超长 JSON 默认折叠：超过阈值行数时只渲染前 N 行，展开才渲染全部 ──
+const JSON_FOLD_LINES = 400
+const jsonExpanded = ref(false)
+const jsonTotalLines = computed(() => (formattedJson.value ? formattedJson.value.split('\n').length : 0))
+const jsonTruncated = computed(() => jsonTotalLines.value > JSON_FOLD_LINES)
+const displayJsonHtml = computed(() => {
+  if (!formattedJson.value) return ''
+  if (!jsonExpanded.value && jsonTruncated.value) {
+    return formattedJson.value.split('\n').slice(0, JSON_FOLD_LINES).join('\n')
+  }
+  return formattedJson.value
+})
+
+// 新结果到达时重置为折叠态
+watch(result, () => {
+  jsonExpanded.value = false
+})
+
 const outputLines = computed(() => {
   if (!result.value) return []
   return result.value.output.split('\n')
@@ -346,6 +412,15 @@ setupLdDirWatch()
 setupLazyLnWatch()
 setupRefsWatch()
 setupAllDataRefsWatch()
+
+// get-dataset-values: LN 变化时加载数据集列表
+watch([() => form.ln?.ld, () => form.ln?.ln], async ([ld, ln]) => {
+  if (props.cmd !== 'get-dataset-values') return
+  form.ds = '' // 清除数据集选择
+  if (ld && ln) {
+    await ensureDatasetRefs(`${ld}/${ln}`)
+  }
+})
 
 // cmd 切换时重置表单 + 加载 negotiate 默认值
 watch(() => props.cmd, async () => {
@@ -757,6 +832,30 @@ async function releaseAp() {
   grid-template-columns: 380px 6px 1fr;
   grid-auto-rows: minmax(0, 1fr);
   gap: 12px;
+}
+
+/* ── 未实现服务：三面板骨架 ── */
+.skeleton-note {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  padding: 12px 0;
+}
+.skeleton-result {
+  height: 100%;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 13px;
+  user-select: none;
+}
+.skeleton-result-icon {
+  opacity: 0.5;
+  margin-bottom: 6px;
 }
 
 .drag-v {

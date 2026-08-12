@@ -11,11 +11,22 @@ export function cnTitle(id) {
   return t.split(' ')[0] || t
 }
 
+/** 服务视图标签标题 */
+const SVC_TITLES = {
+  'sg-view': '定值组',
+  'report-view': '报告',
+  'log-view': '日志',
+  'goose-view': 'GOOSE',
+  'msv-view': '多播采样值',
+  'file-view': '文件',
+  'rpc-view': 'RPC 接口',
+}
+
 /** 根据 viewId 获取标签标题 */
 function tabTitle(viewId) {
   if (viewId === 'dir-tree') return '目录与数据'
   if (viewId === 'connect-root') return '连接管理'
-  return cnTitle(viewId)
+  return SVC_TITLES[viewId] || cnTitle(viewId)
 }
 
 export function useTabs() {

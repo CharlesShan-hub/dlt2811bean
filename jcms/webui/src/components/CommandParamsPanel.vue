@@ -69,6 +69,14 @@
                 empty-label="（不选）"
               />
             </div>
+            <!-- 数据集选择：依赖 ln-cascade 选中的 LN，动态加载数据集名称 -->
+            <UiSelect
+              v-else-if="p.type === 'dataset-select'"
+              v-model="form[p.key]"
+              :options="datasetOptions"
+              placeholder="请先选择逻辑节点"
+              empty-label="（不选）"
+            />
             <UiSelect
               v-else-if="p.type === 'ln-ref-select'"
               v-model="form[p.key]"
@@ -198,6 +206,7 @@ const props = defineProps({
   refOptions: Array,
   fcRowOptions: Array,
   refsListOptions: Array,
+  datasetOptions: Array,
   lnRef: String,
   connMsg: String,
   connMsgOk: Boolean,

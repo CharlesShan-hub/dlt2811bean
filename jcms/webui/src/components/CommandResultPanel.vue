@@ -25,11 +25,18 @@
       :highlighted-cmd="highlightedCmd"
       :highlighted-result-cmd="highlightedResultCmd"
       :formatted-json="formattedJson"
+      :display-json="displayJson"
+      :json-truncated="jsonTruncated"
+      :json-expanded="jsonExpanded"
+      :json-total-lines="jsonTotalLines"
+      :json-fold-lines="jsonFoldLines"
       :output-lines="outputLines"
       :preview-cmd="previewCmd"
       :result-cmd="result?.cmd ?? ''"
       @update:json-format="emit('update:json-format', $event)"
       @edit="emit('edit', $event)"
+      @expand-json="emit('expand-json')"
+      @collapse-json="emit('collapse-json')"
     />
   </div>
 </template>
@@ -51,6 +58,11 @@ defineProps({
   topHeight: Number,
   jsonFormat: Boolean,
   formattedJson: String,
+  displayJson: String,
+  jsonTruncated: Boolean,
+  jsonExpanded: Boolean,
+  jsonTotalLines: Number,
+  jsonFoldLines: Number,
   outputLines: Array,
   highlightedCmd: String,
   highlightedResultCmd: String,
@@ -62,6 +74,8 @@ const emit = defineEmits([
   'update:json-format',
   'edit',
   'start-h-drag',
+  'expand-json',
+  'collapse-json',
 ])
 </script>
 

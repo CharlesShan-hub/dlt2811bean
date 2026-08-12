@@ -10,7 +10,7 @@ public class AssociateConsole extends CommandHandler<AssociateDao, AssociateClie
         super(CommandInfo.ASSOCIATE);
         Param p = Param.of("ap", "", "sapRef", String.class, false);
         param(p, "关联的目标访问点，格式 IED/AP");
-        Param p2 = Param.of("secure", "false", "secure", Boolean.class, false);
+        Param p2 = Param.of("secure", "false", "secure", boolean.class, false);
         param(p2, "启用加密关联");
     }
 }

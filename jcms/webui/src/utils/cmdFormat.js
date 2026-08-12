@@ -100,13 +100,24 @@ export function buildCmd(cmd, params, form, opts = {}) {
       }
     } else if (p.type === 'ln-cascade') {
       const o = v || {}
-      if (o.ld) {
+      // 如果存在依赖该 ln-cascade 的 dataset-select 参数，则跳过（由 dataset-select 产生 --ds）
+      const hasDatasetSelect = params.some(x => x.type === 'dataset-select' && x.dependsOn === p.key)
+      if (hasDatasetSelect) {
+        // 不输出 --ln
+      } else if (o.ld) {
         const ref = opts.cmdProp === 'ld-dir' && p.key === 'after' && form.ld
           ? o.ln
           : (o.ln ? `${o.ld}/${o.ln}` : o.ld)
         if (ref) {
           parts.push(`--${p.key}`, ref)
         }
+      }
+    } else if (p.type === 'dataset-select') {
+      // dataset-select: 与 ln-cascade 组合为 --ds "LD/LN.dsName"
+      const lnKey = p.dependsOn || 'ln'
+      const lnVal = form[lnKey]
+      if (v && lnVal && lnVal.ld && lnVal.ln) {
+        parts.push('--ds', `"${lnVal.ld}/${lnVal.ln}.${v}"`)
       }
     } else if (p.type === 'ln-ref-select') {
       if (v) {

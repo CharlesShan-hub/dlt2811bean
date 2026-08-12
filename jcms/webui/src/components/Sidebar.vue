@@ -1,19 +1,20 @@
 <template>
-  <nav class="sidebar">
-    <div class="nav-section">
+  <nav class="sidebar" :class="{ collapsed }">
+    <div v-if="!collapsed" class="nav-section">
       <span class="section-label">导航</span>
     </div>
     <template v-for="item in items" :key="item.id">
       <a
         class="nav-item"
         :class="{ active: isParentActive(item) }"
+        :title="collapsed ? item.label : undefined"
         @click="handleClick(item)"
       >
         <span class="nav-icon"><component :is="iconMap[item.icon]" :size="16" /></span>
-        <span class="nav-label">{{ item.label }}</span>
-        <span v-if="item.children" class="nav-arrow" :class="{ open: expanded === item.id }">▾</span>
+        <span v-if="!collapsed" class="nav-label">{{ item.label }}</span>
+        <span v-if="!collapsed && item.children" class="nav-arrow" :class="{ open: expanded === item.id }">▾</span>
       </a>
-      <div v-if="item.children && expanded === item.id" class="nav-children">
+      <div v-if="!collapsed && item.children && expanded === item.id" class="nav-children">
         <a
           v-for="child in item.children"
           :key="child.id"
@@ -67,9 +68,11 @@ const iconMap = {
 const props = defineProps({
   items: Array,
   active: String,
+  /** 折叠为窄条（只显示图标） */
+  collapsed: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['select', 'select-duplicate'])
+const emit = defineEmits(['select', 'select-duplicate', 'toggle-collapse'])
 
 const expanded = ref(null)
 
@@ -82,6 +85,12 @@ function isParentActive(item) {
 }
 
 function handleClick(item) {
+  if (props.collapsed) {
+    // 折叠态点击：先展开侧边栏；叶子项（无 children）顺带选中
+    emit('toggle-collapse')
+    if (!item.children) emit('select', item.id)
+    return
+  }
   if (item.children) {
     expanded.value = expanded.value === item.id ? null : item.id
     emit('select', item.id)
@@ -101,6 +110,21 @@ function handleClick(item) {
   padding: 12px 8px;
   flex-shrink: 0;
   overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.2s ease;
+}
+
+/* 折叠态：窄条只留图标 */
+.sidebar.collapsed {
+  width: 56px;
+}
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 8px 0;
+}
+.sidebar.collapsed .nav-icon {
+  width: auto;
+  margin: 0;
 }
 
 .nav-section {

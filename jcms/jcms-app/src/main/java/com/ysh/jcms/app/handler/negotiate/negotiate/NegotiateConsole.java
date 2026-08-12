@@ -11,11 +11,11 @@ public class NegotiateConsole extends CommandHandler<NegotiateClientDao, Negotia
     public NegotiateConsole() {
         super(CommandInfo.NEGOTIATE);
         Negotiate cfg = CmsConfigLoader.load().protocol().negotiate();
-        Param p1 = Param.of("apduSize", String.valueOf(cfg.apduSize()), "apduSize", Integer.class, false);
+        Param p1 = Param.of("apduSize", String.valueOf(cfg.apduSize()), "apduSize", int.class, false);
         param(p1, "APDU 大小（默认取自配置文件）");
-        Param p2 = Param.of("asduSize", String.valueOf(cfg.asduSize()), "asduSize", Long.class, false);
+        Param p2 = Param.of("asduSize", String.valueOf(cfg.asduSize()), "asduSize", long.class, false);
         param(p2, "ASDU 大小（默认取自配置文件）");
-        Param p3 = Param.of("protocolVersion", String.valueOf(cfg.protocolVersion()), "protocolVersion", Long.class, false);
+        Param p3 = Param.of("protocolVersion", String.valueOf(cfg.protocolVersion()), "protocolVersion", long.class, false);
         param(p3, "协议版本（默认取自配置文件）");
     }
 }

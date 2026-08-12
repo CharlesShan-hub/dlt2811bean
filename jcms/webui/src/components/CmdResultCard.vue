@@ -17,7 +17,18 @@
         <template v-else>
           <span class="preview-text" v-html="highlightedCmd" @dblclick="startEdit" title="双击编辑命令"></span>
         </template>
-        <button type="button" class="glass copy-icon-btn copy-inline" :title="copied ? '已复制' : '复制命令'" @click="copyCmd" v-html="copied ? checkIcon : clipIcon"></button>
+        <button
+          type="button"
+          class="glass copy-icon-btn copy-inline"
+          :class="{ 'copy-ok': copied }"
+          :title="copied ? '已复制' : '复制命令'"
+          @click="copyCmd"
+        >
+          <span class="copy-icon" v-html="copied ? checkIcon : clipIcon"></span>
+          <transition name="fade">
+            <span v-if="copied" class="copy-toast">已复制</span>
+          </transition>
+        </button>
       </code>
     </div>
     <div v-if="result" class="glass term-title-bar">
@@ -32,15 +43,49 @@
           :title="jsonFormat ? '切换为原始输出' : '切换为格式化 JSON'"
           @click="$emit('update:jsonFormat', !jsonFormat)"
         ><span v-html="jsonFormat ? jsonIcon : termIcon"></span></button>
-        <button type="button" class="glass copy-icon-btn copy-inline" :title="copiedCmdResult ? '已复制' : '复制命令'" @click="copyCmdResult" v-html="copiedCmdResult ? checkIcon : clipIcon"></button>
+        <button
+          type="button"
+          class="glass copy-icon-btn copy-inline"
+          :class="{ 'copy-ok': copiedCmdResult }"
+          :title="copiedCmdResult ? '已复制' : '复制命令'"
+          @click="copyCmdResult"
+        >
+          <span class="copy-icon" v-html="copiedCmdResult ? checkIcon : clipIcon"></span>
+          <transition name="fade">
+            <span v-if="copiedCmdResult" class="copy-toast">已复制</span>
+          </transition>
+        </button>
       </span>
     </div>
     <div class="cmd-result-scroll">
-      <div v-if="!result" class="empty">执行后在此显示返回结果。</div>
+      <div v-if="!result" class="empty-state">
+        <Terminal class="empty-icon" :size="30" stroke-width="1.5" />
+        <p class="empty-title">执行后在此显示返回结果</p>
+        <span class="empty-hint">双击上方命令可直接编辑</span>
+      </div>
       <div v-else-if="jsonFormat && formattedJson" class="json-window">
         <div class="json-body">
-          <pre class="json-pre"><code v-html="formattedJson"></code></pre>
-          <button type="button" class="glass copy-icon-btn copy-inline copy-out-json" :title="copiedOutput ? '已复制' : '复制输出'" @click="copyOutput" v-html="copiedOutput ? checkIcon : clipIcon"></button>
+          <pre class="json-pre"><code v-html="displayJson || formattedJson"></code></pre>
+          <button
+            type="button"
+            class="glass copy-icon-btn copy-inline copy-out-json"
+            :class="{ 'copy-ok': copiedOutput }"
+            :title="copiedOutput ? '已复制' : '复制输出'"
+            @click="copyOutput"
+          >
+            <span class="copy-icon" v-html="copiedOutput ? checkIcon : clipIcon"></span>
+            <transition name="fade">
+              <span v-if="copiedOutput" class="copy-toast">已复制</span>
+            </transition>
+          </button>
+          <div v-if="jsonTruncated" class="json-fold">
+            <span v-if="!jsonExpanded" class="json-fold-text">
+              内容较长，已折叠（前 {{ jsonFoldLines }} 行 / 共 {{ jsonTotalLines }} 行）
+            </span>
+            <button type="button" class="glass json-fold-btn" @click="$emit(jsonExpanded ? 'collapse-json' : 'expand-json')">
+              {{ jsonExpanded ? '收起' : '展开全部' }}
+            </button>
+          </div>
         </div>
       </div>
       <div v-else class="term-window">
@@ -55,7 +100,18 @@
               >{{ seg.text }}</span>
             </span>
             <span v-if="i === 0" class="term-line-actions">
-              <button type="button" class="copy-icon-btn copy-inline" :title="copiedOutput ? '已复制' : '复制输出'" @click="copyOutput" v-html="copiedOutput ? checkIcon : clipIcon"></button>
+              <button
+                type="button"
+                class="copy-icon-btn copy-inline"
+                :class="{ 'copy-ok': copiedOutput }"
+                :title="copiedOutput ? '已复制' : '复制输出'"
+                @click="copyOutput"
+              >
+                <span class="copy-icon" v-html="copiedOutput ? checkIcon : clipIcon"></span>
+                <transition name="fade">
+                  <span v-if="copiedOutput" class="copy-toast">已复制</span>
+                </transition>
+              </button>
             </span>
           </div>
         </div>
@@ -67,6 +123,7 @@
 <script setup>
 import { ref, watch, nextTick } from 'vue'
 import UiCard from './ui/UiCard.vue'
+import Terminal from '@lucide/vue/dist/esm/icons/terminal.mjs'
 import { parseAnsi } from '../terminalLog.js'
 import { clipIcon, checkIcon } from '../utils/cmdFormat.js'
 
@@ -81,6 +138,16 @@ const props = defineProps({
   highlightedCmd: { type: String, default: '' },
   highlightedResultCmd: { type: String, default: '' },
   formattedJson: { type: String, default: '' },
+  /** 折叠后的 JSON HTML（未折叠时为完整内容） */
+  displayJson: { type: String, default: '' },
+  /** 是否超过阈值行数（显示折叠条） */
+  jsonTruncated: { type: Boolean, default: false },
+  /** 是否已展开全部 */
+  jsonExpanded: { type: Boolean, default: false },
+  /** JSON 总行数 */
+  jsonTotalLines: { type: Number, default: 0 },
+  /** 折叠阈值（前 N 行） */
+  jsonFoldLines: { type: Number, default: 400 },
   outputLines: { type: Array, default: () => [] },
   /** 原始命令字符串（用于复制） */
   previewCmd: { type: String, default: '' },
@@ -88,7 +155,7 @@ const props = defineProps({
   resultCmd: { type: String, default: '' },
 })
 
-const emit = defineEmits(['update:jsonFormat', 'edit'])
+const emit = defineEmits(['update:jsonFormat', 'edit', 'expand-json', 'collapse-json'])
 
 const copied = ref(false)
 const copiedOutput = ref(false)
@@ -269,6 +336,7 @@ async function copyCmdResult() {
 
 /* 复制图标按钮（glass 风格由全局 .glass 类提供） */
 .copy-icon-btn {
+  position: relative;
   margin-left: 6px;
   padding: 4px;
   border-radius: 5px;
@@ -281,6 +349,39 @@ async function copyCmdResult() {
 }
 .copy-icon-btn:hover {
   color: var(--text-primary);
+}
+
+/* 复制成功：图标弹跳 + 气泡提示 */
+.copy-icon {
+  display: inline-flex;
+}
+.copy-ok .copy-icon {
+  animation: copy-pop 0.35s ease;
+}
+.copy-ok {
+  color: var(--green) !important;
+}
+.copy-toast {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  padding: 3px 9px;
+  border-radius: 5px;
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+@keyframes copy-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.3); }
+  100% { transform: scale(1); }
 }
 
 .cmd-preview .copy-icon-btn {
@@ -420,9 +521,57 @@ async function copyCmdResult() {
 .json-pre :deep(.json-null)  { color: #d19a66; }
 .json-pre :deep(.json-num)   { color: #d19a66; }
 
-.empty {
+/* 超长 JSON 折叠提示条 */
+.json-fold {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--glass-bg);
+}
+.json-fold-text {
+  font-size: 12px;
   color: var(--text-muted);
+}
+.json-fold-btn {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent-hover);
+  cursor: pointer;
+}
+.json-fold-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ── 空状态：结果区 ── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 64px 20px;
+  user-select: none;
+}
+.empty-icon {
+  color: var(--text-muted);
+  opacity: 0.5;
+  margin-bottom: 8px;
+}
+.empty-title {
   font-size: 13px;
-  padding: 10px 0;
+  color: var(--text-secondary);
+}
+.empty-hint {
+  font-size: 12px;
+  color: var(--text-muted);
 }
 </style>

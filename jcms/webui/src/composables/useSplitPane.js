@@ -11,6 +11,9 @@ export function useSplitPane() {
   const topHeight = toRef(debugShared, 'topHeight')
   const showAsn1 = toRef(debugShared, 'showAsn1')
 
+  /** 左栏默认宽度（拖拽后双击手柄还原） */
+  const DEFAULT_LEFT = 380
+
   // ASN.1 显示状态持久化
   watch(showAsn1, (v) => localStorage.setItem('cms-show-asn1', v ? '1' : '0'))
 
@@ -51,6 +54,11 @@ export function useSplitPane() {
     document.body.style.userSelect = ''
   }
 
+  /** 双击手柄：还原左栏默认宽度 */
+  function resetSplit() {
+    leftColWidth.value = DEFAULT_LEFT
+  }
+
   return {
     gridRef,
     leftColWidth,
@@ -58,5 +66,6 @@ export function useSplitPane() {
     showAsn1,
     startVDrag,
     startHDrag,
+    resetSplit,
   }
 }

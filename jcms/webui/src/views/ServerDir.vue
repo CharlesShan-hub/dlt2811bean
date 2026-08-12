@@ -3,8 +3,13 @@
     <ServerDirTree
       :connected="connected"
       :lds="lds"
+      :search-query="searchQuery"
+      :search-results="searchResults"
+      :search-loading="searchLoading"
       @toggle="onToggle"
       @toggle-acsi="onToggleAcsi"
+      @update:search-query="searchQuery = $event"
+      @select-result="onSelectResult"
     />
     <ServerDirDetail
       :selected="selected"
@@ -31,7 +36,7 @@ import { executeJson } from '../api/cms.js'
 import ServerDirTree from '../components/ServerDirTree.vue'
 import ServerDirDetail from '../components/ServerDirDetail.vue'
 import ComplexValueEditor from '../components/ComplexValueEditor.vue'
-import { ldCache, refreshLds, ensureAllDefData } from '../ldCache.js'
+import { ldCache, refreshLds, ensureAllDefData, ensureAllLnRefs, allLnRefs } from '../ldCache.js'
 import { ACSI_DEFS } from '../acsiDefs.js'
 import { buildDoTree } from '../utils/treeBuilder.js'
 
@@ -52,6 +57,12 @@ const editError = ref('')
 const editorVisible = ref(false)
 const editorType = ref('')
 const editorEntry = ref(null)
+
+// 搜索状态
+const searchQuery = ref('')
+const searchResults = ref([])
+const searchLoading = ref(false)
+let searchTimer = 0
 
 // load LDs when connected（复用共享缓存，连接后已由 App 拉取）
 watch(() => props.connected, async (val) => {
@@ -308,6 +319,61 @@ async function onToggleAcsi({ node, acsi }) {
     }
   } finally {
     node.loading = false
+  }
+}
+
+// ── 目录树搜索：输入防抖后全量匹配 LD/LN，扁平展示命中结果 ──
+watch(searchQuery, (q) => {
+  clearTimeout(searchTimer)
+  const query = q.trim()
+  if (!query) {
+    searchResults.value = []
+    searchLoading.value = false
+    return
+  }
+  searchLoading.value = true
+  searchTimer = setTimeout(async () => {
+    try {
+      await ensureAllLnRefs()
+      const lq = query.toLowerCase()
+      const ldRes = ldCache
+        .filter((ld) => ld.toLowerCase().includes(lq))
+        .map((ld) => ({ type: 'ld', name: ld, label: ld }))
+      const lnRes = allLnRefs
+        .filter((r) => r.toLowerCase().includes(lq))
+        .map((r) => ({ type: 'ln', name: r, label: r }))
+      searchResults.value = [...ldRes, ...lnRes]
+    } catch {
+      searchResults.value = []
+    } finally {
+      searchLoading.value = false
+    }
+  }, 300)
+})
+
+/** 点击搜索结果：清空搜索，定位并展开树中对应位置（LN 自动打开 data-object）。 */
+async function onSelectResult(res) {
+  searchQuery.value = ''
+  if (res.type === 'ld') {
+    const ldNode = lds.value.find((l) => l.name === res.name)
+    if (ldNode && !ldNode.expanded) await onToggle(ldNode)
+    return
+  }
+  const [ldName] = res.name.split('/')
+  const ldNode = lds.value.find((l) => l.name === ldName)
+  if (!ldNode) return
+  // 未展开或已展开但无数据 → 触发展开加载 LN
+  if (!ldNode.expanded || ldNode.children === null) {
+    if (ldNode.expanded) ldNode.expanded = false
+    await onToggle(ldNode)
+  } else {
+    ldNode.expanded = true
+  }
+  // 自动打开该 LN 的 data-object 视图
+  const lnNode = ldNode.children?.find((c) => c.name === res.name)
+  if (lnNode) {
+    lnNode.activeAcsi = null
+    await onToggleAcsi({ node: lnNode, acsi: 'data-object' })
   }
 }
 

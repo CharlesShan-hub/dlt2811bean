@@ -199,8 +199,60 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
             String value = args.get(p.cliName());
             if (value == null)
                 continue;
-            Method m = dao.getClass().getMethod(daoName, p.type());
+            Method m = findMethod(dao.getClass(), daoName, p.type());
             m.invoke(dao, p.convert(value));
         }
+    }
+
+    /**
+     * Find a method matching the given name and type, trying both primitive and
+     * wrapper equivalents.
+     */
+    private static Method findMethod(Class<?> clazz, String name, Class<?> type) throws NoSuchMethodException {
+        try {
+            return clazz.getMethod(name, type);
+        } catch (NoSuchMethodException e) {
+            // Try primitive/wrapper counterpart
+            Class<?> alt = primitiveToWrapper(type);
+            if (alt != null) {
+                try {
+                    return clazz.getMethod(name, alt);
+                } catch (NoSuchMethodException ignored) {
+                }
+            }
+            throw e;
+        }
+    }
+
+    private static Class<?> primitiveToWrapper(Class<?> type) {
+        if (type == Boolean.class)
+            return boolean.class;
+        if (type == boolean.class)
+            return Boolean.class;
+        if (type == Integer.class)
+            return int.class;
+        if (type == int.class)
+            return Integer.class;
+        if (type == Long.class)
+            return long.class;
+        if (type == long.class)
+            return Long.class;
+        if (type == Byte.class)
+            return byte.class;
+        if (type == byte.class)
+            return Byte.class;
+        if (type == Short.class)
+            return short.class;
+        if (type == short.class)
+            return Short.class;
+        if (type == Float.class)
+            return float.class;
+        if (type == float.class)
+            return Float.class;
+        if (type == Double.class)
+            return double.class;
+        if (type == double.class)
+            return Double.class;
+        return null;
     }
 }

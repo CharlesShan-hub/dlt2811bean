@@ -26,6 +26,7 @@ export function clearLnDirRefs() {
   allCbRefs.splice(0)
   allCbRefsKey = ''
   clearAllDefData()
+  clearDatasetRefs()
 }
 
 /** all-def 响应引用缓存（供 all-data / all-def 的 after 下拉），key 为 "ln|fc"。 */
@@ -68,6 +69,31 @@ export async function ensureAllDefData(lnRef) {
     allDefData[lnRef] = {}
   }
   return allDefData[lnRef]
+}
+
+/** 数据集引用缓存（get-dataset-values 用），key 为 lnRef（如 "LD0/LLN0"）。 */
+export const datasetRefs = reactive({})
+
+/**
+ * 拉取某 LN 下的数据集名称列表（经 ln-dir --acsi data-set 查询，幂等）。
+ * @param {string} lnRef 如 "LD0/LLN0"
+ * @returns {Promise<string[]>} 数据集名称列表，如 ["dsRelayEna", "dsGridEna"]
+ */
+export async function ensureDatasetRefs(lnRef) {
+  if (!lnRef) return []
+  if (datasetRefs[lnRef]) return datasetRefs[lnRef]
+  try {
+    const res = await executeJson(`ln-dir --ln ${lnRef} --acsi data-set --auto-pull true --json`)
+    datasetRefs[lnRef] = res && Array.isArray(res.reference) ? res.reference : []
+  } catch {
+    datasetRefs[lnRef] = []
+  }
+  return datasetRefs[lnRef]
+}
+
+/** 清空数据集缓存（断开连接时）。 */
+export function clearDatasetRefs() {
+  Object.keys(datasetRefs).forEach(k => delete datasetRefs[k])
 }
 
 /** 清空 all-def 数据缓存（断开连接时）。 */

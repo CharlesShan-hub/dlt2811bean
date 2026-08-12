@@ -201,6 +201,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Firefox 细滚动条（与 WebKit 一致） */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

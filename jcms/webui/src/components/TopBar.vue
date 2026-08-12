@@ -1,18 +1,27 @@
 <template>
   <header class="topbar">
     <div class="topbar-brand">
-      <span class="logo">⚡</span>
+      <button
+        class="topbar-btn sidebar-toggle"
+        :title="collapsed ? '展开侧边栏' : '折叠侧边栏'"
+        @click="$emit('toggle-sidebar')"
+      >
+        <Menu class="tb-icon" :size="16" />
+      </button>
+      <Zap class="logo" :size="19" stroke-width="2.2" />
       <span class="title">CMS Console</span>
     </div>
     <div class="topbar-right">
-      <!-- 连接状态：TCP 层（TLS 加密 🔒 / 明文 🔓） -->
+      <!-- 连接状态：TCP 层（TLS 加密 Lock / 明文 LockOpen） -->
       <span class="status-badge" :class="tcpConnected ? 'ok' : 'bad'">
-        <span class="lock">{{ tls ? '🔒' : '🔓' }}</span>
+        <Lock v-if="tls" class="lock" :size="13" />
+        <LockOpen v-else class="lock" :size="13" />
         {{ tcpConnected ? '已连接' : '未连接' }}
       </span>
-      <!-- 关联状态：已关联时显示访问点（安全认证 🔒 / 普通 🔓） -->
+      <!-- 关联状态：已关联时显示访问点（安全认证 Lock / 普通 LockOpen） -->
       <span class="status-badge" :class="ap ? 'ok' : 'bad'">
-        <span class="lock">{{ apSecure ? '🔒' : '🔓' }}</span>
+        <Lock v-if="apSecure" class="lock" :size="13" />
+        <LockOpen v-else class="lock" :size="13" />
         {{ ap || '未关联' }}
       </span>
       <!-- 深色/浅色模式切换 -->
@@ -22,12 +31,13 @@
         :title="darkMode ? '切换到浅色模式' : '切换到深色模式'"
         @click="$emit('toggle-mode')"
       >
-        <span class="tb-icon">{{ darkMode ? '☀️' : '🌙' }}</span>
+        <Sun v-if="darkMode" class="tb-icon" :size="16" />
+        <Moon v-else class="tb-icon" :size="16" />
       </button>
       <!-- 主题切换 -->
       <div class="theme-wrap" ref="themeWrapRef">
         <button class="topbar-btn theme-btn" :title="'主题：' + themeLabel" @click="toggleThemeMenu">
-          <span class="tb-icon">◈</span>
+          <Palette class="tb-icon" :size="16" />
         </button>
         <div v-if="themeOpen" class="theme-dropdown">
           <button
@@ -44,7 +54,7 @@
       </div>
       <!-- 终端面板开关（调试窗口） -->
       <button class="topbar-btn" :class="{ active: terminalOpen }" title="打开/关闭终端" @click="$emit('toggle-terminal')">
-        <span class="tb-icon">⊢</span>
+        <Terminal class="tb-icon" :size="15" />
         <span>终端</span>
       </button>
     </div>
@@ -53,6 +63,14 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import Zap from '@lucide/vue/dist/esm/icons/zap.mjs'
+import Menu from '@lucide/vue/dist/esm/icons/menu.mjs'
+import Lock from '@lucide/vue/dist/esm/icons/lock.mjs'
+import LockOpen from '@lucide/vue/dist/esm/icons/lock-open.mjs'
+import Sun from '@lucide/vue/dist/esm/icons/sun.mjs'
+import Moon from '@lucide/vue/dist/esm/icons/moon.mjs'
+import Palette from '@lucide/vue/dist/esm/icons/palette.mjs'
+import Terminal from '@lucide/vue/dist/esm/icons/terminal.mjs'
 
 const props = defineProps({
   /** TCP 层是否已连接 */
@@ -69,9 +87,11 @@ const props = defineProps({
   theme: { type: String, default: 'blue' },
   /** 是否深色模式 */
   darkMode: { type: Boolean, default: true },
+  /** 侧边栏是否折叠 */
+  collapsed: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['toggle-terminal', 'set-theme', 'toggle-mode'])
+const emit = defineEmits(['toggle-terminal', 'set-theme', 'toggle-mode', 'toggle-sidebar'])
 
 const themes = [
   { id: 'blue', label: '蓝色', color: '#5b8def' },
@@ -128,7 +148,9 @@ if (typeof window !== 'undefined') {
 }
 
 .logo {
-  font-size: 20px;
+  color: #fbbf24;
+  display: inline-flex;
+  filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.35));
 }
 
 .title {
@@ -165,8 +187,8 @@ if (typeof window !== 'undefined') {
 }
 
 .lock {
-  font-size: 13px;
-  line-height: 1;
+  display: inline-flex;
+  flex-shrink: 0;
 }
 
 .topbar-btn {
@@ -195,14 +217,14 @@ if (typeof window !== 'undefined') {
   background: var(--accent-muted);
 }
 
+.tb-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
 /* ── 主题切换 ── */
 .theme-wrap {
   position: relative;
-}
-
-.theme-btn .tb-icon {
-  font-size: 16px;
-  line-height: 1;
 }
 
 .theme-dropdown {
