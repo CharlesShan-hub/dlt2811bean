@@ -9,6 +9,8 @@ import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
+import com.ysh.jcms.utils.transport.frame.FrameCodec;
+import com.ysh.jcms.utils.transport.frame.FrameHeader;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class NegotiateServer extends BaseServerHandler<CmsNegotiateRequest, CmsNegotiateError> {
@@ -33,23 +35,27 @@ public class NegotiateServer extends BaseServerHandler<CmsNegotiateRequest, CmsN
     }
 
     private Frame validateProtocolVersion(CmsNegotiateRequest req, CmsConfig.Protocol.Negotiate config, int reqId) {
+        // DL/T 2811 8.15.2 c): reject if the peer's protocol version is unsupported
         if (req.protocolVersion.value() > config.protocolVersion())
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         return null;
     }
 
     private int calcNegotiatedApduSize(CmsNegotiateRequest req, CmsConfig.Protocol.Negotiate config) {
+        // DL/T 2811 8.15.2 a): server returns the APDU size it can support
         return Math.min(req.apduSize.value(), config.apduSize());
     }
 
     private void applyNegotiation(Session session, CmsNegotiateRequest req, int negotiatedApduSize) {
-        boolean fragSupported = negotiatedApduSize > req.asduSize.value();
+        boolean fragSupported = negotiatedApduSize > req.asduSize.value(); // DL/T 2811 8.15.2 b): apduSize > asduSize means fragmentation
+                                                                           // is supported
         session.connection().fragmentationSupported(fragSupported);
 
         session.negotiatedApduSize(negotiatedApduSize);
         session.negotiated(true);
-        session.connection().maxFrameSize(negotiatedApduSize);
-        session.connection().peerAsduSize((int) req.asduSize.value());
+        // Standard sizes: FL excludes APCH(4), payload excludes ReqID(2)
+        session.connection().maxFrameSize(Math.max(0, negotiatedApduSize - FrameHeader.HEADER_SIZE));
+        session.connection().peerAsduSize(Math.max(0, (int) req.asduSize.value() - FrameCodec.REQID_SIZE));
     }
 
     private void logNegotiation(int negotiatedApduSize, CmsConfig.Protocol.Negotiate config) {

@@ -1,4 +1,4 @@
-import { asn1Abort } from './asn1.js'
+import { asn1Abort } from '../asn1.js'
 
 const abortReasons = [
   { value: 0, label: 'other', cn: '其他' },

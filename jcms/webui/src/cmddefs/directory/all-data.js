@@ -1,5 +1,5 @@
 // 8.3.4 读所有数据值（GetAllDataValues）
-import { FC_OPTIONS } from './common.js'
+import { FC_OPTIONS } from '../common.js'
 
 export default {
   title: '读所有数据值 all-data (8.3.4)',

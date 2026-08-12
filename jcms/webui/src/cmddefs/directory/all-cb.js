@@ -1,5 +1,5 @@
 // 8.3.6 读所有控制块值（GetAllCBValues），acsi 下拉与目录树圆点颜色一致
-import { ACSI_DEFS } from '../acsiDefs.js'
+import { ACSI_DEFS } from '../../acsiDefs.js'
 
 const CB_KEYS = ['brcb', 'urcb', 'lcb', 'sgcb', 'gocb', 'msvcb']
 

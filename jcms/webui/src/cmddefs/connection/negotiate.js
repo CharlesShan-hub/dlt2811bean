@@ -1,5 +1,5 @@
-import { P_APDU, P_ASDU, P_VERSION } from './common.js'
-import { asn1Negotiate } from './asn1.js'
+import { P_APDU, P_ASDU, P_VERSION } from '../common.js'
+import { asn1Negotiate } from '../asn1.js'
 
 export default {
   title: '协商 negotiate (8.15)',

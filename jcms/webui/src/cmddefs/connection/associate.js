@@ -1,5 +1,5 @@
-import { asn1Associate } from './asn1.js'
-import { P_AP } from './common.js'
+import { asn1Associate } from '../asn1.js'
+import { P_AP } from '../common.js'
 
 export default {
   title: '关联 associate (8.2.1)',

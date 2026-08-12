@@ -77,6 +77,7 @@ public class KeepAliveManager {
         long now = System.currentTimeMillis();
 
         for (InnerServer.ServerSession ss : sessions) {
+            // DL/T 2811 6.9.2: communication state checks apply after association
             if (ss.state() != SessionState.ASSOCIATED)
                 continue;
 
@@ -91,6 +92,7 @@ public class KeepAliveManager {
                     ss.incrementKeepaliveRetries();
                     try {
                         ss.connection()
+                                // DL/T 2811 6.9.2: probe an idle link with a Test frame
                                 .send(new Frame(new FrameHeader().serviceCode(CmsServiceInfo.TEST).resp(false).err(false), new byte[0], 0));
                         log.debug("Keepalive: sent TEST probe to session {} (retry={})", ss.sessionId(), retries + 1);
                     } catch (IOException e) {

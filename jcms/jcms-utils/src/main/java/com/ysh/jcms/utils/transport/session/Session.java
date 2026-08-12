@@ -8,7 +8,9 @@ import lombok.experimental.Accessors;
 
 /**
  * Session — abstract base for a logical CMS conversation over a
- * {@link Connection}.
+ * {@link Connection}. Lifecycle follows DL/T 2811 8.2 association services:
+ * CONNECTED (after TCP) → ASSOCIATED (after Associate) → DISCONNECTED
+ * (Release/Abort/TCP loss).
  */
 @Getter
 @Setter

@@ -4,13 +4,17 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameAssembler;
 import com.ysh.jcms.utils.transport.frame.FrameCodec;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Arrays;
 
 /**
  * Connection — a single TCP connection for the CMS protocol.
@@ -20,30 +24,68 @@ import java.util.Arrays;
  * Complete frames are reassembled by {@link FrameAssembler} and delivered to
  * the {@link ConnectionListener}.
  */
+@Getter
+@Setter
+@Accessors(fluent = true, chain = true)
 public class Connection {
 
     private final Socket socket;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private final DataInputStream dis;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private final DataOutputStream dos;
     private final ConnectionListener listener;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private final FrameAssembler assembler = new FrameAssembler();
 
-    /** Max accepted frame length (FL): APCH(4) + ReqID(2) + payload. */
-    private static final int MAX_FRAME_LENGTH = Frame.MAX_PAYLOAD_SIZE + FrameHeader.HEADER_SIZE + FrameCodec.REQID_SIZE;
+    /**
+     * Max accepted frame length (FL): ReqID(2) + payload, per DL/T 2811 (FL max
+     * 65531).
+     */
+    private static final int MAX_FRAME_LENGTH = Frame.MAX_PAYLOAD_SIZE + FrameCodec.REQID_SIZE;
+    /**
+     * Disconnect after this many consecutive malformed frames, per DL/T 2811 6.1.3.
+     */
+    private static final int MAX_CONSECUTIVE_ERRORS = 5;
+    /**
+     * Per-connection read buffer; larger buffer means fewer syscalls for big
+     * frames.
+     */
+    private static final int INPUT_BUFFER_SIZE = 64 * 1024;
 
+    @Getter(AccessLevel.NONE)
     private volatile int maxFrameSize = MAX_FRAME_LENGTH;
+    @Getter(AccessLevel.NONE)
     private volatile int peerAsduSize = Frame.MAX_PAYLOAD_SIZE;
+    @Getter(AccessLevel.NONE)
     private volatile boolean fragmentationSupported = true;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private volatile boolean running;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private Thread readerThread;
+    /**
+     * Consecutive malformed frames received; disconnects when it exceeds the limit.
+     */
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private int errorCount;
+    /** Optional callback fired once when the connection is torn down. */
+    @Getter(AccessLevel.NONE)
+    private volatile Runnable onClosed;
 
     public Connection(Socket socket, ConnectionListener listener) throws IOException {
         this.socket = socket;
         try {
-            socket.setKeepAlive(true);
+            socket.setKeepAlive(true); // DL/T 2811 6.9.3: enable TCP keepalive
+            socket.setTcpNoDelay(true); // low latency for interactive request/response
         } catch (Exception ignored) {
         }
-        this.dis = new DataInputStream(socket.getInputStream());
+        this.dis = new DataInputStream(new BufferedInputStream(socket.getInputStream(), INPUT_BUFFER_SIZE));
         this.dos = new DataOutputStream(socket.getOutputStream());
         this.listener = listener;
         this.running = true;
@@ -72,26 +114,45 @@ public class Connection {
         } finally {
             running = false;
             listener.onDisconnected(this);
+            if (onClosed != null) {
+                onClosed.run();
+            }
         }
     }
 
     /**
-     * Read a single frame from the wire. Format: [FL:2][APCH:4][ReqID:2][Data:FL-6]
+     * Read a single frame from the wire. Format: [APCH:4][ReqID:2][Data:FL-2], APCH
+     * = [CC][SC][FL(lo)][FL(hi)], FL = ReqID + Data (excludes APCH).
      */
     private Frame readFrame() throws IOException {
-        int fl = dis.readUnsignedShort();
-        if (fl < FrameHeader.HEADER_SIZE + FrameCodec.REQID_SIZE || fl > maxFrameSize) {
-            throw new IOException("Invalid frame length: " + fl);
-        }
-
         byte[] header = new byte[FrameHeader.HEADER_SIZE];
         dis.readFully(header);
         FrameHeader fh = FrameHeader.decode(header, 0);
 
-        byte[] asduBytes = new byte[fl - FrameHeader.HEADER_SIZE]; // includes ReqID
-        dis.readFully(asduBytes);
-        int reqId = (asduBytes[0] & 0xFF) | ((asduBytes[1] & 0xFF) << 8); // little-endian
-        byte[] data = Arrays.copyOfRange(asduBytes, FrameCodec.REQID_SIZE, asduBytes.length);
+        int fl = fh.frameLength();
+        if (fl < 0 || fl > maxFrameSize) {
+            throw new IOException("Invalid frame length: " + fl); // 6.1.2 c) / 6.1.3: out-of-range FL
+        }
+        // DL/T 2811 6.1.3: wrong protocol type -> drop the frame; disconnect only after
+        // repeated errors
+        if (fh.pi() != FrameHeader.PI_DEFAULT) {
+            skipFully(fl);
+            if (++errorCount > MAX_CONSECUTIVE_ERRORS) {
+                throw new IOException("Too many consecutive malformed frames");
+            }
+            return null;
+        }
+        errorCount = 0;
+
+        int reqId = 0;
+        byte[] data = new byte[0];
+        if (fl >= FrameCodec.REQID_SIZE) { // header-only frames (Test) carry no ReqID
+            byte[] reqIdBytes = new byte[FrameCodec.REQID_SIZE];
+            dis.readFully(reqIdBytes);
+            reqId = (reqIdBytes[0] & 0xFF) | ((reqIdBytes[1] & 0xFF) << 8); // DL/T 2811 6.2.1: ReqID is 16-bit little-endian
+            data = new byte[fl - FrameCodec.REQID_SIZE]; // read the data directly, no extra copy
+            dis.readFully(data);
+        }
 
         Frame segment = new Frame(fh, data, reqId);
         try {
@@ -101,14 +162,26 @@ public class Connection {
         }
     }
 
+    private void skipFully(int n) throws IOException {
+        long remaining = n;
+        while (remaining > 0) {
+            long skipped = dis.skip(remaining);
+            if (skipped <= 0) {
+                throw new EOFException();
+            }
+            remaining -= skipped;
+        }
+    }
+
     /** Send a Frame over the connection. */
     public void send(Frame frame) throws IOException {
-        // Reject if the peer cannot handle fragmentation and the ASDU exceeds its size
+        // DL/T 2811 8.15.2 b): respect the peer's ASDU capability; never exceed it when
+        // fragmentation is unsupported
         if (!fragmentationSupported && frame.asduBytes().length > peerAsduSize) {
             throw new IOException("Fragmentation not supported: ASDU size (" + frame.asduBytes().length + ") exceeds peer asduSize ("
                     + peerAsduSize + ")");
         }
-        java.util.List<Frame> segments = FrameCodec.split(frame, peerAsduSize);
+        java.util.List<Frame> segments = FrameCodec.split(frame, peerAsduSize); // DL/T 2811 6.5.1: fragment when oversized
         synchronized (dos) {
             for (Frame seg : segments) {
                 byte[] wire = FrameCodec.encode(seg);
@@ -118,26 +191,8 @@ public class Connection {
         }
     }
 
-    public Connection maxFrameSize(int maxFrameSize) {
-        this.maxFrameSize = maxFrameSize;
-        return this;
-    }
-    public Connection peerAsduSize(int peerAsduSize) {
-        this.peerAsduSize = peerAsduSize;
-        return this;
-    }
-    public Connection fragmentationSupported(boolean fragmentationSupported) {
-        this.fragmentationSupported = fragmentationSupported;
-        return this;
-    }
     public boolean connected() {
         return running && !socket.isClosed();
-    }
-    public Socket socket() {
-        return socket;
-    }
-    public ConnectionListener listener() {
-        return listener;
     }
 
     /** Close the connection. */

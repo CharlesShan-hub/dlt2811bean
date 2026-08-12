@@ -6,6 +6,8 @@ import com.ysh.jcms.core.pdu.negotiate.CmsNegotiateError;
 import com.ysh.jcms.core.pdu.negotiate.CmsNegotiateResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
+import com.ysh.jcms.utils.transport.frame.FrameCodec;
+import com.ysh.jcms.utils.transport.frame.FrameHeader;
 import com.ysh.jcms.utils.transport.session.ClientSession;
 
 import java.io.IOException;
@@ -25,11 +27,11 @@ public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
         session.negotiatedApduSize(resp.apduSize.value());
         session.negotiated(true);
 
-        // Standard b): apduSize > asduSize -> fragmentation supported
-        boolean fragSupported = resp.apduSize.value() > resp.asduSize.value();
+        boolean fragSupported = resp.apduSize.value() > resp.asduSize.value(); // DL/T 2811 8.15.2 b)
         session.connection().fragmentationSupported(fragSupported);
-        session.connection().maxFrameSize(resp.apduSize.value());
-        session.connection().peerAsduSize((int) resp.asduSize.value());
+        // Standard sizes: FL excludes APCH(4), payload excludes ReqID(2)
+        session.connection().maxFrameSize(Math.max(0, resp.apduSize.value() - FrameHeader.HEADER_SIZE));
+        session.connection().peerAsduSize(Math.max(0, (int) resp.asduSize.value() - FrameCodec.REQID_SIZE));
 
         // 存储响应结果
         BaseHandler.traceSession("Negotiated: apdu=" + resp.apduSize.value() + ", asdu=" + resp.asduSize.value() + ", version="

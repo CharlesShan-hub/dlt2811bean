@@ -1,70 +1,20 @@
 <template>
   <div class="tree-page">
-    <div class="tree-panel">
-      <h2 class="panel-title">目录树</h2>
-      <p v-if="!connected" class="panel-hint">请先连接服务器</p>
-      <div v-else class="tree-scroll">
-        <TreeNode
-          v-for="ld in lds"
-          :key="ld.name"
-          :node="ld"
-          @toggle="onToggle"
-          @toggle-acsi="onToggleAcsi"
-        />
-      </div>
-    </div>
-    <div class="detail-panel">
-      <div v-if="!selected" class="detail-empty">
-        <span class="detail-icon">⊞</span>
-        <p>选择一个节点查看详情</p>
-      </div>
-      <div v-else-if="detailLoading" class="detail-empty">
-        <span class="detail-icon">○</span>
-        <p>加载中...</p>
-      </div>
-      <div v-else class="detail-content">
-        <h3 class="detail-ref">{{ selected.ref }}</h3>
-
-        <!-- Data directory entries -->
-        <div v-if="dirEntries.length" class="data-section">
-          <h4 class="section-title">属性</h4>
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>FC</th>
-                <th>属性名</th>
-                <th>值</th>
-                <th>类型</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="entry in dirEntries" :key="entry.attr">
-                <td><span class="fc-badge">{{ entry.fc }}</span></td>
-                <td class="cell-attr">{{ entry.attr }}</td>
-                <td class="cell-value">
-                  <button
-                    type="button"
-                    class="val-btn"
-                    :class="{ 'val-btn--has': entry.value }"
-                    @click="startEdit(entry)"
-                  >
-                    {{ entry.value ?? '—' }}
-                  </button>
-                  <span v-if="editError && editingRef === entry.fullRef" class="edit-err">{{ editError }}</span>
-                </td>
-                <td class="cell-type">{{ entry.type ?? '—' }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Raw JSON for debugging -->
-        <details class="raw-toggle">
-          <summary>原始响应</summary>
-          <pre class="detail-raw">{{ detailRaw }}</pre>
-        </details>
-      </div>
-    </div>
+    <ServerDirTree
+      :connected="connected"
+      :lds="lds"
+      @toggle="onToggle"
+      @toggle-acsi="onToggleAcsi"
+    />
+    <ServerDirDetail
+      :selected="selected"
+      :detail-loading="detailLoading"
+      :dir-entries="dirEntries"
+      :detail-raw="detailRaw"
+      :edit-error="editError"
+      :editing-ref="editingRef"
+      @edit-entry="startEdit"
+    />
   </div>
   <ComplexValueEditor
     v-model="editValue"
@@ -78,7 +28,8 @@
 <script setup>
 import { ref, reactive, watch } from 'vue'
 import { executeJson } from '../api/cms.js'
-import TreeNode from '../components/TreeNode.vue'
+import ServerDirTree from '../components/ServerDirTree.vue'
+import ServerDirDetail from '../components/ServerDirDetail.vue'
 import ComplexValueEditor from '../components/ComplexValueEditor.vue'
 import { ldCache, refreshLds, ensureAllDefData } from '../ldCache.js'
 import { ACSI_DEFS } from '../acsiDefs.js'
@@ -137,8 +88,6 @@ async function onToggle(node) {
         const attrs = dirData
           .filter(d => d.reference && d.fc)
           .map(d => {
-            // d.reference 可能是短名（ctlModel）或长名（LD0/GGIO5.Mod.ctlModel）
-            // 统一转为完整引用
             const fullRef = d.reference.includes('/')
               ? d.reference
               : node.ref + '.' + d.reference
@@ -156,7 +105,6 @@ async function onToggle(node) {
           executeJson(`get-data-def --refs "${refs}" --json`),
         ])
 
-        // Handle both old format (array) and new format ({data: [...]})
         const defList = Array.isArray(defRes) ? defRes : (defRes?.data || [])
         const defMap = {}
         const typeKeys = ['boolean','int8','int16','int32','int64','int8u','int16u','int32u','int64u',
@@ -166,10 +114,8 @@ async function onToggle(node) {
           const entry = defList[i]
           if (entry) {
             if (entry.cdcType) {
-              // DO 级别: cdcType 表示类型（如 "INC"）
               defMap[attrs[i].fullRef] = entry.cdcType
             } else if (entry.definition && typeof entry.definition === 'object') {
-              // DA 级别: 从 definition 的 key 名推断（如 {"int32": null}）
               for (const k of typeKeys) {
                 if (Object.prototype.hasOwnProperty.call(entry.definition, k)) {
                   defMap[attrs[i].fullRef] = k
@@ -179,7 +125,7 @@ async function onToggle(node) {
             }
           }
         }
-        // fallback: 从 all-def 缓存查 DA 类型（标准预定义属性，如 stVal→int32）
+        // fallback: 从 all-def 缓存查 DA 类型
         const doName = node.ref.split('.').pop()
         const lnRef = node.ref.slice(0, node.ref.lastIndexOf('.'))
         if (lnRef) {
@@ -197,29 +143,23 @@ async function onToggle(node) {
           }
         }
 
-        // Handle both old format (array) and new format ({value: [...]})
         const valList = Array.isArray(valRes) ? valRes : (valRes?.value || [])
         const valMap = {}
         for (let i = 0; i < valList.length && i < attrs.length; i++) {
           const item = valList[i]
           if (item) {
-            // 新格式: {choice: N, "visible-string": "..."} 或 {"visible-string": "..."}
-            // 旧格式: {valueString, choiceType}
             let valueStr = ''
             let typeKey = ''
             if (item.choice != null) {
-              // 新格式有 choice: 类型从 choice 取，值从余下字段取
               typeKey = choiceTypeToType(item.choice)
               valueStr = Object.entries(item)
                 .filter(([k]) => k !== 'choice')
                 .map(([, v]) => v)
                 .join('')
             } else if (item.valueString != null) {
-              // 旧格式
               valueStr = item.valueString
               typeKey = choiceTypeToType(item.choiceType)
             } else {
-              // 新格式无 choice: 从 key 名推断类型
               for (const k of typeKeys) {
                 if (Object.prototype.hasOwnProperty.call(item, k)) {
                   typeKey = k
@@ -293,13 +233,10 @@ async function onToggle(node) {
             emptyAcsis: [],
             contentAcsis: [],
           })
-          // 并发预检所有 ACSI 分类（不阻塞，标记圆点有无内容）
           preCheckLnAcsis(lnNode)
           return lnNode
         })
       }
-    } else if (node.type === 'ln') {
-      // 首次点击 LN 滚动到该行（预检已在 LD 展开时触发）
     }
   } finally {
     node.loading = false
@@ -327,7 +264,6 @@ function preCheckLnAcsis(node) {
 
 /** LN 行上的 ACSI 圆点：单选切换视图，懒加载分类成员直接展示在 LN 下方（无中间分类层）。 */
 async function onToggleAcsi({ node, acsi }) {
-  // 再次点击已选中的分类：取消视图
   if (node.activeAcsi === acsi) {
     node.activeAcsi = null
     node.children = []
@@ -338,14 +274,11 @@ async function onToggleAcsi({ node, acsi }) {
   try {
     const res = await executeJson(`ln-dir --ln ${node.name} --acsi ${acsi} --auto-pull true --json`)
     if (res && Array.isArray(res.reference) && res.reference.length > 0) {
-      // 有内容：记录到 contentAcsis
       if (!node.contentAcsis.includes(acsi)) {
         node.contentAcsis.push(acsi)
       }
-      // 从空列表中移除（如果之前被标记过）
       const idx = node.emptyAcsis.indexOf(acsi)
       if (idx !== -1) node.emptyAcsis.splice(idx, 1)
-      // 找到该 ACSI 分类的颜色，传给子节点
       const acsiDef = ACSI_DEFS.find(d => d.key === acsi)
       const acsiColor = acsiDef ? acsiDef.color : '#888'
       const childType = acsi === 'data-object' ? 'do' : acsi
@@ -363,7 +296,6 @@ async function onToggleAcsi({ node, acsi }) {
             dotColor: acsiColor,
           }))
     } else {
-      // 没有内容：记录为空
       if (!node.emptyAcsis.includes(acsi)) {
         node.emptyAcsis.push(acsi)
       }
@@ -373,8 +305,6 @@ async function onToggleAcsi({ node, acsi }) {
     node.loading = false
   }
 }
-
-// buildDoTree 实现在 utils/treeBuilder.js 中
 
 /** 递归给树节点加上 dotColor，并默认展开 SDO */
 function addDotColor(nodes, color) {
@@ -408,8 +338,6 @@ async function onEditorConfirm(val) {
     const safeDelim = (candidates) => candidates.find(d => allVals.every(v => !v.includes(d)))
     let delim = safeDelim([' ', ',', ';', '|', '::'])
     if (!delim) {
-      // 如果在空格分隔的多个引用里，值中包含特殊字符，需要使用更长的分隔符
-      // 单值场景下，使用空格分隔即可
       delim = ' '
     }
     let cmd = `set-data-values --refs "${entry.fullRef}" --values "${val}"`
@@ -426,11 +354,6 @@ async function onEditorConfirm(val) {
   } catch {
     editError.value = '请求失败'
   }
-}
-
-function cancelEdit() {
-  editingRef.value = null
-  editError.value = ''
 }
 
 /** Map CMS choiceType to readable type name. */
@@ -462,216 +385,5 @@ function choiceTypeToType(choiceType) {
 .tree-page {
   display: flex;
   height: 100%;
-}
-
-.tree-panel {
-  width: 320px;
-  min-width: 240px;
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-}
-
-.panel-title {
-  font-size: 14px;
-  font-weight: 600;
-  padding: 20px 20px 12px;
-  color: var(--text-primary);
-  flex-shrink: 0;
-}
-
-.panel-hint {
-  color: var(--text-muted);
-  font-size: 13px;
-  padding: 0 20px;
-  flex-shrink: 0;
-}
-
-.tree-scroll {
-  overflow-y: auto;
-  flex: 1;
-  padding-bottom: 20px;
-}
-
-.detail-panel {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.detail-empty {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-}
-
-.detail-icon {
-  font-size: 40px;
-  display: block;
-  margin-bottom: 12px;
-  opacity: 0.3;
-}
-
-.detail-content {
-  padding: 24px 32px;
-}
-
-.detail-ref {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 20px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border);
-  font-family: var(--font-mono);
-}
-
-.data-section {
-  margin-bottom: 24px;
-}
-
-.section-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 12px;
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: var(--font-mono);
-  font-size: 13px;
-}
-
-.data-table th {
-  text-align: left;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  padding: 6px 12px;
-  border-bottom: 1px solid var(--border);
-  letter-spacing: 0.5px;
-}
-
-.data-table td {
-  padding: 6px 12px;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-secondary);
-}
-
-.data-table tbody tr:hover {
-  background: var(--bg-hover);
-}
-
-.fc-badge {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 600;
-  padding: 1px 6px;
-  border-radius: 3px;
-  background: var(--accent-muted);
-  color: var(--accent);
-}
-
-.cell-attr {
-  color: var(--text-primary);
-  font-weight: 500;
-}
-
-.cell-value {
-  color: var(--text-primary);
-  cursor: pointer;
-}
-
-.val-text {
-  min-height: 20px;
-  display: inline-block;
-}
-
-.val-btn {
-  background: none;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  color: var(--text-muted);
-  font-family: inherit;
-  font-size: 13px;
-  padding: 2px 8px;
-  cursor: pointer;
-  width: 100%;
-  text-align: left;
-  transition: border-color 0.12s, color 0.12s, background 0.12s;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.val-btn:hover {
-  border-color: var(--border);
-  color: var(--text-primary);
-  background: var(--bg-hover);
-}
-
-.val-btn--has {
-  color: var(--text-primary);
-}
-
-.edit-input {
-  background: var(--bg-primary);
-  border: 1px solid var(--accent);
-  border-radius: 4px;
-  color: var(--text-primary);
-  font-family: inherit;
-  font-size: 13px;
-  padding: 2px 6px;
-  width: 100%;
-  outline: none;
-}
-
-.edit-input:focus {
-  box-shadow: 0 0 0 2px var(--accent-muted);
-}
-
-.edit-err {
-  font-size: 11px;
-  color: var(--red);
-  margin-left: 6px;
-}
-
-.cell-type {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.raw-toggle {
-  margin-top: 16px;
-}
-
-.raw-toggle summary {
-  font-size: 12px;
-  color: var(--text-muted);
-  cursor: pointer;
-  padding: 4px 0;
-}
-
-.detail-raw {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--text-secondary);
-  white-space: pre-wrap;
-  background: var(--bg-tertiary);
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  margin-top: 8px;
-  max-height: 300px;
-  overflow: auto;
 }
 </style>

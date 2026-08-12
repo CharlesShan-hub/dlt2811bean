@@ -1,4 +1,4 @@
-import { asn1Release } from './asn1.js'
+import { asn1Release } from '../asn1.js'
 
 export default {
   title: '释放 release (8.2.2)',

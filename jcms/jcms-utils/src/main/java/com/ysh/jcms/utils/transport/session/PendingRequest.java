@@ -4,7 +4,8 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 
 /**
- * Holds information about a pending request awaiting a response.
+ * Holds information about a pending request awaiting a response. Implements the
+ * request timeout timer of DL/T 2811 6.9.1.
  */
 @Getter
 @Accessors(fluent = true)

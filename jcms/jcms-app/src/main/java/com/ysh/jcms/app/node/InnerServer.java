@@ -32,6 +32,8 @@ import java.security.*;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class InnerServer implements ConnectionListener {
 
@@ -45,6 +47,15 @@ public class InnerServer implements ConnectionListener {
     private ServerAcceptor sslAcceptor;
     private final Dispatcher dispatcher = new Dispatcher();
     private final CopyOnWriteArrayList<ServerSession> sessions = new CopyOnWriteArrayList<>();
+    /**
+     * Executes handlers off the reader threads; slow services cannot block the same
+     * connection.
+     */
+    private final ExecutorService dispatchExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), r -> {
+        Thread t = new Thread(r, "cms-dispatch");
+        t.setDaemon(true);
+        return t;
+    });
     private SclDocument sclDocument;
     private KeepAliveManager keepalive;
 
@@ -138,6 +149,7 @@ public class InnerServer implements ConnectionListener {
             keepalive.stop();
             keepalive = null;
         }
+        dispatchExecutor.shutdownNow();
         acceptor.stop();
         if (sslAcceptor != null) {
             sslAcceptor.stop();
@@ -190,7 +202,15 @@ public class InnerServer implements ConnectionListener {
         ServerSession ss = findSession(connection);
         if (ss == null)
             return;
-        ss.touchActivity();
+        ss.touchActivity(); // DL/T 2811 6.9.2: any valid frame restarts the idle timer
+        // Handle off the reader thread so a slow service (file, large datasets) cannot
+        // block other requests on the same connection. Out-of-order responses are
+        // legal:
+        // the client matches them by ReqID (DL/T 2811 6.2.1 b).
+        dispatchExecutor.submit(() -> handleFrame(ss, connection, frame));
+    }
+
+    private void handleFrame(ServerSession ss, Connection connection, Frame frame) {
         Dispatcher.DispatchOutcome outcome = dispatcher.dispatch(ss, frame);
         switch (outcome.getResult()) {
             case HANDLED :
@@ -205,8 +225,8 @@ public class InnerServer implements ConnectionListener {
             case NOT_REGISTERED :
                 log.warn("No handler for service: {}", frame.header().serviceCode());
                 try {
-                    connection.send(new Frame(new FrameHeader().serviceCode(frame.header().serviceCode()).resp(true).err(true),
-                            new byte[]{0, 0}, frame.reqId()));
+                    connection.send(new Frame(new FrameHeader().serviceCode(frame.header().serviceCode()).resp(true).err(true), new byte[0],
+                            frame.reqId())); // DL/T 2811 6.2.2: empty error frame, FL=2
                 } catch (IOException e) {
                     log.error("Failed to send NOT_REGISTERED error", e);
                 }
@@ -214,8 +234,8 @@ public class InnerServer implements ConnectionListener {
             case ERROR_OCCURRED :
                 log.error("Handler error for service: {}, sending error response", frame.header().serviceCode());
                 try {
-                    connection.send(new Frame(new FrameHeader().serviceCode(frame.header().serviceCode()).resp(true).err(true),
-                            new byte[]{0, 0}, frame.reqId()));
+                    connection.send(new Frame(new FrameHeader().serviceCode(frame.header().serviceCode()).resp(true).err(true), new byte[0],
+                            frame.reqId())); // DL/T 2811 6.2.2: empty error frame, FL=2
                 } catch (IOException e) {
                     log.error("Failed to send ERROR_OCCURRED response", e);
                 }

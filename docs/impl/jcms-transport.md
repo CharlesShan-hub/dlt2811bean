@@ -54,6 +54,8 @@ jcms-transport 提供 CMS 协议传输层的核心抽象，涵盖 **TCP/TLS 连�
 
 依赖方向：`wire → frame ← session ← service`，单向无环。
 
+**标准支撑**：每一层都有 DL/T 2811 条款背书——wire（6.5 分帧 / 6.6 端口 / 6.7 连接控制 / 6.9 超时与检测）、frame（6.1 APDU / 6.3 空帧 / 6.5 分帧）、session（6.2 服务数据单元 / 6.9.1 超时 / 8.2 关联）、service（8.x 各服务分发）。
+
 ## 子包详解
 
 ### 1. `wire` — 网络连接层
@@ -66,16 +68,17 @@ jcms-transport 提供 CMS 协议传输层的核心抽象，涵盖 **TCP/TLS 连�
 
 - **拥有 Socket** + `DataInputStream`/`DataOutputStream`
 - **后台读线程**：启动一个 daemon 线程 `readLoop()`，持续从网络读帧，通过 `FrameAssembler` 组装完整帧后回调 `ConnectionListener`
-- **接收**：`readFrame()` 直接解出 4 字节 `FrameHeader` + ReqID + ASDU，构造 `Frame`（不再走整包重解码）
+- **接收**：`readFrame()` 直接解出 4 字节 `FrameHeader` + ReqID + ASDU，构造 `Frame`；协议类型 PI 错误的帧直接丢弃并计数，连续 5 次畸形帧才断连（标准 6.1.3）
 - **发送**：`send(Frame)` 按 `peerAsduSize` 自动分片；若对端不支持分帧（`fragmentationSupported=false`）且 ASDU 超限，直接抛异常
-- **协商参数**（协商服务写入，单一事实来源）：
-  - `maxFrameSize` — 接收端 FL 上限（默认 65535）
-  - `peerAsduSize` — 对端 ASDU 分片上限（默认 65529）
+- **协商参数**（协商服务写入，单一事实来源；换算遵循标准口径）：
+  - `maxFrameSize` — 接收端 FL 上限（默认 65531；协商时 = APDU − APCH 4）
+  - `peerAsduSize` — 对端单帧 Data 上限，不含 ReqID（默认 65529；协商时 = ASDU − ReqID 2）
   - `fragmentationSupported` — 对端是否支持分帧
+- **错误响应**：解码失败 / 无 handler / handler 异常 → 回空错误帧（`Resp=1, Err=1, FL=2`，标准 6.2.2）
 - **关闭**：`close()` 设置 `running=false` 并关闭 socket，读线程自动退出并回调 `onDisconnected`
 
 ```
-接收: [FL:2][APCH:4][ReqID:2][Data:FL-6] → FrameAssembler → 完整帧 → listener.onFrameReceived()
+接收: [APCH:4][ReqID:2][Data:FL-2] → FrameAssembler → 完整帧 → listener.onFrameReceived()
 发送: Frame → FrameCodec.split() → 分片 → write()
 ```
 
@@ -94,6 +97,7 @@ acceptor.start();               // 启动监听线程
 
 - 支持 TCP 和 TLS（通过 `SSLContext`）两种模式
 - 每个接受连接自动创建 `Connection` + 启动读线程
+- **同 IP 单连接**（标准 6.7）：新连接到达时，若该客户端 IP 已有活跃连接，先关闭旧的
 - 使用 `CopyOnWriteArrayList` 管理活跃连接，连接断开时自动从清单移除
 
 #### `ClientConnector`
@@ -128,15 +132,15 @@ public interface ConnectionListener {
 #### Wire Format
 
 ```
-[FL:2][APCH:4][ReqID:2][Data:FL-6]
-│       │      │        └── 应用层数据单元（ASDU）
-│       │      └─────────── 请求 ID（小端）
-│       └────────────────── 协议头（APCH，4 字节）
-└────────────────────────── 帧长度（Frame Length，大端，含 APCH+ReqID+Data）
+[APCH:4][ReqID:2][Data:FL-2]
+│         │      └── 应用层数据单元（Data）
+│         └───────── 请求 ID（小端）
+└─────────────────── 协议头（APCH，4 字节）
 ```
 
-- FL 字段为 16 位，最大 65535；单帧 ASDU（不含 ReqID）上限 65529
-- APCH 即 `FrameHeader`，4 字节：CC + SC + FL-hi + FL-lo
+- APCH 即 `FrameHeader`：CC + SC + FL，FL 为 16 位**小端**，表示**不含 APCH 的 ASDU 长度**（ReqID + Data），上限 65531（标准 6.1.2 c）
+- 单帧 Data（不含 ReqID）上限 = 65531 − 2 = 65529
+- 标准 6.3：只有 APCH 无 ASDU 的帧（Test）FL = 0；APCH + ReqID 无数据区的帧 FL = 2
 
 #### `FrameHeader` — 4 字节协议头
 
@@ -153,7 +157,7 @@ CC 字节:
 |------|------|------|------|
 | CC | 0 | 1B | 控制字节（Next + Resp + Err + PI） |
 | SC | 1 | 1B | 服务代码，对应 `CmsServiceInfo` 枚举 |
-| FL | 2-3 | 2B | 帧长度（APCH + ReqID + Data 总长） |
+| FL | 2-3 | 2B | 帧长度（ASDU：ReqID + Data，小端，上限 65531） |
 
 #### `Frame` — 协议帧
 
@@ -173,8 +177,8 @@ public class Frame {
 
 | 方法 | 说明 |
 |------|------|
-| `encode(Frame)` | 帧 → 完整线网字节（含 FL 前缀） |
-| `split(Frame, maxPayload)` | 大帧分片（Next 位标记） |
+| `encode(Frame)` | 帧 → 完整线网字节（FL 在 APCH 内，小端） |
+| `split(Frame, maxPayload)` | 大帧分片（Next 位标记，同 ReqID） |
 | `merge(List<Frame>)` | 分片重组为完整帧 |
 
 > 解码不再走整包重解析：`Connection.readFrame()` 直接解 header + ReqID 构造 Frame。
@@ -283,46 +287,93 @@ ERROR_OCCURRED    — Handler 抛出异常
 
 ---
 
-## 数据流
+## 调用关系
 
-### 服务端接收
+### 服务端 — 一帧请求的完整旅程
 
 ```
-Socket.accept()
+┌─────────────────────────────────────────────────────────────────────────┐
+│ acceptor 线程（1 个）                                                     │
+│  ServerAcceptor.accept()                                                 │
+│    │  同 IP 去重，先关旧连接 (6.7)                                        │
+│    ▼                                                                    │
+│  new Connection(socket, listener)                                       │
+│    ├─ conn.onClosed(移除连接清单) ← 订阅断开事件，与业务 listener 解耦      │
+│    └─ conn.startReader()                                                │
+│                                                                          │
+│                                         ┌─ 读线程（每连接 1 个）─────────┐ │
+│                                         │  readFrame()                 │ │
+│                                         │    [APCH:4] → FrameHeader    │ │
+│                                         │      CC: Next/Resp/Err/PI    │ │
+│                                         │      SC: 服务码 (表1)         │ │
+│                                         │      FL: 小端 (6.1.2)        │ │
+│                                         │    │ FL 越界 → 断连 (6.1.3)   │ │
+│                                         │    │ PI≠0x01 → 丢帧+计数      │ │
+│                                         │    │   连续5次 → 断连 (6.1.3) │ │
+│                                         │    │ ReqID 小端拆分 (6.2.1)   │ │
+│                                         │    ▼                        │ │
+│                                         │  FrameAssembler.addSegment  │ │
+│                                         │    Next=1 → 缓存 (6.5.2)    │ │
+│                                         │    Next=0 → 合并 → 完整帧    │ │
+│                                         │    │ 超预算 → 断连 (防御)     │ │
+│                                         │    ▼                        │ │
+│                                         │  listener.onFrameReceived   │ │
+│                                         └─────────────┬───────────────┘ │
+│                                                       ▼                │
+│  InnerServer.onFrameReceived (jcms-app)                                 │
+│    ├─ touchActivity() 刷新空闲计时 (6.9.2)                               │
+│    ▼                                                                    │
+│  Dispatcher.dispatch(session, frame)                                   │
+│    ├─ HANDLED       → ServiceHandler.handleRequest() → 响应帧           │
+│    ├─ NOT_REGISTERED → 回空错误帧 Resp=1 Err=1 FL=2 (6.2.2)             │
+│    └─ ERROR_OCCURRED → 回空错误帧 Resp=1 Err=1 FL=2 (6.2.2)             │
+│    ▼                                                                    │
+│  Connection.send(response)                                             │
+│    ├─ 超 peerAsduSize → FrameCodec.split 分片 (6.5.1)                   │
+│    │    每段同 ReqID、Next 标记 (6.5.1 b / 6.5.2)                       │
+│    └─ FrameCodec.encode → write(socket)                                │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### 客户端 — 请求/响应匹配
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 业务线程（调用方）                            读线程（客户端仅 1 个）        │
+│                                                                          │
+│  ClientConnector.connect() ──────────────► 建立 Connection + 读线程      │
+│  NegotiateClient（8.15.2 协商 apdu/asdu/版本）                            │
+│  AssociateClient（8.2.1 建立关联）                                        │
+│                                                                          │
+│  sendRequest(service, asdu, timeout)                                    │
+│    ├─ nextReqId()               (6.2.1 a: 1~65535 循环)                  │
+│    ├─ addPendingRequest(reqId, timeout) (6.9.1 挂超时定时器)              │
+│    ├─ connection.send(request) ──────────► write(socket)                │
+│    ▼                                                                    │
+│  waitForPendingRequest(reqId, timeout)   readFrame() ◄── socket 响应      │
+│    │  阻塞等待                           FrameAssembler → 完整帧          │
+│    │                                     tryDispatchResponse(frame)      │
+│    │                                     (6.2.1 b: 按 ReqID 匹配响应)     │
+│    ◄────────── setResult(frame) 唤醒 ────┘                              │
+│    ▼                                                                    │
+│  拿到响应；超时返回 null (6.9.1)                                          │
+│                                                                          │
+│  TEST 响应（8.14）：读线程收到 Test → 立即回 FL=0 空帧，不走 pending       │
+│  REPORT 推送（6.2.1 c）：ReqID=0，非请求响应服务，交给 reportHandler      │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### 关闭 — 双保险清理
+
+```
+Connection 断开（正常/异常/close()）
     │
+    ▼ 读线程 finally
+  listener.onDisconnected()  →  业务层：ServerSession.state(DISCONNECTED)
+    │                              └─ clearConnection() 清理会话状态 (8.2.2/8.2.3)
     ▼
-Connection(读线程) → readFrame()
-    │                    │
-    │              FrameAssembler.addSegment()
-    │                    │
-    │             完整帧? ──否→ 等待下一分片
-    │                    │
-    │                    ▼ 是
-    │              listener.onFrameReceived(conn, frame)
-    │                    │
-    ▼                    ▼
-Dispatcher.dispatch(session, request)
-    │
-    ├─ ServiceHandler.handleRequest() → 响应帧
-    └─ Connection.send(response) → 分片→写入 socket
-```
-
-### 客户端发送/接收
-
-```
-ClientSession.nextReqId() → reqId
-    │
-    ├─ addPendingRequest(reqId)
-    ├─ Connection.send(request) → 写入 socket
-    │
-    ▼ 等待响应
-waitForPendingRequest(reqId, timeout)
-    │
-    ▼ 收到响应
-tryDispatchResponse(frame) → PendingRequest.setResult()
-    │
-    ▼
-调用方拿到结果 → 继续执行
+  onClosed 回调               →  ServerAcceptor：从连接清单移除
+                                InnerServer：从会话列表移除
 ```
 
 ---

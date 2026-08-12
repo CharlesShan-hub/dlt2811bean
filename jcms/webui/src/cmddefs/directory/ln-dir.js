@@ -1,5 +1,5 @@
 // 8.3.3 读逻辑节点目录：ACSI 类限定（标准表 26），选项与目录树圆点颜色一致
-import { ACSI_DEFS } from '../acsiDefs.js'
+import { ACSI_DEFS } from '../../acsiDefs.js'
 
 export default {
   title: '逻辑节点目录 ln-dir (8.3.3)',

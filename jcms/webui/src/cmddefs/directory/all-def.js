@@ -1,5 +1,5 @@
 // 8.3.5 读所有数据定义（GetAllDataDefinition）
-import { FC_OPTIONS } from './common.js'
+import { FC_OPTIONS } from '../common.js'
 
 export default {
   title: '读所有数据定义 all-def (8.3.5)',

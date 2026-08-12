@@ -10,11 +10,16 @@ import java.util.Arrays;
  * FrameCodec — stateless frame encoding, decoding, and splitting.
  *
  * <p>
- * Wire format (APDU = APCH + ASDU, ASDU = ReqID + Data, ReqID little-endian):
+ * Wire format (APDU = APCH + ASDU, ASDU = ReqID + Data, 16-bit fields
+ * little-endian):
  *
  * <pre>
- * [FL:2][APCH:4][ReqID:2][Data:FL-6]
+ * [APCH:4][ReqID:2][Data:FL-2]   where APCH = [CC][SC][FL(lo)][FL(hi)]
  * </pre>
+ *
+ * FL is the ASDU length (ReqID + Data), excluding the 4-byte APCH, per DL/T
+ * 2811 6.1.2 c). FL = 0 for a header-only frame (Test), FL = 2 for an empty
+ * data area.
  */
 public class FrameCodec {
 
@@ -24,21 +29,28 @@ public class FrameCodec {
     }
 
     public static byte[] encode(Frame frame) throws IOException {
-        int fl = FrameHeader.HEADER_SIZE + REQID_SIZE + frame.asduBytes().length;
+        // Header-only frames (Test: reqId=0, empty payload) carry no ReqID, FL=0, per
+        // DL/T 2811 6.3
+        boolean headerOnly = frame.reqId() == 0 && frame.asduBytes().length == 0;
+        int fl = headerOnly ? 0 : REQID_SIZE + frame.asduBytes().length; // excludes APCH, per standard
         frame.header().frameLength(fl);
         byte[] hdr = frame.header().encode();
-        int reqId = frame.reqId();
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(2 + hdr.length + REQID_SIZE + frame.asduBytes().length);
-        bos.write((fl >> 8) & 0xFF);
-        bos.write(fl & 0xFF);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(hdr.length + (headerOnly ? 0 : REQID_SIZE) + frame.asduBytes().length);
         bos.write(hdr);
-        bos.write(reqId & 0xFF); // ReqID low byte first
-        bos.write((reqId >> 8) & 0xFF);
+        if (!headerOnly) {
+            int reqId = frame.reqId();
+            bos.write(reqId & 0xFF); // ReqID low byte first
+            bos.write((reqId >> 8) & 0xFF);
+        }
         bos.write(frame.asduBytes());
         return bos.toByteArray();
     }
 
+    /**
+     * Split an ASDU into segments, per DL/T 2811 6.5.1: cut the data area
+     * (excluding ReqID).
+     */
     public static List<Frame> split(Frame frame, int maxPayloadSize) {
         byte[] asdu = frame.asduBytes();
         if (maxPayloadSize <= 0) {
@@ -57,14 +69,18 @@ public class FrameCodec {
             System.arraycopy(asdu, offset, chunk, 0, chunkLen);
 
             FrameHeader segHdr = new FrameHeader().resp(frame.header().resp()).err(frame.header().err())
-                    .serviceCode(frame.header().serviceCode()).next(!isLast);
+                    .serviceCode(frame.header().serviceCode()).next(!isLast); // 6.5.2: Next=1 means more to come
 
-            segments[i] = new Frame(segHdr, chunk, frame.reqId());
+            segments[i] = new Frame(segHdr, chunk, frame.reqId()); // 6.5.1 b): same ReqID as the original ASDU
             offset += chunkLen;
         }
         return Arrays.asList(segments);
     }
 
+    /**
+     * Reassemble segments into one frame, per DL/T 2811 6.5.2 (sum of the data
+     * areas).
+     */
     public static Frame merge(List<Frame> segments) {
         if (segments.isEmpty())
             throw new IllegalArgumentException("No segments to merge");

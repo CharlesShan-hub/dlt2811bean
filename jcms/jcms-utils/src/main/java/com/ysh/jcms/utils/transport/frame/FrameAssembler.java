@@ -17,7 +17,9 @@ public class FrameAssembler {
 
     /** Max distinct ReqIDs with pending segments; bounds the pending map. */
     private static final int MAX_PENDING_SEGMENTS = 1024;
-    /** Max accumulated bytes of pending segments; a hard memory budget against DoS. */
+    /**
+     * Max accumulated bytes of pending segments; a hard memory budget against DoS.
+     */
     private static final long MAX_PENDING_BYTES = 8L * 1024 * 1024;
 
     private final Map<Integer, List<Frame>> pending = new HashMap<>();
@@ -35,6 +37,7 @@ public class FrameAssembler {
     public synchronized Frame addSegment(Frame segment) throws FrameFormatException {
         int reqId = segment.reqId();
 
+        // DL/T 2811 6.5.2: Next=0 marks the final segment — merge now
         if (!segment.header().next()) {
             List<Frame> previous = pending.remove(reqId);
             if (previous == null)
@@ -45,11 +48,11 @@ public class FrameAssembler {
         }
 
         if (pending.containsKey(reqId)) {
+            // DL/T 2811 6.2.1 a): a ReqID must be unique within a request-response cycle
             throw new FrameFormatException("ReqID " + reqId + " reused before previous completed");
         }
         if (pending.size() >= MAX_PENDING_SEGMENTS || pendingBytes + segment.asduBytes().length > MAX_PENDING_BYTES) {
-            throw new FrameFormatException(
-                    "Segmentation budget exceeded: pending=" + pending.size() + ", bytes=" + pendingBytes);
+            throw new FrameFormatException("Segmentation budget exceeded: pending=" + pending.size() + ", bytes=" + pendingBytes);
         }
         List<Frame> list = new ArrayList<>();
         list.add(segment);

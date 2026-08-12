@@ -75,7 +75,7 @@ public abstract class BaseServerHandler<R extends CmsType, E extends CmsType> ex
             }
             prepareDecode(decoded);
             if (!tryDecode(session, request, decoded)) {
-                return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+                return buildError(new byte[0], reqId); // DL/T 2811 6.2.2: empty error frame, FL=2
             }
             if (traceEnabled())
                 log.info("[TRACE] <<< {} reqId={}:\n{}", serviceName, reqId, decoded);
@@ -139,7 +139,7 @@ public abstract class BaseServerHandler<R extends CmsType, E extends CmsType> ex
      */
     protected Frame onDecodeError(int reqId, int err) {
         if (errorType == null) {
-            return buildError(new byte[]{0, 0, 0, 0}, reqId);
+            return buildError(new byte[0], reqId); // empty error frame, FL=2
         }
         try {
             CmsType errorPdu;

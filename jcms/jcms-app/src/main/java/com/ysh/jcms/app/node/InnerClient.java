@@ -75,7 +75,7 @@ public class InnerClient implements ConnectionListener {
         session.addPendingRequest(reqId, timeoutMs);
         connection.send(new Frame(new FrameHeader().serviceCode(serviceCode).resp(false).err(false), asduBytes, reqId));
         try {
-            return (Frame) session.waitForPendingRequest(reqId, timeoutMs);
+            return (Frame) session.waitForPendingRequest(reqId, timeoutMs); // DL/T 2811 6.9.1: give up on timeout
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return null;
@@ -126,6 +126,7 @@ public class InnerClient implements ConnectionListener {
             if (session.tryDispatchResponse(frame))
                 return;
 
+            // DL/T 2811 8.14 / 6.9.2: a Test frame must be answered immediately
             if (frame.header().serviceCode() == CmsServiceInfo.TEST && !frame.header().resp()) {
                 try {
                     connection.send(new Frame(new FrameHeader().serviceCode(CmsServiceInfo.TEST).resp(true).err(false), new byte[0],
@@ -137,6 +138,7 @@ public class InnerClient implements ConnectionListener {
                 return;
             }
 
+            // DL/T 2811 6.2.1 c): Report is a non-request-response service (ReqID=0)
             if (frame.header().serviceCode() == CmsServiceInfo.REPORT && reportHandler != null) {
                 try {
                     reportHandler.accept(frame);
