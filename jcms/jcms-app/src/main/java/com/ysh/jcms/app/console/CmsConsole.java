@@ -2,7 +2,7 @@ package com.ysh.jcms.app.console;
 
 import com.ysh.jcms.app.console.CommandInfo.Requirement;
 import com.ysh.jcms.app.node.CmsNode;
-import com.ysh.jcms.util.CmsFormatUtil;
+import com.ysh.jcms.core.util.CmsFormatUtil;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.session.SessionState;
 import org.jline.reader.EndOfFileException;

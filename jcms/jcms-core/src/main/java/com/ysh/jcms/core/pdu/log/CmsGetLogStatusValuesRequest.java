@@ -1,0 +1,34 @@
+package com.ysh.jcms.core.pdu.log;
+
+import com.ysh.jcms.data.InnerGetLogStatusValuesRequestPDU;
+import com.ysh.jcms.core.data.core.CmsField;
+import com.ysh.jcms.core.data.core.CmsSequence;
+import com.ysh.jcms.core.data.scalar.CmsObjectReference;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * <pre>
+ * {@code
+ * GetLogStatusValues-RequestPDU ::= SEQUENCE {
+ *     logReference    [0] IMPLICIT SEQUENCE OF ObjectReference
+ * } — 8.8.6
+ * }
+ * </pre>
+ */
+public class CmsGetLogStatusValuesRequest extends CmsSequence {
+
+    @CmsField(sequenceOf = true, elementType = CmsObjectReference.class)
+    public List<CmsObjectReference> logReference; /* SEQUENCE OF ObjectReference */
+
+    public CmsGetLogStatusValuesRequest() {
+        super(new InnerGetLogStatusValuesRequestPDU());
+        this.logReference = new ArrayList<>();
+    }
+
+    public CmsGetLogStatusValuesRequest logReference(List<CmsObjectReference> v) {
+        this.logReference = v;
+        return this;
+    }
+}

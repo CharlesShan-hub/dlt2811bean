@@ -1,0 +1,75 @@
+package com.ysh.jcms.core.pdu.file;
+
+import java.nio.charset.StandardCharsets;
+
+import com.ysh.jcms.data.InnerGetFileDirectoryRequestPDU;
+import com.ysh.jcms.core.data.core.CmsField;
+import com.ysh.jcms.core.data.core.CmsSequence;
+import com.ysh.jcms.core.data.scalar.CmsString;
+import com.ysh.jcms.core.data.sequence.common.CmsUtcTime;
+
+/**
+ * <pre>
+ * {@code
+ * GetFileDirectory-RequestPDU ::= SEQUENCE {
+ *     pathName        [0] IMPLICIT VisibleString255,
+ *     startTime       [1] IMPLICIT TimeStamp OPTIONAL,
+ *     stopTime        [2] IMPLICIT TimeStamp OPTIONAL,
+ *     fileAfter       [3] IMPLICIT VisibleString255 OPTIONAL
+ * } — 8.12.5
+ * }
+ * </pre>
+ */
+public class CmsGetFileDirectoryRequest extends CmsSequence {
+
+    @CmsField
+    public CmsString pathName;
+    @CmsField(optional = true)
+    public CmsUtcTime startTime;
+    @CmsField(optional = true)
+    public CmsUtcTime stopTime;
+    @CmsField(optional = true)
+    public CmsString fileAfter;
+
+    public CmsGetFileDirectoryRequest() {
+        super(new InnerGetFileDirectoryRequestPDU());
+    }
+
+    public CmsGetFileDirectoryRequest pathName(String v) {
+        this.pathName.value(v);
+        return this;
+    }
+    public CmsGetFileDirectoryRequest pathName(byte[] v) {
+        return pathName(new String(v, StandardCharsets.UTF_8));
+    }
+    public CmsGetFileDirectoryRequest startTime(CmsUtcTime v) {
+        if (v != null) {
+            this.startTime.value(v);
+            setPresent("startTime", true);
+        } else {
+            setPresent("startTime", false);
+        }
+        return this;
+    }
+    public CmsGetFileDirectoryRequest stopTime(CmsUtcTime v) {
+        if (v != null) {
+            this.stopTime.value(v);
+            setPresent("stopTime", true);
+        } else {
+            setPresent("stopTime", false);
+        }
+        return this;
+    }
+    public CmsGetFileDirectoryRequest fileAfter(String v) {
+        if (v != null) {
+            this.fileAfter.value(v);
+            setPresent("fileAfter", true);
+        } else {
+            setPresent("fileAfter", false);
+        }
+        return this;
+    }
+    public CmsGetFileDirectoryRequest fileAfter(byte[] v) {
+        return fileAfter(v != null ? new String(v, StandardCharsets.UTF_8) : null);
+    }
+}

@@ -57,8 +57,8 @@ public class ClientSession extends Session {
     }
 
     /**
-     * Clear all pending requests on teardown: wake waiters (they get null)
-     * so the map cannot grow unbounded after disconnect.
+     * Clear all pending requests on teardown: wake waiters (they get null) so the
+     * map cannot grow unbounded after disconnect.
      */
     @Override
     protected void clearConnection() {

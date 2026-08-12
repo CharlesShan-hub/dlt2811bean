@@ -1,0 +1,37 @@
+package com.ysh.jcms.core.pdu.goose;
+
+import com.ysh.jcms.data.InnerGetGoCbValuesErrorPDU;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
+
+/**
+ * <pre>
+ * {@code
+ * GetGoCbValues-ErrorPDU ::= ServiceError — 8.9.4
+ * }
+ * </pre>
+ *
+ * <p>
+ * Type alias, not a SEQUENCE.
+ */
+public class CmsGetGoCbValuesError extends CmsServiceError {
+
+    public CmsGetGoCbValuesError() {
+        super(new InnerGetGoCbValuesErrorPDU());
+    }
+
+    public CmsGetGoCbValuesError(int v) {
+        this();
+        value(v);
+    }
+
+    @Override
+    public CmsGetGoCbValuesError value(int v) {
+        super.value(v);
+        return this;
+    }
+
+    @Override
+    public int value() {
+        return super.value();
+    }
+}

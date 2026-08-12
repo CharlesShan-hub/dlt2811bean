@@ -84,8 +84,8 @@ public class ServerAcceptor {
 
     /**
      * Wrap the external listener: drop the connection from the local list on
-     * disconnect (so closed Connection objects do not accumulate), then
-     * forward the event.
+     * disconnect (so closed Connection objects do not accumulate), then forward the
+     * event.
      */
     private ConnectionListener wrapListener(ConnectionListener delegate) {
         return new ConnectionListener() {

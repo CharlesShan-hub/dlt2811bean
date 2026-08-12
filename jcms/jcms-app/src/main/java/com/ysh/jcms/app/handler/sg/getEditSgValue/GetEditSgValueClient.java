@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.sg.getEditSgValue;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.pdu.sg.CmsGetEditSgValueError;
-import com.ysh.jcms.pdu.sg.CmsGetEditSgValueResponse;
+import com.ysh.jcms.core.pdu.sg.CmsGetEditSgValueError;
+import com.ysh.jcms.core.pdu.sg.CmsGetEditSgValueResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

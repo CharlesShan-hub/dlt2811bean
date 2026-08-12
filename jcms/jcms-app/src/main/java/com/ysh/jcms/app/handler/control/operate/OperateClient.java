@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.control.operate;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.pdu.control.CmsOperateError;
-import com.ysh.jcms.pdu.control.CmsOperateResponse;
+import com.ysh.jcms.core.pdu.control.CmsOperateError;
+import com.ysh.jcms.core.pdu.control.CmsOperateResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;

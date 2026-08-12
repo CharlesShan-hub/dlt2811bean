@@ -2,8 +2,8 @@ package com.ysh.jcms.app.handler.dataset.getDataSetDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.CmsClientOperator;
-import com.ysh.jcms.pdu.dataset.CmsGetDataSetDirectoryError;
-import com.ysh.jcms.pdu.dataset.CmsGetDataSetDirectoryResponse;
+import com.ysh.jcms.core.pdu.dataset.CmsGetDataSetDirectoryError;
+import com.ysh.jcms.core.pdu.dataset.CmsGetDataSetDirectoryResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

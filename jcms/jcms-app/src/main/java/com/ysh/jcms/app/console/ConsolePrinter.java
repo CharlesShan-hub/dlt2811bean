@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.console;
 
 import com.ysh.jcms.data.InnerBase;
-import com.ysh.jcms.util.CmsFormatUtil;
+import com.ysh.jcms.core.util.CmsFormatUtil;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;

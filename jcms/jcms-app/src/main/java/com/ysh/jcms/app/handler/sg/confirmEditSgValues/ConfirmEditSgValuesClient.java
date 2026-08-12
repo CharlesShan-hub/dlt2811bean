@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.sg.confirmEditSgValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.pdu.sg.CmsConfirmEditSgValuesError;
-import com.ysh.jcms.pdu.sg.CmsConfirmEditSgValuesResponse;
+import com.ysh.jcms.core.pdu.sg.CmsConfirmEditSgValuesError;
+import com.ysh.jcms.core.pdu.sg.CmsConfirmEditSgValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.dataset.setDataSetValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.pdu.dataset.CmsSetDataSetValuesError;
-import com.ysh.jcms.pdu.dataset.CmsSetDataSetValuesResponse;
+import com.ysh.jcms.core.pdu.dataset.CmsSetDataSetValuesError;
+import com.ysh.jcms.core.pdu.dataset.CmsSetDataSetValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

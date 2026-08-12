@@ -2,8 +2,8 @@ package com.ysh.jcms.app.handler.directory.getAllDataDefinition;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.CmsClientOperator;
-import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionError;
-import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionResponse;
+import com.ysh.jcms.core.pdu.directory.CmsGetAllDataDefinitionError;
+import com.ysh.jcms.core.pdu.directory.CmsGetAllDataDefinitionResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

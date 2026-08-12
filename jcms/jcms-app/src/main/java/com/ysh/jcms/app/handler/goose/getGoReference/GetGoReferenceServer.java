@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.handler.goose.getGoReference;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.pdu.goose.CmsGetGoReferenceError;
-import com.ysh.jcms.pdu.goose.CmsGetGoReferenceRequest;
-import com.ysh.jcms.pdu.goose.CmsGetGoReferenceResponse;
+import com.ysh.jcms.core.pdu.goose.CmsGetGoReferenceError;
+import com.ysh.jcms.core.pdu.goose.CmsGetGoReferenceRequest;
+import com.ysh.jcms.core.pdu.goose.CmsGetGoReferenceResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;

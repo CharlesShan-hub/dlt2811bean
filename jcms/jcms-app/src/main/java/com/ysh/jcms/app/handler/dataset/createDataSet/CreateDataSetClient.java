@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.dataset.createDataSet;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.pdu.dataset.CmsCreateDataSetError;
-import com.ysh.jcms.pdu.dataset.CmsCreateDataSetResponse;
+import com.ysh.jcms.core.pdu.dataset.CmsCreateDataSetError;
+import com.ysh.jcms.core.pdu.dataset.CmsCreateDataSetResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

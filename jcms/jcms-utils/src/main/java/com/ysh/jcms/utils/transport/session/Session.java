@@ -30,9 +30,9 @@ public abstract class Session {
     private volatile boolean fragmentationSupported = true;
 
     /**
-     * Sole state entry point. Manual (release/abort) and passive (TCP
-     * disconnect) transitions both go through here; cleanup is dispatched
-     * from the old -> new state pair.
+     * Sole state entry point. Manual (release/abort) and passive (TCP disconnect)
+     * transitions both go through here; cleanup is dispatched from the old -> new
+     * state pair.
      */
     public void state(SessionState newState) {
         SessionState old = this.state;
@@ -48,8 +48,8 @@ public abstract class Session {
     }
 
     /**
-     * Hook 1: clear association-level state when leaving ASSOCIATED.
-     * Subclasses may override to add business state (setting groups, reports).
+     * Hook 1: clear association-level state when leaving ASSOCIATED. Subclasses may
+     * override to add business state (setting groups, reports).
      */
     protected void clearAssociation() {
         this.associationId = null;

@@ -1,0 +1,37 @@
+package com.ysh.jcms.core.pdu.sg;
+
+import com.ysh.jcms.data.InnerSelectActiveSGErrorPDU;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
+
+/**
+ * <pre>
+ * {@code
+ * SelectActiveSG-ErrorPDU ::= ServiceError — 8.6.1
+ * }
+ * </pre>
+ *
+ * <p>
+ * Type alias, not a SEQUENCE.
+ */
+public class CmsSelectActiveSgError extends CmsServiceError {
+
+    public CmsSelectActiveSgError() {
+        super(new InnerSelectActiveSGErrorPDU());
+    }
+
+    public CmsSelectActiveSgError(int v) {
+        this();
+        value(v);
+    }
+
+    @Override
+    public CmsSelectActiveSgError value(int v) {
+        super.value(v);
+        return this;
+    }
+
+    @Override
+    public int value() {
+        return super.value();
+    }
+}

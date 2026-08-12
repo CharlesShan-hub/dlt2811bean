@@ -2,8 +2,8 @@ package com.ysh.jcms.app.handler.directory.getAllCbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.CmsClientOperator;
-import com.ysh.jcms.pdu.directory.CmsGetAllCbValuesError;
-import com.ysh.jcms.pdu.directory.CmsGetAllCbValuesResponse;
+import com.ysh.jcms.core.pdu.directory.CmsGetAllCbValuesError;
+import com.ysh.jcms.core.pdu.directory.CmsGetAllCbValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

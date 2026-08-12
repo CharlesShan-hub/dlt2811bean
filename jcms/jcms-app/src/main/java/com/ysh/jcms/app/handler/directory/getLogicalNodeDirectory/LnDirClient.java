@@ -2,8 +2,8 @@ package com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.CmsClientOperator;
-import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryError;
-import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryResponse;
+import com.ysh.jcms.core.pdu.directory.CmsGetLogicalNodeDirectoryError;
+import com.ysh.jcms.core.pdu.directory.CmsGetLogicalNodeDirectoryResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

@@ -1,0 +1,32 @@
+package com.ysh.jcms.core.pdu.data;
+
+import com.ysh.jcms.data.InnerGetDataDirectoryErrorPDU;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
+
+/**
+ * <pre>
+ * {@code
+ * GetDataDirectory-ErrorPDU ::= ServiceError — 8.4.3
+ * }
+ * </pre>
+ *
+ * <p>
+ * Type alias, not a SEQUENCE.
+ */
+public class CmsGetDataDirectoryError extends CmsServiceError {
+
+    public CmsGetDataDirectoryError() {
+        super(new InnerGetDataDirectoryErrorPDU());
+    }
+
+    public CmsGetDataDirectoryError(int v) {
+        this();
+        value(v);
+    }
+
+    @Override
+    public CmsGetDataDirectoryError value(int v) {
+        super.value(v);
+        return this;
+    }
+}

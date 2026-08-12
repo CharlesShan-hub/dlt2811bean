@@ -1,0 +1,32 @@
+package com.ysh.jcms.core.pdu.dataset;
+
+import com.ysh.jcms.data.InnerGetDataSetDirectoryErrorPDU;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
+
+/**
+ * <pre>
+ * {@code
+ * GetDataSetDirectory-ErrorPDU ::= ServiceError — 8.5.5
+ * }
+ * </pre>
+ *
+ * <p>
+ * Type alias, not a SEQUENCE.
+ */
+public class CmsGetDataSetDirectoryError extends CmsServiceError {
+
+    public CmsGetDataSetDirectoryError() {
+        super(new InnerGetDataSetDirectoryErrorPDU());
+    }
+
+    public CmsGetDataSetDirectoryError(int v) {
+        this();
+        value(v);
+    }
+
+    @Override
+    public CmsGetDataSetDirectoryError value(int v) {
+        super.value(v);
+        return this;
+    }
+}

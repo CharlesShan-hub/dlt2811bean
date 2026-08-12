@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.report.getUrcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.pdu.report.CmsGetUrcbValuesError;
-import com.ysh.jcms.pdu.report.CmsGetUrcbValuesResponse;
+import com.ysh.jcms.core.pdu.report.CmsGetUrcbValuesError;
+import com.ysh.jcms.core.pdu.report.CmsGetUrcbValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

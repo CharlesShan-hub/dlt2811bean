@@ -2,7 +2,7 @@ package com.ysh.jcms.app.console.api;
 
 import com.ysh.jcms.app.console.CmsClientConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
-import com.ysh.jcms.util.CmsFormatUtil;
+import com.ysh.jcms.core.util.CmsFormatUtil;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpExchange;
 

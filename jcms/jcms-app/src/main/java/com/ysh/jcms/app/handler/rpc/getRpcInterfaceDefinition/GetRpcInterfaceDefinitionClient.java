@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.rpc.getRpcInterfaceDefinition;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.pdu.rpc.CmsGetRpcInterfaceDefinitionError;
-import com.ysh.jcms.pdu.rpc.CmsGetRpcInterfaceDefinitionResponse;
+import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDefinitionError;
+import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDefinitionResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

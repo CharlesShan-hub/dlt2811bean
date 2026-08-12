@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.rpc.getRpcMethodDefinition;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.pdu.rpc.CmsGetRpcMethodDefinitionError;
-import com.ysh.jcms.pdu.rpc.CmsGetRpcMethodDefinitionResponse;
+import com.ysh.jcms.core.pdu.rpc.CmsGetRpcMethodDefinitionError;
+import com.ysh.jcms.core.pdu.rpc.CmsGetRpcMethodDefinitionResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
