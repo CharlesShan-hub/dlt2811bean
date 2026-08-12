@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler;
 
 import com.ysh.jcms.app.node.InnerServer;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.info.CmsFCInfo;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.SclDocument;
@@ -198,12 +198,12 @@ public abstract class BaseServerHandler<R extends CmsType, E extends CmsType> ex
     }
 
     /** Extract a String from a CmsString value. */
-    protected static String str(com.ysh.jcms.data.scalar.CmsString s) {
+    protected static String str(com.ysh.jcms.core.data.scalar.CmsString s) {
         return s == null ? null : s.value();
     }
 
     /** Extract a String from a CmsObjectReference value. */
-    protected static String str(com.ysh.jcms.data.scalar.CmsObjectReference r) {
+    protected static String str(com.ysh.jcms.core.data.scalar.CmsObjectReference r) {
         return r == null ? null : r.value();
     }
 

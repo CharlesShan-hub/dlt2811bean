@@ -1,11 +1,11 @@
 package com.ysh.jcms.app.handler.report.setUrcbValues;
 
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.data.bitarray.CmsRcbOptFlds;
-import com.ysh.jcms.data.bitarray.CmsTriggerConditions;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.data.sequence.report.CmsSetUrcbEntry;
-import com.ysh.jcms.pdu.report.CmsSetUrcbValuesRequest;
+import com.ysh.jcms.core.data.bitarray.CmsRcbOptFlds;
+import com.ysh.jcms.core.data.bitarray.CmsTriggerConditions;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.data.sequence.report.CmsSetUrcbEntry;
+import com.ysh.jcms.core.pdu.report.CmsSetUrcbValuesRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

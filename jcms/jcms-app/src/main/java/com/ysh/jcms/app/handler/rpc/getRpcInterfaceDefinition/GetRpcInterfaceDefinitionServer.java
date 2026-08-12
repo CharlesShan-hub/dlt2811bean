@@ -2,11 +2,11 @@ package com.ysh.jcms.app.handler.rpc.getRpcInterfaceDefinition;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.rpc.RpcRegistry;
-import com.ysh.jcms.data.enumerate.CmsServiceError;
-import com.ysh.jcms.pdu.rpc.CmsGetRpcInterfaceDefinitionError;
-import com.ysh.jcms.pdu.rpc.CmsGetRpcInterfaceDefinitionRequest;
-import com.ysh.jcms.pdu.rpc.CmsGetRpcInterfaceDefinitionResponse;
-import com.ysh.jcms.data.sequence.rpc.CmsRpcMethodEntry;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDefinitionError;
+import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDefinitionRequest;
+import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDefinitionResponse;
+import com.ysh.jcms.core.data.sequence.rpc.CmsRpcMethodEntry;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;

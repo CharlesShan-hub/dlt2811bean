@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.file.setFile;
 
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.pdu.file.CmsSetFileRequest;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.pdu.file.CmsSetFileRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

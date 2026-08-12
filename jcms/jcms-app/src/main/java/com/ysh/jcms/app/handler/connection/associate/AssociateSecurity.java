@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.handler.connection.associate;
 
-import com.ysh.jcms.data.enumerate.CmsServiceError;
-import com.ysh.jcms.data.sequence.common.CmsUtcTime;
-import com.ysh.jcms.data.sequence.connection.CmsAuthenticationParameter;
-import com.ysh.jcms.pdu.connection.CmsAssociateRequest;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.data.sequence.common.CmsUtcTime;
+import com.ysh.jcms.core.data.sequence.connection.CmsAuthenticationParameter;
+import com.ysh.jcms.core.pdu.connection.CmsAssociateRequest;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.security.GmAuthenticator;
 import com.ysh.jcms.utils.security.GmSignature;

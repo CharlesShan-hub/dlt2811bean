@@ -1,10 +1,10 @@
 package com.ysh.jcms.app.handler.msv.setMsvcbValues;
 
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.data.bitarray.CmsMsvcbOptFlds;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.data.sequence.msv.CmsSetMsvcbEntry;
-import com.ysh.jcms.pdu.msv.CmsSetMsvcbValuesRequest;
+import com.ysh.jcms.core.data.bitarray.CmsMsvcbOptFlds;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.data.sequence.msv.CmsSetMsvcbEntry;
+import com.ysh.jcms.core.pdu.msv.CmsSetMsvcbValuesRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

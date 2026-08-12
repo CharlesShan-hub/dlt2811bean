@@ -1,14 +1,14 @@
 package com.ysh.jcms.utils.scl.service;
 
-import com.ysh.jcms.data.choice.CmsCbValueChoice;
-import com.ysh.jcms.data.choice.CmsDataDefinition;
-import com.ysh.jcms.data.enumerate.CmsAcsiClass;
-import com.ysh.jcms.data.scalar.CmsFC;
-import com.ysh.jcms.data.sequence.common.CmsDataDefinitionStructElem;
-import com.ysh.jcms.data.sequence.directory.CmsCbValueEntry;
-import com.ysh.jcms.data.sequence.directory.CmsDataDefinitionEntry;
-import com.ysh.jcms.data.sequence.data.CmsSubRefEntry;
-import com.ysh.jcms.data.sequence.directory.CmsDataValueEntry;
+import com.ysh.jcms.core.data.choice.CmsCbValueChoice;
+import com.ysh.jcms.core.data.choice.CmsDataDefinition;
+import com.ysh.jcms.core.data.enumerate.CmsAcsiClass;
+import com.ysh.jcms.core.data.scalar.CmsFC;
+import com.ysh.jcms.core.data.sequence.common.CmsDataDefinitionStructElem;
+import com.ysh.jcms.core.data.sequence.directory.CmsCbValueEntry;
+import com.ysh.jcms.core.data.sequence.directory.CmsDataDefinitionEntry;
+import com.ysh.jcms.core.data.sequence.data.CmsSubRefEntry;
+import com.ysh.jcms.core.data.sequence.directory.CmsDataValueEntry;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.convert.CbConverter;
 import com.ysh.jcms.utils.scl.convert.DataConverter;

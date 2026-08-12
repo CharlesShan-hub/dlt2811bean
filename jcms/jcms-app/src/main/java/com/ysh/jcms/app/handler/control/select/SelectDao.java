@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.control.select;
 
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.pdu.control.CmsSelectRequest;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.pdu.control.CmsSelectRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

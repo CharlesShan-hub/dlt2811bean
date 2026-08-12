@@ -1,7 +1,7 @@
 package com.ysh.jcms.utils.scl.convert;
 
-import com.ysh.jcms.data.bitarray.CmsCheck;
-import com.ysh.jcms.data.choice.CmsData;
+import com.ysh.jcms.core.data.bitarray.CmsCheck;
+import com.ysh.jcms.core.data.choice.CmsData;
 
 import java.nio.charset.StandardCharsets;
 

@@ -1,10 +1,10 @@
 package com.ysh.jcms.utils.scl.convert;
 
 import com.ysh.jcms.data.V;
-import com.ysh.jcms.data.bitarray.CmsQuality;
-import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.data.sequence.common.CmsBinaryTime;
-import com.ysh.jcms.data.sequence.common.CmsUtcTime;
+import com.ysh.jcms.core.data.bitarray.CmsQuality;
+import com.ysh.jcms.core.data.choice.CmsData;
+import com.ysh.jcms.core.data.sequence.common.CmsBinaryTime;
+import com.ysh.jcms.core.data.sequence.common.CmsUtcTime;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;

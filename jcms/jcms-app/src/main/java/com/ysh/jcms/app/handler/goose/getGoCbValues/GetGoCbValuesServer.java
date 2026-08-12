@@ -1,12 +1,12 @@
 package com.ysh.jcms.app.handler.goose.getGoCbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.choice.CmsGocbValueChoice;
-import com.ysh.jcms.data.sequence.block.CmsGoCb;
-import com.ysh.jcms.data.enumerate.CmsServiceError;
-import com.ysh.jcms.pdu.goose.CmsGetGoCbValuesError;
-import com.ysh.jcms.pdu.goose.CmsGetGoCbValuesRequest;
-import com.ysh.jcms.pdu.goose.CmsGetGoCbValuesResponse;
+import com.ysh.jcms.core.data.choice.CmsGocbValueChoice;
+import com.ysh.jcms.core.data.sequence.block.CmsGoCb;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.pdu.goose.CmsGetGoCbValuesError;
+import com.ysh.jcms.core.pdu.goose.CmsGetGoCbValuesRequest;
+import com.ysh.jcms.core.pdu.goose.CmsGetGoCbValuesResponse;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.service.SclControlBlockService;

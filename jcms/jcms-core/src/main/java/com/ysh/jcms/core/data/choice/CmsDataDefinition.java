@@ -1,13 +1,13 @@
 package com.ysh.jcms.core.data.choice;
 
-import com.ysh.jcms.data.sequence.common.CmsDataDefinitionArray;
-import com.ysh.jcms.data.sequence.common.CmsDataDefinitionStructElem;
-import com.ysh.jcms.data.core.CmsChoice;
+import com.ysh.jcms.core.data.sequence.common.CmsDataDefinitionArray;
+import com.ysh.jcms.core.data.sequence.common.CmsDataDefinitionStructElem;
+import com.ysh.jcms.core.data.core.CmsChoice;
 import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerDataDefinition;
 import com.ysh.jcms.data.V;
-import com.ysh.jcms.data.enumerate.CmsServiceError;
-import com.ysh.jcms.data.scalar.CmsInt32;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.data.scalar.CmsInt32;
 import java.util.ArrayList;
 import java.util.List;
 

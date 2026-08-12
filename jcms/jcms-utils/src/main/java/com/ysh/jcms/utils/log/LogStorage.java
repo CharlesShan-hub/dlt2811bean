@@ -1,8 +1,8 @@
 package com.ysh.jcms.utils.log;
 
-import com.ysh.jcms.data.bitarray.CmsReasonCode;
-import com.ysh.jcms.data.sequence.log.CmsLogDataEntry;
-import com.ysh.jcms.data.sequence.log.CmsLogEntry;
+import com.ysh.jcms.core.data.bitarray.CmsReasonCode;
+import com.ysh.jcms.core.data.sequence.log.CmsLogDataEntry;
+import com.ysh.jcms.core.data.sequence.log.CmsLogEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

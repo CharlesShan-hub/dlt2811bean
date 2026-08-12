@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.control.timeActivatedOperateTermination;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.pdu.control.CmsTimeActivatedOperateTermination;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.pdu.control.CmsTimeActivatedOperateTermination;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;

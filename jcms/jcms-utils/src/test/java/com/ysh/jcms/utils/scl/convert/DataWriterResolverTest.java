@@ -1,6 +1,6 @@
 package com.ysh.jcms.utils.scl.convert;
 
-import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
 import org.junit.Test;

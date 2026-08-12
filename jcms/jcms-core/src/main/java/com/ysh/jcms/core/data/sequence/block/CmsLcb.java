@@ -1,12 +1,12 @@
 package com.ysh.jcms.core.data.sequence.block;
 
-import com.ysh.jcms.data.bitarray.CmsLcbOptFlds;
-import com.ysh.jcms.data.bitarray.CmsTriggerConditions;
-import com.ysh.jcms.data.core.CmsField;
-import com.ysh.jcms.data.core.CmsSequence;
+import com.ysh.jcms.core.data.bitarray.CmsLcbOptFlds;
+import com.ysh.jcms.core.data.bitarray.CmsTriggerConditions;
+import com.ysh.jcms.core.data.core.CmsField;
+import com.ysh.jcms.core.data.core.CmsSequence;
 import com.ysh.jcms.data.*;
-import com.ysh.jcms.data.scalar.*;
-import com.ysh.jcms.data.scalar.CmsObjectReference;
+import com.ysh.jcms.core.data.scalar.*;
+import com.ysh.jcms.core.data.scalar.CmsObjectReference;
 
 /**
  * <pre>

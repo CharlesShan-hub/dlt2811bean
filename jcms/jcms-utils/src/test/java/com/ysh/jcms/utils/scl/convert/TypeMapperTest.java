@@ -1,6 +1,6 @@
 package com.ysh.jcms.utils.scl.convert;
 
-import com.ysh.jcms.data.choice.CmsData;
+import com.ysh.jcms.core.data.choice.CmsData;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

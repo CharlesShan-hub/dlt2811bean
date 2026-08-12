@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.handler.goose.getGoReference;
 
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.data.scalar.CmsInt16U;
-import com.ysh.jcms.pdu.goose.CmsGetGoReferenceRequest;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.data.scalar.CmsInt16U;
+import com.ysh.jcms.core.pdu.goose.CmsGetGoReferenceRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

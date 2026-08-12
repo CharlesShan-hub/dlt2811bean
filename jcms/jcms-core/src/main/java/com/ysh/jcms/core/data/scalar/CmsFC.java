@@ -1,6 +1,6 @@
 package com.ysh.jcms.core.data.scalar;
 
-import com.ysh.jcms.data.core.CmsScalar;
+import com.ysh.jcms.core.data.core.CmsScalar;
 import com.ysh.jcms.data.InnerFunctionalConstraint;
 import com.ysh.jcms.data.V;
 

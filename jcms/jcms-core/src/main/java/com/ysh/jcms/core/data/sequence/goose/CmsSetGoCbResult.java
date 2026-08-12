@@ -1,9 +1,9 @@
 package com.ysh.jcms.core.data.sequence.goose;
 
 import com.ysh.jcms.data.InnerEmpty;
-import com.ysh.jcms.data.core.CmsField;
-import com.ysh.jcms.data.core.CmsSequence;
-import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.data.core.CmsField;
+import com.ysh.jcms.core.data.core.CmsSequence;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 
 /**
  * <pre>

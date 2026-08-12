@@ -1,10 +1,10 @@
 package com.ysh.jcms.app.handler.log.queryLogByTime;
 
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.data.scalar.CmsEntryId;
-import com.ysh.jcms.data.sequence.common.CmsBinaryTime;
-import com.ysh.jcms.pdu.log.CmsQueryLogByTimeRequest;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.data.scalar.CmsEntryId;
+import com.ysh.jcms.core.data.sequence.common.CmsBinaryTime;
+import com.ysh.jcms.core.pdu.log.CmsQueryLogByTimeRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler;
 
-import com.ysh.jcms.data.core.CmsType;
+import com.ysh.jcms.core.data.core.CmsType;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -3,10 +3,10 @@ package com.ysh.jcms.core.data.sequence.sg;
 import java.nio.charset.StandardCharsets;
 
 import com.ysh.jcms.data.InnerAnonymousSetEditSGValueRequestPDUData;
-import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.data.core.CmsField;
-import com.ysh.jcms.data.core.CmsSequence;
-import com.ysh.jcms.data.scalar.CmsObjectReference;
+import com.ysh.jcms.core.data.choice.CmsData;
+import com.ysh.jcms.core.data.core.CmsField;
+import com.ysh.jcms.core.data.core.CmsSequence;
+import com.ysh.jcms.core.data.scalar.CmsObjectReference;
 
 /**
  * <pre>

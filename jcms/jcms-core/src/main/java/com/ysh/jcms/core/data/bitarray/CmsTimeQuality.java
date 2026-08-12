@@ -1,6 +1,6 @@
 package com.ysh.jcms.core.data.bitarray;
 
-import com.ysh.jcms.data.core.CmsBits;
+import com.ysh.jcms.core.data.core.CmsBits;
 import com.ysh.jcms.data.InnerTimeQuality;
 import lombok.Getter;
 import lombok.Setter;

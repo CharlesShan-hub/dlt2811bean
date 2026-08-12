@@ -1,13 +1,13 @@
 package com.ysh.jcms.core.data.choice;
 
-import com.ysh.jcms.data.core.CmsChoice;
+import com.ysh.jcms.core.data.core.CmsChoice;
 import com.ysh.jcms.data.InnerEmpty;
-import com.ysh.jcms.data.sequence.block.CmsBrcb;
-import com.ysh.jcms.data.sequence.block.CmsGoCb;
-import com.ysh.jcms.data.sequence.block.CmsLcb;
-import com.ysh.jcms.data.sequence.block.CmsMsvcb;
-import com.ysh.jcms.data.sequence.block.CmsSgcb;
-import com.ysh.jcms.data.sequence.block.CmsUrcb;
+import com.ysh.jcms.core.data.sequence.block.CmsBrcb;
+import com.ysh.jcms.core.data.sequence.block.CmsGoCb;
+import com.ysh.jcms.core.data.sequence.block.CmsLcb;
+import com.ysh.jcms.core.data.sequence.block.CmsMsvcb;
+import com.ysh.jcms.core.data.sequence.block.CmsSgcb;
+import com.ysh.jcms.core.data.sequence.block.CmsUrcb;
 
 /**
  * <pre>

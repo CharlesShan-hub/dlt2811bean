@@ -1,14 +1,14 @@
 package com.ysh.jcms.core.data.sequence.common;
 
-import com.ysh.jcms.data.bitarray.CmsTimeQuality;
-import com.ysh.jcms.util.CmsBytesUtil;
-import com.ysh.jcms.data.core.CmsType;
+import com.ysh.jcms.core.data.bitarray.CmsTimeQuality;
+import com.ysh.jcms.core.util.CmsBytesUtil;
+import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.data.DefaultInnerOctetString;
 import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerUtcTime;
 import com.ysh.jcms.data.V;
-import com.ysh.jcms.data.scalar.CmsInt24U;
-import com.ysh.jcms.data.scalar.CmsInt32U;
+import com.ysh.jcms.core.data.scalar.CmsInt24U;
+import com.ysh.jcms.core.data.scalar.CmsInt32U;
 import java.nio.ByteBuffer;
 
 /**

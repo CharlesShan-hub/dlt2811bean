@@ -1,11 +1,11 @@
 package com.ysh.jcms.core.data.sequence.common;
 
-import com.ysh.jcms.data.core.CmsType;
+import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerBinaryTime;
 import com.ysh.jcms.data.V;
-import com.ysh.jcms.data.scalar.CmsInt16U;
-import com.ysh.jcms.data.scalar.CmsInt32U;
+import com.ysh.jcms.core.data.scalar.CmsInt16U;
+import com.ysh.jcms.core.data.scalar.CmsInt32U;
 import java.nio.ByteBuffer;
 
 /**

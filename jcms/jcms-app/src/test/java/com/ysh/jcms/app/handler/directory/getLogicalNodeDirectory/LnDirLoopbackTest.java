@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseLoopbackTest;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
 import com.ysh.jcms.app.handler.connection.associate.AssociateServer;
 import com.ysh.jcms.app.node.CmsNode;
-import com.ysh.jcms.data.enumerate.CmsAcsiClass;
+import com.ysh.jcms.core.data.enumerate.CmsAcsiClass;
 import org.junit.Test;
 
 public class LnDirLoopbackTest extends BaseLoopbackTest {

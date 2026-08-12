@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getAllDataDefinition;
 
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionRequest;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.pdu.directory.CmsGetAllDataDefinitionRequest;
 import lombok.Getter;
 import com.ysh.jcms.app.handler.BaseDao;
 import lombok.Setter;
@@ -37,7 +37,7 @@ public class AllDataDefDao extends BaseDao {
      * Convenience setter for FC from a 2-char code string (e.g. "ST", "MX").
      */
     public void fc(String value) {
-        this.fc = com.ysh.jcms.data.scalar.CmsFC.fromString(value);
+        this.fc = com.ysh.jcms.core.data.scalar.CmsFC.fromString(value);
     }
 
     @Override

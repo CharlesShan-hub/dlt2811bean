@@ -1,6 +1,6 @@
 package com.ysh.jcms.utils.scl.convert;
 
-import com.ysh.jcms.data.choice.CmsDataDefinition;
+import com.ysh.jcms.core.data.choice.CmsDataDefinition;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 

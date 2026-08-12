@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler;
 
-import com.ysh.jcms.data.core.CmsType;
+import com.ysh.jcms.core.data.core.CmsType;
 
 /**
  * Base class for all DAO (Data Access Object) types used by client handlers.

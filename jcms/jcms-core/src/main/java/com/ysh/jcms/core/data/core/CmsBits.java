@@ -2,7 +2,7 @@ package com.ysh.jcms.core.data.core;
 
 import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.V;
-import com.ysh.jcms.data.scalar.CmsBoolean;
+import com.ysh.jcms.core.data.scalar.CmsBoolean;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

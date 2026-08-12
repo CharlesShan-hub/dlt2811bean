@@ -2,12 +2,12 @@ package com.ysh.jcms.app.handler.directory.getAllDataDefinition;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.ServiceException;
-import com.ysh.jcms.data.choice.CmsReferenceChoice;
-import com.ysh.jcms.data.enumerate.CmsServiceError;
-import com.ysh.jcms.data.sequence.directory.CmsDataDefinitionEntry;
-import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionError;
-import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionRequest;
-import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionResponse;
+import com.ysh.jcms.core.data.choice.CmsReferenceChoice;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.data.sequence.directory.CmsDataDefinitionEntry;
+import com.ysh.jcms.core.pdu.directory.CmsGetAllDataDefinitionError;
+import com.ysh.jcms.core.pdu.directory.CmsGetAllDataDefinitionRequest;
+import com.ysh.jcms.core.pdu.directory.CmsGetAllDataDefinitionResponse;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;

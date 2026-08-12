@@ -1,11 +1,11 @@
 package com.ysh.jcms.core.data.sequence.common;
 
-import com.ysh.jcms.data.core.CmsField;
-import com.ysh.jcms.data.core.CmsSequence;
+import com.ysh.jcms.core.data.core.CmsField;
+import com.ysh.jcms.core.data.core.CmsSequence;
 import com.ysh.jcms.data.InnerPhyComAddr;
-import com.ysh.jcms.data.scalar.CmsInt16U;
-import com.ysh.jcms.data.scalar.CmsInt8U;
-import com.ysh.jcms.data.scalar.CmsOctetString;
+import com.ysh.jcms.core.data.scalar.CmsInt16U;
+import com.ysh.jcms.core.data.scalar.CmsInt8U;
+import com.ysh.jcms.core.data.scalar.CmsOctetString;
 
 /**
  * <pre>

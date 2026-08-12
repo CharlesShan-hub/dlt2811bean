@@ -1,10 +1,10 @@
 package com.ysh.jcms.core.data.sequence.block;
 
-import com.ysh.jcms.data.core.CmsField;
-import com.ysh.jcms.data.core.CmsSequence;
+import com.ysh.jcms.core.data.core.CmsField;
+import com.ysh.jcms.core.data.core.CmsSequence;
 import com.ysh.jcms.data.*;
-import com.ysh.jcms.data.scalar.*;
-import com.ysh.jcms.data.sequence.common.CmsUtcTime;
+import com.ysh.jcms.core.data.scalar.*;
+import com.ysh.jcms.core.data.sequence.common.CmsUtcTime;
 
 /**
  * <pre>

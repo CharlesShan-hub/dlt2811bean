@@ -1,10 +1,10 @@
 package com.ysh.jcms.app.handler.sg.getEditSgValue;
 
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.data.scalar.CmsFC;
-import com.ysh.jcms.data.sequence.sg.CmsSgRefFcEntry;
-import com.ysh.jcms.pdu.sg.CmsGetEditSgValueRequest;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.data.scalar.CmsFC;
+import com.ysh.jcms.core.data.sequence.sg.CmsSgRefFcEntry;
+import com.ysh.jcms.core.pdu.sg.CmsGetEditSgValueRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

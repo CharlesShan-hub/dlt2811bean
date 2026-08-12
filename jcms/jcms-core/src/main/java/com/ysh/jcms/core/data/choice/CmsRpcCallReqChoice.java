@@ -3,7 +3,7 @@ package com.ysh.jcms.core.data.choice;
 import com.ysh.jcms.data.DefaultInnerOctetString;
 import com.ysh.jcms.data.InnerRpcCallRequestPDUReq;
 import com.ysh.jcms.data.V;
-import com.ysh.jcms.data.core.CmsChoice;
+import com.ysh.jcms.core.data.core.CmsChoice;
 
 /**
  * <pre>

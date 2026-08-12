@@ -1,14 +1,14 @@
 package com.ysh.jcms.core.data.sequence.block;
 
-import com.ysh.jcms.data.bitarray.CmsMsvcbOptFlds;
-import com.ysh.jcms.data.core.CmsField;
-import com.ysh.jcms.data.core.CmsSequence;
+import com.ysh.jcms.core.data.bitarray.CmsMsvcbOptFlds;
+import com.ysh.jcms.core.data.core.CmsField;
+import com.ysh.jcms.core.data.core.CmsSequence;
 import com.ysh.jcms.data.*;
-import com.ysh.jcms.data.enumerate.CmsSmpMod;
-import com.ysh.jcms.data.scalar.*;
-import com.ysh.jcms.data.scalar.CmsObjectReference;
-import com.ysh.jcms.data.sequence.common.CmsPhyComAddr;
-import com.ysh.jcms.data.scalar.CmsString;
+import com.ysh.jcms.core.data.enumerate.CmsSmpMod;
+import com.ysh.jcms.core.data.scalar.*;
+import com.ysh.jcms.core.data.scalar.CmsObjectReference;
+import com.ysh.jcms.core.data.sequence.common.CmsPhyComAddr;
+import com.ysh.jcms.core.data.scalar.CmsString;
 
 /**
  * <pre>

@@ -1,7 +1,7 @@
 package com.ysh.jcms.core.data.enumerate;
 
 import com.ysh.jcms.data.InnerTcmd;
-import com.ysh.jcms.data.core.CmsEnum;
+import com.ysh.jcms.core.data.core.CmsEnum;
 
 /**
  * <pre>

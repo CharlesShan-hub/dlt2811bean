@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory;
 
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryRequest;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.pdu.directory.CmsGetLogicalNodeDirectoryRequest;
 import lombok.Getter;
 import com.ysh.jcms.app.handler.BaseDao;
 import lombok.Setter;

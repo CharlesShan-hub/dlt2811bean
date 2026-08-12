@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.connection.release;
 
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.pdu.connection.CmsReleaseRequest;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.pdu.connection.CmsReleaseRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

@@ -2,10 +2,10 @@ package com.ysh.jcms.app.handler.sg.selectEditSg;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.sg.SgSessionState;
-import com.ysh.jcms.data.enumerate.CmsServiceError;
-import com.ysh.jcms.pdu.sg.CmsSelectEditSgError;
-import com.ysh.jcms.pdu.sg.CmsSelectEditSgRequest;
-import com.ysh.jcms.pdu.sg.CmsSelectEditSgResponse;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.pdu.sg.CmsSelectEditSgError;
+import com.ysh.jcms.core.pdu.sg.CmsSelectEditSgRequest;
+import com.ysh.jcms.core.pdu.sg.CmsSelectEditSgResponse;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;

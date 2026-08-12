@@ -1,6 +1,6 @@
 package com.ysh.jcms.utils.scl.state;
 
-import com.ysh.jcms.data.sequence.block.CmsGoCb;
+import com.ysh.jcms.core.data.sequence.block.CmsGoCb;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 

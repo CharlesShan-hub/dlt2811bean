@@ -1,10 +1,10 @@
 package com.ysh.jcms.core.data.choice;
 
-import com.ysh.jcms.data.core.CmsChoice;
+import com.ysh.jcms.core.data.core.CmsChoice;
 import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerEmpty;
-import com.ysh.jcms.data.scalar.CmsObjectName;
-import com.ysh.jcms.data.scalar.CmsObjectReference;
+import com.ysh.jcms.core.data.scalar.CmsObjectName;
+import com.ysh.jcms.core.data.scalar.CmsObjectReference;
 
 /**
  * <pre>

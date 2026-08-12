@@ -1,10 +1,10 @@
 package com.ysh.jcms.core.data.sequence.log;
 
 import com.ysh.jcms.data.InnerAnonymousGetLogStatusValuesResponsePDULogValue;
-import com.ysh.jcms.data.core.CmsField;
-import com.ysh.jcms.data.core.CmsSequence;
-import com.ysh.jcms.data.scalar.CmsEntryId;
-import com.ysh.jcms.data.sequence.common.CmsBinaryTime;
+import com.ysh.jcms.core.data.core.CmsField;
+import com.ysh.jcms.core.data.core.CmsSequence;
+import com.ysh.jcms.core.data.scalar.CmsEntryId;
+import com.ysh.jcms.core.data.sequence.common.CmsBinaryTime;
 
 /**
  * <pre>

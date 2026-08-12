@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.handler.goose.getGooseElementNumber;
 
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.data.sequence.goose.CmsGoRefFcEntry;
-import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberRequest;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.data.sequence.goose.CmsGoRefFcEntry;
+import com.ysh.jcms.core.pdu.goose.CmsGetGooseElementNumberRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

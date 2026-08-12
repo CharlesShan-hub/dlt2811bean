@@ -1,10 +1,10 @@
 package com.ysh.jcms.app.handler.msv.getMsvcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.choice.CmsMsvcbValueChoice;
-import com.ysh.jcms.data.sequence.block.CmsMsvcb;
-import com.ysh.jcms.pdu.msv.CmsGetMsvcbValuesError;
-import com.ysh.jcms.pdu.msv.CmsGetMsvcbValuesResponse;
+import com.ysh.jcms.core.data.choice.CmsMsvcbValueChoice;
+import com.ysh.jcms.core.data.sequence.block.CmsMsvcb;
+import com.ysh.jcms.core.pdu.msv.CmsGetMsvcbValuesError;
+import com.ysh.jcms.core.pdu.msv.CmsGetMsvcbValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

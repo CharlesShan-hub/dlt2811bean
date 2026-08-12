@@ -2,7 +2,7 @@ package com.ysh.jcms.core.data.scalar;
 
 import com.ysh.jcms.data.DefaultInnerOctetString;
 import com.ysh.jcms.data.InnerBase;
-import com.ysh.jcms.data.core.CmsScalar;
+import com.ysh.jcms.core.data.core.CmsScalar;
 
 /**
  * <pre>

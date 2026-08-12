@@ -1,10 +1,10 @@
 package com.ysh.jcms.app.handler.negotiate.negotiate;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.enumerate.CmsServiceError;
-import com.ysh.jcms.pdu.negotiate.CmsNegotiateError;
-import com.ysh.jcms.pdu.negotiate.CmsNegotiateRequest;
-import com.ysh.jcms.pdu.negotiate.CmsNegotiateResponse;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.pdu.negotiate.CmsNegotiateError;
+import com.ysh.jcms.core.pdu.negotiate.CmsNegotiateRequest;
+import com.ysh.jcms.core.pdu.negotiate.CmsNegotiateResponse;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;

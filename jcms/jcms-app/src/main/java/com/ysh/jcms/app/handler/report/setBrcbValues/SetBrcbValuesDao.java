@@ -1,11 +1,11 @@
 package com.ysh.jcms.app.handler.report.setBrcbValues;
 
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.data.bitarray.CmsRcbOptFlds;
-import com.ysh.jcms.data.bitarray.CmsTriggerConditions;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.data.sequence.report.CmsSetBrcbEntry;
-import com.ysh.jcms.pdu.report.CmsSetBrcbValuesRequest;
+import com.ysh.jcms.core.data.bitarray.CmsRcbOptFlds;
+import com.ysh.jcms.core.data.bitarray.CmsTriggerConditions;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.data.sequence.report.CmsSetBrcbEntry;
+import com.ysh.jcms.core.pdu.report.CmsSetBrcbValuesRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.handler.report.getUrcbValues;
 
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.data.scalar.CmsObjectReference;
-import com.ysh.jcms.pdu.report.CmsGetUrcbValuesRequest;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.data.scalar.CmsObjectReference;
+import com.ysh.jcms.core.pdu.report.CmsGetUrcbValuesRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

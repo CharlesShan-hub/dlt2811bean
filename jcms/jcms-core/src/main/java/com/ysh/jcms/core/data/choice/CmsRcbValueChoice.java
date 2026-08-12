@@ -1,9 +1,9 @@
 package com.ysh.jcms.core.data.choice;
 
 import com.ysh.jcms.data.InnerAnonymousGetBRCBValuesResponsePDUBrcb;
-import com.ysh.jcms.data.core.CmsChoice;
-import com.ysh.jcms.data.enumerate.CmsServiceError;
-import com.ysh.jcms.data.sequence.block.CmsBrcb;
+import com.ysh.jcms.core.data.core.CmsChoice;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.data.sequence.block.CmsBrcb;
 
 /**
  * <pre>

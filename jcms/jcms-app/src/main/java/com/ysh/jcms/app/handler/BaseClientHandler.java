@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler;
 
 import com.ysh.jcms.app.node.CmsNode;
-import com.ysh.jcms.data.core.CmsType;
+import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;

@@ -1,10 +1,10 @@
 package com.ysh.jcms.app.handler.log.queryLogAfter;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.sequence.log.CmsLogDataEntry;
-import com.ysh.jcms.data.sequence.log.CmsLogEntry;
-import com.ysh.jcms.pdu.log.CmsQueryLogAfterError;
-import com.ysh.jcms.pdu.log.CmsQueryLogAfterResponse;
+import com.ysh.jcms.core.data.sequence.log.CmsLogDataEntry;
+import com.ysh.jcms.core.data.sequence.log.CmsLogEntry;
+import com.ysh.jcms.core.pdu.log.CmsQueryLogAfterError;
+import com.ysh.jcms.core.pdu.log.CmsQueryLogAfterResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

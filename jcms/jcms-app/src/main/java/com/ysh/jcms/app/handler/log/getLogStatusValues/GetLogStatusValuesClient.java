@@ -1,10 +1,10 @@
 package com.ysh.jcms.app.handler.log.getLogStatusValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.choice.CmsLogStatusValueChoice;
-import com.ysh.jcms.data.sequence.log.CmsLogStatusValue;
-import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesError;
-import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesResponse;
+import com.ysh.jcms.core.data.choice.CmsLogStatusValueChoice;
+import com.ysh.jcms.core.data.sequence.log.CmsLogStatusValue;
+import com.ysh.jcms.core.pdu.log.CmsGetLogStatusValuesError;
+import com.ysh.jcms.core.pdu.log.CmsGetLogStatusValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

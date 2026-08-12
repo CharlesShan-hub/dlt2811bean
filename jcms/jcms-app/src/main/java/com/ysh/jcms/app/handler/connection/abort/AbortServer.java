@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.connection.abort;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.pdu.connection.CmsAbort;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.pdu.connection.CmsAbort;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -21,7 +21,8 @@ public class AbortServer extends BaseServerHandler<CmsAbort, CmsType> {
     protected Frame onDecodeSuccess(Session session, CmsAbort req, int reqId) {
         log.warn("Abort received: session={}, reason={}", session.sessionId(), req.reason.value());
 
-        // State hook: entering DISCONNECTED clears session state and closes the connection
+        // State hook: entering DISCONNECTED clears session state and closes the
+        // connection
         session.state(SessionState.DISCONNECTED);
         return noResponse();
     }

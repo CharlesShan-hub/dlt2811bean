@@ -3,14 +3,14 @@ package com.ysh.jcms.core.data.sequence.msv;
 import java.nio.charset.StandardCharsets;
 
 import com.ysh.jcms.data.InnerAnonymousSetMSVCBValuesRequestPDUMsvcb;
-import com.ysh.jcms.data.bitarray.CmsMsvcbOptFlds;
-import com.ysh.jcms.data.core.CmsField;
-import com.ysh.jcms.data.core.CmsSequence;
-import com.ysh.jcms.data.enumerate.CmsSmpMod;
-import com.ysh.jcms.data.scalar.CmsBoolean;
-import com.ysh.jcms.data.scalar.CmsInt16U;
-import com.ysh.jcms.data.scalar.CmsObjectReference;
-import com.ysh.jcms.data.scalar.CmsString;
+import com.ysh.jcms.core.data.bitarray.CmsMsvcbOptFlds;
+import com.ysh.jcms.core.data.core.CmsField;
+import com.ysh.jcms.core.data.core.CmsSequence;
+import com.ysh.jcms.core.data.enumerate.CmsSmpMod;
+import com.ysh.jcms.core.data.scalar.CmsBoolean;
+import com.ysh.jcms.core.data.scalar.CmsInt16U;
+import com.ysh.jcms.core.data.scalar.CmsObjectReference;
+import com.ysh.jcms.core.data.scalar.CmsString;
 
 /**
  * <pre>

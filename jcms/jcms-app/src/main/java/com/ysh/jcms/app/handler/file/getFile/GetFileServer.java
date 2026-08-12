@@ -1,10 +1,10 @@
 package com.ysh.jcms.app.handler.file.getFile;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.enumerate.CmsServiceError;
-import com.ysh.jcms.pdu.file.CmsGetFileError;
-import com.ysh.jcms.pdu.file.CmsGetFileRequest;
-import com.ysh.jcms.pdu.file.CmsGetFileResponse;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.pdu.file.CmsGetFileError;
+import com.ysh.jcms.core.pdu.file.CmsGetFileRequest;
+import com.ysh.jcms.core.pdu.file.CmsGetFileResponse;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;

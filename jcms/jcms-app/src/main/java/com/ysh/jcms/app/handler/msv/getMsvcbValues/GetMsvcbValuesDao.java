@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.handler.msv.getMsvcbValues;
 
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.data.scalar.CmsObjectReference;
-import com.ysh.jcms.pdu.msv.CmsGetMsvcbValuesRequest;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.data.scalar.CmsObjectReference;
+import com.ysh.jcms.core.pdu.msv.CmsGetMsvcbValuesRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

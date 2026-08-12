@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.handler.connection.associate;
 
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.data.sequence.connection.CmsAuthenticationParameter;
-import com.ysh.jcms.pdu.connection.CmsAssociateRequest;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.data.sequence.connection.CmsAuthenticationParameter;
+import com.ysh.jcms.core.pdu.connection.CmsAssociateRequest;
 import lombok.Setter;
 import lombok.Getter;
 import lombok.experimental.Accessors;

@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.rpc.getRpcInterfaceDirectory;
 
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.pdu.rpc.CmsGetRpcInterfaceDirectoryRequest;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDirectoryRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

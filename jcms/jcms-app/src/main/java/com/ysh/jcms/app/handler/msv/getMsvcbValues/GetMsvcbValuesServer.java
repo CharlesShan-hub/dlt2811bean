@@ -1,13 +1,13 @@
 package com.ysh.jcms.app.handler.msv.getMsvcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.choice.CmsMsvcbValueChoice;
-import com.ysh.jcms.data.sequence.block.CmsMsvcb;
-import com.ysh.jcms.data.enumerate.CmsServiceError;
-import com.ysh.jcms.data.scalar.CmsObjectReference;
-import com.ysh.jcms.pdu.msv.CmsGetMsvcbValuesError;
-import com.ysh.jcms.pdu.msv.CmsGetMsvcbValuesRequest;
-import com.ysh.jcms.pdu.msv.CmsGetMsvcbValuesResponse;
+import com.ysh.jcms.core.data.choice.CmsMsvcbValueChoice;
+import com.ysh.jcms.core.data.sequence.block.CmsMsvcb;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.data.scalar.CmsObjectReference;
+import com.ysh.jcms.core.pdu.msv.CmsGetMsvcbValuesError;
+import com.ysh.jcms.core.pdu.msv.CmsGetMsvcbValuesRequest;
+import com.ysh.jcms.core.pdu.msv.CmsGetMsvcbValuesResponse;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.service.SclControlBlockService;

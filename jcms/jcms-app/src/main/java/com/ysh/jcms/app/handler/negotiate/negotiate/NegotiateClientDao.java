@@ -2,8 +2,8 @@ package com.ysh.jcms.app.handler.negotiate.negotiate;
 
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.pdu.negotiate.CmsNegotiateRequest;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.pdu.negotiate.CmsNegotiateRequest;
 import lombok.Setter;
 import lombok.Getter;
 import lombok.experimental.Accessors;

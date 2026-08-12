@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler;
 
-import com.ysh.jcms.data.core.CmsSequence;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.data.core.CmsSequence;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;

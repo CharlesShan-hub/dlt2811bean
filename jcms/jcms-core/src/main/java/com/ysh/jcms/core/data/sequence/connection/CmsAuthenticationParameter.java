@@ -2,10 +2,10 @@ package com.ysh.jcms.core.data.sequence.connection;
 
 import com.ysh.jcms.data.InnerAssociateRequestPDUAuthenticationParameter;
 import com.ysh.jcms.data.InnerBase;
-import com.ysh.jcms.data.core.CmsField;
-import com.ysh.jcms.data.scalar.CmsOctetString;
-import com.ysh.jcms.data.core.CmsSequence;
-import com.ysh.jcms.data.sequence.common.CmsUtcTime;
+import com.ysh.jcms.core.data.core.CmsField;
+import com.ysh.jcms.core.data.scalar.CmsOctetString;
+import com.ysh.jcms.core.data.core.CmsSequence;
+import com.ysh.jcms.core.data.sequence.common.CmsUtcTime;
 
 /**
  * <pre>

@@ -1,10 +1,10 @@
 package com.ysh.jcms.core.data.sequence.common;
 
-import com.ysh.jcms.data.core.CmsField;
-import com.ysh.jcms.data.core.CmsSequence;
+import com.ysh.jcms.core.data.core.CmsField;
+import com.ysh.jcms.core.data.core.CmsSequence;
 import com.ysh.jcms.data.InnerOriginator;
-import com.ysh.jcms.data.enumerate.CmsOrCat;
-import com.ysh.jcms.data.scalar.CmsOctetString;
+import com.ysh.jcms.core.data.enumerate.CmsOrCat;
+import com.ysh.jcms.core.data.scalar.CmsOctetString;
 
 /**
  * <pre>

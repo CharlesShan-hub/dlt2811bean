@@ -1,10 +1,10 @@
 package com.ysh.jcms.app.handler.goose.getGoCbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.choice.CmsGocbValueChoice;
-import com.ysh.jcms.data.sequence.block.CmsGoCb;
-import com.ysh.jcms.pdu.goose.CmsGetGoCbValuesError;
-import com.ysh.jcms.pdu.goose.CmsGetGoCbValuesResponse;
+import com.ysh.jcms.core.data.choice.CmsGocbValueChoice;
+import com.ysh.jcms.core.data.sequence.block.CmsGoCb;
+import com.ysh.jcms.core.pdu.goose.CmsGetGoCbValuesError;
+import com.ysh.jcms.core.pdu.goose.CmsGetGoCbValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

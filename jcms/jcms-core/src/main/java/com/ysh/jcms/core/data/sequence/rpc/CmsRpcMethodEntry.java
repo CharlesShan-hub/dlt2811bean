@@ -3,11 +3,11 @@ package com.ysh.jcms.core.data.sequence.rpc;
 import java.nio.charset.StandardCharsets;
 
 import com.ysh.jcms.data.InnerAnonymousGetRpcInterfaceDefinitionResponsePDUMethod;
-import com.ysh.jcms.data.choice.CmsDataDefinition;
-import com.ysh.jcms.data.core.CmsField;
-import com.ysh.jcms.data.core.CmsSequence;
-import com.ysh.jcms.data.scalar.CmsInt32U;
-import com.ysh.jcms.data.scalar.CmsString;
+import com.ysh.jcms.core.data.choice.CmsDataDefinition;
+import com.ysh.jcms.core.data.core.CmsField;
+import com.ysh.jcms.core.data.core.CmsSequence;
+import com.ysh.jcms.core.data.scalar.CmsInt32U;
+import com.ysh.jcms.core.data.scalar.CmsString;
 
 /**
  * <pre>

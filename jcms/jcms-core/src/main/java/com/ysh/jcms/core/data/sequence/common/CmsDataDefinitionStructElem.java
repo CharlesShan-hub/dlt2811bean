@@ -1,11 +1,11 @@
 package com.ysh.jcms.core.data.sequence.common;
 
-import com.ysh.jcms.data.choice.CmsDataDefinition;
-import com.ysh.jcms.data.core.CmsField;
-import com.ysh.jcms.data.core.CmsSequence;
+import com.ysh.jcms.core.data.choice.CmsDataDefinition;
+import com.ysh.jcms.core.data.core.CmsField;
+import com.ysh.jcms.core.data.core.CmsSequence;
 import com.ysh.jcms.data.InnerAnonymousDataDefinitionStructure;
-import com.ysh.jcms.data.scalar.CmsObjectName;
-import com.ysh.jcms.data.scalar.CmsFC;
+import com.ysh.jcms.core.data.scalar.CmsObjectName;
+import com.ysh.jcms.core.data.scalar.CmsFC;
 
 /**
  * <pre>

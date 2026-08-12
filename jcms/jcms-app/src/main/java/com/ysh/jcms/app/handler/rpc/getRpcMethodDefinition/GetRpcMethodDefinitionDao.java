@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.handler.rpc.getRpcMethodDefinition;
 
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.data.scalar.CmsString;
-import com.ysh.jcms.pdu.rpc.CmsGetRpcMethodDefinitionRequest;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.data.scalar.CmsString;
+import com.ysh.jcms.core.pdu.rpc.CmsGetRpcMethodDefinitionRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

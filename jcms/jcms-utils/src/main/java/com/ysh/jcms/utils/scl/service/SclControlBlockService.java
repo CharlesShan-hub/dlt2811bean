@@ -1,12 +1,12 @@
 package com.ysh.jcms.utils.scl.service;
 
-import com.ysh.jcms.data.bitarray.CmsLcbOptFlds;
-import com.ysh.jcms.data.bitarray.CmsTriggerConditions;
-import com.ysh.jcms.data.sequence.block.CmsBrcb;
-import com.ysh.jcms.data.sequence.block.CmsGoCb;
-import com.ysh.jcms.data.sequence.block.CmsLcb;
-import com.ysh.jcms.data.sequence.block.CmsMsvcb;
-import com.ysh.jcms.data.sequence.block.CmsUrcb;
+import com.ysh.jcms.core.data.bitarray.CmsLcbOptFlds;
+import com.ysh.jcms.core.data.bitarray.CmsTriggerConditions;
+import com.ysh.jcms.core.data.sequence.block.CmsBrcb;
+import com.ysh.jcms.core.data.sequence.block.CmsGoCb;
+import com.ysh.jcms.core.data.sequence.block.CmsLcb;
+import com.ysh.jcms.core.data.sequence.block.CmsMsvcb;
+import com.ysh.jcms.core.data.sequence.block.CmsUrcb;
 import com.ysh.jcms.utils.scl.model.control.SclGSEControl;
 import com.ysh.jcms.utils.scl.model.control.SclLogControl;
 import com.ysh.jcms.utils.scl.model.control.SclReportControl;

@@ -3,16 +3,16 @@ package com.ysh.jcms.core.data.sequence.report;
 import java.nio.charset.StandardCharsets;
 
 import com.ysh.jcms.data.InnerAnonymousSetBRCBValuesRequestPDUBrcb;
-import com.ysh.jcms.data.bitarray.CmsRcbOptFlds;
-import com.ysh.jcms.data.bitarray.CmsTriggerConditions;
-import com.ysh.jcms.data.core.CmsField;
-import com.ysh.jcms.data.core.CmsSequence;
-import com.ysh.jcms.data.scalar.CmsBoolean;
-import com.ysh.jcms.data.scalar.CmsEntryId;
-import com.ysh.jcms.data.scalar.CmsInt16;
-import com.ysh.jcms.data.scalar.CmsInt32U;
-import com.ysh.jcms.data.scalar.CmsObjectReference;
-import com.ysh.jcms.data.scalar.CmsString;
+import com.ysh.jcms.core.data.bitarray.CmsRcbOptFlds;
+import com.ysh.jcms.core.data.bitarray.CmsTriggerConditions;
+import com.ysh.jcms.core.data.core.CmsField;
+import com.ysh.jcms.core.data.core.CmsSequence;
+import com.ysh.jcms.core.data.scalar.CmsBoolean;
+import com.ysh.jcms.core.data.scalar.CmsEntryId;
+import com.ysh.jcms.core.data.scalar.CmsInt16;
+import com.ysh.jcms.core.data.scalar.CmsInt32U;
+import com.ysh.jcms.core.data.scalar.CmsObjectReference;
+import com.ysh.jcms.core.data.scalar.CmsString;
 
 /**
  * <pre>

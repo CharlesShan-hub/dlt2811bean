@@ -1,7 +1,7 @@
 package com.ysh.jcms.utils.scl.convert;
 
-import com.ysh.jcms.data.sequence.block.*;
-import com.ysh.jcms.data.choice.CmsCbValueChoice;
+import com.ysh.jcms.core.data.sequence.block.*;
+import com.ysh.jcms.core.data.choice.CmsCbValueChoice;
 import com.ysh.jcms.utils.scl.model.control.SclGSEControl;
 import com.ysh.jcms.utils.scl.model.control.SclLogControl;
 import com.ysh.jcms.utils.scl.model.control.SclReportControl;

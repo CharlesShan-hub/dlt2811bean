@@ -1,6 +1,6 @@
 package com.ysh.jcms.utils.scl.convert;
 
-import com.ysh.jcms.data.choice.CmsCbValueChoice;
+import com.ysh.jcms.core.data.choice.CmsCbValueChoice;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.model.control.*;
 import org.junit.Test;

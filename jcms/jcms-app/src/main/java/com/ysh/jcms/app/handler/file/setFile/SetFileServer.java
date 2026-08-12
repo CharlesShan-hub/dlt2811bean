@@ -1,10 +1,10 @@
 package com.ysh.jcms.app.handler.file.setFile;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.enumerate.CmsServiceError;
-import com.ysh.jcms.pdu.file.CmsSetFileError;
-import com.ysh.jcms.pdu.file.CmsSetFileRequest;
-import com.ysh.jcms.pdu.file.CmsSetFileResponse;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.pdu.file.CmsSetFileError;
+import com.ysh.jcms.core.pdu.file.CmsSetFileRequest;
+import com.ysh.jcms.core.pdu.file.CmsSetFileResponse;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;

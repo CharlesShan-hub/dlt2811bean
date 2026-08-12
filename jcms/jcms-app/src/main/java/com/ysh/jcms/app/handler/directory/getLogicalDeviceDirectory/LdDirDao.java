@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory;
 
-import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryRequest;
+import com.ysh.jcms.core.data.core.CmsType;
+import com.ysh.jcms.core.pdu.directory.CmsGetLogicalDeviceDirectoryRequest;
 import lombok.Getter;
 import com.ysh.jcms.app.handler.BaseDao;
 import lombok.Setter;

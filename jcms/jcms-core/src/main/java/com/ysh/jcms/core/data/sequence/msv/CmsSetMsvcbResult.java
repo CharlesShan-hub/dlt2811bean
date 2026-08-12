@@ -1,9 +1,9 @@
 package com.ysh.jcms.core.data.sequence.msv;
 
 import com.ysh.jcms.data.InnerAnonymousSetMSVCBValuesErrorPDUResult;
-import com.ysh.jcms.data.core.CmsField;
-import com.ysh.jcms.data.core.CmsSequence;
-import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.data.core.CmsField;
+import com.ysh.jcms.core.data.core.CmsSequence;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 
 /**
  * <pre>

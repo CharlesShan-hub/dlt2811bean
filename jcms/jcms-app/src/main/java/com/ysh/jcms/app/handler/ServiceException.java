@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler;
 
-import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 
 /**
  * Unchecked exception carrying a service error code for automatic error

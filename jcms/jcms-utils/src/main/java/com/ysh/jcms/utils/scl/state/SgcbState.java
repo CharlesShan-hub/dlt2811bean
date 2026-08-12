@@ -1,6 +1,6 @@
 package com.ysh.jcms.utils.scl.state;
 
-import com.ysh.jcms.data.choice.CmsData;
+import com.ysh.jcms.core.data.choice.CmsData;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
