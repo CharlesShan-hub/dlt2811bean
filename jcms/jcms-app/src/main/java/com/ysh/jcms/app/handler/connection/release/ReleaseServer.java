@@ -29,7 +29,7 @@ public class ReleaseServer extends BaseServerHandler<CmsReleaseRequest, CmsRelea
 
         byte[] respBytes = new CmsReleaseResponse().serviceError(CmsServiceError.NO_ERROR).encode();
 
-        session.clear();
+        // State hook: leaving ASSOCIATED clears association-level state
         session.state(SessionState.CONNECTED);
         log.info("Release completed: session={}", session.sessionId());
 

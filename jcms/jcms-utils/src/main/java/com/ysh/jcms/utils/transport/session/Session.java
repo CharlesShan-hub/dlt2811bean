@@ -1,7 +1,7 @@
 package com.ysh.jcms.utils.transport.session;
 
-import com.ysh.jcms.utils.scl.state.RcbStateManager;
 import com.ysh.jcms.utils.transport.wire.Connection;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -17,6 +17,7 @@ public abstract class Session {
 
     private final String sessionId;
     private final Connection connection;
+    @Setter(AccessLevel.NONE)
     private volatile SessionState state = SessionState.DISCONNECTED;
     private volatile byte[] associationId;
     private volatile String associatedApRef;
@@ -29,15 +30,47 @@ public abstract class Session {
     private volatile boolean fragmentationSupported = true;
 
     /**
-     * Full cleanup: associationId and RCB runtime state. Subclasses may override to
-     * add more.
+     * Sole state entry point. Manual (release/abort) and passive (TCP
+     * disconnect) transitions both go through here; cleanup is dispatched
+     * from the old -> new state pair.
      */
-    public void clear() {
+    public void state(SessionState newState) {
+        SessionState old = this.state;
+        this.state = newState;
+        if (old == newState)
+            return;
+        if (old == SessionState.ASSOCIATED) {
+            clearAssociation(); // hook 1: leaving associated
+        }
+        if (newState == SessionState.DISCONNECTED) {
+            clearConnection(); // hook 2: session teardown
+        }
+    }
+
+    /**
+     * Hook 1: clear association-level state when leaving ASSOCIATED.
+     * Subclasses may override to add business state (setting groups, reports).
+     */
+    protected void clearAssociation() {
         this.associationId = null;
         this.associatedApRef = null;
         this.associatedSecure = false;
         this.fragmentationSupported = true;
-        RcbStateManager.clear();
+    }
+
+    /**
+     * Hook 2: full teardown when entering DISCONNECTED. Idempotent; repeated
+     * transitions are skipped by the old==new guard in {@link #state}.
+     */
+    protected void clearConnection() {
+        clearAssociation();
+        this.negotiated = false;
+        this.negotiatedApduSize = 65535;
+        this.peerAsduSize = 0;
+        this.peerProtocolVersion = 0;
+        if (connection != null) {
+            connection.close();
+        }
     }
 
     protected Session(String sessionId, Connection connection) {

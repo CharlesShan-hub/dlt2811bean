@@ -21,7 +21,7 @@ public class AbortServer extends BaseServerHandler<CmsAbort, CmsType> {
     protected Frame onDecodeSuccess(Session session, CmsAbort req, int reqId) {
         log.warn("Abort received: session={}, reason={}", session.sessionId(), req.reason.value());
 
-        session.clear();
+        // State hook: entering DISCONNECTED clears session state and closes the connection
         session.state(SessionState.DISCONNECTED);
         return noResponse();
     }

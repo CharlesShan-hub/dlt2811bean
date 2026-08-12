@@ -1,5 +1,8 @@
 package com.ysh.jcms.info;
 
+import lombok.Getter;
+import lombok.experimental.Accessors;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,6 +10,8 @@ import java.util.Map;
  * DL/T 2811 data type definitions derived from the ASN.1 module. Each entry
  * maps to a type defined in cms.asn1 with its PER encoding semantics.
  */
+@Getter
+@Accessors(fluent = true)
 public enum CmsDataTypeInfo {
 
     // ==================== Primitive numeric types (§7.1) ====================
@@ -147,22 +152,6 @@ public enum CmsDataTypeInfo {
         this.enDescription = enDescription;
         this.cnDescription = cnDescription;
         this.asn1Summary = asn1Summary;
-    }
-
-    public String getTypeName() {
-        return typeName;
-    }
-    public String getSection() {
-        return section;
-    }
-    public String getEnDescription() {
-        return enDescription;
-    }
-    public String getCnDescription() {
-        return cnDescription;
-    }
-    public String getAsn1Summary() {
-        return asn1Summary;
     }
 
     public static CmsDataTypeInfo byTypeName(String typeName) {

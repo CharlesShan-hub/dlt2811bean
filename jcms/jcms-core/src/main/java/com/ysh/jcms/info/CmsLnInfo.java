@@ -1,5 +1,8 @@
 package com.ysh.jcms.info;
 
+import lombok.Getter;
+import lombok.experimental.Accessors;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,6 +12,8 @@ import java.util.Map;
 /**
  * Logical Node (LN) type information — IEC 61850-7-4 logical nodes.
  */
+@Getter
+@Accessors(fluent = true)
 public enum CmsLnInfo {
 
     // ==================== L — System ====================
@@ -130,6 +135,8 @@ public enum CmsLnInfo {
     /**
      * LN class group according to IEC 61850-7-4.
      */
+    @Getter
+    @Accessors(fluent = true)
     public enum LnClass {
         L("System", "系统逻辑节点"),
         P("Protection", "保护功能逻辑节点"),
@@ -152,13 +159,6 @@ public enum CmsLnInfo {
             this.enName = en;
             this.cnName = cn;
         }
-
-        public String getEnName() {
-            return enName;
-        }
-        public String getCnName() {
-            return cnName;
-        }
     }
 
     private static final Map<String, CmsLnInfo> BY_NAME = new HashMap<>();
@@ -166,34 +166,21 @@ public enum CmsLnInfo {
 
     static {
         for (CmsLnInfo ln : values()) {
-            BY_NAME.put(ln.name, ln);
+            BY_NAME.put(ln.lnName, ln);
             BY_CLASS.computeIfAbsent(ln.lnClass, k -> new ArrayList<>()).add(ln);
         }
     }
 
-    private final String name;
+    private final String lnName;
     private final String enName;
     private final String cnName;
     private final LnClass lnClass;
 
-    CmsLnInfo(String name, String enName, String cnName, LnClass lnClass) {
-        this.name = name;
+    CmsLnInfo(String lnName, String enName, String cnName, LnClass lnClass) {
+        this.lnName = lnName;
         this.enName = enName;
         this.cnName = cnName;
         this.lnClass = lnClass;
-    }
-
-    public String getName() {
-        return name;
-    }
-    public String getEnName() {
-        return enName;
-    }
-    public String getCnName() {
-        return cnName;
-    }
-    public LnClass getLnClass() {
-        return lnClass;
     }
 
     public static CmsLnInfo byName(String name) {

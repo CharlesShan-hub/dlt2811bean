@@ -15,7 +15,7 @@ public class ServiceNameConsistencyTest {
     @Test
     public void everyCmsServiceInfoCodeHasServiceName() {
         for (CmsServiceInfo s : CmsServiceInfo.values()) {
-            int code = s.getServiceCode();
+            int code = s.serviceCode();
             if (code == 0) continue; // unconfirmed services have no standard code
             assertNotNull("No ServiceName for CmsServiceInfo." + s.name()
                     + " (0x" + Integer.toHexString(code) + ")", ServiceName.fromCode(code));

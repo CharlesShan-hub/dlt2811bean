@@ -1,14 +1,20 @@
 package com.ysh.jcms.info;
 
+import lombok.Getter;
+import lombok.experimental.Accessors;
+
 /**
- * Functional Constraint (FC) — IEC 61850-7-4 §5.4
+ * Functional Constraint (FC) reference table — IEC 61850-7-4 §5.4
  *
  * DL/T 2811 adopts IEC 61850; FC values are fixed and not extensible.
  *
  * Each FC defines the semantic category, permitted operations, and initial-value
- * behavior of a data attribute.
+ * behavior of a data attribute. The wire-level value type is {@code CmsFC}
+ * (jcms-core data.scalar); this enum is the semantic reference table.
  */
-public enum FunctionalConstraint {
+@Getter
+@Accessors(fluent = true)
+public enum CmsFCInfo {
 
     ST("Status information", "状态信息",
             "DataAttribute shall represent status information whose value may be read, substituted, reported, and logged but shall not be writeable.",
@@ -81,7 +87,7 @@ public enum FunctionalConstraint {
     private final String initialValue;
     private final String initialValueZh;
 
-    FunctionalConstraint(String semantic, String semanticZh, String servicesAllowed, String servicesAllowedZh, String initialValue,
+    CmsFCInfo(String semantic, String semanticZh, String servicesAllowed, String servicesAllowedZh, String initialValue,
             String initialValueZh) {
         this.semantic = semantic;
         this.semanticZh = semanticZh;
@@ -91,35 +97,8 @@ public enum FunctionalConstraint {
         this.initialValueZh = initialValueZh;
     }
 
-    /** Semantic description (English). */
-    public String semantic() {
-        return semantic;
-    }
-    /** Semantic description (Chinese). */
-    public String semanticZh() {
-        return semanticZh;
-    }
-
-    /** Permitted services/operations (English). */
-    public String servicesAllowed() {
-        return servicesAllowed;
-    }
-    /** Permitted services/operations (Chinese). */
-    public String servicesAllowedZh() {
-        return servicesAllowedZh;
-    }
-
-    /** Initial value / storage behavior (English). */
-    public String initialValue() {
-        return initialValue;
-    }
-    /** Initial value / storage behavior (Chinese). */
-    public String initialValueZh() {
-        return initialValueZh;
-    }
-
     /** Look up by 2-char FC code, e.g. "ST", "MX". */
-    public static FunctionalConstraint fromCode(String code) {
+    public static CmsFCInfo fromCode(String code) {
         return valueOf(code);
     }
 

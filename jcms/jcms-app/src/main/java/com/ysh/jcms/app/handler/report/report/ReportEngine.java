@@ -78,8 +78,26 @@ public class ReportEngine {
         if (rcb == null)
             return;
         rcb.removeSubscriber(session);
-        rcb.cancelIntegrityTimer();
+        // Stop the timer only when no subscriber remains, so one session's
+        // unsubscribe does not kill another session's integrity timer.
+        if (rcb.getSubscribers().isEmpty()) {
+            rcb.cancelIntegrityTimer();
+        }
         log.info("Report unsubscription: {} removed for ref={}", session.sessionId(), rcbRef);
+    }
+
+    /**
+     * Remove a session from every RCB. Called by the state-cleanup hook on
+     * disconnect/release so dead Session references cannot accumulate.
+     */
+    public void unsubscribeAll(Session session) {
+        for (ReportControlBlock rcb : rcbs.values()) {
+            rcb.removeSubscriber(session);
+            if (rcb.getSubscribers().isEmpty()) {
+                rcb.cancelIntegrityTimer();
+            }
+        }
+        log.info("Report unsubscription: {} removed from all RCBs", session.sessionId());
     }
 
     /**

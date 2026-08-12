@@ -57,6 +57,19 @@ public class ClientSession extends Session {
     }
 
     /**
+     * Clear all pending requests on teardown: wake waiters (they get null)
+     * so the map cannot grow unbounded after disconnect.
+     */
+    @Override
+    protected void clearConnection() {
+        super.clearConnection();
+        for (PendingRequest pr : pendingRequests.values()) {
+            pr.setResult(null);
+        }
+        pendingRequests.clear();
+    }
+
+    /**
      * Try to dispatch an incoming frame to a matching pending request. Sets the
      * result on the PendingRequest so that waitForPendingRequest can unblock.
      *

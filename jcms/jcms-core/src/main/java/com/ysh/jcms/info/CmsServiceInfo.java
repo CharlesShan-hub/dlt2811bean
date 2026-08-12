@@ -1,5 +1,8 @@
 package com.ysh.jcms.info;
 
+import lombok.Getter;
+import lombok.experimental.Accessors;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,6 +10,8 @@ import java.util.Map;
  * DL/T 2811 service definitions according to cms.asn1. Each service has a name,
  * section reference, service code (SC), and corresponding PDU types.
  */
+@Getter
+@Accessors(fluent = true)
 public enum CmsServiceInfo {
 
     // ==================== 8.2 Association services ====================
@@ -22,9 +27,9 @@ public enum CmsServiceInfo {
     // ==================== 8.3 Directory services ====================
     GET_SERVER_DIRECTORY("server-dir", "8.3.1", 0x50, "Get Server Directory", "读服务器目录",
             "Retrieve the logical device directory from the server"),
-    GET_LOGICAL_DEVICE_DIRECTORY("ld-dir", "8.3.2", 0x51, "Get Logical Device Directory", "读逻辑设备目录",
+    GET_LOGIC_DEVICE_DIRECTORY("ld-dir", "8.3.2", 0x51, "Get Logical Device Directory", "读逻辑设备目录",
             "Retrieve logical node references under a logical device"),
-    GET_LOGICAL_NODE_DIRECTORY("ln-dir", "8.3.3", 0x52, "Get Logical Node Directory", "读逻辑节点目录",
+    GET_LOGIC_NODE_DIRECTORY("ln-dir", "8.3.3", 0x52, "Get Logical Node Directory", "读逻辑节点目录",
             "Retrieve data references under a logical node"),
     GET_ALL_DATA_VALUES("get-all-values", "8.3.4", 0x53, "Get All Data Values", "读所有数据值",
             "Retrieve all data values for a logical device or node"),
@@ -101,9 +106,9 @@ public enum CmsServiceInfo {
             "Retrieve the data references mapped to GOOSE members"),
     GET_GOOSE_ELEMENT_NUMBER("get-goose-elem", "8.9.3", 0x00, "Get GOOSE Element Number", "读GOOSE元素编号",
             "Retrieve GOOSE element numbers for data references"),
-    GET_GO_CB_VALUES("get-gocb-values", "8.9.4", 0x66, "Get GoCB Values", "读GOOSE控制块",
+    GET_GOCB_VALUES("get-gocb-values", "8.9.4", 0x66, "Get GoCB Values", "读GOOSE控制块",
             "Retrieve GoCB (GOOSE Control Block) values"),
-    SET_GO_CB_VALUES("set-gocb-values", "8.9.5", 0x67, "Set GoCB Values", "写GOOSE控制块",
+    SET_GOCB_VALUES("set-gocb-values", "8.9.5", 0x67, "Set GoCB Values", "写GOOSE控制块",
             "Modify GoCB (GOOSE Control Block) attributes"),
 
     // ==================== 8.10 Sampled Value services ====================
@@ -187,25 +192,6 @@ public enum CmsServiceInfo {
         this.enName = enName;
         this.cnName = cnName;
         this.description = description;
-    }
-
-    public String getCliName() {
-        return cliName;
-    }
-    public String getSection() {
-        return section;
-    }
-    public int getServiceCode() {
-        return serviceCode;
-    }
-    public String getEnName() {
-        return enName;
-    }
-    public String getCnName() {
-        return cnName;
-    }
-    public String getDescription() {
-        return description;
     }
 
     public static CmsServiceInfo byName(String cliName) {

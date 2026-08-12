@@ -5,7 +5,7 @@ import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.app.handler.sg.SgSessionState.SgcState;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.sequence.sg.CmsSgRefFcEntry;
-import com.ysh.jcms.info.FunctionalConstraint;
+import com.ysh.jcms.info.CmsFCInfo;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueError;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueRequest;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueResponse;
@@ -39,8 +39,8 @@ public class GetEditSgValueServer extends BaseServerHandler<CmsGetEditSgValueReq
                 continue;
 
             int fcVal = entry.fc.value();
-            boolean isSE = fcVal >= 0 && fcVal < FunctionalConstraint.values().length
-                    && "SE".equals(FunctionalConstraint.values()[fcVal].name());
+            boolean isSE = fcVal >= 0 && fcVal < CmsFCInfo.values().length
+                    && "SE".equals(CmsFCInfo.values()[fcVal].name());
 
             byte[] val = isSE ? state.getEditValue(ref) : state.getCommittedValue(ref);
             if (val != null) {

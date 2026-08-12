@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.node;
 
 import com.ysh.jcms.app.handler.sg.SgSessionState;
+import com.ysh.jcms.app.handler.report.report.ReportEngine;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.SclDocument;
@@ -179,6 +180,8 @@ public class InnerServer implements ConnectionListener {
         ServerSession ss = new ServerSession(connection);
         ss.sclDocument(sclDocument);
         ss.touchActivity();
+        // Remove from the session list when the session ends (enters DISCONNECTED)
+        ss.onClosed(() -> sessions.remove(ss));
         sessions.add(ss);
     }
 
@@ -224,8 +227,9 @@ public class InnerServer implements ConnectionListener {
     public void onDisconnected(Connection connection) {
         ServerSession ss = findSession(connection);
         if (ss != null) {
+            // State hook: entering DISCONNECTED clears association/session state
+            // and removes the session from the container
             ss.state(SessionState.DISCONNECTED);
-            sessions.remove(ss);
         }
     }
 
@@ -251,6 +255,8 @@ public class InnerServer implements ConnectionListener {
         private SclDataTypeTemplates sclDataTypeTemplates;
         private volatile long lastActivityTime = System.currentTimeMillis();
         private volatile int keepaliveRetries;
+        /** Container-removal callback injected by InnerServer; runs on teardown. */
+        private Runnable onClosed;
 
         public ServerSession(Connection connection) {
             super("srv-" + connection.socket().getPort(), connection);
@@ -271,6 +277,9 @@ public class InnerServer implements ConnectionListener {
         }
         public void close() {
             connection().close();
+        }
+        void onClosed(Runnable onClosed) {
+            this.onClosed = onClosed;
         }
 
         public SclDocument sclDocument() {
@@ -298,10 +307,24 @@ public class InnerServer implements ConnectionListener {
             this.sclDataTypeTemplates = templates;
         }
 
+        /** Hook 1: clear setting-group session state and report subscriptions. */
         @Override
-        public void clear() {
+        protected void clearAssociation() {
+            super.clearAssociation();
             SgSessionState.clear(sessionId());
-            super.clear();
+            ReportEngine engine = ReportEngine.getInstance();
+            if (engine != null) {
+                engine.unsubscribeAll(this);
+            }
+        }
+
+        /** Hook 2: notify the container for removal (idempotent). */
+        @Override
+        protected void clearConnection() {
+            super.clearConnection();
+            if (onClosed != null) {
+                onClosed.run();
+            }
         }
     }
 }

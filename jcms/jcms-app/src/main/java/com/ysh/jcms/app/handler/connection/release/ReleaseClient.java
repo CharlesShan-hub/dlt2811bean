@@ -41,7 +41,7 @@ public class ReleaseClient extends BaseClientHandler<ReleaseDao> {
             throw new IOException("Release rejected: serviceError=" + serviceError);
         }
 
-        node.client().session().clear();
+        // State hook: leaving ASSOCIATED clears association-level state
         node.client().session().state(SessionState.CONNECTED);
         BaseHandler.traceSession("Released");
     }

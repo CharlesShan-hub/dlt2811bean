@@ -1,11 +1,16 @@
 package com.ysh.jcms.info;
 
+import lombok.Getter;
+import lombok.experimental.Accessors;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * CDC (Common Data Class) information — IEC 61850-7-3 data types.
  */
+@Getter
+@Accessors(fluent = true)
 public enum CmsCdcInfo {
 
     // ==================== Status (ST) ====================
@@ -68,33 +73,20 @@ public enum CmsCdcInfo {
 
     static {
         for (CmsCdcInfo cdc : values()) {
-            BY_NAME.put(cdc.name, cdc);
+            BY_NAME.put(cdc.cdcName, cdc);
         }
     }
 
-    private final String name;
+    private final String cdcName;
     private final String enName;
     private final String cnName;
     private final String description;
 
-    CmsCdcInfo(String name, String enName, String cnName, String description) {
-        this.name = name;
+    CmsCdcInfo(String cdcName, String enName, String cnName, String description) {
+        this.cdcName = cdcName;
         this.enName = enName;
         this.cnName = cnName;
         this.description = description;
-    }
-
-    public String getName() {
-        return name;
-    }
-    public String getEnName() {
-        return enName;
-    }
-    public String getCnName() {
-        return cnName;
-    }
-    public String getDescription() {
-        return description;
     }
 
     public static CmsCdcInfo byName(String name) {

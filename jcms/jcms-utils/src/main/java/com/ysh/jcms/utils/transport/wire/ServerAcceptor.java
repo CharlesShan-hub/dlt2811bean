@@ -71,7 +71,7 @@ public class ServerAcceptor {
         while (running && !serverSocket.isClosed()) {
             try {
                 Socket socket = serverSocket.accept();
-                Connection conn = new Connection(socket, listener);
+                Connection conn = new Connection(socket, wrapListener(listener));
                 connections.add(conn);
                 conn.startReader();
                 listener.onConnected(conn);
@@ -80,6 +80,36 @@ public class ServerAcceptor {
                     log.error("Accept failed", e);
             }
         }
+    }
+
+    /**
+     * Wrap the external listener: drop the connection from the local list on
+     * disconnect (so closed Connection objects do not accumulate), then
+     * forward the event.
+     */
+    private ConnectionListener wrapListener(ConnectionListener delegate) {
+        return new ConnectionListener() {
+            @Override
+            public void onConnected(Connection connection) {
+                delegate.onConnected(connection);
+            }
+
+            @Override
+            public void onFrameReceived(Connection connection, com.ysh.jcms.utils.transport.frame.Frame frame) {
+                delegate.onFrameReceived(connection, frame);
+            }
+
+            @Override
+            public void onDisconnected(Connection connection) {
+                connections.remove(connection);
+                delegate.onDisconnected(connection);
+            }
+
+            @Override
+            public void onError(Connection connection, Exception e) {
+                delegate.onError(connection, e);
+            }
+        };
     }
 
     /** Stop listening and close all connections. */

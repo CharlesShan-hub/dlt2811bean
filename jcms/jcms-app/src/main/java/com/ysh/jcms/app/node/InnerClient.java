@@ -89,10 +89,8 @@ public class InnerClient implements ConnectionListener {
     /* ====== lifecycle ====== */
 
     public void close() {
-        if (connection != null)
-            connection.close();
+        // State hook: entering DISCONNECTED clears pending requests and closes the connection
         if (session != null) {
-            session.clear();
             session.state(SessionState.DISCONNECTED);
         }
     }

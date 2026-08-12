@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler;
 import com.ysh.jcms.app.node.InnerServer;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
-import com.ysh.jcms.info.FunctionalConstraint;
+import com.ysh.jcms.info.CmsFCInfo;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.transport.ServiceName;
@@ -265,9 +265,9 @@ public abstract class BaseServerHandler<R extends CmsType, E extends CmsType> ex
 
     /** Map FC integer value to its string code (e.g. 0 → "ST", 1 → "MX"). */
     protected static String fcCode(int fcVal) {
-        if (fcVal < 0 || fcVal >= FunctionalConstraint.values().length)
+        if (fcVal < 0 || fcVal >= CmsFCInfo.values().length)
             return null;
-        String code = FunctionalConstraint.values()[fcVal].name();
+        String code = CmsFCInfo.values()[fcVal].name();
         return "XX".equals(code) ? null : code;
     }
 
