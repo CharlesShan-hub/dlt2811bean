@@ -1,4 +1,4 @@
-package com.ysh.jcms.info;
+package com.ysh.jcms.core.info;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
