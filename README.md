@@ -10,14 +10,14 @@
 - **砍掉中间商（直接映射）**：以前MMS需要把电力指令层层转译（七层模型），现在CMS**直接映射TCP/IP**。
 - **穿上防弹衣（国密加密）**：最大的亮点在于**安全性**。CMS原生支持国密算法加密。
 
-本项目就是制作CMS标准的代码实现。主要的思路是，使用C语言编写per编码部分和基础数据结构部分。后续开发可以基于C/C++，也可以将该模块打包成dll，后续迁移到其他语言平台。项目目录包含下边内容：
+本项目就是制作CMS标准的代码实现。PER 编解码由 Rust 侧负责：基于 [rasn](https://github.com/rustasn/rasn) 开源库，通过 `csasn1` 生成器从 `assets/cms.asn1` 生成 Java 数据类，并借助 Rust FFI 完成 APER 编解码。Java 侧在此基础上手写封装。项目目录包含下边内容：
 
-- **ccms**
-  - [per](docs/impl/ccms-per.md): 底层编码，dlt2811协议使用per编码将asn1转换成字节码。
-  - [data](docs/impl/ccms-data.md): dlt2811 §7 数据结构部分的实现。
-  - [svc](docs/impl/ccms-svc.md): dlt2811 §8 报文段部分的实现。
+- **csasn1**（Rust）
+  - 基于 rasn 的 ASN.1 生成器，从 `assets/cms.asn1` 生成 jcms-data 的 Java 代码，同时提供 Rust FFI 编解码入口。
+- **jcms-data**（inner-data）
+  - 由 csasn1 自动生成的 `Inner*` POJO 类，是数据结构的单一真相源，以 JSON（JER）作为与上层交换的载体。
 - **jcms-core**
-  - [core](docs/impl/jcms-core.md): 负责将ccms api映射到java，并且设计基础的`CmsType`等基类。
+  - [core](docs/impl/jcms-core.md): 手写封装，将 jcms-data 打包为 `CmsType` 等 Cms* 基类体系。
   - [info](docs/impl/jcms-info.md): 一些文档性质的枚举和说明。
   - [data](docs/impl/jcms-data.md): dlt2811 §7的java封装。
   - [svc](docs/impl/jcms-svc.md): dlt2811 §8的java封装。
@@ -212,257 +212,36 @@ cms> exit
 Bye.
 ```
 
-## ccms
+## csasn1（Rust 生成器）
 
-### 使用方法
+### 说明
 
-本模块主要的功能是封装基础数据结构并提供对应的编码解码功能，采用c语言编写。可以将本模块打包成动态库供后续开发使用，也可以基于本模块进一步开发。
+本部分基于 [rasn](https://github.com/rustasn/rasn) 开源库，从 `assets/cms.asn1` 生成 jcms-data 的 `Inner*` POJO 类，并提供 Rust FFI 完成 APER 编解码。生成的 Java 类由 jcms-core 手写封装为 `Cms*` 类型。
 
-#### 构建要求
+### per 编码规则
 
-- **CMake**（≥ 3.14）
-- **C 编译器**：clang 或 gcc
-  - Windows 推荐 [LLVM-MinGW (UCRT)](https://github.com/mstorsjo/llvm-mingw)
-  - macOS 可通过 `xcode-select --install` 安装
-  - Linux 可通过系统包管理器安装
-
-#### 构建产物
-
-| 平台      | 输入产物            | 打包后名称        |
-| ------- | --------------- | ------------ |
-| Windows | `libccms.dll`   | `ccms.dll`   |
-| macOS   | `libccms.dylib` | `ccms.dylib` |
-| Linux   | `libccms.so`    | `ccms.so`    |
-
-> 去除 `lib` 前缀是为了适配 JNA 的 `Native.load("ccms", ...)` 加载约定。
-
-#### 构建命令
-
-```bash
-# Windows（PowerShell）
-cd ccms
-.\win_ccms.ps1
-
-# macOS / Linux
-cd ccms
-chmod +x ccms.sh
-./ccms.sh
-```
-
-构建完成后产物输出至 `ccms/dist/` 目录。
-
-### per
-
-- **INTEGER**（`cms_integer.h`）
+- **INTEGER**
   - 没有前导码、没有 Tag、没有自带的 Length；是否对齐，只看它的取值范围（`lb..ub`）
   - 对于 2811，小的不需要对齐（比如 `Boolean`、`Quality`），其他的都需要对齐（因为 **range > 255**）
   - 不需要对齐的举例：`Boolean ::= INTEGER (0..1)`、`SmpMod ::= INTEGER (0..2)`
   - 需要对齐的举例：`Int16U ::= INTEGER (0..65535)`
-- **OCTET STRING**（`cms_string.h`）
+- **OCTET STRING**
   - 永远都是对齐，长度字段视情况而定。
   - `OCTET STRING (SIZE(n))`：固定长度。不需要编码长度，因为长度已在 ASN.1 文件中规定。
   - `OCTET STRING (SIZE(lb..ub)), ub < 64K`：变长。长度为字符串实际长度。若长度超过 64K，长度编码会越界，必须改用不受约束长度决定因子。
   - 无约束（只在 Data 中有一个）：需要对齐（实际与带约束的编码一样，只是不检查长度）。
-- **BIT STRING**（`cms_string.h`）
+- **BIT STRING**
   - `BIT STRING (SIZE(n))`：固定 BIT STRING，n ≤ 16 → 不对齐；n > 16 或变长 → 对齐。
   - `BIT STRING (SIZE(lb..ub)), ub < 64K`：需要对齐，需要编码长度，长度是 **bit 数**。
   - 无约束（只在 Data 中有一个）：需要对齐（实际与带约束的编码一样，只是不检查长度）。
-- **VisibleString**（`cms_string.h`）
+- **VisibleString**
   - 已知倍数字符串，1 字符 = 1 字节。
   - 约束不编码；只有实际长度（字符数 = 字节数）可能编码。
   - 固定 `SIZE(n)`：`n × 8 < 16` → 不对齐；`n × 8 > 16` → 对齐；无长度字段。
   - 变长 / 无约束：先编码长度决定因子，内容对齐（`> 16 bit` 时）。
-- **UTF8String**（`cms_string.h`）
+- **UTF8String**
   - 标准实际上并没有定义，这里按 VisibleString 实现，长度也为字节数。仅在 Data 中使用。
-- **OPTIONAL**（`cms_sequence.h`）
-  - 提供了一个函数：若字段为可选，标准要求在前面加一个 bit 表示该字段是否存在。
-- **SEQUENCE OF**（`cms_sequence.h`）
-  - 提供了一个函数：此类数组需要编码元素个数。
-- **工具流**（`cms_stream.h`）
-
-toolName: CompactFake
-
-status: success
-
-toolName: view\_folder
-
-status: success
-
-d:\project\work\standard\dlt2811bean\cms\jcms\jcms-core\src\main\java\com\ysh\jcms\data
-
-toolName: view\_files
-
-status: success
-
-filePath: d:\project\work\standard\dlt2811bean\cms\jcms\jcms-core\src\main\java\com\ysh\jcms\data\core\CmsChoice.java
-
-toolName: view\_files
-
-status: success
-
-filePath: d:\project\work\standard\dlt2811bean\cms\jcms\jcms-core\src\main\java\com\ysh\jcms\data\core\CmsChoice.java
-
-toolName: view\_files
-
-status: success
-
-filePath: d:\project\work\standard\dlt2811bean\cms\jcms\jcms-core\src\main\java\com\ysh\jcms\data\core\CmsScalar.java
-
-toolName: view\_files
-
-status: success
-
-filePath: d:\project\work\standard\dlt2811bean\cms\jcms\jcms-core\src\main\java\com\ysh\jcms\data\core\CmsBits.java
-
-toolName: view\_files
-
-status: success
-
-filePath: d:\project\work\standard\dlt2811bean\cms\jcms\jcms-core\src\main\java\com\ysh\jcms\data\core\CmsSequence.java
-
-toolName: view\_files
-
-status: success
-
-filePath: d:\project\work\standard\dlt2811bean\cms\jcms\jcms-core\src\main\java\com\ysh\jcms\data\core\CmsType.java
-
-toolName: view\_files
-
-status: success
-
-filePath: d:\project\work\standard\dlt2811bean\cms\jcms\jcms-core\src\main\java\com\ysh\jcms\data\choice\CmsData.java
-
-toolName: view\_files
-
-status: success
-
-filePath: d:\project\work\standard\dlt2811bean\cms\jcms\jcms-data\src\main\java\com\ysh\jcms\data\InnerBase.java
-
-toolName: view\_files
-
-status: success
-
-filePath: d:\project\work\standard\dlt2811bean\cms\jcms\jcms-core\src\main\java\com\ysh\jcms\data\core\CmsEnum.java
-
-toolName: view\_files
-
-status: success
-
-filePath: d:\project\work\standard\dlt2811bean\cms\jcms\jcms-core\src\main\java\com\ysh\jcms\data\core\CmsChoice.java
-
-toolName: view\_files
-
-status: success
-
-filePath: d:\project\work\standard\dlt2811bean\cms\jcms\jcms-data\src\main\java\com\ysh\jcms\data\DefaultInnerVisibleString.java
-
-toolName: search\_by\_regex
-
-status: failed
-
-query: catch (Exception (ignored|e) {})
-
-toolName: search\_by\_regex
-
-status: success
-
-query: toJsonValue|\_v
-
-toolName: search\_by\_regex
-
-status: success
-
-query: catch (Exception \w+) {\s\*}
-
-toolName: search\_by\_regex
-
-status: success
-
-query: String json = .*\_v|writeValueAsString(.*\_v|toJsonValue
-
-toolName: view\_files
-
-status: success
-
-filePath: d:\project\work\standard\dlt2811bean\cms\jcms\jcms-data\src\main\java\com\ysh\jcms\data\InnerBase.java
-
-toolName: view\_files
-
-status: failed
-
-filePath: d:\project\work\standard\dlt2811bean\cms\jcms\jcms-data\src\main\java\com\ysh\jcms\data\InnerUrgb.java
-
-toolName: view\_files
-
-status: success
-
-filePath: d:\project\work\standard\dlt2811bean\cms\jcms\jcms-data\src\main\java\com\ysh\jcms\data\InnerURCB.java
-
-toolName: search\_by\_regex
-
-status: success
-
-query: lombok|@Data|equals|hashCode|class Inner|@JsonValue|toJsonValue
-
-toolName: view\_files
-
-status: success
-
-filePath: d:\project\work\standard\dlt2811bean\cms\jcms\jcms-data\src\main\java\com\ysh\jcms\data\InnerUtcTime.java
-
-toolName: view\_files
-
-status: success
-
-filePath: d:\project\cs\csasn1\src\generator\java\gen\_newtype.rs
-
-整体看完了核心链路（`CmsType` / `CmsScalar` / `CmsBits` / `CmsSequence` / `CmsChoice` / `InnerBase` + 生成器模板）。这轮 `_v` 统一做得相当干净，数据流基本打通。下面按优先级给出评审结论。
-
-## 🔴 正确性隐患（建议优先处理）
-
-**1.🆗 生成器对 SEQUENCE / NEWTYPE 还在用 Lombok** **`@Data`，但类里已经没有任何实例字段了 → equals/hashCode 是"恒真"的**
-
-看生成的 [InnerUtcTime.java](file:///d:/project/work/standard/dlt2811bean/cms/jcms/jcms-data/src/main/java/com/ysh/jcms/data/InnerUtcTime.java#L18-L19) 和 [InnerURCB.java](file:///d:/project/work/standard/dlt2811bean/cms/jcms/jcms-data/src/main/java/com/ysh/jcms/data/InnerURCB.java#L24-L27)：`@Data` 还在，但类里只剩静态 `MAPPER` 和方法，数据全在父类 `_v` 里。Lombok 的 equals 只比较**本类声明的字段**——零字段时生成的 `equals()` 对同类实例**无条件返回 true**、`hashCode()` 是常量。而 [CmsType.equals](file:///d:/project/work/standard/dlt2811bean/cms/jcms/jcms-core/src/main/java/com/ysh/jcms/data/core/CmsType.java#L70-L76) 委托给 `inner.equals(...)`。
-
-这意味着：**所有 SEQUENCE/NEWTYPE 的相等性断言实际从未真正比较过数据**，"全对"有一部分是"恒真"假象。CHOICE 的 [gen\_choice.rs](file:///d:/project/cs/csasn1/src/generator/java/gen_choice.rs#L86-L103) 已经手写了 `_v` 版 equals，建议 struct/newtype 也照抄同一模式（比较 `_v` 的键 + 各键值），同时把 `@Data` 从生成器里彻底删掉。
-
-**2🆗.** **`syncInnerToInner`** **破坏了"共享** **`_v`"不变式**（[CmsChoice.java:L370-380](file:///d:/project/work/standard/dlt2811bean/cms/jcms/jcms-core/src/main/java/com/ysh/jcms/data/core/CmsChoice.java#L370-L380)）
-
-INNER 变体（DefaultInner\*）每次 encode 都新建一个 sub-map 塞进父 `_v`，把 `val._v` 变成了孤儿引用，还把 octet-string 的 byte\[] 就地换成了 hex String。注释还是老的（"DefaultInner\* types store data in a direct `value` field"——已过时）。根因在 [choice(int)](file:///d:/project/work/standard/dlt2811bean/cms/jcms/jcms-core/src/main/java/com/ysh/jcms/data/core/CmsChoice.java#L150-L166)：只有 `CmsType` 字段会被 `inner._v.put(vi.name, w.inner._v)` 播种，`InnerBase` 字段没有。
-
-修法很顺：`choice(int)` 对 isInner 字段同样把 `val._v` 播种进父 `_v`，然后 `syncInnerToInner` 退化为纯共享刷新（甚至直接删掉）——byte\[] 留在共享 map 里，JER 的 hex 由 [InnerBase 的 byte\[\] 序列化器](file:///d:/project/work/standard/dlt2811bean/cms/jcms/jcms-data/src/main/java/com/ysh/jcms/data/InnerBase.java#L96-L109) 在 JSON 边界完成，行为等价且别名不再断裂。
-
-**3. 🆗decode 后残留未选中的默认变体**
-
-早前 DBG 显示 `{_choice=visible-string, error={_=1}, ...}`——`error={_=1}` 是构造默认值。encode 路径会清理，但 decode 后 `_v` 不干净，`toJsonValue()`/日志会带出脏数据。建议在 `syncFromInner` 里加一个与 encode 对称的清理循环。
-
-## 🟡 代码结构
-
-- **LIST 和 ARRAY 两个 sync 模式实现逐字节相同**（[syncListToInner](file:///d:/project/work/standard/dlt2811bean/cms/jcms/jcms-core/src/main/java/com/ysh/jcms/data/core/CmsChoice.java#L397-L406) vs `syncArrayToInner`、`syncListFromInner` vs `syncArrayFromInner`），可以合并成一个。
-- **`CmsData.alt_sequence`** **/** **`alt_bit_string`** **游离在 @Choice 体系外**（手工 List 初始化 + RAW 分支），建议给 ARRAY 变体也走注解注入，统一两条路径。
-- `syncScalarToInner` 里 `wrapper.syncToInner()` + `toJsonValue()` 的组合，和 [CmsSequence.java:L250](file:///d:/project/work/standard/dlt2811bean/cms/jcms/jcms-core/src/main/java/com/ysh/jcms/data/core/CmsSequence.java#L250) 的写法重复，可抽一个"wrapper → JSON 值"工具。
-
-## 🟡 性能
-
-- **反射元数据每实例重建**：`injectFields`/`injectChoices`/`rebind*`/`CmsBits.bitCount()` 每次都 `getClass().getFields()` + 注解扫描。decode 每来一包就 new 一批实例 → 每包都在反射。建议用 `ClassValue` 或静态 `ConcurrentHashMap` 缓存每类的字段元数据（这些元数据类加载后就不变）。这是 PDU 高频收发场景最大的收益点。
-- **`InnerBase.toString()`** **每次** **`new ObjectMapper()`**（[InnerBase.java:L114-118](file:///d:/project/work/standard/dlt2811bean/cms/jcms/jcms-data/src/main/java/com/ysh/jcms/data/InnerBase.java#L114-L118)）——日志热路径会爆炸。另外**每个生成的 Inner 类各持一个私有** **`MAPPER`**（N 个类 = N 个 mapper + 各注册序列化器），建议收敛为 `InnerBase` 单一静态共享实例（配置完成后线程安全）。
-- **`hex()`/`bitStringHex()`** **逐字节** **`String.format("%02x")`**——编解码热路径，换成静态查表法。
-- **`CmsType.decode()`** **每次** **`getMethod("decode", ...)`** **+** **`Method.invoke`**（[CmsType.java:L57-67](file:///d:/project/work/standard/dlt2811bean/cms/jcms/jcms-core/src/main/java/com/ysh/jcms/data/core/CmsType.java#L57-L67)），方法引用可按 Inner 类缓存。
-
-## 🟠 安全与健壮性
-
-- [CmsChoice.java:L112](file:///d:/project/work/standard/dlt2811bean/cms/jcms/jcms-core/src/main/java/com/ysh/jcms/data/core/CmsChoice.java#L112) 和 [:L205](file:///d:/project/work/standard/dlt2811bean/cms/jcms/jcms-core/src/main/java/com/ysh/jcms/data/core/CmsChoice.java#L205) 的 `catch (Exception ignored) {}` 会吞掉 rebind/choice 的失败——这类静默失败正是别名断裂 bug 的温床，至少 warn 日志。
-- **`unhex()`** **无输入校验**：奇数长度会越界，非法字符产出垃圾字节；`parseBitStringHex` 的 `Integer.parseInt` 对坏输入抛 `NumberFormatException`。协议库的 decode 面向不可信数据，建议统一校验入口。
-- 建议补一个**随机字节模糊回环测试**（随机 APER 字节 → decode → 不崩溃），顺带验证 Rust FFI 的健壮性。
-- `_v` 共享 map 是可变共享状态，建议在 `CmsType` 文档里注明"实例非线程安全、单线程使用"（服务端并发响应时容易踩）。
-
-## 🟢 功能/工程化
-
-- **生成器漂移防护**：加一个 `gen-check` 目标（重新生成到临时目录 → diff 已提交文件），防止"模板改了、生成物没跟"再次发生——这轮已经因此踩过坑。
-- **`encodeTest()`** 每个生成类都有，纯调试用、生产无效载荷，建议挪到测试辅助或条件编译。
-- **库级 encode/decode 钩子**（可插拔监听器）：CLI 已有 trace-pdu，库层提供一个监听器接口能方便服务端线上排障。
-- `CmsEnum` 的位宽推导已经很优雅，可选：给 `value(int)` 增加负值/越界统一校验策略的开关。
-
-***
-
-其中 **#1（Lombok 恒真 equals）** 和 **#2（INNER 别名断裂）** 是真正值得动手的两处，我可以分别给出修改方案。要我先把这两个的改动预览做出来吗？还是按你的节奏，你自己先验证当前状态？
+- **OPTIONAL**
+  - 若字段为可选，标准要求在前面加一个 bit 表示该字段是否存在。
+- **SEQUENCE OF**
+  - 此类数组需要编码元素个数。
