@@ -5,7 +5,8 @@ import com.ysh.jcms.core.data.bitarray.CmsQuality;
 import com.ysh.jcms.core.data.choice.CmsData;
 import com.ysh.jcms.core.data.sequence.common.CmsBinaryTime;
 import com.ysh.jcms.core.data.sequence.common.CmsUtcTime;
-import com.ysh.jcms.core.util.CmsPrinter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -16,6 +17,8 @@ import java.nio.charset.StandardCharsets;
  */
 public final class DataConverter {
 
+    private static final Logger log = LoggerFactory.getLogger(DataConverter.class);
+
     private DataConverter() {
     }
 
@@ -25,7 +28,7 @@ public final class DataConverter {
     public static CmsData toCmsData(DataValueEntry dv) {
         String bType = dv.bType() != null ? dv.bType().toUpperCase() : "";
         String val = dv.val();
-        CmsPrinter.consoleOnly("[DEBUG] DataConverter.toCmsData bType=" + bType + " ref=" + dv.ref() + " val=" + val);
+        log.debug("toCmsData bType={} ref={} val={}", bType, dv.ref(), val);
         try {
             switch (bType) {
                 case "BOOLEAN" :
@@ -78,13 +81,11 @@ public final class DataConverter {
                         return new CmsData().alt_octet_string(val.getBytes(StandardCharsets.UTF_8));
                     if (bType.startsWith("BIT_STRING"))
                         return new CmsData().alt_bit_string(val.getBytes(StandardCharsets.UTF_8));
-                    CmsPrinter.consoleOnly(
-                            "[DEBUG] DataConverter.toCmsData UNKNOWN bType=" + dv.bType() + " ref=" + dv.ref() + " falling back to string");
+                    log.warn("toCmsData: unknown bType '{}' for ref {}, falling back to string", dv.bType(), dv.ref());
                     return fillString(val);
             }
         } catch (Exception e) {
-            CmsPrinter.consoleOnly("[DEBUG] DataConverter.toCmsData ERROR bType=" + dv.bType() + " ref=" + dv.ref() + " val=" + val + " ex="
-                    + e.getMessage());
+            log.warn("toCmsData failed for bType={} ref={} val={}, falling back to string", dv.bType(), dv.ref(), val, e);
             return fillString(val);
         }
     }

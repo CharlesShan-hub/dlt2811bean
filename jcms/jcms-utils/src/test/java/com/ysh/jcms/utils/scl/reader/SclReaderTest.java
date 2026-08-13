@@ -346,8 +346,23 @@ public class SclReaderTest {
     @Test
     public void testDocumentFileType() {
         SclDocument doc = parseFullScd();
-        // SCL element in this sample has no version/revision attributes
-        assertEquals(SclDocument.SclFileType.UNKNOWN, doc.fileType());
+        // 按内容结构判定：sample 含 <Substation> → SCD
+        assertEquals(SclDocument.SclFileType.SCD, doc.fileType());
+    }
+
+    @Test
+    public void testScanLdLns() throws Exception {
+        InputStream is = getClass().getClassLoader().getResourceAsStream("sample-scd-full.scd");
+        assertNotNull("sample-scd-full.scd not found on classpath", is);
+        java.util.Map<String, java.util.List<String>> dir = SclReader.scanLdLns(is);
+
+        // E1Q1SB1/S1 → 6 个 LN（LLN0 + LPHD + CSWI1 + CSWI2 + MMXU1 + TVTR1）
+        java.util.List<String> e1 = dir.get("E1Q1SB1/S1");
+        assertNotNull("E1Q1SB1/S1 not found", e1);
+        assertEquals(6, e1.size());
+        assertTrue(e1.contains("C1/LLN0"));
+        assertTrue(e1.contains("C1/CSWI1"));
+        assertTrue(e1.contains("C1/MMXU1"));
     }
 
     @Test

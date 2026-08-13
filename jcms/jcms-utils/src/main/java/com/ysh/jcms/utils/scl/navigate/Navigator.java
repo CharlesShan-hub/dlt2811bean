@@ -202,15 +202,8 @@ public class Navigator {
     }
 
     private static SclLDevice findLd(SclIED ied, String ldInst) {
-        for (SclAccessPoint ap : ied.accessPoints()) {
-            SclServer server = ap.server();
-            if (server != null) {
-                SclLDevice ld = server.findLDeviceByInst(ldInst);
-                if (ld != null)
-                    return ld;
-            }
-        }
-        return null;
+        // 走 SclIED 的惰性 LD 索引（首次 O(AP×LD)，之后 O(1)）
+        return ied.lDevice(ldInst);
     }
 
     /** AP 作用域查找：只在指定 AP 下找 LD。 */

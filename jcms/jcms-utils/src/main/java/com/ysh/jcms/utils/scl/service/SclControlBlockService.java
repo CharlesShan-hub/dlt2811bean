@@ -116,6 +116,8 @@ public class SclControlBlockService {
     }
 
     private static CmsUrcb buildUrcb(SclReportControl rc, String ref) {
+        if (rc == null)
+            return null;
         CmsUrcb urcb = new CmsUrcb();
         if (rc.rptID() != null)
             urcb.rptID(rc.rptID());
@@ -124,19 +126,22 @@ public class SclControlBlockService {
         if (rc.confRev() != null) {
             try {
                 urcb.confRev(Long.parseLong(rc.confRev()));
-            } catch (NumberFormatException ignored) {
+            } catch (NumberFormatException e) {
+                log.warn("SCL confRev '{}' 非数字，URCB 回退默认值", rc.confRev(), e);
             }
         }
         if (rc.bufTime() != null) {
             try {
                 urcb.bufTm(Long.parseLong(rc.bufTime()));
-            } catch (NumberFormatException ignored) {
+            } catch (NumberFormatException e) {
+                log.warn("SCL bufTime '{}' 非数字，URCB 回退默认值", rc.bufTime(), e);
             }
         }
         if (rc.intgPd() != null) {
             try {
                 urcb.intgPd(Long.parseLong(rc.intgPd()));
-            } catch (NumberFormatException ignored) {
+            } catch (NumberFormatException e) {
+                log.warn("SCL intgPd '{}' 非数字，URCB 回退默认值", rc.intgPd(), e);
             }
         }
         urcb.rptEna(false);
@@ -462,7 +467,8 @@ public class SclControlBlockService {
         if (gc.confRev() != null) {
             try {
                 gocb.confRev(Long.parseLong(gc.confRev()));
-            } catch (NumberFormatException ignored) {
+            } catch (NumberFormatException e) {
+                log.warn("SCL confRev '{}' 非数字，GoCB 回退默认值", gc.confRev(), e);
             }
         }
         return gocb;
@@ -477,13 +483,15 @@ public class SclControlBlockService {
         if (svc.confRev() != null) {
             try {
                 msvcb.confRev(Long.parseLong(svc.confRev()));
-            } catch (NumberFormatException ignored) {
+            } catch (NumberFormatException e) {
+                log.warn("SCL confRev '{}' 非数字，MSVCB 回退默认值", svc.confRev(), e);
             }
         }
         if (svc.smpRate() != null && !svc.smpRate().isEmpty()) {
             try {
                 msvcb.smpRate(Integer.parseInt(svc.smpRate()));
-            } catch (NumberFormatException ignored) {
+            } catch (NumberFormatException e) {
+                log.warn("SCL smpRate '{}' 非数字，MSVCB 回退默认值", svc.smpRate(), e);
             }
         }
         return msvcb;
@@ -508,7 +516,8 @@ public class SclControlBlockService {
         if (lc.intgPd() != null) {
             try {
                 lcb.intgPd(Long.parseLong(lc.intgPd()));
-            } catch (NumberFormatException ignored) {
+            } catch (NumberFormatException e) {
+                log.warn("SCL intgPd '{}' 非数字，LCB 回退默认值", lc.intgPd(), e);
             }
         }
         if (lc.logName() != null)
@@ -518,7 +527,8 @@ public class SclControlBlockService {
                 long v = Long.parseLong(lc.optFields());
                 CmsLcbOptFlds f = new CmsLcbOptFlds().bit0(v != 0);
                 lcb.optFlds(f);
-            } catch (NumberFormatException ignored) {
+            } catch (NumberFormatException e) {
+                log.warn("SCL optFields '{}' 非数字，LCB 回退默认值", lc.optFields(), e);
             }
         }
         if (lc.trgOps() != null) {
@@ -536,19 +546,22 @@ public class SclControlBlockService {
         if (rc.confRev() != null) {
             try {
                 brcb.confRev(Long.parseLong(rc.confRev()));
-            } catch (NumberFormatException ignored) {
+            } catch (NumberFormatException e) {
+                log.warn("SCL confRev '{}' 非数字，BRCB 回退默认值", rc.confRev(), e);
             }
         }
         if (rc.bufTime() != null) {
             try {
                 brcb.bufTm(Long.parseLong(rc.bufTime()));
-            } catch (NumberFormatException ignored) {
+            } catch (NumberFormatException e) {
+                log.warn("SCL bufTime '{}' 非数字，BRCB 回退默认值", rc.bufTime(), e);
             }
         }
         if (rc.intgPd() != null) {
             try {
                 brcb.intgPd(Long.parseLong(rc.intgPd()));
-            } catch (NumberFormatException ignored) {
+            } catch (NumberFormatException e) {
+                log.warn("SCL intgPd '{}' 非数字，BRCB 回退默认值", rc.intgPd(), e);
             }
         }
         brcb.rptEna(false);

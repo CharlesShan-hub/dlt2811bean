@@ -48,11 +48,7 @@ public class SclReader {
 
     public SclDocument read(InputStream inputStream) throws SclParseException {
         try {
-            XMLInputFactory factory = XMLInputFactory.newInstance();
-            factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-            factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
-
-            XMLStreamReader reader = factory.createXMLStreamReader(inputStream);
+            XMLStreamReader reader = createSafeFactory().createXMLStreamReader(inputStream);
             SclDocument document = parseDocument(reader);
             reader.close();
             return document;
@@ -65,28 +61,31 @@ public class SclReader {
 
     private SclDocument parseDocument(XMLStreamReader reader) throws XMLStreamException, SclParseException {
         SclDocument document = new SclDocument();
+        ParseStats stats = new ParseStats();
 
         while (reader.hasNext()) {
             int event = reader.next();
             if (event == START_ELEMENT) {
                 String localName = reader.getLocalName();
                 if ("SCL".equals(localName)) {
-                    // 检测文件类型
-                    String version = getAttr(reader, "version");
-                    String revision = getAttr(reader, "revision");
-                    if ("2007".equals(version) && "B".equals(revision)) {
-                        document.fileType(SclDocument.SclFileType.SCD);
-                    }
-                    // 解析子元素
-                    parseSclChildren(reader, document);
+                    parseSclChildren(reader, document, stats);
                 }
                 break;
             }
         }
+
+        // 按内容结构判定文件类型（2007B 只是 IEC 61850 Ed.2 版本号，不能区分文件种类）：
+        // 含 <Substation> → SCD；单 IED 且无 Substation → ICD（CID 同构，暂归 ICD）；其余 UNKNOWN
+        if (stats.hasSubstation) {
+            document.fileType(SclDocument.SclFileType.SCD);
+        } else if (stats.iedCount == 1) {
+            document.fileType(SclDocument.SclFileType.ICD);
+        }
         return document;
     }
 
-    private void parseSclChildren(XMLStreamReader reader, SclDocument document) throws XMLStreamException, SclParseException {
+    private void parseSclChildren(XMLStreamReader reader, SclDocument document, ParseStats stats)
+            throws XMLStreamException, SclParseException {
         while (reader.hasNext()) {
             int event = reader.nextTag();
             if (event == START_ELEMENT) {
@@ -95,12 +94,14 @@ public class SclReader {
                         document.header(SclHeaderParser.parse(reader));
                         break;
                     case "Substation" :
+                        stats.hasSubstation = true;
                         document.substation(SclSubstationParser.parse(reader));
                         break;
                     case "Communication" :
                         document.communication(SclCommunicationParser.parse(reader));
                         break;
                     case "IED" :
+                        stats.iedCount++;
                         document.addIed(SclIedParser.parse(reader));
                         break;
                     case "DataTypeTemplates" :
@@ -117,7 +118,21 @@ public class SclReader {
         }
     }
 
-    // ======================== 轻量扫描（AccessPoint 目录） ========================
+    /** 解析过程中的内容统计（用于文件类型判定）。 */
+    private static final class ParseStats {
+        boolean hasSubstation;
+        int iedCount;
+    }
+
+    // ======================== 轻量扫描（AccessPoint / LD-LN 目录） ========================
+
+    /** 创建禁用 DTD + 外部实体的安全 XML 工厂（防 XXE）。 */
+    private static XMLInputFactory createSafeFactory() {
+        XMLInputFactory factory = XMLInputFactory.newInstance();
+        factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        return factory;
+    }
 
     /**
      * 轻量扫描 SCL 文件中的 IED → AccessPoint 名，不构建完整模型。
@@ -140,11 +155,7 @@ public class SclReader {
     public static Map<String, List<String>> scanAccessPoints(InputStream inputStream) throws SclParseException {
         Map<String, List<String>> result = new LinkedHashMap<>();
         try {
-            XMLInputFactory factory = XMLInputFactory.newInstance();
-            factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-            factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
-
-            XMLStreamReader reader = factory.createXMLStreamReader(inputStream);
+            XMLStreamReader reader = createSafeFactory().createXMLStreamReader(inputStream);
             String currentIed = null;
             while (reader.hasNext()) {
                 int event = reader.next();
@@ -169,6 +180,85 @@ public class SclReader {
             return result;
         } catch (XMLStreamException e) {
             throw new SclParseException("Failed to scan SCL XML for access points", e);
+        }
+    }
+
+    /**
+     * 轻量扫描 SCL 文件中的 IED → AP → (LD, LN) 目录，不构建完整模型。
+     * <p>
+     * 只读取 IED / AccessPoint / Server / LDevice / LN 的 name 属性， 跳过实例数据、控制块、模板等全部细节，
+     * 适合为前端候选列表（数据集/控制块下拉的 LD/LN 来源）提供秒级目录。
+     *
+     * @param path
+     *            SCL 文件路径
+     * @return 有序的 "IED/AP" → "LD/LN" 完整引用列表
+     */
+    public static Map<String, List<String>> scanLdLns(Path path) throws SclParseException {
+        try (InputStream is = new FileInputStream(path.toFile())) {
+            return scanLdLns(is);
+        } catch (IOException e) {
+            throw new SclParseException("Failed to read SCL file: " + path, e);
+        }
+    }
+
+    public static Map<String, List<String>> scanLdLns(InputStream inputStream) throws SclParseException {
+        Map<String, List<String>> result = new LinkedHashMap<>();
+        try {
+            XMLStreamReader reader = createSafeFactory().createXMLStreamReader(inputStream);
+            String apRef = null;     // "IED/AP"
+            String ldInst = null;    // 当前 LD 实例名
+            while (reader.hasNext()) {
+                int event = reader.next();
+                if (event == START_ELEMENT) {
+                    switch (reader.getLocalName()) {
+                        case "IED" :
+                            apRef = reader.getAttributeValue(null, "name");
+                            break;
+                        case "AccessPoint" :
+                            if (apRef != null) {
+                                String ap = reader.getAttributeValue(null, "name");
+                                apRef = ap != null ? apRef + "/" + ap : apRef;
+                                result.put(apRef, new ArrayList<>());
+                            }
+                            break;
+                        case "Server" :
+                            // 落入 LDevice/LN，无需额外处理
+                            break;
+                        case "LDevice" :
+                            ldInst = reader.getAttributeValue(null, "inst");
+                            break;
+                        case "LN" :
+                        case "LN0" :
+                            if (apRef != null && ldInst != null) {
+                                String ln = reader.getAttributeValue(null, "lnClass");
+                                String inst = reader.getAttributeValue(null, "inst");
+                                String prefix = reader.getAttributeValue(null, "prefix");
+                                if (ln != null) {
+                                    result.get(apRef).add(ldInst + "/" + (prefix != null ? prefix : "") + ln + (inst != null ? inst : ""));
+                                }
+                            }
+                            break;
+                        default :
+                            break;
+                    }
+                } else if (event == END_ELEMENT) {
+                    switch (reader.getLocalName()) {
+                        case "IED" :
+                            apRef = null;
+                            ldInst = null;
+                            break;
+                        case "LDevice" :
+                            ldInst = null;
+                            break;
+                        default :
+                            break;
+                    }
+                }
+            }
+            reader.close();
+            return result;
+        } catch (XMLStreamException e) {
+            throw new SclParseException("Failed to scan SCL XML for LD/LN directory", e);
         }
     }
 

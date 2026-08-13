@@ -6,7 +6,9 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -28,8 +30,12 @@ public class SclIED {
 
     private final List<SclAccessPoint> accessPoints = new ArrayList<>();
 
+    /** 惰性索引：LD 实例名 → LD（首次 lDevice() 时建立，addAccessPoint 时失效）。 */
+    private transient Map<String, SclLDevice> ldByInst;
+
     public SclIED addAccessPoint(SclAccessPoint accessPoint) {
         this.accessPoints.add(accessPoint);
+        this.ldByInst = null;
         return this;
     }
 
@@ -54,16 +60,24 @@ public class SclIED {
         return result;
     }
 
-    /** Find a logical device by instance name across all access points. */
+    /** Find a logical device by instance name across all access points (O(1) after first call). */
     public SclLDevice lDevice(String inst) {
-        for (SclAccessPoint ap : accessPoints) {
-            SclServer srv = ap.server();
-            if (srv != null) {
-                SclLDevice ld = srv.findLDeviceByInst(inst);
-                if (ld != null)
-                    return ld;
+        if (inst == null)
+            return null;
+        if (ldByInst == null) {
+            Map<String, SclLDevice> idx = new HashMap<>();
+            for (SclAccessPoint ap : accessPoints) {
+                SclServer srv = ap.server();
+                if (srv != null) {
+                    for (SclLDevice ld : srv.lDevices()) {
+                        if (ld.inst() != null) {
+                            idx.putIfAbsent(ld.inst(), ld);
+                        }
+                    }
+                }
             }
+            ldByInst = idx;
         }
-        return null;
+        return ldByInst.get(inst);
     }
 }
