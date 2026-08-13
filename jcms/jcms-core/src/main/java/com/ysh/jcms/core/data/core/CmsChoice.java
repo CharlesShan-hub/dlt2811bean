@@ -1,5 +1,6 @@
 package com.ysh.jcms.core.data.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ysh.jcms.data.DefaultInnerOctetString;
 import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.V;
@@ -136,7 +137,9 @@ public abstract class CmsChoice extends CmsType {
         }
     }
 
+    @JsonIgnore
     private final Map<Integer, VariantInfo> variantByIndex = new LinkedHashMap<>();
+    @JsonIgnore
     private final Map<String, VariantInfo> variantByName = new LinkedHashMap<>();
     /** Locally tracked variant index. */
     protected int selectedChoiceIndex = -1;

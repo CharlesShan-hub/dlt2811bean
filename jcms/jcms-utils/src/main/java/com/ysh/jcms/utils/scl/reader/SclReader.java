@@ -124,7 +124,8 @@ public class SclReader {
         int iedCount;
     }
 
-    // ======================== 轻量扫描（AccessPoint / LD-LN 目录） ========================
+    // ======================== 轻量扫描（AccessPoint / LD-LN 目录）
+    // ========================
 
     /** 创建禁用 DTD + 外部实体的安全 XML 工厂（防 XXE）。 */
     private static XMLInputFactory createSafeFactory() {
@@ -205,8 +206,8 @@ public class SclReader {
         Map<String, List<String>> result = new LinkedHashMap<>();
         try {
             XMLStreamReader reader = createSafeFactory().createXMLStreamReader(inputStream);
-            String apRef = null;     // "IED/AP"
-            String ldInst = null;    // 当前 LD 实例名
+            String apRef = null; // "IED/AP"
+            String ldInst = null; // 当前 LD 实例名
             while (reader.hasNext()) {
                 int event = reader.next();
                 if (event == START_ELEMENT) {

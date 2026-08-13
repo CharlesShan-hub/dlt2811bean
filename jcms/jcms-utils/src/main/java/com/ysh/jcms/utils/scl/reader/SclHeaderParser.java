@@ -17,6 +17,7 @@ public class SclHeaderParser {
         header.id(getAttr(reader, "id"));
         header.version(getAttr(reader, "version"));
         header.revision(getAttr(reader, "revision"));
+        header.release(getAttr(reader, "release"));
         header.toolId(getAttr(reader, "toolID"));
         header.nameStructure(getAttr(reader, "nameStructure"));
 

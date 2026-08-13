@@ -26,6 +26,8 @@ public class SclLNBase {
     private String inst;
     private String desc;
     private String lnType;
+    /** IED 类型标识（厂商扩展属性，国际 schema 的 tLN 无此属性，国网 SCD 常见）。 */
+    private String iedType;
 
     /** 所属逻辑设备（解析时由 SclLDevice.addLn 建立，用于推导完整控制块引用）。 */
     private transient SclLDevice parentLd;

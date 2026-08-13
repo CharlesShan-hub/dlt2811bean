@@ -63,6 +63,27 @@ public class DataValueResolverTest {
     }
 
     @Test
+    public void testResolveTemplateDefaultWhenNoDai() {
+        SclDocument doc = parseFullScd();
+        // LLN0 的 NamPlt 无 DOI 实例，值写在 DOType 模板的 DA/<Val> 里 → 实例无值时应兜底模板默认值
+        DataValueEntry dv = DataValueResolver.resolve(doc, "E1Q1SB1/C1/LLN0.NamPlt.configRev");
+        assertNotNull("should fall back to template default", dv);
+        assertEquals("Rev 3.45", dv.val());
+
+        DataValueEntry ldNs = DataValueResolver.resolve(doc, "E1Q1SB1/C1/LLN0.NamPlt.ldNs");
+        assertNotNull("should fall back to template default", ldNs);
+        assertEquals("IEC61850-7-4:2003", ldNs.val());
+    }
+
+    @Test
+    public void testInstanceValueWinsOverTemplate() {
+        SclDocument doc = parseFullScd();
+        // 实例 DAI 有值时优先，模板默认值不覆盖
+        DataValueEntry dv = DataValueResolver.resolve(doc, "E1Q1SB1/C1/LPHD1.Proxy.stVal");
+        assertEquals("false", dv.val());
+    }
+
+    @Test
     public void testResolveInvalidRef() {
         SclDocument doc = parseFullScd();
         assertNull(DataValueResolver.resolve(doc, "NONEXIST/LD/LN.DO.DA"));

@@ -30,6 +30,7 @@ import java.util.List;
  *     <xs:attribute name="id" type="xs:normalizedString" use="required"/>
  *     <xs:attribute name="version" type="xs:normalizedString"/>
  *     <xs:attribute name="revision" type="xs:normalizedString" default=""/>
+ *     <xs:attribute name="release" type="xs:normalizedString"/>
  *     <xs:attribute name="toolID" type="xs:normalizedString"/>
  *     <xs:attribute name="nameStructure" use="optional" default="IEDName">
  *         <xs:simpleType>
@@ -59,6 +60,11 @@ public class SclHeader {
      * empty string meaning the original before any revision / change.
      */
     private String revision;
+    /**
+     * The release of this SCL configuration file (e.g. "2007B"), optional in IEC
+     * 61850-6 Ed 2.1, useful for fileType detection.
+     */
+    private String release;
     /**
      * The manufacturer specific identification of the tool that was used to create
      * the SCL file

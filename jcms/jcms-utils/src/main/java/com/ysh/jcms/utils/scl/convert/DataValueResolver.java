@@ -1,15 +1,19 @@
 package com.ysh.jcms.utils.scl.convert;
 
 import com.ysh.jcms.utils.scl.SclDocument;
+import com.ysh.jcms.utils.scl.model.SclVal;
 import com.ysh.jcms.utils.scl.model.instance.SclDAI;
 import com.ysh.jcms.utils.scl.model.instance.SclDOI;
 import com.ysh.jcms.utils.scl.model.instance.SclSDI;
+import com.ysh.jcms.utils.scl.model.template.SclBDA;
 import com.ysh.jcms.utils.scl.model.template.SclDA;
 import com.ysh.jcms.utils.scl.model.template.SclDOType;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.scl.navigate.TypeChain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * 数据值解析器。
@@ -66,17 +70,18 @@ public final class DataValueResolver {
             return null;
 
         if (nav.ref().isDaLevel()) {
-            if (nav.dai() == null) {
-                log.debug("resolve ref={}: dai=null", ref);
-                return null;
-            }
-            String daiVal = firstVal(nav.dai());
-            if (daiVal == null) {
-                log.debug("resolve ref={}: dai={} no vals, davals={}", ref, nav.dai().name(), nav.dai().vals().size());
-                return null;
-            }
             String bType = resolveBType(nav);
-            return new DataValueEntry(ref, daiVal, bType);
+            if (nav.dai() != null) {
+                String daiVal = firstVal(nav.dai());
+                if (daiVal != null)
+                    return new DataValueEntry(ref, daiVal, bType);
+            }
+            // 实例 DAI 无值 → 模板 DA/BDA 默认值兜底（真实 SCD 常见值写在 DOType 模板里）
+            String tpl = templateDefault(nav);
+            if (tpl != null)
+                return new DataValueEntry(ref, tpl, bType);
+            log.debug("resolve ref={}: no instance nor template value", ref);
+            return null;
         }
 
         return resolveDoLevel(nav, ref, fc);
@@ -96,6 +101,12 @@ public final class DataValueResolver {
                 if (val != null) {
                     String bType = resolveDaBType(nav, dai.name());
                     return new DataValueEntry(ref, val, bType);
+                }
+                // 实例 DAI 无值 → 模板 DA 默认值兜底
+                String tpl = templateDefaultByName(nav, dai.name());
+                if (tpl != null) {
+                    String bType = resolveDaBType(nav, dai.name());
+                    return new DataValueEntry(ref, tpl, bType);
                 }
             }
             return null;
@@ -123,6 +134,12 @@ public final class DataValueResolver {
                     return new DataValueEntry(ref, val, bType);
                 }
             }
+            // 实例 DAI 无值 → DOType 中 DA 的模板默认值兜底
+            String tpl = firstTemplateVal(da.vals());
+            if (tpl != null) {
+                String bType = resolveDaBType(nav, da.name());
+                return new DataValueEntry(ref, tpl, bType);
+            }
 
             SclSDI sdi = doi.findSdiByName(da.name());
             if (sdi != null) {
@@ -131,6 +148,12 @@ public final class DataValueResolver {
                     if (val != null) {
                         String bType = resolveSdiBdaBType(nav, da.name(), sdai.name());
                         return new DataValueEntry(ref, val, bType);
+                    }
+                    // 实例 SDI 的 DAI 无值 → DAType 中 BDA 模板默认值兜底
+                    String bdaTpl = templateBdaDefault(nav, da.name(), sdai.name());
+                    if (bdaTpl != null) {
+                        String bType = resolveSdiBdaBType(nav, da.name(), sdai.name());
+                        return new DataValueEntry(ref, bdaTpl, bType);
                     }
                 }
             }
@@ -144,6 +167,54 @@ public final class DataValueResolver {
             return null;
         String v = dai.vals().get(0).value();
         return (v != null && !v.isEmpty()) ? v : null;
+    }
+
+    /** 取模板 DA/BDA 默认值列表中的第一个有效值。 */
+    private static String firstTemplateVal(List<SclVal> vals) {
+        if (vals == null || vals.isEmpty())
+            return null;
+        String v = vals.get(0).value();
+        return (v != null && !v.isEmpty()) ? v : null;
+    }
+
+    /**
+     * DA 级模板默认值兜底：按完整引用沿 TypeChain 找到 DOType 的 DA（或 DAType 的 BDA）默认 Val。 支持无 SDI 的
+     * DO.DA 与单级 SDI 的 DO.SDI.BDA 两种路径（与现有类型解析一致）。
+     */
+    private static String templateDefault(Navigator nav) {
+        if (nav.document().dataTypeTemplates() == null || nav.ln().lnType() == null)
+            return null;
+        String doName = nav.ref().doName();
+        String daName = nav.ref().daName();
+        if (doName == null || daName == null)
+            return null;
+        TypeChain chain = TypeChain.of(nav.document().dataTypeTemplates());
+        if (nav.ref().sdiChain() == null || nav.ref().sdiChain().isEmpty()) {
+            SclDA da = chain.from(nav.ln().lnType()).doDef(doName).daDef(daName).da();
+            return da != null ? firstTemplateVal(da.vals()) : null;
+        }
+        TypeChain.DaStep step = chain.from(nav.ln().lnType()).doDef(doName).daDef(nav.ref().sdiChain().get(0));
+        SclBDA bda = step.daType().bdaDef(daName);
+        return bda != null ? firstTemplateVal(bda.vals()) : null;
+    }
+
+    /** DO 级（无 FC 过滤）按 DA 名查模板默认值。 */
+    private static String templateDefaultByName(Navigator nav, String daName) {
+        if (nav.document().dataTypeTemplates() == null || nav.ln().lnType() == null || nav.ref().doName() == null)
+            return null;
+        TypeChain chain = TypeChain.of(nav.document().dataTypeTemplates());
+        SclDA da = chain.from(nav.ln().lnType()).doDef(nav.ref().doName()).daDef(daName).da();
+        return da != null ? firstTemplateVal(da.vals()) : null;
+    }
+
+    /** SDI 内 DAI 无值时的 BDA 模板默认值兜底。 */
+    private static String templateBdaDefault(Navigator nav, String sdiName, String bdaName) {
+        if (nav.document().dataTypeTemplates() == null || nav.ln().lnType() == null)
+            return null;
+        TypeChain chain = TypeChain.of(nav.document().dataTypeTemplates());
+        TypeChain.DaStep step = chain.from(nav.ln().lnType()).doDef(nav.ref().doName()).daDef(sdiName);
+        SclBDA bda = step.daType().bdaDef(bdaName);
+        return bda != null ? firstTemplateVal(bda.vals()) : null;
     }
 
     private static String resolveDaBType(Navigator nav, String daName) {

@@ -60,7 +60,10 @@ public class SclIED {
         return result;
     }
 
-    /** Find a logical device by instance name across all access points (O(1) after first call). */
+    /**
+     * Find a logical device by instance name across all access points (O(1) after
+     * first call).
+     */
     public SclLDevice lDevice(String inst) {
         if (inst == null)
             return null;

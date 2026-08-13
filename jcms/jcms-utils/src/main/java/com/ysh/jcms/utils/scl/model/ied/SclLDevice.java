@@ -17,6 +17,8 @@ public class SclLDevice {
     private String inst;
     private String desc;
     private String ldName;
+    /** LD 配置版本号（厂商/国网扩展属性，IEC 61850-6 2007B schema 的 tLDevice 无此属性）。 */
+    private String confRev;
     private SclAccessControl accessControl;
 
     private final List<SclLN> lns = new ArrayList<>();

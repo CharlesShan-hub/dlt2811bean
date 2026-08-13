@@ -147,6 +147,7 @@ public class SclIedParser {
         ld.inst(getAttr(reader, "inst"));
         ld.desc(getAttr(reader, "desc"));
         ld.ldName(getAttr(reader, "ldName"));
+        ld.confRev(getAttr(reader, "confRev"));
 
         while (reader.hasNext()) {
             int event = reader.nextTag();
@@ -185,6 +186,7 @@ public class SclIedParser {
     private static SclLN parseLN(XMLStreamReader reader) throws XMLStreamException {
         SclLN ln = new SclLN();
         ln.lnType(getAttr(reader, "lnType"));
+        ln.iedType(getAttr(reader, "iedType"));
         ln.prefix(getAttr(reader, "prefix"));
         ln.lnClass(getAttr(reader, "lnClass"));
         ln.inst(getAttr(reader, "inst"));
