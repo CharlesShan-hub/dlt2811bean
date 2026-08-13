@@ -215,10 +215,21 @@ async function onToggle(node) {
 
     try {
       const cmd = node.type === 'data-set'
-        ? `get-dataset-dir --ds ${node.ref} --json`
+        ? `get-dataset-dir --ds ${node.ref} --auto-pull true --json`
         : `get-${node.type}-vals --refs "${node.ref}" --json`
       const res = await executeJson(cmd)
       detailRaw.value = JSON.stringify(res, null, 2)
+
+      // data-set 节点：将 memberData 映射到表格
+      if (node.type === 'data-set' && res && Array.isArray(res.memberData)) {
+        dirEntries.value = res.memberData.map(m => ({
+          fc: m.fc,
+          attr: m.reference,
+          fullRef: m.reference,
+          value: null,
+          type: '',
+        }))
+      }
     } finally {
       detailLoading.value = false
     }
