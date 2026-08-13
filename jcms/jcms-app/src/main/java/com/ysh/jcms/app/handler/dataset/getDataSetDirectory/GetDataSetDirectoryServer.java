@@ -42,8 +42,8 @@ public class GetDataSetDirectoryServer extends BaseServerHandler<CmsGetDataSetDi
         boolean refAfterPresent = req.isPresent("referenceAfter");
         String refAfter = refAfterPresent ? req.referenceAfter.value() : null;
 
-        log.info("GetDataSetDirectory DEBUG: dataset='{}', fcDas.size={}, refAfterPresent={}, refAfter='{}'",
-                ref, dataSet.fcDas().size(), refAfterPresent, refAfter);
+        log.info("GetDataSetDirectory DEBUG: dataset='{}', fcDas.size={}, refAfterPresent={}, refAfter='{}'", ref, dataSet.fcDas().size(),
+                refAfterPresent, refAfter);
         CmsGetDataSetDirectoryResponse resp = new CmsGetDataSetDirectoryResponse();
         int ps = pageSize(), count = 0;
 
