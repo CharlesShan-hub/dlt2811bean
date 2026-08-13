@@ -6,12 +6,34 @@ export default {
         reference         [0] IMPLICIT ObjectReference,
         fc                [1] IMPLICIT FunctionalConstraint
     }
-} — 8.6.5
+}
 
 GetEditSGValue-ResponsePDU ::= SEQUENCE {
     value               [0] IMPLICIT SEQUENCE OF Data,
     moreFollows         [1] IMPLICIT BOOLEAN DEFAULT TRUE
-} — 8.6.5
+}
 
-GetEditSGValue-ErrorPDU ::= ServiceError — 8.6.5`,
+GetEditSGValue-ErrorPDU ::= ServiceError`,
+  doc: `## 协议原文
+
+### 服务参数
+
+读编辑定值组用于获取编辑定值组的数据，服务的参数见表 44。
+
+**表 44 读编辑定值组值服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| data [1..n] | | |
+| reference | data | ObjectReference |
+| fc | data | FunctionalConstraint |
+| **Response+** | | |
+| value [1..n] | | Data |
+| moreFollows [0..1] | | BOOLEAN |
+| **Response-** | | |
+| serviceError | | ServiceError |
+
+功能约束 fc 的值为 SG 或 SE。
+`,
 }

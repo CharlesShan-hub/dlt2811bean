@@ -9,7 +9,7 @@ Associate-ResponsePDU ::= SEQUENCE {
     associationId           OCTETSTRING64,
     result                  ServiceError DEFAULT no-error,
     authenticationParameter OCTETSTRING  OPTIONAL
-} — 8.2.1`
+}`
 
 export const asn1Negotiate = `Negotiate-RequestPDU ::= SEQUENCE {
     apduSize         INTEGER (0..65535),
@@ -31,7 +31,7 @@ export const asn1Release = `Release-RequestPDU ::= SEQUENCE {
 Release-ResponsePDU ::= SEQUENCE {
     associationId OCTETSTRING64,
     result        ServiceError DEFAULT no-error
-} — 8.2.2`
+}`
 
 export const asn1Abort = `Abort-RequestPDU ::= SEQUENCE {
     associationId OCTETSTRING64,
@@ -43,4 +43,4 @@ export const asn1Abort = `Abort-RequestPDU ::= SEQUENCE {
         invalid-result                (4),
         max-serv-outstanding-exceeded (5)
     } (0..5)
-} — 8.2.3`
+}`

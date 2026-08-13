@@ -14,5 +14,21 @@ GetFileAttributeValues-ResponsePDU ::= SEQUENCE {
     }
 }
 
-GetFileAttributeValues-ErrorPDU ::= ServiceError — 8.12.4`,
+GetFileAttributeValues-ErrorPDU ::= ServiceError`,
+  doc: `## 协议原文
+
+### 服务参数
+
+读文件属性值服务的参数见表75。
+
+**表75 读文件属性值服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| fileName | | VisibleString255 |
+| **Response+** | | |
+| fileEntry | | FileEntry |
+| **Response-** | | |
+| serviceError | | ServiceError |`,
 }

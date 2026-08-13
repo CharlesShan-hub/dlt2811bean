@@ -4,9 +4,26 @@ export default {
   asn1: `SelectActiveSG-RequestPDU ::= SEQUENCE {
     sgcbReference       [0] IMPLICIT ObjectReference,
     settingGroupNumber  [1] IMPLICIT INT8U
-} — 8.6.1
+}
 
-SelectActiveSG-ResponsePDU ::= NULL — 8.6.1
+SelectActiveSG-ResponsePDU ::= NULL
 
-SelectActiveSG-ErrorPDU ::= ServiceError — 8.6.1`,
+SelectActiveSG-ErrorPDU ::= ServiceError`,
+  doc: `## 协议原文
+
+### 服务参数
+
+选择激活定值组服务用于选择待启用的定值组，服务的参数见表 40。
+
+**表 40 选择激活定值组服务参数**
+
+| 服务/参数 | 数据类型 |
+|-----------|----------|
+| **Request** | |
+| sgcbReference | ObjectReference |
+| settingGroupNumber | INT8U |
+| **Response+** | |
+| **Response-** | |
+| serviceError | ServiceError |
+`,
 }

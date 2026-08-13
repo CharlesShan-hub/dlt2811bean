@@ -15,7 +15,7 @@ GetDataDirectory-ResponsePDU ::= SEQUENCE {
     moreFollows      [1] IMPLICIT BOOLEAN DEFAULT TRUE
 }
 
-GetDataDirectory-ErrorPDU ::= ServiceError — 8.4.3`,
+GetDataDirectory-ErrorPDU ::= ServiceError`,
   doc: `## 协议原文
 
 ### 服务参数

@@ -18,7 +18,7 @@ GetDataDefinition-ResponsePDU ::= SEQUENCE {
     moreFollows      [1] IMPLICIT BOOLEAN DEFAULT TRUE
 }
 
-GetDataDefinition-ErrorPDU ::= ServiceError — 8.4.4`,
+GetDataDefinition-ErrorPDU ::= ServiceError`,
   doc: `## 协议原文
 
 ### 服务参数

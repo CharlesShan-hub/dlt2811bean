@@ -13,5 +13,23 @@ GetLCBValues-ResponsePDU ::= SEQUENCE {
     moreFollows      [1] IMPLICIT BOOLEAN DEFAULT TRUE
 }
 
-GetLCBValues-ErrorPDU ::= ServiceError — 8.8.2`,
+GetLCBValues-ErrorPDU ::= ServiceError`,
+  doc: `## 协议原文
+
+### 服务参数
+
+读日志控制块值服务用于获取日志控制块的所有属性，服务的参数见表52。
+
+**表52 读日志控制块值服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| lcbReference[1..n] | | ObjectReference |
+| **Response+** | | |
+| error/lcb[1..n] | | ServiceError/LCB |
+| moreFollows[0..1] | | BOOLEAN |
+| **Response-** | | |
+| result | | ServiceError |
+`,
 }

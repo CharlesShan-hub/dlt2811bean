@@ -13,5 +13,23 @@ GetMSVCBValues-ResponsePDU ::= SEQUENCE {
     moreFollows      [1] IMPLICIT BOOLEAN DEFAULT TRUE
 }
 
-GetMSVCBValues-ErrorPDU ::= ServiceError — 8.10.2`,
+GetMSVCBValues-ErrorPDU ::= ServiceError`,
+  doc: `## 协议原文
+
+### 服务参数
+
+读多播采样值控制块值服务的参数见表63。
+
+**表63 读多播采样值控制块值服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| reference[1..n] | | ObjectReference |
+| **Response+** | | |
+| error/msvcb[1..n] | | ServiceError/MSVCB |
+| moreFollows[0..1] | | BOOLEAN |
+| **Response-** | | |
+| serviceError | | ServiceError |
+`,
 }

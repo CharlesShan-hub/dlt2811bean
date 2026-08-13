@@ -15,7 +15,7 @@ GetDataValues-ResponsePDU ::= SEQUENCE {
     moreFollows      [1] IMPLICIT BOOLEAN DEFAULT TRUE
 }
 
-GetDataValues-ErrorPDU ::= ServiceError — 8.4.1`,
+GetDataValues-ErrorPDU ::= ServiceError`,
   doc: `## 协议原文
 
 ### 服务参数

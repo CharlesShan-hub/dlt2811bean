@@ -30,7 +30,7 @@ GetAllCBValues-ResponsePDU ::= SEQUENCE {
     moreFollows      [1] IMPLICIT Boolean DEFAULT 1
 }
 
-GetAllCBValues-ErrorPDU ::= ServiceError — 8.3.6`,
+GetAllCBValues-ErrorPDU ::= ServiceError`,
   doc: `## 协议原文
 
 ### 服务参数

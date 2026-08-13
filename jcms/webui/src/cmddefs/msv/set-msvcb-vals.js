@@ -17,5 +17,28 @@ SetMSVCBValues-ResponsePDU ::= NULL
 
 SetMSVCBValues-ErrorPDU ::= SEQUENCE {
     result           [0] IMPLICIT SEQUENCE OF ServiceError
-} — 8.10.3`,
+}`,
+  doc: `## 协议原文
+
+### 服务参数
+
+设置多播采样值控制块值服务的参数见表64。
+
+**表64 设置多播采样值控制块值服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| msvcb[1..n] | | |
+| reference | msvcb | ObjectReference |
+| svEna[0..1] | msvcb | BOOLEAN |
+| msvID[0..1] | msvcb | VisibleString129 |
+| datSet[0..1] | msvcb | ObjectReference |
+| smpMod[0..1] | msvcb | SmpMod |
+| smpRate[0..1] | msvcb | INT16U |
+| optFlds[0..1] | msvcb | MSVOptFlds |
+| **Response+** | | |
+| **Response-** | | |
+| result[1..n] | | ServiceError |
+`,
 }

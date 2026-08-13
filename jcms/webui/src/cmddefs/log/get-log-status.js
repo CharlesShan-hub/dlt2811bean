@@ -20,5 +20,28 @@ GetLogStatusValues-ResponsePDU ::= SEQUENCE {
     moreFollows      [1] IMPLICIT BOOLEAN DEFAULT TRUE
 }
 
-GetLogStatusValues-ErrorPDU ::= ServiceError — 8.8.6`,
+GetLogStatusValues-ErrorPDU ::= ServiceError`,
+  doc: `## 协议原文
+
+### 服务参数
+
+读日志状态值服务的参数见表56。
+
+**表56 读日志状态值服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| logReference[1..n] | | ObjectReference |
+| **Response+** | | |
+| log[1..n] | | |
+| error/value | log | ServiceError/log |
+| oldEntrTm | log | EntryTime |
+| newEntrTm | log | EntryTime |
+| oldEntr | log | EntryID |
+| newEntr | log | EntryID |
+| moreFollows[0..1] | | BOOLEAN |
+| **Response-** | | |
+| serviceError | | ServiceError |
+`,
 }

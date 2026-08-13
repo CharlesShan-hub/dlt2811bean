@@ -12,5 +12,25 @@ QueryLogAfter-ResponsePDU ::= SEQUENCE {
     moreFollows      [1] IMPLICIT BOOLEAN DEFAULT TRUE
 }
 
-QueryLogAfter-ErrorPDU ::= ServiceError — 8.8.5`,
+QueryLogAfter-ErrorPDU ::= ServiceError`,
+  doc: `## 协议原文
+
+### 服务参数
+
+查询指定条目之后的日志服务的参数见表55。
+
+**表55 查询指定条目之后的日志服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| logReference | | ObjectReference |
+| startTime[0..1] | | EntryTime |
+| entry | | EntryID |
+| **Response+** | | |
+| logEntry[0..n] | | LogEntry |
+| moreFollows[0..1] | | BOOLEAN |
+| **Response-** | | |
+| serviceError | | ServiceError |
+`,
 }

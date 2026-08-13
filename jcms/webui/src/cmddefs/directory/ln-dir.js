@@ -31,7 +31,7 @@ GetLogicalNodeDirectory-ResponsePDU ::= SEQUENCE {
     moreFollows     [1] IMPLICIT BOOLEAN DEFAULT TRUE
 }
 
-GetLogicalNodeDirectory-ErrorPDU ::= ServiceError — 8.3.3`,
+GetLogicalNodeDirectory-ErrorPDU ::= ServiceError`,
   doc: `## 协议原文
 
 ### 服务参数

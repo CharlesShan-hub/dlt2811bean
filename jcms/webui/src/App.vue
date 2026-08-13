@@ -277,7 +277,7 @@ const navItems = [
     { id: 'set-dataset-values', label: cnTitle('set-dataset-values'), done: false },
     { id: 'create-dataset', label: cnTitle('create-dataset'), done: false },
     { id: 'delete-dataset', label: cnTitle('delete-dataset'), done: false },
-    { id: 'get-dataset-dir', label: cnTitle('get-dataset-dir'), done: false },
+    { id: 'get-dataset-dir', label: cnTitle('get-dataset-dir'), done: true },
   ] },
   { id: 'sg', label: '定值组', icon: 'Settings', done: false, children: [
     { id: 'select-active-sg', label: cnTitle('select-active-sg'), done: false },

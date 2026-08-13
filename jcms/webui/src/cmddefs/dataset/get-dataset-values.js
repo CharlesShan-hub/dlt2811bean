@@ -6,14 +6,14 @@ export default {
   asn1: `GetDataSetValues-RequestPDU ::= SEQUENCE {
     datasetReference    [0] IMPLICIT ObjectReference,
     referenceAfter      [1] IMPLICIT ObjectReference OPTIONAL
-} — 8.5.1
+}
 
 GetDataSetValues-ResponsePDU ::= SEQUENCE {
     value               [0] IMPLICIT SEQUENCE OF Data,
     moreFollows         [1] IMPLICIT BOOLEAN DEFAULT TRUE
-} — 8.5.1
+}
 
-GetDataSetValues-ErrorPDU ::= ServiceError — 8.5.1`,
+GetDataSetValues-ErrorPDU ::= ServiceError`,
   doc: `## 协议原文
 
 ### 8.5.1.1 服务参数

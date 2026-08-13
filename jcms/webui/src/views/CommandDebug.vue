@@ -282,7 +282,7 @@ const {
   getDef: () => def.value,
   getCmd: () => props.cmd,
   getLnRef: () => lnRef.value,
-  lnRequiredCmds: ['ln-dir', 'all-data', 'all-def', 'all-cb', 'get-dataset-values'],
+  lnRequiredCmds: ['ln-dir', 'all-data', 'all-def', 'all-cb', 'get-dataset-values', 'get-dataset-dir'],
 })
 
 const formValid = computed(() => {
@@ -388,9 +388,9 @@ setupLazyLnWatch()
 setupRefsWatch()
 setupAllDataRefsWatch()
 
-// get-dataset-values: LN 变化时加载数据集列表
+// get-dataset-values / get-dataset-dir: LN 变化时加载数据集列表
 watch([() => form.ln?.ld, () => form.ln?.ln], async ([ld, ln]) => {
-  if (props.cmd !== 'get-dataset-values') return
+  if (!['get-dataset-values', 'get-dataset-dir'].includes(props.cmd)) return
   form.ds = '' // 清除数据集选择
   if (ld && ln) {
     await ensureDatasetRefs(`${ld}/${ln}`)

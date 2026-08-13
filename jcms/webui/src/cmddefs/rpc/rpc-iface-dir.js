@@ -10,5 +10,22 @@ GetRpcInterfaceDirectory-ResponsePDU ::= SEQUENCE {
     moreFollows      [1] IMPLICIT BOOLEAN DEFAULT TRUE
 }
 
-GetRpcInterfaceDirectory-ErrorPDU ::= ServiceError — 8.13.2`,
+GetRpcInterfaceDirectory-ErrorPDU ::= ServiceError`,
+  doc: `## 协议原文
+
+### 服务参数
+
+读远程过程调用接口目录服务用于获取服务器所有可用的调用接口，服务的参数见表77。
+
+**表77 读远程过程调用接口目录服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| referenceAfter[0..1] | | VisibleString |
+| **Response+** | | |
+| reference[0..n] | | VisibleString |
+| moreFollows[0..1] | | BOOLEAN |
+| **Response-** | | |
+| serviceError | | ServiceError |`,
 }

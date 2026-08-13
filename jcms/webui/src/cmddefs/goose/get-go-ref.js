@@ -16,5 +16,28 @@ GetGoReference-ResponsePDU ::= SEQUENCE {
     }
 }
 
-GetGoReference-ErrorPDU ::= ServiceError — 8.9.2`,
+GetGoReference-ErrorPDU ::= ServiceError`,
+  doc: `## 协议原文
+
+### 服务参数
+
+读GOOSE引用服务的参数见表58。
+
+**表58 读GOOSE引用服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| gocbReference | | ObjectReference |
+| memberOffset[1..n] | | INT16U |
+| **Response+** | | |
+| gocbReference | | ObjectReference |
+| confRev | | INT32U |
+| datSet | | ObjectReference |
+| memberData[1..n] | | |
+| reference | memberData | ObjectReference |
+| fc | memberData | FunctionalConstraint |
+| **Response-** | | |
+| serviceError | | ServiceError |
+`,
 }

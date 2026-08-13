@@ -11,7 +11,7 @@ GetLogicalDeviceDirectory-ResponsePDU ::= SEQUENCE {
     moreFollows       [1] IMPLICIT BOOLEAN DEFAULT TRUE
 }
 
-GetLogicalDeviceDirectory-ErrorPDU ::= ServiceError — 8.3.2`,
+GetLogicalDeviceDirectory-ErrorPDU ::= ServiceError`,
   doc: `## 协议原文
 
 ### 服务参数

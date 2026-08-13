@@ -7,5 +7,20 @@ export default {
 
 DeleteFile-ResponsePDU ::= NULL
 
-DeleteFile-ErrorPDU ::= ServiceError — 8.12.3`,
+DeleteFile-ErrorPDU ::= ServiceError`,
+  doc: `## 协议原文
+
+### 服务参数
+
+删除文件服务的参数见表74。
+
+**表74 删除文件服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| fileName | | VisibleString255 |
+| **Response+** | | |
+| **Response-** | | |
+| serviceError | | ServiceError |`,
 }

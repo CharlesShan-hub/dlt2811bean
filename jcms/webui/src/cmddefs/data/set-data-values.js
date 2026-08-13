@@ -15,7 +15,7 @@ SetDataValues-ResponsePDU ::= NULL
 
 SetDataValues-ErrorPDU ::= SEQUENCE {
     result           [0] IMPLICIT SEQUENCE OF ServiceError
-} — 8.4.2`,
+}`,
   doc: `## 协议原文
 
 ### 服务参数
