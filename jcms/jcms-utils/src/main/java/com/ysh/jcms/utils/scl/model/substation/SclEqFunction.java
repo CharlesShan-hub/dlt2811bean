@@ -8,9 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 设备功能 (EqFunction)，挂载在 GeneralEquipment 或 TapChanger 下的功能定义。
+ * Equipment function (EqFunction), a function definition mounted under GeneralEquipment or TapChanger.
  * <p>
- * EqFunction 可以包含 LNode、GeneralEquipment 和 EqSubFunction， 用于描述一次设备所承载的具体自动化功能。
+ * EqFunction may contain LNode, GeneralEquipment and EqSubFunction, describing
+ * the specific automation functions carried by the primary equipment.
  * <p>
  * Schema:
  *
@@ -37,17 +38,17 @@ import java.util.List;
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclEqFunction {
-    /** 设备功能名称 (name) */
+    /** Equipment function name (name) */
     private String name;
-    /** 描述 (desc) */
+    /** Description (desc) */
     private String desc;
-    /** 设备功能类型 (type) */
+    /** Equipment function type (type) */
     private String type;
-    /** 逻辑节点引用列表 (LNode) */
+    /** List of logical node references (LNode) */
     private final List<SclLNode> lNodes = new ArrayList<>();
-    /** 通用一次设备列表 (GeneralEquipment) */
+    /** List of general equipment (GeneralEquipment) */
     private final List<SclGeneralEquipment> generalEquipments = new ArrayList<>();
-    /** 设备子功能列表 (EqSubFunction) */
+    /** List of equipment sub-functions (EqSubFunction) */
     private final List<SclEqSubFunction> eqSubFunctions = new ArrayList<>();
 
     public SclEqFunction addLNode(SclLNode lNode) {

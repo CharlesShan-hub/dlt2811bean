@@ -7,12 +7,12 @@ import com.ysh.jcms.utils.scl.model.template.SclEnumVal;
 import java.util.Optional;
 
 /**
- * bType → Java 原生类型 值映射器。
+ * bType → Java native type value mapper.
  * <p>
- * 负责两件事：
+ * Responsible for two things:
  * <ol>
- * <li>bType + 字符串值 → Java 原生类型（Integer、Float 等）</li>
- * <li>枚举值 ord ↔ label 双向查找</li>
+ * <li>bType + string value → Java native type (Integer, Float, etc.)</li>
+ * <li>bidirectional lookup between enumeration value ord ↔ label</li>
  * </ol>
  */
 public class ValueMapper {
@@ -23,10 +23,10 @@ public class ValueMapper {
         this.templates = templates;
     }
 
-    // ==================== 值转换 ====================
+    // ==================== Value conversion ====================
 
     /**
-     * 将字符串值按 bType 转换为对应的 Java 类型。
+     * Converts a string value to the corresponding Java type according to the bType.
      */
     public Optional<Object> mapValue(String bType, String value) {
         if (value == null)
@@ -65,9 +65,9 @@ public class ValueMapper {
         }
     }
 
-    // ==================== 枚举映射 ====================
+    // ==================== Enumeration mapping ====================
 
-    /** 根据枚举类型 id 和 ord 查找对应的枚举值 label */
+    /** Finds the enumeration value label by enumeration type id and ord */
     public Optional<String> mapEnumValue(String enumTypeId, int ord) {
         if (templates == null)
             return Optional.empty();
@@ -75,7 +75,7 @@ public class ValueMapper {
         return Optional.ofNullable(ev != null ? ev.value() : null);
     }
 
-    /** 根据枚举类型 id 和 label 查找对应的 ord */
+    /** Finds the ord by enumeration type id and label */
     public Optional<Integer> mapEnumOrd(String enumTypeId, String value) {
         if (templates == null || value == null)
             return Optional.empty();

@@ -8,9 +8,9 @@ import com.ysh.jcms.utils.scl.model.control.SclReportControl;
 import com.ysh.jcms.utils.scl.model.control.SclSampledValueControl;
 
 /**
- * 控制块 → CMS 协议类型 转换器。
+ * Control block → CMS protocol type converter.
  * <p>
- * 将 SCL 模型中的控制块定义转为 {@link CmsCbValueChoice} 协议对象。
+ * Converts control block definitions in the SCL model into {@link CmsCbValueChoice} protocol objects.
  */
 public final class CbConverter {
 

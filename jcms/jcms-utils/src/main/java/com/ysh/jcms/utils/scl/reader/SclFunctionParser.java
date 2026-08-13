@@ -11,7 +11,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import static com.ysh.jcms.utils.scl.reader.SclReader.*;
 
-/** 解析 Substation 下的功能节点：Function / SubFunction / EqFunction / EqSubFunction。 */
+/** Parses functional nodes under Substation: Function / SubFunction / EqFunction / EqSubFunction. */
 public class SclFunctionParser {
 
     private SclFunctionParser() {

@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 子功能 (SubFunction)，Function 的嵌套子级。
+ * Sub-function (SubFunction), the nested child level of Function.
  * <p>
- * SubFunction 可以递归嵌套，包含 LNode、GeneralEquipment、ConductingEquipment 以及更细粒度的
- * SubFunction。
+ * SubFunction can be nested recursively, containing LNode, GeneralEquipment,
+ * ConductingEquipment as well as more fine-grained SubFunction.
  * <p>
  * Schema:
  *
@@ -40,19 +40,19 @@ import java.util.List;
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclSubFunction {
-    /** 子功能名称 (name) */
+    /** Sub-function name (name) */
     private String name;
-    /** 描述 (desc) */
+    /** Description (desc) */
     private String desc;
-    /** 子功能类型 (type) */
+    /** Sub-function type (type) */
     private String type;
-    /** 逻辑节点引用列表 (LNode) */
+    /** List of logical node references (LNode) */
     private final List<SclLNode> lNodes = new ArrayList<>();
-    /** 通用一次设备列表 (GeneralEquipment) */
+    /** List of general equipment (GeneralEquipment) */
     private final List<SclGeneralEquipment> generalEquipments = new ArrayList<>();
-    /** 导电设备列表 (ConductingEquipment) */
+    /** List of conducting equipment (ConductingEquipment) */
     private final List<SclConductingEquipment> conductingEquipments = new ArrayList<>();
-    /** 子功能列表 (SubFunction)，支持递归嵌套 */
+    /** List of sub-functions (SubFunction), supporting recursive nesting */
     private final List<SclSubFunction> subFunctions = new ArrayList<>();
 
     public SclSubFunction addLNode(SclLNode lNode) {

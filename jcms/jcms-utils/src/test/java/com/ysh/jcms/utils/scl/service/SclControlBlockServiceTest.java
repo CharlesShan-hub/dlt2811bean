@@ -17,7 +17,7 @@ import java.io.InputStream;
 import static org.junit.Assert.*;
 
 /**
- * 控制块服务测试 —— ref 解析 + SCL 默认值 + 运行时 overlay（用 sample-scd-full.scd 的 E1Q1SB1 IED）。
+ * Control block service tests — ref parsing + SCL defaults + runtime overlay (using the E1Q1SB1 IED of sample-scd-full.scd).
  */
 public class SclControlBlockServiceTest {
 
@@ -38,11 +38,11 @@ public class SclControlBlockServiceTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        // 清空静态运行时状态，避免测试间污染（resolveGocb/msvcb 优先读缓存）
+        // clear static runtime state to avoid cross-test pollution (resolveGocb/msvcb prefer the cache)
         CbStateManager.clearAll();
     }
 
-    // ==================== URCB（无 buffered 属性归 URCB） ====================
+    // ==================== URCB (no buffered attribute → URCB) ====================
 
     @Test
     public void testResolveUrcbFromSclDefaults() {
@@ -65,7 +65,7 @@ public class SclControlBlockServiceTest {
 
     @Test
     public void testResolveBrcbReturnsNullWhenNoBuffered() {
-        // sample 的 ReportControl 均无 buffered 属性 → BRCB 无匹配
+        // none of the sample's ReportControl entries have a buffered attribute → no BRCB match
         assertNull(SclControlBlockService.resolveBrcb(ied, ap, "C1/LLN0.PosReport"));
     }
 
@@ -75,7 +75,7 @@ public class SclControlBlockServiceTest {
         assertNull(SclControlBlockService.resolveUrcb(ied, ap, "bad-ref"));
     }
 
-    // ==================== GoCB（8.10.2） ====================
+    // ==================== GoCB (8.10.2) ====================
 
     @Test
     public void testResolveGocbFromSclDefaults() {
@@ -88,7 +88,7 @@ public class SclControlBlockServiceTest {
 
     @Test
     public void testResolveGocbPrefersRuntimeCache() {
-        // 先写运行时状态，resolve 应优先返回缓存而非 SCL 值
+        // write runtime state first; resolve should prefer the cache over SCL values
         CmsGoCb rt = new CmsGoCb();
         rt.goID("RuntimeGoID");
         rt.datSet("RuntimeDs");
@@ -105,7 +105,7 @@ public class SclControlBlockServiceTest {
         assertNull(SclControlBlockService.resolveGocb(ied, ap, "C1/LLN0.NoSuchCb"));
     }
 
-    // ==================== MSVCB（8.11.2） ====================
+    // ==================== MSVCB (8.11.2) ====================
 
     @Test
     public void testResolveMsvcbFromSclDefaults() {
@@ -121,7 +121,7 @@ public class SclControlBlockServiceTest {
         assertNull(SclControlBlockService.resolveMsvcb(ied, ap, "C1/LLN0.NoSuchCb"));
     }
 
-    // ==================== LCB（8.8.2） ====================
+    // ==================== LCB (8.8.2) ====================
 
     @Test
     public void testResolveLcb() {

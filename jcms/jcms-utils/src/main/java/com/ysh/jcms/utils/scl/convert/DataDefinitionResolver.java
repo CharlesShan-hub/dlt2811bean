@@ -16,10 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 数据定义解析器。
+ * Data definition resolver.
  * <p>
- * 按引用路径查找数据类型定义，返回 {@link DataDefinitionEntry}。 基于 {@link Navigator} +
- * {@link TypeChain} 积木。
+ * Looks up the data type definition by reference path and returns a {@link DataDefinitionEntry}. Based on {@link Navigator} +
+ * {@link TypeChain} building blocks.
  */
 public final class DataDefinitionResolver {
 
@@ -28,17 +28,17 @@ public final class DataDefinitionResolver {
     private DataDefinitionResolver() {
     }
 
-    // ==================== 核心入口 ====================
+    // ==================== Core entry ====================
 
     /**
-     * 按完整引用解析数据定义。
+     * Resolves the data definition by a full reference.
      */
     public static DataDefinitionEntry resolve(Navigator nav) {
         return resolve(nav, null);
     }
 
     /**
-     * 按完整引用解析数据定义，支持 FC 过滤。
+     * Resolves the data definition by a full reference, with FC filtering support.
      */
     public static DataDefinitionEntry resolve(Navigator nav, String fc) {
         if (!nav.isValid() || nav.ln() == null) {
@@ -64,7 +64,7 @@ public final class DataDefinitionResolver {
         return null;
     }
 
-    /** FC 过滤检查 */
+    /** FC filter check */
     private static boolean applyFcFilter(Navigator nav, String fc) {
         if (fc == null || fc.isEmpty() || "XX".equals(fc))
             return true;
@@ -89,7 +89,7 @@ public final class DataDefinitionResolver {
         return false;
     }
 
-    /** DA / SDI.BDA 级别 */
+    /** DA / SDI.BDA level */
     private static DataDefinitionEntry resolveDaLevel(Navigator nav) {
         if (nav.document().dataTypeTemplates() == null) {
             log.debug("resolveDaLevel: dataTypeTemplates=null");
@@ -97,7 +97,7 @@ public final class DataDefinitionResolver {
         }
 
         String daName = nav.ref().daName();
-        // 从模板中查找 DA 定义（走 TypeChain）
+        // Look up the DA definition from templates (via TypeChain)
         String lnTypeId = nav.ln().lnType();
         TypeChain ta = TypeChain.of(nav.document().dataTypeTemplates());
         String fullRef = nav.ref().doName() + "." + daName;
@@ -123,7 +123,7 @@ public final class DataDefinitionResolver {
         return new DataDefinitionEntry(nav.ref().fullReference(), "", toDataDefinition(bType));
     }
 
-    /** DO 级别：CDC 类型 + 结构定义 */
+    /** DO level: CDC type + structure definition */
     private static DataDefinitionEntry resolveDoLevel(Navigator nav) {
         if (nav.document().dataTypeTemplates() == null)
             return null;
@@ -136,7 +136,7 @@ public final class DataDefinitionResolver {
         return new DataDefinitionEntry(nav.ref().fullReference(), cdc != null ? cdc : "SPC", def);
     }
 
-    /** 构造 DO 级别的结构定义 */
+    /** Builds the structure definition at DO level */
     private static CmsDataDefinition buildDoDefinition(Navigator nav) {
         if (nav.document().dataTypeTemplates() == null)
             return null;
@@ -162,11 +162,11 @@ public final class DataDefinitionResolver {
 
     // ==================== bType → CmsDataDefinition ====================
 
-    /** bType 转 CmsDataDefinition（含长度约束） */
+    /** Converts bType to CmsDataDefinition (with length constraints) */
     public static CmsDataDefinition toDataDefinition(String bType) {
         if (bType == null)
             return nullDataDefinition();
-        // 统一转小写、去下划线、去前后空格，避免大小写/格式变体
+        // Normalize to lowercase, strip underscores and surrounding spaces to avoid case/format variants
         String key = bType.trim().replace("_", "").replace("-", "").toLowerCase();
         switch (key) {
             case "boolean" :

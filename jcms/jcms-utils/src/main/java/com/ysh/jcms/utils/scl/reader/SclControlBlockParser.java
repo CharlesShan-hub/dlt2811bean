@@ -12,7 +12,7 @@ import javax.xml.stream.XMLStreamReader;
 import static com.ysh.jcms.utils.scl.reader.SclReader.*;
 
 /**
- * 解析 LN 下的控制块：ReportControl / LogControl / GSEControl / SampledValueControl。
+ * Parses control blocks under LN: ReportControl / LogControl / GSEControl / SampledValueControl.
  */
 public class SclControlBlockParser {
 

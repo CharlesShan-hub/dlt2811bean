@@ -10,6 +10,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclServerAt {
-    /** 引用的访问点名称 (apName) */
+    /** Referenced access point name (apName) */
     private String apName;
 }

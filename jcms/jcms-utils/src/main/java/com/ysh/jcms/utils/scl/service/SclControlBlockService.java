@@ -23,10 +23,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 控制块（Report/Log/Goose/MSV）相关的 SCL 操作服务。
+ * SCL operation service for control blocks (Report/Log/Goose/MSV).
  * <p>
- * 收编 GetBrcbValues、GetUrcbValues、GetLcbValues、GetGoCbValues、GetMsvcbValues
- * handler 中的重复 SCL 解析逻辑，统一提供从 SCL 模型构建控制块对象的方法。
+ * Consolidates the duplicated SCL parsing logic in the
+ * GetBrcbValues、GetUrcbValues、GetLcbValues、GetGoCbValues、GetMsvcbValues
+ * handlers, and uniformly provides methods to build control block objects from the SCL model.
  */
 public class SclControlBlockService {
 
@@ -35,33 +36,33 @@ public class SclControlBlockService {
     private SclControlBlockService() {
     }
 
-    // ==================== BRCB（8.7.2） ====================
+    // ==================== BRCB (8.7.2) ====================
 
     /**
-     * 按 ref 解析 buffered ReportControl，合并 SCL 默认值与运行时状态。
+     * Resolves a buffered ReportControl by ref, merging SCL default values and runtime state.
      * <p>
-     * 在指定 AP 作用域内查找。
+     * Looks up within the scope of the given AP.
      *
      * @param ied
-     *            IED 模型
+     *            IED model
      * @param ap
-     *            当前关联的访问点
+     *            the currently associated access point
      * @param ref
-     *            引用字符串，格式为 {@code ldInst/lnName.cbName}
-     * @return BRCB 对象，若未找到则返回 {@code null}
+     *            reference string, format {@code ldInst/lnName.cbName}
+     * @return BRCB object, or {@code null} if not found
      */
     public static CmsBrcb resolveBrcb(SclIED ied, SclAccessPoint ap, String ref) {
         return buildBrcb(findReportControl(ied, ap, ref, true), ref);
     }
 
     /**
-     * 按 ref 解析 buffered ReportControl，合并 SCL 默认值与运行时状态。
+     * Resolves a buffered ReportControl by ref, merging SCL default values and runtime state.
      *
      * @param ied
-     *            IED 模型
+     *            IED model
      * @param ref
-     *            引用字符串，格式为 {@code ldInst/lnName.cbName}
-     * @return BRCB 对象，若未找到则返回 {@code null}
+     *            reference string, format {@code ldInst/lnName.cbName}
+     * @return BRCB object, or {@code null} if not found
      */
     public static CmsBrcb resolveBrcb(SclIED ied, String ref) {
         return buildBrcb(findReportControl(ied, null, ref, true), ref);
@@ -83,33 +84,33 @@ public class SclControlBlockService {
         return brcb;
     }
 
-    // ==================== URCB（8.7.4） ====================
+    // ==================== URCB (8.7.4) ====================
 
     /**
-     * 按 ref 解析 unbuffered ReportControl，合并 SCL 默认值与运行时状态。
+     * Resolves an unbuffered ReportControl by ref, merging SCL default values and runtime state.
      * <p>
-     * 在指定 AP 作用域内查找。
+     * Looks up within the scope of the given AP.
      *
      * @param ied
-     *            IED 模型
+     *            IED model
      * @param ap
-     *            当前关联的访问点
+     *            the currently associated access point
      * @param ref
-     *            引用字符串
-     * @return URCB 对象，若未找到则返回 {@code null}
+     *            reference string
+     * @return URCB object, or {@code null} if not found
      */
     public static CmsUrcb resolveUrcb(SclIED ied, SclAccessPoint ap, String ref) {
         return buildUrcb(findReportControl(ied, ap, ref, false), ref);
     }
 
     /**
-     * 按 ref 解析 unbuffered ReportControl，合并 SCL 默认值与运行时状态。
+     * Resolves an unbuffered ReportControl by ref, merging SCL default values and runtime state.
      *
      * @param ied
-     *            IED 模型
+     *            IED model
      * @param ref
-     *            引用字符串
-     * @return URCB 对象，若未找到则返回 {@code null}
+     *            reference string
+     * @return URCB object, or {@code null} if not found
      */
     public static CmsUrcb resolveUrcb(SclIED ied, String ref) {
         return buildUrcb(findReportControl(ied, null, ref, false), ref);
@@ -127,21 +128,21 @@ public class SclControlBlockService {
             try {
                 urcb.confRev(Long.parseLong(rc.confRev()));
             } catch (NumberFormatException e) {
-                log.warn("SCL confRev '{}' 非数字，URCB 回退默认值", rc.confRev(), e);
+                log.warn("SCL confRev '{}' is not numeric; URCB falls back to default", rc.confRev(), e);
             }
         }
         if (rc.bufTime() != null) {
             try {
                 urcb.bufTm(Long.parseLong(rc.bufTime()));
             } catch (NumberFormatException e) {
-                log.warn("SCL bufTime '{}' 非数字，URCB 回退默认值", rc.bufTime(), e);
+                log.warn("SCL bufTime '{}' is not numeric; URCB falls back to default", rc.bufTime(), e);
             }
         }
         if (rc.intgPd() != null) {
             try {
                 urcb.intgPd(Long.parseLong(rc.intgPd()));
             } catch (NumberFormatException e) {
-                log.warn("SCL intgPd '{}' 非数字，URCB 回退默认值", rc.intgPd(), e);
+                log.warn("SCL intgPd '{}' is not numeric; URCB falls back to default", rc.intgPd(), e);
             }
         }
         urcb.rptEna(false);
@@ -192,31 +193,31 @@ public class SclControlBlockService {
         }
     }
 
-    // ==================== LCB（8.8.2） ====================
+    // ==================== LCB (8.8.2) ====================
 
     /**
-     * 按 ref 解析 LogControl。
+     * Resolves a LogControl by ref.
      *
      * @param ied
-     *            IED 模型
+     *            IED model
      * @param ref
-     *            引用字符串
-     * @return LCB 对象，若未找到则返回 {@code null}
+     *            reference string
+     * @return LCB object, or {@code null} if not found
      */
     public static CmsLcb resolveLcb(SclIED ied, String ref) {
         return resolveLcb(ied, null, ref);
     }
 
     /**
-     * 按 ref 解析 LogControl（AP 作用域）。
+     * Resolves a LogControl by ref (AP scope).
      *
      * @param ied
-     *            IED 模型
+     *            IED model
      * @param ap
-     *            当前关联的访问点；为 {@code null} 时在全 IED 范围内查找
+     *            the currently associated access point; when {@code null}, looks up within the whole IED
      * @param ref
-     *            引用字符串
-     * @return LCB 对象，若未找到则返回 {@code null}
+     *            reference string
+     * @return LCB object, or {@code null} if not found
      */
     public static CmsLcb resolveLcb(SclIED ied, SclAccessPoint ap, String ref) {
         if (!SclRefParser.isValid(ref))
@@ -235,33 +236,33 @@ public class SclControlBlockService {
         return buildLcb(ln, cbName);
     }
 
-    // ==================== GoCB（8.10.2） ====================
+    // ==================== GoCB (8.10.2) ====================
 
     /**
-     * 按 ref 解析 GSEControl，优先使用缓存（由 SetGoCBValues 写入）。
+     * Resolves a GSEControl by ref, preferring the cache (written by SetGoCBValues).
      *
      * @param ied
-     *            IED 模型
+     *            IED model
      * @param ref
-     *            引用字符串
-     * @return GoCB 对象，若未找到则返回 {@code null}
+     *            reference string
+     * @return GoCB object, or {@code null} if not found
      */
     public static CmsGoCb resolveGocb(SclIED ied, String ref) {
         return resolveGocb(ied, null, ref);
     }
 
     /**
-     * 按 ref 解析 GSEControl，优先使用缓存（由 SetGoCBValues 写入）。
+     * Resolves a GSEControl by ref, preferring the cache (written by SetGoCBValues).
      * <p>
-     * 在指定 AP 作用域内查找。
+     * Looks up within the scope of the given AP.
      *
      * @param ied
-     *            IED 模型
+     *            IED model
      * @param ap
-     *            当前关联的访问点；为 {@code null} 时在全 IED 范围内查找
+     *            the currently associated access point; when {@code null}, looks up within the whole IED
      * @param ref
-     *            引用字符串
-     * @return GoCB 对象，若未找到则返回 {@code null}
+     *            reference string
+     * @return GoCB object, or {@code null} if not found
      */
     public static CmsGoCb resolveGocb(SclIED ied, SclAccessPoint ap, String ref) {
         // Check in-memory cache first (written by SetGoCBValues)
@@ -293,33 +294,33 @@ public class SclControlBlockService {
         return findGocbInDevice(device, lnPart, cbName, ref);
     }
 
-    // ==================== MSVCB（8.11.2） ====================
+    // ==================== MSVCB (8.11.2) ====================
 
     /**
-     * 按 ref 解析 SampledValueControl，优先使用缓存（由 SetMSVCBValues 写入）。
+     * Resolves a SampledValueControl by ref, preferring the cache (written by SetMSVCBValues).
      *
      * @param ied
-     *            IED 模型
+     *            IED model
      * @param ref
-     *            引用字符串
-     * @return MSVCB 对象，若未找到则返回 {@code null}
+     *            reference string
+     * @return MSVCB object, or {@code null} if not found
      */
     public static CmsMsvcb resolveMsvcb(SclIED ied, String ref) {
         return resolveMsvcb(ied, null, ref);
     }
 
     /**
-     * 按 ref 解析 SampledValueControl，优先使用缓存（由 SetMSVCBValues 写入）。
+     * Resolves a SampledValueControl by ref, preferring the cache (written by SetMSVCBValues).
      * <p>
-     * 在指定 AP 作用域内查找。
+     * Looks up within the scope of the given AP.
      *
      * @param ied
-     *            IED 模型
+     *            IED model
      * @param ap
-     *            当前关联的访问点；为 {@code null} 时在全 IED 范围内查找
+     *            the currently associated access point; when {@code null}, looks up within the whole IED
      * @param ref
-     *            引用字符串
-     * @return MSVCB 对象，若未找到则返回 {@code null}
+     *            reference string
+     * @return MSVCB object, or {@code null} if not found
      */
     public static CmsMsvcb resolveMsvcb(SclIED ied, SclAccessPoint ap, String ref) {
         // Check in-memory cache first (written by SetMSVCBValues)
@@ -351,12 +352,12 @@ public class SclControlBlockService {
         return findMsvcbInDevice(device, lnPart, cbName, ref);
     }
 
-    // ==================== 内部辅助方法 ====================
+    // ==================== Internal helper methods ====================
 
     /**
-     * 查找 buffered (buffered=true) 或 unbuffered (buffered=false) 的 ReportControl。
+     * Finds a buffered (buffered=true) or unbuffered (buffered=false) ReportControl.
      * <p>
-     * 在指定 AP 作用域内查找；ap 为 {@code null} 时在全 IED 范围内查找。
+     * Looks up within the scope of the given AP; when ap is {@code null}, looks up within the whole IED.
      */
     private static SclReportControl findReportControl(SclIED ied, SclAccessPoint ap, String ref, boolean buffered) {
         if (!SclRefParser.isValid(ref))
@@ -390,7 +391,7 @@ public class SclControlBlockService {
         return ld != null ? ld.findLnByFullName(lnName) : null;
     }
 
-    /** AP 作用域查找 LN。 */
+    /** Finds the LN within the AP scope. */
     private static SclLN findLn(SclAccessPoint ap, String ldName, String lnName) {
         SclLDevice ld = Navigator.findLd(ap, ldName);
         return ld != null ? ld.findLnByFullName(lnName) : null;
@@ -400,12 +401,12 @@ public class SclControlBlockService {
         return ied.lDevice(ldName);
     }
 
-    /** AP 作用域查找 LD。 */
+    /** Finds the LD within the AP scope. */
     private static SclLDevice findLd(SclAccessPoint ap, String ldName) {
         return Navigator.findLd(ap, ldName);
     }
 
-    /** 在指定 LD 设备中查找 GSEControl（支持精确匹配和前缀匹配）。 */
+    /** Finds a GSEControl in the given LD device (supports exact and prefix matching). */
     private static CmsGoCb findGocbInDevice(SclLDevice device, String lnPart, String cbName, String ref) {
         // Try findLnByFullName first (exact match)
         SclLN ln = device.findLnByFullName(lnPart);
@@ -431,7 +432,7 @@ public class SclControlBlockService {
         return null;
     }
 
-    /** 在指定 LD 设备中查找 SampledValueControl（支持精确匹配和前缀匹配）。 */
+    /** Finds a SampledValueControl in the given LD device (supports exact and prefix matching). */
     private static CmsMsvcb findMsvcbInDevice(SclLDevice device, String lnPart, String cbName, String ref) {
         // Try exact name match first
         SclLN ln = device.findLnByFullName(lnPart);
@@ -468,7 +469,7 @@ public class SclControlBlockService {
             try {
                 gocb.confRev(Long.parseLong(gc.confRev()));
             } catch (NumberFormatException e) {
-                log.warn("SCL confRev '{}' 非数字，GoCB 回退默认值", gc.confRev(), e);
+                log.warn("SCL confRev '{}' is not numeric; GoCB falls back to default", gc.confRev(), e);
             }
         }
         return gocb;
@@ -484,14 +485,14 @@ public class SclControlBlockService {
             try {
                 msvcb.confRev(Long.parseLong(svc.confRev()));
             } catch (NumberFormatException e) {
-                log.warn("SCL confRev '{}' 非数字，MSVCB 回退默认值", svc.confRev(), e);
+                log.warn("SCL confRev '{}' is not numeric; MSVCB falls back to default", svc.confRev(), e);
             }
         }
         if (svc.smpRate() != null && !svc.smpRate().isEmpty()) {
             try {
                 msvcb.smpRate(Integer.parseInt(svc.smpRate()));
             } catch (NumberFormatException e) {
-                log.warn("SCL smpRate '{}' 非数字，MSVCB 回退默认值", svc.smpRate(), e);
+                log.warn("SCL smpRate '{}' is not numeric; MSVCB falls back to default", svc.smpRate(), e);
             }
         }
         return msvcb;
@@ -517,7 +518,7 @@ public class SclControlBlockService {
             try {
                 lcb.intgPd(Long.parseLong(lc.intgPd()));
             } catch (NumberFormatException e) {
-                log.warn("SCL intgPd '{}' 非数字，LCB 回退默认值", lc.intgPd(), e);
+                log.warn("SCL intgPd '{}' is not numeric; LCB falls back to default", lc.intgPd(), e);
             }
         }
         if (lc.logName() != null)
@@ -528,7 +529,7 @@ public class SclControlBlockService {
                 CmsLcbOptFlds f = new CmsLcbOptFlds().bit0(v != 0);
                 lcb.optFlds(f);
             } catch (NumberFormatException e) {
-                log.warn("SCL optFields '{}' 非数字，LCB 回退默认值", lc.optFields(), e);
+                log.warn("SCL optFields '{}' is not numeric; LCB falls back to default", lc.optFields(), e);
             }
         }
         if (lc.trgOps() != null) {
@@ -547,21 +548,21 @@ public class SclControlBlockService {
             try {
                 brcb.confRev(Long.parseLong(rc.confRev()));
             } catch (NumberFormatException e) {
-                log.warn("SCL confRev '{}' 非数字，BRCB 回退默认值", rc.confRev(), e);
+                log.warn("SCL confRev '{}' is not numeric; BRCB falls back to default", rc.confRev(), e);
             }
         }
         if (rc.bufTime() != null) {
             try {
                 brcb.bufTm(Long.parseLong(rc.bufTime()));
             } catch (NumberFormatException e) {
-                log.warn("SCL bufTime '{}' 非数字，BRCB 回退默认值", rc.bufTime(), e);
+                log.warn("SCL bufTime '{}' is not numeric; BRCB falls back to default", rc.bufTime(), e);
             }
         }
         if (rc.intgPd() != null) {
             try {
                 brcb.intgPd(Long.parseLong(rc.intgPd()));
             } catch (NumberFormatException e) {
-                log.warn("SCL intgPd '{}' 非数字，BRCB 回退默认值", rc.intgPd(), e);
+                log.warn("SCL intgPd '{}' is not numeric; BRCB falls back to default", rc.intgPd(), e);
             }
         }
         brcb.rptEna(false);

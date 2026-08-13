@@ -5,9 +5,9 @@ import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.scl.ref.SclRef;
 
 /**
- * DataSet/FCDA 引用转换器。
+ * DataSet/FCDA reference converter.
  * <p>
- * FCDA ↔ 引用字符串 互转，基于 {@link SclRef} 和 {@link Navigator}。
+ * Bidirectional conversion between FCDA and reference string, based on {@link SclRef} and {@link Navigator}.
  */
 public final class DataSetResolver {
 
@@ -15,9 +15,9 @@ public final class DataSetResolver {
     }
 
     /**
-     * 将 FCDA 构建为完整引用字符串。
+     * Builds a complete reference string from an FCDA.
      * <p>
-     * 格式：{@code LD/LN.DO[.DA]}，例如 {@code C1/MMXU1.Volts.mag}
+     * Format: {@code LD/LN.DO[.DA]}, e.g. {@code C1/MMXU1.Volts.mag}
      */
     public static String fcdaRef(SclFCDA fcda) {
         StringBuilder sb = new StringBuilder();
@@ -37,7 +37,7 @@ public final class DataSetResolver {
     }
 
     /**
-     * 从 FCDA 构建 LN 全名（prefix + lnClass + lnInst）。
+     * Builds the full LN name (prefix + lnClass + lnInst) from an FCDA.
      */
     public static String fcdaLnName(SclFCDA fcda) {
         StringBuilder sb = new StringBuilder();
@@ -52,9 +52,9 @@ public final class DataSetResolver {
     }
 
     /**
-     * 从引用字符串解析为 FCDA 对象。
+     * Parses an FCDA object from a reference string.
      * <p>
-     * 通过 Navigator 定位到 LN，提取 lnClass/lnInst/prefix 填入 FCDA。
+     * Locates the LN via Navigator, extracts lnClass/lnInst/prefix and fills them into the FCDA.
      */
     public static SclFCDA parseRef(Navigator nav) {
         if (!nav.isValid() || nav.ln() == null)

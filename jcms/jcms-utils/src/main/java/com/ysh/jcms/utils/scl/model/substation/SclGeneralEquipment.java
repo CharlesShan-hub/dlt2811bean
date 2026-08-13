@@ -8,9 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 通用一次设备 (GeneralEquipment)，挂载在 Substation 结构的任意层级。
+ * General equipment (GeneralEquipment), mounted at any level of the Substation structure.
  * <p>
- * 表示无法归入 ConductingEquipment 的其他一次设备，如电池 (BAT)、 交流滤波器 (AXN) 等。
+ * Represents other primary equipment that cannot be classified under
+ * ConductingEquipment, such as batteries (BAT), AC filters (AXN), etc.
  * <p>
  * Schema:
  *
@@ -36,17 +37,17 @@ import java.util.List;
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclGeneralEquipment {
-    /** 设备名称 (name) */
+    /** Equipment name (name) */
     private String name;
-    /** 描述 (desc) */
+    /** Description (desc) */
     private String desc;
-    /** 设备类型 (type)，例如 "AXN"、"BAT" */
+    /** Equipment type (type), e.g. "AXN", "BAT" */
     private String type;
-    /** 是否为虚拟设备 (virtual) */
+    /** Whether it is a virtual device (virtual) */
     private Boolean virtual;
-    /** 逻辑节点引用列表 (LNode) */
+    /** List of logical node references (LNode) */
     private final List<SclLNode> lNodes = new ArrayList<>();
-    /** 设备功能列表 (EqFunction) */
+    /** List of equipment functions (EqFunction) */
     private final List<SclEqFunction> eqFunctions = new ArrayList<>();
 
     public SclGeneralEquipment addLNode(SclLNode lNode) {

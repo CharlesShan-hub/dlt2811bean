@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * 额定电压 (Voltage)，继承自 tValueWithUnit，单位固定为 V（伏特）。
+ * Rated voltage (Voltage), derived from tValueWithUnit, with unit fixed to V (volt).
  * <p>
  * Schema:
  *
@@ -30,10 +30,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclVoltage {
-    /** 电压数值 (decimal) */
+    /** Voltage value (decimal) */
     private String value;
-    /** 单位乘数 (multiplier), 如 "k"(千伏)、"M"(兆伏)、""(伏) */
+    /** Unit multiplier (multiplier), e.g. "k" (kilovolt), "M" (megavolt), "" (volt) */
     private String multiplier;
-    /** 单位 (unit), 固定为 "V" */
+    /** Unit (unit), fixed to "V" */
     private String unit;
 }

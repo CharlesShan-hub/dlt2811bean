@@ -18,10 +18,11 @@ public class SclLDevice {
     private String desc;
     private String ldName;
     /**
-     * LD 配置版本号。
+     * LD configuration revision number.
      * <p>
-     * 注意：非 IEC 61850-6 2007B 标准属性（tLDevice 只有 inst/ldName）——系国网 Q/GDW 1396 / 厂商扩展，
-     * 真实国网 SCD 常见，保留用于宽容解析。
+     * Note: Not a standard attribute of IEC 61850-6 2007B (tLDevice only has
+     * inst/ldName) - this is a State Grid Q/GDW 1396 / vendor extension, commonly
+     * seen in real State Grid SCD files; kept for lenient parsing.
      */
     private String confRev;
     private SclAccessControl accessControl;

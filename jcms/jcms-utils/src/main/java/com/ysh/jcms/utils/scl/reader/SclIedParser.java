@@ -17,7 +17,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import static com.ysh.jcms.utils.scl.reader.SclReader.*;
 
-/** 解析 {@code <IED>} 的结构骨架：AccessPoint / Server / LDevice / LN。 */
+/** Parses the structural skeleton of {@code <IED>}: AccessPoint / Server / LDevice / LN. */
 public class SclIedParser {
 
     private SclIedParser() {
@@ -104,7 +104,7 @@ public class SclIedParser {
         return sa;
     }
 
-    /** 解析 {@code <GOOSESecurity>} / {@code <SMVSecurity>} 证书（tCertificate）。 */
+    /** Parses {@code <GOOSESecurity>} / {@code <SMVSecurity>} certificates (tCertificate). */
     private static SclCertificate parseCertificate(XMLStreamReader reader) throws XMLStreamException {
         SclCertificate cert = new SclCertificate();
         cert.xferNumber(getAttr(reader, "xferNumber"));

@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 数据目录服务（8.4.3）—— LN 级列出 DO，DO 级列出 DA/含 fc，SDO 级列出 DA。
+ * Data directory service (8.4.3) —— lists DOs at LN level, DAs/including fc at DO level, and DAs at SDO level.
  * <p>
- * 在 DO 级别会合并实例（{@code doi}）与模板中的条目，避免重复。
+ * At DO level, entries from the instance ({@code doi}) and the template are merged to avoid duplicates.
  */
 public final class SclDataDirectoryService {
 
@@ -31,19 +31,19 @@ public final class SclDataDirectoryService {
     }
 
     /**
-     * 获取数据目录（LN 级列出 DO，DO 级列出 DA/含 fc，SDO 级列出 DA）。
+     * Gets the data directory (lists DOs at LN level, DAs/including fc at DO level, and DAs at SDO level).
      *
      * @param doc
-     *            SCL 文档
+     *            SCL document
      * @param ln
-     *            当前 LN
+     *            current LN
      * @param doName
-     *            DO 名（null = LN 级）
+     *            DO name (null = LN level)
      * @param sdoName
-     *            SDO 名（null = DO 级，非 null = SDO 级）
+     *            SDO name (null = DO level, non-null = SDO level)
      * @param doi
-     *            DO 实例（null = 仅模板，DO 级别时使用）
-     * @return 目录条目列表
+     *            DO instance (null = template only, used at DO level)
+     * @return list of directory entries
      */
     public static List<CmsSubRefEntry> getDataDirectory(SclDocument doc, SclLN ln, String doName, String sdoName, SclDOI doi) {
         if (doName == null) {
@@ -57,7 +57,7 @@ public final class SclDataDirectoryService {
         }
     }
 
-    /** LN 级别：列出 DO 名（合并实例 + 模板）。 */
+    /** LN level: lists DO names (merging instance + template). */
     private static List<CmsSubRefEntry> collectLnDirectory(SclDocument doc, SclLN ln) {
         Set<String> seen = new HashSet<>();
         List<CmsSubRefEntry> entries = new ArrayList<>();
@@ -84,7 +84,7 @@ public final class SclDataDirectoryService {
         return entries;
     }
 
-    /** DO 级别：列出 DA/SDI 名（合并实例 + 模板），含 FC。 */
+    /** DO level: lists DA/SDI names (merging instance + template), including FC. */
     private static List<CmsSubRefEntry> collectDoDirectory(SclDocument doc, SclDOI doi, SclLN ln) {
         Set<String> seen = new HashSet<>();
         List<CmsSubRefEntry> entries = new ArrayList<>();
@@ -115,14 +115,14 @@ public final class SclDataDirectoryService {
         return entries;
     }
 
-    /** DO 级别（仅模板兜底）。 */
+    /** DO level (template fallback only). */
     private static List<CmsSubRefEntry> collectDoDirectoryFromTemplate(SclDocument doc, SclLN ln, String doName) {
         List<CmsSubRefEntry> entries = new ArrayList<>();
         addTemplateDirs(doc, ln, doName, new HashSet<>(), entries);
         return entries;
     }
 
-    /** 从 DOType 模板追加 DA/SDO 目录条目（跳过已存在的）。 */
+    /** Appends DA/SDO directory entries from the DOType template (skipping existing ones). */
     private static void addTemplateDirs(SclDocument doc, SclLN ln, String doName, Set<String> seen, List<CmsSubRefEntry> entries) {
         SclDataTypeTemplates templates = doc.dataTypeTemplates();
         if (templates == null || ln.lnType() == null || ln.lnType().isEmpty())
@@ -147,7 +147,7 @@ public final class SclDataDirectoryService {
         }
     }
 
-    /** SDO 级别：列出 SDO 的 DOType 中的 DA。 */
+    /** SDO level: lists the DAs in the SDO's DOType. */
     private static List<CmsSubRefEntry> collectSdoDirectory(SclDocument doc, SclLN ln, String doName, String sdoName) {
         SclDataTypeTemplates templates = doc.dataTypeTemplates();
         if (templates == null || ln.lnType() == null || ln.lnType().isEmpty())
@@ -171,7 +171,7 @@ public final class SclDataDirectoryService {
         return entries;
     }
 
-    /** 从 DOType 中解析 DA 的 FC。 */
+    /** Resolves the FC of a DA from the DOType. */
     private static String resolveDaFc(SclDocument doc, SclLN ln, String doName, String daName) {
         SclDataTypeTemplates templates = doc.dataTypeTemplates();
         if (templates == null || ln.lnType() == null)

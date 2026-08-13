@@ -17,7 +17,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * SclReader 集成测试 —— 用 sample-scd-full.scd 验证全量解析。
+ * SclReader integration tests — full parsing verified with sample-scd-full.scd.
  */
 public class SclReaderTest {
 
@@ -335,7 +335,7 @@ public class SclReaderTest {
         assertEquals("on", beh.enumVals().get(0).value());
     }
 
-    // ==================== 边界情况 ====================
+    // ==================== edge cases ====================
 
     @Test
     public void testNoUnsupportedElements() {
@@ -346,7 +346,7 @@ public class SclReaderTest {
     @Test
     public void testDocumentFileType() {
         SclDocument doc = parseFullScd();
-        // 按内容结构判定：sample 含 <Substation> → SCD
+        // determined by content structure: sample contains <Substation> → SCD
         assertEquals(SclDocument.SclFileType.SCD, doc.fileType());
     }
 
@@ -356,7 +356,7 @@ public class SclReaderTest {
         assertNotNull("sample-scd-full.scd not found on classpath", is);
         java.util.Map<String, java.util.List<String>> dir = SclReader.scanLdLns(is);
 
-        // E1Q1SB1/S1 → 6 个 LN（LLN0 + LPHD + CSWI1 + CSWI2 + MMXU1 + TVTR1）
+        // E1Q1SB1/S1 → 6 LNs (LLN0 + LPHD + CSWI1 + CSWI2 + MMXU1 + TVTR1)
         java.util.List<String> e1 = dir.get("E1Q1SB1/S1");
         assertNotNull("E1Q1SB1/S1 not found", e1);
         assertEquals(6, e1.size());

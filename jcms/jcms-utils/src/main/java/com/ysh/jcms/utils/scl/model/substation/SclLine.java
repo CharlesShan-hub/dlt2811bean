@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 线路 (Line)，变电站之间的输电线路或变电站内部的连接线。
+ * Line, a transmission line between substations or a connection line within a substation.
  * <p>
- * Line 可以包含 LNode、GeneralEquipment、Function、ConductingEquipment 和
- * ConnectivityNode，并关联 Voltage 信息。
+ * Line may contain LNode, GeneralEquipment, Function, ConductingEquipment and
+ * ConnectivityNode, and is associated with Voltage information.
  * <p>
  * Schema:
  *
@@ -44,27 +44,27 @@ import java.util.List;
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclLine {
-    /** 线路名称 (name) */
+    /** Line name (name) */
     private String name;
-    /** 描述 (desc) */
+    /** Description (desc) */
     private String desc;
-    /** 线路类型 (type) */
+    /** Line type (type) */
     private String type;
-    /** 额定频率 (nomFreq) */
+    /** Rated frequency (nomFreq) */
     private String nomFreq;
-    /** 相数 (numPhases) */
+    /** Number of phases (numPhases) */
     private Integer numPhases;
-    /** 关联的电压等级 (Voltage) */
+    /** Associated voltage level (Voltage) */
     private SclVoltage voltage;
-    /** 逻辑节点引用列表 (LNode) */
+    /** List of logical node references (LNode) */
     private final List<SclLNode> lNodes = new ArrayList<>();
-    /** 通用一次设备列表 (GeneralEquipment) */
+    /** List of general equipment (GeneralEquipment) */
     private final List<SclGeneralEquipment> generalEquipments = new ArrayList<>();
-    /** 功能列表 (Function) */
+    /** List of functions (Function) */
     private final List<SclFunction> functions = new ArrayList<>();
-    /** 导电设备列表 (ConductingEquipment) */
+    /** List of conducting equipment (ConductingEquipment) */
     private final List<SclConductingEquipment> conductingEquipments = new ArrayList<>();
-    /** 连接点列表 (ConnectivityNode) */
+    /** List of connectivity nodes (ConnectivityNode) */
     private final List<SclConnectivityNode> connectivityNodes = new ArrayList<>();
 
     public SclLine addLNode(SclLNode lNode) {

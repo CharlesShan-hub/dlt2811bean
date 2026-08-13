@@ -8,7 +8,7 @@ import java.io.InputStream;
 import static org.junit.Assert.*;
 
 /**
- * DataValueResolver 单元测试。
+ * Unit tests for DataValueResolver.
  */
 public class DataValueResolverTest {
 
@@ -65,7 +65,8 @@ public class DataValueResolverTest {
     @Test
     public void testResolveTemplateDefaultWhenNoDai() {
         SclDocument doc = parseFullScd();
-        // LLN0 的 NamPlt 无 DOI 实例，值写在 DOType 模板的 DA/<Val> 里 → 实例无值时应兜底模板默认值
+        // LLN0's NamPlt has no DOI instance; the value is stored in the DA/<Val> of the DOType template
+        // → fall back to the template default when the instance has no value
         DataValueEntry dv = DataValueResolver.resolve(doc, "E1Q1SB1/C1/LLN0.NamPlt.configRev");
         assertNotNull("should fall back to template default", dv);
         assertEquals("Rev 3.45", dv.val());
@@ -78,7 +79,7 @@ public class DataValueResolverTest {
     @Test
     public void testInstanceValueWinsOverTemplate() {
         SclDocument doc = parseFullScd();
-        // 实例 DAI 有值时优先，模板默认值不覆盖
+        // an instance DAI value takes priority; the template default does not override it
         DataValueEntry dv = DataValueResolver.resolve(doc, "E1Q1SB1/C1/LPHD1.Proxy.stVal");
         assertEquals("false", dv.val());
     }

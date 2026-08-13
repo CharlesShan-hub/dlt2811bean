@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * 可复用的文本元素 (tText)，用于需要文本描述的所有元素。
+ * Reusable text element (tText), used by all elements that require a text description.
  * <p>
  * Schema:
  *
@@ -27,8 +27,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclText {
-    /** 文本内容 (mixed content) */
+    /** Text content (mixed content) */
     private String value;
-    /** 引用外部文件的URI (source) */
+    /** URI referencing an external file (source) */
     private String source;
 }

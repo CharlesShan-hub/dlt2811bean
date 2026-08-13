@@ -6,10 +6,11 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
- * AccessPoint 的 {@code <GOOSESecurity>} / {@code <SMVSecurity>} 证书（tCertificate
- * / tCert）。
+ * The {@code <GOOSESecurity>} / {@code <SMVSecurity>} certificates of AccessPoint (tCertificate
+ * / tCert).
  * <p>
- * 扁平化建模：Subject / IssuerName 两个 tCert 子元素的 commonName + idHierarchy 直接作为字段。
+ * Flattened modeling: the commonName + idHierarchy of the two tCert child elements
+ * Subject / IssuerName are exposed directly as fields.
  */
 @Getter
 @Setter

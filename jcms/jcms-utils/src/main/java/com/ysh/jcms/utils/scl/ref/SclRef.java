@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * SCL 引用 —— 模型中的通用索引键。
+ * SCL reference — the universal index key in the model.
  * <p>
- * 引用格式：{@code [IEDName/]LDInst/LNName[.DO][[.SDI]...][.DA][FC]} <br>
- * 例如：{@code E1Q1SB1/C1/MMXU1.Volts.sVC.offset}
+ * Reference format: {@code [IEDName/]LDInst/LNName[.DO][[.SDI]...][.DA][FC]} <br>
+ * e.g.: {@code E1Q1SB1/C1/MMXU1.Volts.sVC.offset}
  */
 @Getter
 @Accessors(fluent = true)
@@ -35,7 +35,7 @@ public class SclRef {
         this.fc = fc;
     }
 
-    // ==================== 工厂方法 ====================
+    // ==================== Factory methods ====================
 
     public static SclRefBuilder ld(String ldInst) {
         return new SclRefBuilder(ldInst);
@@ -107,7 +107,7 @@ public class SclRef {
         }
     }
 
-    // ==================== 层级判断 ====================
+    // ==================== Level determination ====================
 
     public boolean isLnLevel() {
         return doName == null;
@@ -125,13 +125,13 @@ public class SclRef {
         return fc != null && !fc.isEmpty();
     }
 
-    /** @deprecated 使用 {@link #ldInst()} */
+    /** @deprecated use {@link #ldInst()} */
     @Deprecated
     public String ldName() {
         return ldInst;
     }
 
-    // ==================== 引用组合 ====================
+    // ==================== Reference composition ====================
 
     public String lnReference() {
         return ldInst + "/" + lnName;

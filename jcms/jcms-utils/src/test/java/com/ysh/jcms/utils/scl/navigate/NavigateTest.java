@@ -8,7 +8,7 @@ import java.io.InputStream;
 import static org.junit.Assert.*;
 
 /**
- * Navigator / TypeChain / CmsDataTypeMap 单元测试。
+ * Unit tests for Navigator / TypeChain / CmsDataTypeMap.
  */
 public class NavigateTest {
 

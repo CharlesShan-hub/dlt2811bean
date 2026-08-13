@@ -35,11 +35,11 @@ public class SclDocument {
     private SclDataTypeTemplates dataTypeTemplates;
     private final List<String> unsupportedElements = new ArrayList<>();
 
-    /** 惰性索引：IED 名 → IED（首次查询时建立，addIed 时失效）。 */
+    /** Lazy index: IED name → IED (built on first lookup, invalidated by addIed). */
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private transient Map<String, SclIED> iedIndex;
-    /** 惰性缓存：全部 LD 实例名（首次查询时建立，addIed 时失效）。 */
+    /** Lazy cache: all LD instance names (built on first lookup, invalidated by addIed). */
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private transient List<String> ldNamesCache;
@@ -58,7 +58,7 @@ public class SclDocument {
         return !unsupportedElements.isEmpty();
     }
 
-    /** 按名称 O(1) 查找 IED（惰性索引）。 */
+    /** Look up an IED by name in O(1) (lazy index). */
     public SclIED ied(String name) {
         if (iedIndex == null) {
             Map<String, SclIED> idx = new HashMap<>();
@@ -70,7 +70,7 @@ public class SclDocument {
         return iedIndex.get(name);
     }
 
-    /** 收集全部 IED 的逻辑设备实例名（惰性缓存）。 */
+    /** Collect logical device instance names of all IEDs (lazy cache). */
     public List<String> ldNames() {
         if (ldNamesCache == null) {
             ldNamesCache = ieds.stream().flatMap(ied -> ied.lDevices().stream()).map(SclLDevice::inst)

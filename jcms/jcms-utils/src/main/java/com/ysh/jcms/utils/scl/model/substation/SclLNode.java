@@ -6,9 +6,11 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * 逻辑节点引用 (LNode)，挂载在 Substation 结构的任意层级。
+ * Logical node reference (LNode), mounted at any level of the Substation structure.
  * <p>
- * 用于将 SA 系统功能关联到一次设备上。在 SSD 文件中功能尚未分配到 IED， 在 SCD 文件中则指向具体的 IED 中的 LN。
+ * Used to associate SA system functions with primary equipment. In SSD files the
+ * functions are not yet assigned to an IED, while in SCD files they point to the
+ * LN in a specific IED.
  * <p>
  * Schema:
  *
@@ -30,18 +32,18 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclLNode {
-    /** 逻辑设备实例 (ldInst) */
+    /** Logical device instance (ldInst) */
     private String ldInst;
-    /** 逻辑节点类 (lnClass) */
+    /** Logical node class (lnClass) */
     private String lnClass;
-    /** 逻辑节点实例号 (lnInst) */
+    /** Logical node instance number (lnInst) */
     private String lnInst;
-    /** 逻辑节点类型 (lnType) */
+    /** Logical node type (lnType) */
     private String lnType;
-    /** 所属 IED 名称 (iedName) */
+    /** Name of the IED this LN belongs to (iedName) */
     private String iedName;
-    /** 前缀 (prefix) */
+    /** Prefix (prefix) */
     private String prefix;
-    /** 描述 (desc) */
+    /** Description (desc) */
     private String desc;
 }

@@ -7,15 +7,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 访问点解析服务 —— 从 sapRef 解析 IED + AccessPoint。
+ * Access point resolution service —— resolves IED + AccessPoint from sapRef.
  * <p>
- * 供 Associate 服务在建立连接时定位客户端请求的访问点。
+ * Used by the Associate service to locate the access point requested by the client when establishing a connection.
  */
 public final class SclAccessPointService {
 
     private static final Logger log = LoggerFactory.getLogger(SclAccessPointService.class);
 
-    /** 解析结果：IED + AccessPoint。 */
+    /** Resolution result: IED + AccessPoint. */
     public static final class ResolvedAp {
         public final SclIED ied;
         public final SclAccessPoint ap;
@@ -30,13 +30,13 @@ public final class SclAccessPointService {
     }
 
     /**
-     * 按 sapRef 解析访问点。
+     * Resolves an access point by sapRef.
      *
      * @param scl
-     *            SCL 文档
+     *            SCL document
      * @param sapRef
-     *            访问点引用，格式 {@code IEDName[/AccessPointName]}，缺省 AP 名为 {@code S1}
-     * @return 解析结果，IED 或 AP 不存在时返回 {@code null}
+     *            access point reference, format {@code IEDName[/AccessPointName]}, the default AP name is {@code S1}
+     * @return resolution result, or {@code null} if the IED or AP does not exist
      */
     public static ResolvedAp resolve(SclDocument scl, String sapRef) {
         if (scl == null || sapRef == null)
@@ -58,7 +58,7 @@ public final class SclAccessPointService {
         return new ResolvedAp(ied, ap);
     }
 
-    /** 取第一个带访问点的 IED 及其首个 AP；无可用访问点时返回 {@code null}。 */
+    /** Takes the first IED with an access point and its first AP; returns {@code null} if no access point is available. */
     public static ResolvedAp resolveDefault(SclDocument scl) {
         if (scl == null)
             return null;

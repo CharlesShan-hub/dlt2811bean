@@ -15,7 +15,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * 目录服务测试 —— 8.3.1/8.3.2/8.3.3（用 sample-scd-full.scd 的 E1Q1SB1 IED）。
+ * Directory service tests — 8.3.1/8.3.2/8.3.3 (using the E1Q1SB1 IED of sample-scd-full.scd).
  */
 public class SclDirectoryServiceTest {
 
@@ -41,7 +41,7 @@ public class SclDirectoryServiceTest {
         }
     }
 
-    // ==================== 服务器目录（8.3.1） ====================
+    // ==================== server directory (8.3.1) ====================
 
     @Test
     public void testGetServerDirectory() {
@@ -49,14 +49,14 @@ public class SclDirectoryServiceTest {
         assertEquals(java.util.Collections.singletonList("C1"), SclDirectoryService.getServerDirectory(ap));
     }
 
-    // ==================== 逻辑设备目录（8.3.2） ====================
+    // ==================== logical device directory (8.3.2) ====================
 
     @Test
     public void testGetLogicalDeviceDirectoryWithLdName() {
         load();
         List<String> names = SclDirectoryService.getLogicalDeviceDirectory(ap, "C1");
         assertNotNull(names);
-        // LLN0 移到首位，其余保持解析顺序（LN 完整名 = lnClass + inst）
+        // LLN0 is moved to the front, the rest keep parse order (full LN name = lnClass + inst)
         assertEquals("LLN0", names.get(0));
         assertEquals(6, names.size());
         assertTrue(names.contains("LPHD1"));
@@ -67,7 +67,7 @@ public class SclDirectoryServiceTest {
     @Test
     public void testGetLogicalDeviceDirectoryAllLds() {
         load();
-        // ldName 为空 → 全站 "LD/LN" 完整引用
+        // ldName is null → full "LD/LN" references across the whole station
         List<String> names = SclDirectoryService.getLogicalDeviceDirectory(ap, null);
         assertNotNull(names);
         assertTrue(names.contains("C1/LLN0"));
@@ -80,7 +80,7 @@ public class SclDirectoryServiceTest {
         assertNull(SclDirectoryService.getLogicalDeviceDirectory(ap, "NOPE"));
     }
 
-    // ==================== 逻辑节点目录（8.3.3） ====================
+    // ==================== logical node directory (8.3.3) ====================
 
     @Test
     public void testGetLogicalNodeDirectoryDataSet() {
@@ -92,7 +92,7 @@ public class SclDirectoryServiceTest {
     @Test
     public void testGetLogicalNodeDirectoryReportControls() {
         load();
-        // sample 的 ReportControl 无 buffered 属性 → 全部归 URCB
+        // the sample's ReportControl has no buffered attribute → all classified as URCB
         List<String> urcb = SclDirectoryService.getLogicalNodeDirectory(doc, lns, "C1", CmsAcsiClass.URCB);
         assertEquals(java.util.Arrays.asList("PosReport", "MeaReport"), urcb);
         List<String> brcb = SclDirectoryService.getLogicalNodeDirectory(doc, lns, "C1", CmsAcsiClass.BRCB);
@@ -111,7 +111,7 @@ public class SclDirectoryServiceTest {
     @Test
     public void testGetLogicalNodeDirectoryLog() {
         load();
-        // LCB：LogControl 名称；LOG：logName（C1）
+        // LCB: LogControl names; LOG: logName (C1)
         assertEquals(java.util.Collections.singletonList("Log"),
                 SclDirectoryService.getLogicalNodeDirectory(doc, lns, "C1", CmsAcsiClass.LCB));
         assertEquals(java.util.Collections.singletonList("C1"),
@@ -122,7 +122,7 @@ public class SclDirectoryServiceTest {
     public void testGetLogicalNodeDirectoryDataObject() {
         load();
         List<String> names = SclDirectoryService.getLogicalNodeDirectory(doc, lns, "C1", CmsAcsiClass.DATA_OBJECT);
-        // LN0 类型有 Mod/Health/Beh/NamPlt 4 个 DO，引用前缀为 "C1/LLN0."
+        // the LN0 type has 4 DOs: Mod/Health/Beh/NamPlt, with reference prefix "C1/LLN0."
         assertTrue(names.contains("C1/LLN0.Mod"));
         assertTrue(names.contains("C1/LLN0.Health"));
         assertTrue(names.contains("C1/LLN0.Beh"));

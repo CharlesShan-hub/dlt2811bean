@@ -11,9 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 数据值写入器（SetDataValues 服务）。
+ * Data value writer (SetDataValues service).
  * <p>
- * 按引用路径查找 DAI（必要时虚拟创建），验证并设值。
+ * Finds the DAI by reference path (virtually creates it if necessary), validates and sets the value.
  */
 public final class DataWriterResolver {
     private static final Logger log = LoggerFactory.getLogger(DataWriterResolver.class);
@@ -22,13 +22,13 @@ public final class DataWriterResolver {
     }
 
     /**
-     * 设置数据值。如果 DAI/DOI/SDI 不存在则虚拟创建。
+     * Sets a data value. Virtually creates the DAI/DOI/SDI if it does not exist.
      *
      * @param nav
-     *            已导航到目标点的 Navigator（需包含 LN）
+     *            Navigator already navigated to the target point (must contain the LN)
      * @param value
-     *            字符串值
-     * @return CmsServiceError.NO_ERROR，或错误码
+     *            string value
+     * @return CmsServiceError.NO_ERROR, or an error code
      */
     public static int setValue(Navigator nav, String value) {
         if (!nav.isValid() || nav.ln() == null)
@@ -36,7 +36,7 @@ public final class DataWriterResolver {
         if (nav.ref().isLnLevel())
             return CmsServiceError.INSTANCE_NOT_AVAILABLE;
 
-        // 确保 DOI 存在
+        // Ensure the DOI exists
         SclDOI doi = nav.doi();
         if (doi == null) {
             doi = new SclDOI().name(nav.ref().doName());
@@ -44,7 +44,7 @@ public final class DataWriterResolver {
         }
 
         if (nav.ref().isDoLevel()) {
-            // DO 级别：找第一个 DA
+            // DO level: find the first DA
             String firstDaName = findFirstDaName(nav);
             if (firstDaName == null)
                 firstDaName = "stVal";
@@ -58,7 +58,7 @@ public final class DataWriterResolver {
             return CmsServiceError.NO_ERROR;
         }
 
-        // DA / SDI.BDA 级别：确保 SDI 链存在
+        // DA / SDI.BDA level: ensure the SDI chain exists
         SclSDI currentSdi = null;
         for (String sdiName : nav.ref().sdiChain()) {
             SclSDI next = (currentSdi == null) ? doi.findSdiByName(sdiName) : currentSdi.findSdiByName(sdiName);
@@ -72,7 +72,7 @@ public final class DataWriterResolver {
             currentSdi = next;
         }
 
-        // 找或创建 DAI
+        // Find or create the DAI
         SclDAI dai = (currentSdi != null) ? currentSdi.findDaiByName(nav.ref().daName()) : doi.findDaiByName(nav.ref().daName());
         if (dai == null) {
             dai = new SclDAI().name(nav.ref().daName());
@@ -82,7 +82,7 @@ public final class DataWriterResolver {
                 doi.addDai(dai);
         }
 
-        // 验证并设值
+        // Validate and set the value
         String bType = resolveBType(nav);
         dai.vals().clear();
         if (bType != null) {
@@ -116,7 +116,7 @@ public final class DataWriterResolver {
         return TypeChain.of(nav.document().dataTypeTemplates()).resolveBType(nav.ln().lnType(), ref.toString());
     }
 
-    /** 按 bType 验证并规范化值。无效返回 null。 */
+    /** Validates and normalizes a value by bType. Returns null if invalid. */
     static String validateAndConvert(String value, String bType) {
         if (value == null)
             return null;

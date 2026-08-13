@@ -6,8 +6,8 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
- * SampledValueControl 的 {@code <SmvOpts>} 子元素（tSampledValueControl /
- * agSmvOpts）。
+ * The {@code <SmvOpts>} child element of SampledValueControl (tSampledValueControl /
+ * agSmvOpts).
  */
 @Getter
 @Setter

@@ -16,9 +16,9 @@ public class SclGSE {
 
     private String ldInst;
     private String cbName;
-    /** 最小时间 (MinTime), 毫秒 */
+    /** Minimum time (MinTime), in milliseconds */
     private String minTime;
-    /** 最大时间 (MaxTime), 毫秒 */
+    /** Maximum time (MaxTime), in milliseconds */
     private String maxTime;
 
     private final List<SclAddress> addresses = new ArrayList<>();

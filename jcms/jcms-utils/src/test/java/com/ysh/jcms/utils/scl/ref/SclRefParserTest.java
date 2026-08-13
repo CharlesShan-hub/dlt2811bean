@@ -5,11 +5,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * SclRefParser 单元测试。
+ * Unit tests for SclRefParser.
  */
 public class SclRefParserTest {
 
-    // ==================== 有效格式 ====================
+    // ==================== valid formats ====================
 
     @Test
     public void testParseLnLevel() {
@@ -71,7 +71,7 @@ public class SclRefParserTest {
         assertEquals("ST", ref.fc());
     }
 
-    // ==================== 无效格式 ====================
+    // ==================== invalid formats ====================
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseNull() {
@@ -130,7 +130,7 @@ public class SclRefParserTest {
         assertEquals("LD1/LLN0.Mod", SclRefParser.extractDoReference("LD1/LLN0.Mod.stVal[MX]"));
     }
 
-    // ==================== 工厂方法 ====================
+    // ==================== factory methods ====================
 
     @Test
     public void testSclRefOf() {

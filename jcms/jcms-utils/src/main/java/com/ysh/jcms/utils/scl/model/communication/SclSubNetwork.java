@@ -19,7 +19,7 @@ public class SclSubNetwork {
     private String name;
     private String desc;
     private String type;
-    /** 文本描述 (Text, type=tText, optional) */
+    /** Text description (Text, type=tText, optional) */
     private SclText text;
     private String bitRate;
     private String bitRateUnit;

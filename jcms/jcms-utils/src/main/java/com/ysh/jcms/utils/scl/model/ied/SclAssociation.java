@@ -10,18 +10,18 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclAssociation {
-    /** 关联的 IED 名称 (iedName) */
+    /** Associated IED name (iedName) */
     private String iedName;
-    /** 逻辑设备实例 (ldInst) */
+    /** Logical device instance (ldInst) */
     private String ldInst;
-    /** 前缀 (prefix) */
+    /** Prefix (prefix) */
     private String prefix;
-    /** LN 类 (lnClass) */
+    /** LN class (lnClass) */
     private String lnClass;
-    /** LN 实例号 (lnInst) */
+    /** LN instance number (lnInst) */
     private String lnInst;
-    /** 关联类型 (kind): pre-established / predefined */
+    /** Association kind (kind): pre-established / predefined */
     private String kind;
-    /** 关联标识 (associationID) */
+    /** Association identifier (associationID) */
     private String associationID;
 }

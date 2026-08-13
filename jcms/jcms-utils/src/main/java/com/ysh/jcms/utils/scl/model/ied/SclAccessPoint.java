@@ -21,9 +21,9 @@ public class SclAccessPoint {
     private SclServer server;
     private SclServerAt serverAt;
 
-    /** {@code <GOOSESecurity>} 证书（tAccessPoint，maxOccurs=7）。 */
+    /** {@code <GOOSESecurity>} certificates (tAccessPoint, maxOccurs=7). */
     private final List<SclCertificate> gooseSecurity = new ArrayList<>();
-    /** {@code <SMVSecurity>} 证书（tAccessPoint，maxOccurs=7）。 */
+    /** {@code <SMVSecurity>} certificates (tAccessPoint, maxOccurs=7). */
     private final List<SclCertificate> smvSecurity = new ArrayList<>();
 
     public SclAccessPoint addGooseSecurity(SclCertificate cert) {

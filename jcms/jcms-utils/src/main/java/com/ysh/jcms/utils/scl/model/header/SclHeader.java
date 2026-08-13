@@ -63,9 +63,10 @@ public class SclHeader {
     /**
      * The release of this SCL configuration file (e.g. "2007B").
      * <p>
-     * 注意：非 IEC 61850-6 Ed 2.1（2007B）标准属性——tHeader 只有
-     * id/version/revision/toolID/nameStructure； release 自 2007B4 / 3.0
-     * 起引入，部分厂商也会输出。保留用于宽容解析与 fileType 辅助判定。
+     * Note: Not a standard attribute of IEC 61850-6 Ed 2.1 (2007B) - tHeader only
+     * has id/version/revision/toolID/nameStructure; release was introduced from
+     * 2007B4 / 3.0 onwards, and some vendors also output it. Kept for lenient
+     * parsing and auxiliary fileType determination.
      */
     private String release;
     /**

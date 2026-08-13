@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 引用导航器 —— SclRef → 模型元素。
+ * Reference navigator — SclRef → model elements.
  * <p>
- * 核心入口：{@link #go(SclDocument, SclRef)}。 所有查找操作最终都通过 SclRef 定位到模型元素。
+ * Core entry: {@link #go(SclDocument, SclRef)}. All lookup operations ultimately locate model elements via SclRef.
  */
 public class Navigator {
 
@@ -38,17 +38,17 @@ public class Navigator {
         this.ref = ref;
     }
 
-    // ==================== 核心入口 ====================
+    // ==================== Core entry ====================
 
-    /** 核心方法：按 SclRef 导航到模型元素 */
+    /** Core method: navigate to a model element by SclRef */
     public static Navigator go(SclDocument document, SclRef ref) {
         if (document == null || ref == null)
             return empty();
 
-        // 找 IED
+        // Find the IED
         String iedName = ref.iedName();
         if (iedName == null)
-            return empty(); // SclRef 必须含 IED 名
+            return empty(); // SclRef must contain an IED name
         SclIED ied = document.ied(iedName);
         if (ied == null)
             return empty();
@@ -56,70 +56,71 @@ public class Navigator {
         return navigate(ied, ref, document);
     }
 
-    /** 按引用字符串导航（便捷方法） */
+    /** Navigate by reference string (convenience method) */
     public static Navigator go(SclDocument document, String ref) {
         if (document == null || ref == null || !SclRefParser.isValid(ref))
             return empty();
         return go(document, SclRefParser.parse(ref));
     }
 
-    /** 在指定 IED 内按 SclRef 导航 */
+    /** Navigate by SclRef within the specified IED */
     public static Navigator go(SclIED ied, SclRef ref) {
         if (ied == null || ref == null)
             return empty();
         return navigate(ied, ref, null);
     }
 
-    /** 在指定 IED 内按字符串导航 */
+    /** Navigate by string within the specified IED */
     public static Navigator go(SclIED ied, String ref) {
         if (ied == null || ref == null || !SclRefParser.isValid(ref))
             return empty();
         return navigate(ied, SclRefParser.parse(ref), null);
     }
 
-    /** 在文档 + 指定 IED 内按字符串导航（带 dataTypeTemplates 访问能力） */
+    /** Navigate by string within the document + specified IED (with dataTypeTemplates access capability) */
     public static Navigator go(SclDocument doc, SclIED ied, String ref) {
         if (doc == null || ied == null || ref == null || !SclRefParser.isValid(ref))
             return empty();
         return navigate(ied, SclRefParser.parse(ref), doc);
     }
 
-    /** AP 作用域：在文档 + 指定 AP 内按字符串导航 */
+    /** AP scope: navigate by string within the document + specified AP */
     public static Navigator go(SclDocument doc, SclAccessPoint ap, String ref) {
         if (doc == null || ap == null || ref == null || !SclRefParser.isValid(ref))
             return empty();
         return navigate(ap, SclRefParser.parse(ref), doc);
     }
 
-    /** AP 作用域：在指定 IED + AP 内按字符串导航 */
+    /** AP scope: navigate by string within the specified IED + AP */
     public static Navigator go(SclIED ied, SclAccessPoint ap, String ref) {
         if (ied == null || ap == null || ref == null || !SclRefParser.isValid(ref))
             return empty();
         return navigate(ap, SclRefParser.parse(ref), null);
     }
 
-    // ==================== 导航逻辑 ====================
+    // ==================== Navigation logic ====================
 
     private static Navigator navigate(SclIED ied, SclRef sclRef, SclDocument doc) {
-        // 找 LDevice
+        // Find the LDevice
         SclLDevice ld = findLd(ied, sclRef.ldInst());
         if (ld == null)
             return empty();
 
-        // 找 LN
+        // Find the LN
         SclLN ln = findLn(ld, sclRef.lnName());
         if (ln == null)
             return empty();
 
-        // LN 级别
+        // LN level
         if (sclRef.isLnLevel()) {
             return new Navigator(doc, ied, ld, ln, null, null, null, sclRef);
         }
 
-        // DO 级别及以上：找 DOI
+        // DO level and above: find the DOI
         SclDOI doi = ln.findDoiByName(sclRef.doName());
         if (doi == null) {
-            // DO 可能在模板中定义但不在实例中（如 Beh）→ 返回无 DOI 的 Navigator，让下游走模板查找
+            // The DO may be defined in the template but not in the instance (e.g. Beh) → return a Navigator without
+            // DOI so downstream falls back to template lookup
             return new Navigator(doc, ied, ld, ln, null, null, null, sclRef);
         }
 
@@ -127,7 +128,7 @@ public class Navigator {
             return new Navigator(doc, ied, ld, ln, doi, null, null, sclRef);
         }
 
-        // DA 级别：走 SDI 链→DAI
+        // DA level: walk the SDI chain → DAI
         SclSDI currentSdi = null;
         boolean sdiFound = true;
         for (String sdiName : sclRef.sdiChain()) {
@@ -140,21 +141,22 @@ public class Navigator {
         }
 
         if (!sdiFound) {
-            // SDI 未在实例中找到 → 可能是 SDO 级引用（模板级 SDO，无实例 SDI）
-            // 返回部分 Navigator（有 DOI，无 SDI/DAI），让下游走模板查找
+            // SDI not found in the instance → may be an SDO-level reference (template-level SDO without an instance
+            // SDI); return a partial Navigator (with DOI, without SDI/DAI) so downstream falls back to template lookup
             return new Navigator(doc, ied, ld, ln, doi, null, null, sclRef);
         }
 
         SclDAI dai = (currentSdi != null) ? currentSdi.findDaiByName(sclRef.daName()) : doi.findDaiByName(sclRef.daName());
         if (dai == null) {
-            // DAI 未在实例中找到 → 返回部分 Navigator（有 DOI，无 DAI），让下游走模板查找
+            // DAI not found in the instance → return a partial Navigator (with DOI, without DAI) so downstream falls
+            // back to template lookup
             return new Navigator(doc, ied, ld, ln, doi, currentSdi, null, sclRef);
         }
 
         return new Navigator(doc, ied, ld, ln, doi, currentSdi, dai, sclRef);
     }
 
-    /** AP 作用域导航：只在指定 AP 下查找 LD。 */
+    /** AP-scoped navigation: only looks up LD under the specified AP. */
     private static Navigator navigate(SclAccessPoint ap, SclRef sclRef, SclDocument doc) {
         SclLDevice ld = findLd(ap, sclRef.ldInst());
         if (ld == null)
@@ -170,7 +172,8 @@ public class Navigator {
 
         SclDOI doi = ln.findDoiByName(sclRef.doName());
         if (doi == null) {
-            // DO 可能在模板中定义但不在实例中（如 Beh）→ 返回无 DOI 的 Navigator，让下游走模板查找
+            // The DO may be defined in the template but not in the instance (e.g. Beh) → return a Navigator without
+            // DOI so downstream falls back to template lookup
             return new Navigator(doc, null, ld, ln, null, null, null, sclRef);
         }
 
@@ -202,11 +205,11 @@ public class Navigator {
     }
 
     private static SclLDevice findLd(SclIED ied, String ldInst) {
-        // 走 SclIED 的惰性 LD 索引（首次 O(AP×LD)，之后 O(1)）
+        // Use SclIED's lazy LD index (first access O(AP×LD), afterwards O(1))
         return ied.lDevice(ldInst);
     }
 
-    /** AP 作用域查找：只在指定 AP 下找 LD。 */
+    /** AP-scoped lookup: only finds LD under the specified AP. */
     public static SclLDevice findLd(SclAccessPoint ap, String ldInst) {
         SclServer server = ap.server();
         if (server != null) {
@@ -224,17 +227,17 @@ public class Navigator {
     }
 
     /**
-     * 按 LD 名称或 LN 引用解析逻辑节点列表（AP 作用域）。
+     * Resolves a logical node list by LD name or LN reference (AP scope).
      *
      * @param ied
-     *            IED 对象
+     *            the IED object
      * @param ap
-     *            当前关联的访问点（非 null 时限定在该 AP 下查找）
+     *            the currently associated access point (when non-null, lookup is limited to this AP)
      * @param ldName
-     *            LD 名称（非空时返回该 LD 下所有 LN）
+     *            the LD name (when non-empty, returns all LNs under this LD)
      * @param lnReference
-     *            LN 引用（LD/LN 格式，ldName 为空时使用）
-     * @return LN 列表，未找到时返回 null
+     *            the LN reference (LD/LN format, used when ldName is empty)
+     * @return the LN list, or null when not found
      */
     public static List<SclLN> resolveLns(SclIED ied, SclAccessPoint ap, String ldName, String lnReference) {
         List<SclLN> result = new ArrayList<>();
@@ -261,15 +264,15 @@ public class Navigator {
     }
 
     /**
-     * 按 LD 名称或 LN 引用解析逻辑节点列表（跨所有 AP）。
+     * Resolves a logical node list by LD name or LN reference (across all APs).
      *
      * @param ied
-     *            IED 对象
+     *            the IED object
      * @param ldName
-     *            LD 名称（非空时返回该 LD 下所有 LN）
+     *            the LD name (when non-empty, returns all LNs under this LD)
      * @param lnReference
-     *            LN 引用（LD/LN 格式，ldName 为空时使用）
-     * @return LN 列表，未找到时返回 null
+     *            the LN reference (LD/LN format, used when ldName is empty)
+     * @return the LN list, or null when not found
      */
     public static List<SclLN> resolveLns(SclIED ied, String ldName, String lnReference) {
         List<SclLN> result = new ArrayList<>();
@@ -296,13 +299,13 @@ public class Navigator {
     }
 
     /**
-     * 反向查找：在指定 IED 中查找包含给定 LN 的 LD 实例名。
+     * Reverse lookup: finds the LD instance name containing the given LN in the specified IED.
      *
      * @param ied
-     *            IED 对象
+     *            the IED object
      * @param ln
-     *            要查找的 LN
-     * @return LD 的 inst 值，未找到时返回 null
+     *            the LN to look up
+     * @return the LD inst value, or null when not found
      */
     public static String findLdInst(SclIED ied, SclLN ln) {
         for (SclAccessPoint ap : ied.accessPoints()) {
@@ -321,7 +324,7 @@ public class Navigator {
         return new Navigator(null, null, null, null, null, null, null, null);
     }
 
-    // ==================== 状态 ====================
+    // ==================== State ====================
 
     public boolean isValid() {
         return ln != null;
@@ -336,7 +339,7 @@ public class Navigator {
         return dai != null;
     }
 
-    // ==================== 访问器 ====================
+    // ==================== Accessors ====================
 
     public SclDocument document() {
         return document;

@@ -24,7 +24,7 @@ public class SclBDA {
     private String sAddr;
     private Integer count;
     private Boolean valImport;
-    /** 触发条件（tBDA 继承 agTrgOps，可选）。 */
+    /** Trigger conditions (tBDA inherits agTrgOps, optional). */
     private Boolean dchg;
     private Boolean qchg;
     private Boolean dupd;

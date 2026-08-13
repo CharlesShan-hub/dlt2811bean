@@ -8,9 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 设备子功能 (EqSubFunction)，EqFunction 的嵌套子级。
+ * Equipment sub-function (EqSubFunction), the nested child level of EqFunction.
  * <p>
- * EqSubFunction 可以递归嵌套，包含 LNode、GeneralEquipment 以及 更细粒度的 EqSubFunction。
+ * EqSubFunction can be nested recursively, containing LNode, GeneralEquipment as
+ * well as more fine-grained EqSubFunction.
  * <p>
  * Schema:
  *
@@ -37,17 +38,17 @@ import java.util.List;
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclEqSubFunction {
-    /** 设备子功能名称 (name) */
+    /** Equipment sub-function name (name) */
     private String name;
-    /** 描述 (desc) */
+    /** Description (desc) */
     private String desc;
-    /** 设备子功能类型 (type) */
+    /** Equipment sub-function type (type) */
     private String type;
-    /** 逻辑节点引用列表 (LNode) */
+    /** List of logical node references (LNode) */
     private final List<SclLNode> lNodes = new ArrayList<>();
-    /** 通用一次设备列表 (GeneralEquipment) */
+    /** List of general equipment (GeneralEquipment) */
     private final List<SclGeneralEquipment> generalEquipments = new ArrayList<>();
-    /** 设备子功能列表 (EqSubFunction)，支持递归嵌套 */
+    /** List of equipment sub-functions (EqSubFunction), supporting recursive nesting */
     private final List<SclEqSubFunction> eqSubFunctions = new ArrayList<>();
 
     public SclEqSubFunction addLNode(SclLNode lNode) {

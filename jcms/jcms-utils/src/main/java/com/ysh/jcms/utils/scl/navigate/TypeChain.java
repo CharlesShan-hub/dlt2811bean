@@ -3,12 +3,12 @@ package com.ysh.jcms.utils.scl.navigate;
 import com.ysh.jcms.utils.scl.model.template.*;
 
 /**
- * 类型链追溯器。
+ * Type chain tracer.
  * <p>
- * 从 LN 的 lnType 出发，沿 {@code LNodeType → DO → DOType → DA → bType} 链追溯。 支持
- * SDI/BDA 嵌套追溯。
+ * Starting from the LN's lnType, traces along the {@code LNodeType → DO → DOType → DA → bType} chain,
+ * supporting nested SDI/BDA tracing.
  * <p>
- * 用法：
+ * Usage:
  *
  * <pre>
  * {
@@ -34,22 +34,22 @@ public class TypeChain {
 
     // ==================== Step Builder ====================
 
-    /** 第一步：从 LNodeType 开始。返回 DO 选择器。 */
+    /** First step: start from the LNodeType. Returns the DO selector. */
     public DoStep from(String lnTypeId) {
         SclLNodeType lnt = templates.findLNodeTypeById(lnTypeId);
         return new DoStep(lnt);
     }
 
-    // ==================== Step 类 ====================
+    // ==================== Step classes ====================
 
-    /** DO 选择步骤 */
+    /** DO selection step */
     public class DoStep {
         private final SclLNodeType lnt;
         DoStep(SclLNodeType lnt) {
             this.lnt = lnt;
         }
 
-        /** 按名称查找 DO 定义 */
+        /** Finds a DO definition by name */
         public DoTypeStep doDef(String doName) {
             if (lnt == null)
                 return new DoTypeStep(null);
@@ -61,7 +61,7 @@ public class TypeChain {
         }
     }
 
-    /** DOType 选择步骤 */
+    /** DOType selection step */
     public class DoTypeStep {
         private final SclDOType doType;
         DoTypeStep(SclDOType doType) {
@@ -75,7 +75,7 @@ public class TypeChain {
             return doType != null ? doType.cdc() : null;
         }
 
-        /** 按名称查找 DA 定义 */
+        /** Finds a DA definition by name */
         public DaStep daDef(String daName) {
             if (doType == null)
                 return new DaStep(null);
@@ -84,7 +84,7 @@ public class TypeChain {
         }
     }
 
-    /** DA 选择步骤 */
+    /** DA selection step */
     public class DaStep {
         private final SclDA da;
         DaStep(SclDA da) {
@@ -101,7 +101,7 @@ public class TypeChain {
             return da != null ? da.fc() : null;
         }
 
-        /** 如果 bType 是 Struct，继续追 DAType */
+        /** If the bType is Struct, continue tracing the DAType */
         public BdaStep daType() {
             if (da != null && "Struct".equals(da.bType()) && da.type() != null) {
                 SclDAType dat = templates.findDaTypeById(da.type());
@@ -111,7 +111,7 @@ public class TypeChain {
         }
     }
 
-    /** BDA 选择步骤（DAType 内部） */
+    /** BDA selection step (inside DAType) */
     public class BdaStep {
         private final SclDAType dat;
         BdaStep(SclDAType dat) {
@@ -122,14 +122,14 @@ public class TypeChain {
             return dat;
         }
 
-        /** 按名称查找 BDA */
+        /** Finds a BDA by name */
         public SclBDA bdaDef(String bdaName) {
             if (dat == null)
                 return null;
             return dat.findBdaByName(bdaName);
         }
 
-        /** 第一个 BDA 的 bType（适用于单字段结构体） */
+        /** bType of the first BDA (for single-field structures) */
         public String firstBdaBType() {
             if (dat == null || dat.bdas().isEmpty())
                 return null;
@@ -137,18 +137,18 @@ public class TypeChain {
         }
     }
 
-    // ==================== 快捷方法 ====================
+    // ==================== Quick methods ====================
 
     /**
-     * 快捷解析：从 lnType 开始，一步解析引用到 bType。
+     * Quick resolution: starting from lnType, resolves a reference to bType in one step.
      * <p>
-     * 引用格式：{@code DO.DA}、{@code DO.SDI.BDA} 或 {@code DO.SDO[.SDO...].DA}
+     * Reference formats: {@code DO.DA}, {@code DO.SDI.BDA} or {@code DO.SDO[.SDO...].DA}
      *
      * @param lnTypeId
-     *            LNodeType 的 id
+     *            the id of the LNodeType
      * @param ref
-     *            DO 级别引用（如 "Mod.stVal" 或 "PPV.phsAB.cVal"）
-     * @return bType 字符串，无法解析返回 null
+     *            a DO-level reference (e.g. "Mod.stVal" or "PPV.phsAB.cVal")
+     * @return the bType string, or null when unresolvable
      */
     public String resolveBType(String lnTypeId, String ref) {
         if (ref == null)

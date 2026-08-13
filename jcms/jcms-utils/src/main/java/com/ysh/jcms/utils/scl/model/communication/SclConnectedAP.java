@@ -16,7 +16,7 @@ public class SclConnectedAP {
 
     private String iedName;
     private String apName;
-    /** 冗余协议 (redProt), 如 "hsr", "prp", "rstp" */
+    /** Redundancy protocol (redProt), e.g. "hsr", "prp", "rstp" */
     private String redProt;
 
     private final List<SclAddress> addresses = new ArrayList<>();

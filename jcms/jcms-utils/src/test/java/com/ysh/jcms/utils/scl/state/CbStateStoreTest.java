@@ -7,11 +7,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * 控制块运行时状态分层存储测试（RUNTIME / ASSOCIATION / 门面）。
+ * Layered runtime state storage tests for control blocks (RUNTIME / ASSOCIATION / facade).
  */
 public class CbStateStoreTest {
 
-    // ==================== RUNTIME 层（CbStateStore） ====================
+    // ==================== RUNTIME layer (CbStateStore) ====================
 
     @Test
     public void testCbStateStorePutGetRemove() {
@@ -32,7 +32,7 @@ public class CbStateStoreTest {
         CbStateStore<CmsBrcb> store = new CbStateStore<>();
         CmsBrcb a = store.getOrCreate("ref1", CmsBrcb::new);
         CmsBrcb b = store.getOrCreate("ref1", CmsBrcb::new);
-        assertSame(a, b); // 已存在则复用
+        assertSame(a, b); // reuse existing instance
         assertNotNull(store.getOrCreate("ref2", CmsBrcb::new));
     }
 
@@ -46,17 +46,17 @@ public class CbStateStoreTest {
         assertNull(store.get("b"));
     }
 
-    // ==================== ASSOCIATION 层（CbAssociationStore） ====================
+    // ==================== ASSOCIATION layer (CbAssociationStore) ====================
 
     @Test
     public void testAssociationIsolationBySession() {
         CbAssociationStore<CmsBrcb> store = new CbAssociationStore<>();
         store.put("s1", "ref", new CmsBrcb());
         store.put("s2", "ref", new CmsBrcb());
-        // 不同会话互不干扰
+        // different sessions do not interfere with each other
         assertNotNull(store.get("s1", "ref"));
         assertNotNull(store.get("s2", "ref"));
-        // 会话隔离：修改 s2 不影响 s1
+        // session isolation: modifying s2 does not affect s1
         String s1RptId = store.get("s1", "ref").rptID.value();
         store.get("s2", "ref").rptID("changed");
         assertEquals(s1RptId, store.get("s1", "ref").rptID.value());
@@ -70,7 +70,7 @@ public class CbStateStoreTest {
         store.put("s2", "ref", new CmsBrcb());
         store.removeSession("s1");
         assertNull(store.get("s1", "ref"));
-        assertNotNull(store.get("s2", "ref")); // 其他会话不受影响
+        assertNotNull(store.get("s2", "ref")); // other sessions unaffected
     }
 
     @Test
@@ -85,7 +85,7 @@ public class CbStateStoreTest {
         assertNull(store.get("s1", "ref2"));
     }
 
-    // ==================== 门面（CbStateManager） ====================
+    // ==================== facade (CbStateManager) ====================
 
     @Test
     public void testStateManagerLifecycle() {
@@ -97,12 +97,12 @@ public class CbStateStoreTest {
         assertNotNull(CbStateManager.GOCB.get("C1/LLN0.ItlPositions"));
         assertNotNull(CbStateManager.ASSOCIATION.get("session-1", "C1/LLN0.PosReport"));
 
-        // 关联释放只清该会话
+        // releasing the association only clears that session
         CbStateManager.clearAssociation("session-1");
         assertNull(CbStateManager.ASSOCIATION.get("session-1", "C1/LLN0.PosReport"));
-        assertNotNull(CbStateManager.RCB.get("C1/LLN0.PosReport")); // RUNTIME 不受影响
+        assertNotNull(CbStateManager.RCB.get("C1/LLN0.PosReport")); // RUNTIME unaffected
 
-        // 服务器停止清全部
+        // server shutdown clears everything
         CbStateManager.clearAll();
         assertNull(CbStateManager.RCB.get("C1/LLN0.PosReport"));
         assertNull(CbStateManager.GOCB.get("C1/LLN0.ItlPositions"));

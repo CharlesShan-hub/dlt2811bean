@@ -1,12 +1,12 @@
 package com.ysh.jcms.utils.scl.navigate;
 
 /**
- * bType → CMS 协议类型 映射表。
+ * bType → CMS protocol type mapping table.
  * <p>
- * 纯查表，零状态。负责两件事：
+ * Pure lookup table, zero state. Responsible for two things:
  * <ol>
- * <li>bType → CmsDataDefinition.choice 的 selector 值</li>
- * <li>bType → CmsType 的映射</li>
+ * <li>bType → selector value of CmsDataDefinition.choice</li>
+ * <li>bType → CmsType mapping</li>
  * </ol>
  */
 public final class CmsDataTypeMap {
@@ -40,8 +40,8 @@ public final class CmsDataTypeMap {
     }
 
     /**
-     * 将 bType 字符串映射为 CmsDataDefinition 的 CHOICE selector 值。 无法识别时返回
-     * SEL_BOOLEAN（默认兜底）。
+     * Maps a bType string to the CHOICE selector value of CmsDataDefinition. Returns
+     * SEL_BOOLEAN (default fallback) when unrecognized.
      */
     public static int toSelector(String bType) {
         if (bType == null)
@@ -106,7 +106,7 @@ public final class CmsDataTypeMap {
     }
 
     /**
-     * 获取 VisibleString 的长度约束。 VisString255 → 255, VisString64 → 64, 其他 → 0
+     * Gets the length constraint of VisibleString. VisString255 → 255, VisString64 → 64, others → 0
      */
     public static int visibleStringLength(String bType) {
         if (bType == null)

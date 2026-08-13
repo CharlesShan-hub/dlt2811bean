@@ -8,10 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 过程 (Process)，描述变电站自动化系统中的过程层级。
+ * Process, describing the process level in a substation automation system.
  * <p>
- * Process 是 Substation 结构之外的最高层级元素，可以包含 LNode、
- * GeneralEquipment、Function、ConductingEquipment、Substation、 Line 以及递归的 Process。
+ * Process is the top-level element outside the Substation structure, and may
+ * contain LNode, GeneralEquipment, Function, ConductingEquipment, Substation,
+ * Line as well as recursive Process.
  * <p>
  * Schema:
  *
@@ -46,25 +47,25 @@ import java.util.List;
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclProcess {
-    /** 过程名称 (name) */
+    /** Process name (name) */
     private String name;
-    /** 描述 (desc) */
+    /** Description (desc) */
     private String desc;
-    /** 过程类型 (type) */
+    /** Process type (type) */
     private String type;
-    /** 逻辑节点引用列表 (LNode) */
+    /** List of logical node references (LNode) */
     private final List<SclLNode> lNodes = new ArrayList<>();
-    /** 通用一次设备列表 (GeneralEquipment) */
+    /** List of general equipment (GeneralEquipment) */
     private final List<SclGeneralEquipment> generalEquipments = new ArrayList<>();
-    /** 功能列表 (Function) */
+    /** List of functions (Function) */
     private final List<SclFunction> functions = new ArrayList<>();
-    /** 导电设备列表 (ConductingEquipment) */
+    /** List of conducting equipment (ConductingEquipment) */
     private final List<SclConductingEquipment> conductingEquipments = new ArrayList<>();
-    /** 变电站列表 (Substation) */
+    /** List of substations (Substation) */
     private final List<SclSubstation> substations = new ArrayList<>();
-    /** 线路列表 (Line) */
+    /** List of lines (Line) */
     private final List<SclLine> lines = new ArrayList<>();
-    /** 子过程列表 (Process)，支持递归嵌套 */
+    /** List of sub-processes (Process), supporting recursive nesting */
     private final List<SclProcess> processes = new ArrayList<>();
 
     public SclProcess addLNode(SclLNode lNode) {

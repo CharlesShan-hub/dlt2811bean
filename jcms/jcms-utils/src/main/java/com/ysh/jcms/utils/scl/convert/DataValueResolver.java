@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * 数据值解析器。
+ * Data value resolver.
  * <p>
- * 基于 {@link Navigator} + {@link TypeChain} 积木，按引用路径查找 DAI 值并追溯 bType。 使用方式：
+ * Based on the {@link Navigator} + {@link TypeChain} building blocks, looks up the DAI value by reference path and traces the bType. Usage:
  *
  * <pre>
  * {
@@ -36,14 +36,14 @@ public final class DataValueResolver {
     }
 
     /**
-     * 按完整引用解析数据值。
+     * Resolves a data value by a full reference.
      */
     public static DataValueEntry resolve(SclDocument doc, String ref) {
         return resolve(doc, ref, null);
     }
 
     /**
-     * 按完整引用 + FC 过滤解析数据值。
+     * Resolves a data value by a full reference with FC filtering.
      */
     public static DataValueEntry resolve(SclDocument doc, String ref, String fc) {
         if (doc == null || ref == null)
@@ -52,14 +52,14 @@ public final class DataValueResolver {
         return resolve(nav, fc, ref);
     }
 
-    /** 基于已创建的 Navigator 解析数据值。 */
+    /** Resolves a data value based on an already created Navigator. */
     public static DataValueEntry resolve(Navigator nav, String fc) {
         if (nav == null || !nav.isValid())
             return null;
         return resolve(nav, fc, nav.ref() != null ? nav.ref().fullReference() : "");
     }
 
-    /** 内部实现 */
+    /** Internal implementation */
     private static DataValueEntry resolve(Navigator nav, String fc, String ref) {
         if (nav == null || !nav.isValid() || nav.ln() == null) {
             log.debug("resolve ref={}: nav invalid or ln=null (valid={})", ref, nav != null ? nav.isValid() : false);
@@ -76,7 +76,7 @@ public final class DataValueResolver {
                 if (daiVal != null)
                     return new DataValueEntry(ref, daiVal, bType);
             }
-            // 实例 DAI 无值 → 模板 DA/BDA 默认值兜底（真实 SCD 常见值写在 DOType 模板里）
+            // Instance DAI has no value → fall back to the template DA/BDA default value (in real SCD files, common values are written in the DOType template)
             String tpl = templateDefault(nav);
             if (tpl != null)
                 return new DataValueEntry(ref, tpl, bType);
@@ -87,7 +87,7 @@ public final class DataValueResolver {
         return resolveDoLevel(nav, ref, fc);
     }
 
-    /** DO 级别的值查找（需要 FC 过滤来确定取哪个 DA） */
+    /** DO level value lookup (FC filtering is needed to determine which DA to take) */
     private static DataValueEntry resolveDoLevel(Navigator nav, String ref, String fc) {
         SclDOI doi = nav.doi();
         if (doi == null)
@@ -102,7 +102,7 @@ public final class DataValueResolver {
                     String bType = resolveDaBType(nav, dai.name());
                     return new DataValueEntry(ref, val, bType);
                 }
-                // 实例 DAI 无值 → 模板 DA 默认值兜底
+                // Instance DAI has no value → fall back to the template DA default value
                 String tpl = templateDefaultByName(nav, dai.name());
                 if (tpl != null) {
                     String bType = resolveDaBType(nav, dai.name());
@@ -134,7 +134,7 @@ public final class DataValueResolver {
                     return new DataValueEntry(ref, val, bType);
                 }
             }
-            // 实例 DAI 无值 → DOType 中 DA 的模板默认值兜底
+            // Instance DAI has no value → fall back to the template default value of the DA in DOType
             String tpl = firstTemplateVal(da.vals());
             if (tpl != null) {
                 String bType = resolveDaBType(nav, da.name());
@@ -149,7 +149,7 @@ public final class DataValueResolver {
                         String bType = resolveSdiBdaBType(nav, da.name(), sdai.name());
                         return new DataValueEntry(ref, val, bType);
                     }
-                    // 实例 SDI 的 DAI 无值 → DAType 中 BDA 模板默认值兜底
+                    // The DAI of an instance SDI has no value → fall back to the BDA template default value in DAType
                     String bdaTpl = templateBdaDefault(nav, da.name(), sdai.name());
                     if (bdaTpl != null) {
                         String bType = resolveSdiBdaBType(nav, da.name(), sdai.name());
@@ -169,7 +169,7 @@ public final class DataValueResolver {
         return (v != null && !v.isEmpty()) ? v : null;
     }
 
-    /** 取模板 DA/BDA 默认值列表中的第一个有效值。 */
+    /** Takes the first valid value from the template DA/BDA default value list. */
     private static String firstTemplateVal(List<SclVal> vals) {
         if (vals == null || vals.isEmpty())
             return null;
@@ -178,8 +178,9 @@ public final class DataValueResolver {
     }
 
     /**
-     * DA 级模板默认值兜底：按完整引用沿 TypeChain 找到 DOType 的 DA（或 DAType 的 BDA）默认 Val。 支持无 SDI 的
-     * DO.DA 与单级 SDI 的 DO.SDI.BDA 两种路径（与现有类型解析一致）。
+     * DA level template default value fallback: follows the TypeChain along the full reference to find the default Val of
+     * the DOType's DA (or the DAType's BDA). Supports two paths — DO.DA without SDI and DO.SDI.BDA with a single-level
+     * SDI (consistent with the existing type resolution).
      */
     private static String templateDefault(Navigator nav) {
         if (nav.document().dataTypeTemplates() == null || nav.ln().lnType() == null)
@@ -198,7 +199,7 @@ public final class DataValueResolver {
         return bda != null ? firstTemplateVal(bda.vals()) : null;
     }
 
-    /** DO 级（无 FC 过滤）按 DA 名查模板默认值。 */
+    /** DO level (without FC filtering): looks up the template default value by DA name. */
     private static String templateDefaultByName(Navigator nav, String daName) {
         if (nav.document().dataTypeTemplates() == null || nav.ln().lnType() == null || nav.ref().doName() == null)
             return null;
@@ -207,7 +208,7 @@ public final class DataValueResolver {
         return da != null ? firstTemplateVal(da.vals()) : null;
     }
 
-    /** SDI 内 DAI 无值时的 BDA 模板默认值兜底。 */
+    /** Fallback to the BDA template default value when the DAI inside an SDI has no value. */
     private static String templateBdaDefault(Navigator nav, String sdiName, String bdaName) {
         if (nav.document().dataTypeTemplates() == null || nav.ln().lnType() == null)
             return null;

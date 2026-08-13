@@ -6,21 +6,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * SCL 引用解析器。
+ * SCL reference parser.
  * <p>
- * 支持格式：
+ * Supported formats:
  * <ul>
- * <li>{@code LD/LN} — LN 级别</li>
- * <li>{@code LD/LN.DO[.SDI]...[.DA][FC]} — DO/DA 级别</li>
- * <li>{@code IED/LD/LN[.DO[.SDI]...[.DA]][FC]} — 带 IED 前缀</li>
+ * <li>{@code LD/LN} — LN level</li>
+ * <li>{@code LD/LN.DO[.SDI]...[.DA][FC]} — DO/DA level</li>
+ * <li>{@code IED/LD/LN[.DO[.SDI]...[.DA]][FC]} — with IED prefix</li>
  * </ul>
  */
 public final class SclRefParser {
 
-    // 不带 IED: LD/LN[.X[.Y]...][FC] — 捕获 LD/LN，剩余手工解析
+    // Without IED: LD/LN[.X[.Y]...][FC] — capture LD/LN, parse the rest manually
     private static final Pattern REF_PATTERN = Pattern.compile("([^/]+)/([^.]+)(?:\\..+)?(?:\\[([^\\]]+)\\])?");
 
-    // 带 IED: IED/LD/LN[.X[.Y]...][FC]
+    // With IED: IED/LD/LN[.X[.Y]...][FC]
     private static final Pattern FULL_REF_PATTERN = Pattern.compile("([^/]+)/([^/]+)/([^.]+)(?:\\..+)?(?:\\[([^\\]]+)\\])?");
 
     private SclRefParser() {
@@ -38,7 +38,7 @@ public final class SclRefParser {
         String lnName;
         String fc = null;
 
-        // 先尝试完整格式
+        // Try the full format first
         Matcher fullMatcher = FULL_REF_PATTERN.matcher(trimmed);
         if (fullMatcher.matches()) {
             iedName = fullMatcher.group(1);
@@ -56,19 +56,19 @@ public final class SclRefParser {
             }
         }
 
-        // 手工解析 DO/SDI/DA 部分
-        // 从 trimmed 中去掉 [IED/]LD/LN 部分，剩下 ".DO[.SDI...[.DA]][FC]"
+        // Manually parse the DO/SDI/DA parts
+        // Remove the [IED/]LD/LN part from trimmed, leaving ".DO[.SDI...[.DA]][FC]"
         int prefixLen = (iedName != null ? iedName.length() + 1 : 0) + ldInst.length() + 1 + lnName.length();
-        String rest = trimmed.substring(prefixLen); // ".DO.SDI.DA[FC]" 或 ""
+        String rest = trimmed.substring(prefixLen); // ".DO.SDI.DA[FC]" or ""
 
         String doName = null;
         List<String> sdiChain = new ArrayList<>();
         String daName = null;
 
         if (!rest.isEmpty()) {
-            // 去掉开头的 "."
+            // Strip the leading "."
             String dotPart = rest.startsWith(".") ? rest.substring(1) : rest;
-            // 去掉尾部的 "[FC]"
+            // Strip the trailing "[FC]"
             String fcPart = null;
             int bracketStart = dotPart.indexOf('[');
             if (bracketStart >= 0) {
@@ -77,13 +77,13 @@ public final class SclRefParser {
                 if (fc == null)
                     fc = fcPart;
             }
-            // 按 "." 分割
+            // Split by "."
             String[] parts = dotPart.split("\\.");
             if (parts.length >= 1 && !parts[0].isEmpty()) {
                 doName = parts[0];
             }
             if (parts.length >= 3) {
-                // DO.SDI...[.DA] — 中间的都是 SDI
+                // DO.SDI...[.DA] — everything in the middle is SDI
                 for (int i = 1; i < parts.length - 1; i++) {
                     sdiChain.add(parts[i]);
                 }

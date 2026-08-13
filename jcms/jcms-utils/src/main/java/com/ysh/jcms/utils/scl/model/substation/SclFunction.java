@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 功能 (Function)，描述变电站自动化系统中的一项功能。
+ * Function, describing a function in the substation automation system.
  * <p>
- * Function 可以包含 LNode、SubFunction、GeneralEquipment 和 ConductingEquipment，
- * 用于将一次设备和二次功能关联起来。
+ * Function may contain LNode, SubFunction, GeneralEquipment and ConductingEquipment,
+ * used to associate primary equipment with secondary functions.
  * <p>
  * Schema:
  *
@@ -40,19 +40,19 @@ import java.util.List;
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclFunction {
-    /** 功能名称 (name) */
+    /** Function name (name) */
     private String name;
-    /** 描述 (desc) */
+    /** Description (desc) */
     private String desc;
-    /** 功能类型 (type) */
+    /** Function type (type) */
     private String type;
-    /** 逻辑节点引用列表 (LNode) */
+    /** List of logical node references (LNode) */
     private final List<SclLNode> lNodes = new ArrayList<>();
-    /** 子功能列表 (SubFunction) */
+    /** List of sub-functions (SubFunction) */
     private final List<SclSubFunction> subFunctions = new ArrayList<>();
-    /** 通用一次设备列表 (GeneralEquipment) */
+    /** List of general equipment (GeneralEquipment) */
     private final List<SclGeneralEquipment> generalEquipments = new ArrayList<>();
-    /** 导电设备列表 (ConductingEquipment) */
+    /** List of conducting equipment (ConductingEquipment) */
     private final List<SclConductingEquipment> conductingEquipments = new ArrayList<>();
 
     public SclFunction addLNode(SclLNode lNode) {

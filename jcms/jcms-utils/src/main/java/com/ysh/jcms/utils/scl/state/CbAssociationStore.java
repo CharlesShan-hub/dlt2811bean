@@ -7,10 +7,10 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
 
 /**
- * ASSOCIATION 层控制块状态存储：按会话（sessionId）隔离的并发存储。
+ * Control block state store at the ASSOCIATION layer: concurrent storage isolated by session (sessionId).
  * <p>
- * 生命周期：连接断开即清除（{@link #removeSession(String)}），对应 URCB 等 per-association
- * 实例字段（{@code @CbField(scope = CbFieldScope.ASSOCIATION)}）。
+ * Lifecycle: cleared when the connection is closed ({@link #removeSession(String)}), corresponding to per-association
+ * instance fields such as URCB ({@code @CbField(scope = CbFieldScope.ASSOCIATION)}).
  */
 public final class CbAssociationStore<T extends CmsSequence> {
 
@@ -20,23 +20,23 @@ public final class CbAssociationStore<T extends CmsSequence> {
         return bySession.computeIfAbsent(sessionId, k -> new ConcurrentHashMap<>());
     }
 
-    /** 获取指定会话下指定引用的状态，未设置返回 {@code null}。 */
+    /** Gets the state of the given reference under the given session; returns {@code null} if not set. */
     public T get(String sessionId, String ref) {
         ConcurrentMap<String, T> b = bySession.get(sessionId);
         return b != null ? b.get(ref) : null;
     }
 
-    /** 获取或创建指定会话下指定引用的状态。 */
+    /** Gets or creates the state of the given reference under the given session. */
     public T getOrCreate(String sessionId, String ref, Supplier<T> factory) {
         return bucket(sessionId).computeIfAbsent(ref, k -> factory.get());
     }
 
-    /** 写入/替换指定会话下指定引用的状态。 */
+    /** Writes/replaces the state of the given reference under the given session. */
     public void put(String sessionId, String ref, T cb) {
         bucket(sessionId).put(ref, cb);
     }
 
-    /** 移除指定会话下指定引用的状态。 */
+    /** Removes the state of the given reference under the given session. */
     public void remove(String sessionId, String ref) {
         ConcurrentMap<String, T> b = bySession.get(sessionId);
         if (b != null) {
@@ -44,12 +44,12 @@ public final class CbAssociationStore<T extends CmsSequence> {
         }
     }
 
-    /** 移除整个会话的全部关联级状态（关联释放钩子）。 */
+    /** Removes all association-level state of the whole session (association release hook). */
     public void removeSession(String sessionId) {
         bySession.remove(sessionId);
     }
 
-    /** 清空所有会话的状态。 */
+    /** Clears the state of all sessions. */
     public void clear() {
         bySession.clear();
     }

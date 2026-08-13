@@ -7,35 +7,36 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
 
 /**
- * RUNTIME 层控制块状态存储：进程内按 ref 隔离的并发存储。
+ * Control block state store at the RUNTIME layer: in-process concurrent storage isolated by ref.
  * <p>
- * 生命周期：Set 写入、Get 优先读取；客户端断开不丢，服务器重启丢失（回到 SCL 工程值）。
+ * Lifecycle: written by Set and read with priority by Get; survives client disconnection, lost on server restart
+ * (falls back to the SCL engineering values).
  */
 public final class CbStateStore<T extends CmsSequence> {
 
     private final ConcurrentMap<String, T> state = new ConcurrentHashMap<>();
 
-    /** 获取指定引用的运行时状态，未设置返回 {@code null}。 */
+    /** Gets the runtime state of the given reference; returns {@code null} if not set. */
     public T get(String ref) {
         return state.get(ref);
     }
 
-    /** 获取或创建指定引用的运行时状态。 */
+    /** Gets or creates the runtime state of the given reference. */
     public T getOrCreate(String ref, Supplier<T> factory) {
         return state.computeIfAbsent(ref, k -> factory.get());
     }
 
-    /** 写入/替换指定引用的运行时状态。 */
+    /** Writes/replaces the runtime state of the given reference. */
     public void put(String ref, T cb) {
         state.put(ref, cb);
     }
 
-    /** 移除指定引用的运行时状态。 */
+    /** Removes the runtime state of the given reference. */
     public void remove(String ref) {
         state.remove(ref);
     }
 
-    /** 清空所有运行时状态。 */
+    /** Clears all runtime state. */
     public void clear() {
         state.clear();
     }

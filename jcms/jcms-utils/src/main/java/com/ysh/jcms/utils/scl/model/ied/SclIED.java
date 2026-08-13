@@ -30,7 +30,7 @@ public class SclIED {
 
     private final List<SclAccessPoint> accessPoints = new ArrayList<>();
 
-    /** 惰性索引：LD 实例名 → LD（首次 lDevice() 时建立，addAccessPoint 时失效）。 */
+    /** Lazy index: LD instance name → LD (built on first lDevice() call, invalidated on addAccessPoint). */
     private transient Map<String, SclLDevice> ldByInst;
 
     public SclIED addAccessPoint(SclAccessPoint accessPoint) {

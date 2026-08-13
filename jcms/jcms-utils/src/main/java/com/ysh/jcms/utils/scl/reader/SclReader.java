@@ -21,16 +21,16 @@ import java.util.Map;
 import static javax.xml.stream.XMLStreamConstants.*;
 
 /**
- * SCL XML 文件解析器。
+ * SCL XML file parser.
  * <p>
- * 使用 StAX (XMLStreamReader) 流式解析 SCL/ICD/CID/SSD 文件， 将 XML 转换为纯 SclDocument
- * POJO 模型。
+ * Uses StAX (XMLStreamReader) to parse SCL/ICD/CID/SSD files in a streaming manner, converting the XML into a plain
+ * SclDocument POJO model.
  * <p>
- * 职责单一：只做 XML → POJO 映射，不含任何业务逻辑。
+ * Single responsibility: only performs XML → POJO mapping, containing no business logic.
  */
 public class SclReader {
 
-    // ======================== 公共入口 ========================
+    // ======================== Public entry ========================
 
     public SclDocument read(String filePath) throws SclParseException {
         return read(Paths.get(filePath));
@@ -57,7 +57,7 @@ public class SclReader {
         }
     }
 
-    // ======================== 主解析入口 ========================
+    // ======================== Main parsing entry ========================
 
     private SclDocument parseDocument(XMLStreamReader reader) throws XMLStreamException, SclParseException {
         SclDocument document = new SclDocument();
@@ -74,8 +74,9 @@ public class SclReader {
             }
         }
 
-        // 按内容结构判定文件类型（2007B 只是 IEC 61850 Ed.2 版本号，不能区分文件种类）：
-        // 含 <Substation> → SCD；单 IED 且无 Substation → ICD（CID 同构，暂归 ICD）；其余 UNKNOWN
+        // Determine the file type by content structure (2007B is only the IEC 61850 Ed.2 version number and cannot
+        // distinguish file kinds): contains <Substation> → SCD; single IED without Substation → ICD (CID is
+        // structurally identical, temporarily classified as ICD); otherwise UNKNOWN
         if (stats.hasSubstation) {
             document.fileType(SclDocument.SclFileType.SCD);
         } else if (stats.iedCount == 1) {
@@ -118,16 +119,16 @@ public class SclReader {
         }
     }
 
-    /** 解析过程中的内容统计（用于文件类型判定）。 */
+    /** Content statistics during parsing (used for file type determination). */
     private static final class ParseStats {
         boolean hasSubstation;
         int iedCount;
     }
 
-    // ======================== 轻量扫描（AccessPoint / LD-LN 目录）
+    // ======================== Lightweight scan (AccessPoint / LD-LN directory)
     // ========================
 
-    /** 创建禁用 DTD + 外部实体的安全 XML 工厂（防 XXE）。 */
+    /** Creates a secure XML factory with DTD and external entities disabled (XXE protection). */
     private static XMLInputFactory createSafeFactory() {
         XMLInputFactory factory = XMLInputFactory.newInstance();
         factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
@@ -136,14 +137,15 @@ public class SclReader {
     }
 
     /**
-     * 轻量扫描 SCL 文件中的 IED → AccessPoint 名，不构建完整模型。
+     * Lightweight scan of the IED → AccessPoint names in an SCL file without building the full model.
      * <p>
-     * 只读取 IED / AccessPoint 元素的 name 属性，跳过其余所有内容， 因此即使是几百个 IED、几十 MB 的 SCD
-     * 也能秒级完成，不会因完整 模型解析（LNodeType/DO/DA/模板等）而卡住。
+     * Only reads the name attributes of IED / AccessPoint elements and skips everything else, so even an SCD with
+     * hundreds of IEDs and tens of MB completes in seconds, without getting stuck on full model parsing
+     * (LNodeType/DO/DA/templates, etc.).
      *
      * @param path
-     *            SCL 文件路径
-     * @return 有序的 IED 名 → AccessPoint 名列表
+     *            SCL file path
+     * @return ordered list of IED name → AccessPoint names
      */
     public static Map<String, List<String>> scanAccessPoints(Path path) throws SclParseException {
         try (InputStream is = new FileInputStream(path.toFile())) {
@@ -185,14 +187,15 @@ public class SclReader {
     }
 
     /**
-     * 轻量扫描 SCL 文件中的 IED → AP → (LD, LN) 目录，不构建完整模型。
+     * Lightweight scan of the IED → AP → (LD, LN) directory in an SCL file without building the full model.
      * <p>
-     * 只读取 IED / AccessPoint / Server / LDevice / LN 的 name 属性， 跳过实例数据、控制块、模板等全部细节，
-     * 适合为前端候选列表（数据集/控制块下拉的 LD/LN 来源）提供秒级目录。
+     * Only reads the name attributes of IED / AccessPoint / Server / LDevice / LN, skipping all details such as
+     * instance data, control blocks, and templates; suitable for providing a second-level directory for frontend
+     * candidate lists (LD/LN source for data set / control block dropdowns).
      *
      * @param path
-     *            SCL 文件路径
-     * @return 有序的 "IED/AP" → "LD/LN" 完整引用列表
+     *            SCL file path
+     * @return ordered list of "IED/AP" → full "LD/LN" references
      */
     public static Map<String, List<String>> scanLdLns(Path path) throws SclParseException {
         try (InputStream is = new FileInputStream(path.toFile())) {
@@ -207,7 +210,7 @@ public class SclReader {
         try {
             XMLStreamReader reader = createSafeFactory().createXMLStreamReader(inputStream);
             String apRef = null; // "IED/AP"
-            String ldInst = null; // 当前 LD 实例名
+            String ldInst = null; // current LD instance name
             while (reader.hasNext()) {
                 int event = reader.next();
                 if (event == START_ELEMENT) {
@@ -223,7 +226,7 @@ public class SclReader {
                             }
                             break;
                         case "Server" :
-                            // 落入 LDevice/LN，无需额外处理
+                            // falls through to LDevice/LN, no extra handling needed
                             break;
                         case "LDevice" :
                             ldInst = reader.getAttributeValue(null, "inst");
@@ -263,14 +266,14 @@ public class SclReader {
         }
     }
 
-    // ======================== 共享工具方法 ========================
+    // ======================== Shared utility methods ========================
 
-    /** 获取属性值，不存在返回 null */
+    /** Gets an attribute value, returns null if absent */
     public static String getAttr(XMLStreamReader reader, String name) {
         return reader.getAttributeValue(null, name);
     }
 
-    /** 获取布尔属性，不存在返回 null */
+    /** Gets a boolean attribute, returns null if absent */
     public static Boolean boolAttr(XMLStreamReader reader, String name) {
         String val = reader.getAttributeValue(null, name);
         if (val == null)
@@ -278,7 +281,7 @@ public class SclReader {
         return "true".equals(val) || "1".equals(val);
     }
 
-    /** 获取整型属性，不存在返回 null */
+    /** Gets an integer attribute, returns null if absent */
     public static Integer intAttr(XMLStreamReader reader, String name) {
         String val = reader.getAttributeValue(null, name);
         if (val == null)
@@ -290,18 +293,18 @@ public class SclReader {
         }
     }
 
-    /** 获取整型属性，不存在返回默认值 */
+    /** Gets an integer attribute, returns the default value if absent */
     public static int intAttr(XMLStreamReader reader, String name, int defaultValue) {
         Integer val = intAttr(reader, name);
         return val != null ? val : defaultValue;
     }
 
-    /** 读取元素的文本内容 */
+    /** Reads the text content of an element */
     public static String elementText(XMLStreamReader reader) throws XMLStreamException {
         return reader.getElementText();
     }
 
-    /** 跳过未知元素（递归跳过所有子元素直到遇到 END_ELEMENT） */
+    /** Skips an unknown element (recursively skips all child elements until END_ELEMENT is reached) */
     public static void skipElement(XMLStreamReader reader) throws XMLStreamException {
         int depth = 1;
         while (depth > 0 && reader.hasNext()) {
@@ -313,13 +316,13 @@ public class SclReader {
         }
     }
 
-    /** 读取当前元素的文本子元素（如 <Val>内容</Val>） */
+    /** Reads the text child of the current element (e.g. {@code <Val>content</Val>}) */
     public static String parseSimpleElementText(XMLStreamReader reader) throws XMLStreamException {
         String text = reader.getElementText();
         return text != null ? text.trim() : null;
     }
 
-    /** 解析可选的文本子元素 */
+    /** Parses an optional text child element */
     public static SclText parseTextChild(XMLStreamReader reader) throws XMLStreamException {
         SclText text = new SclText();
         text.source(getAttr(reader, "source"));
@@ -333,7 +336,7 @@ public class SclReader {
         return text;
     }
 
-    /** 解析 tVal 子元素 */
+    /** Parses a tVal child element */
     public static SclVal parseValChild(XMLStreamReader reader) throws XMLStreamException {
         SclVal val = new SclVal();
         val.sGroup(intAttr(reader, "sGroup"));

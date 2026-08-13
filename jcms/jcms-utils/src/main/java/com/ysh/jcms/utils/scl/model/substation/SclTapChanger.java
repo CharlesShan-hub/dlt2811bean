@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 分接头 (TapChanger)，变压器绕组上的分接头调节设备。
+ * Tap changer (TapChanger), the tap-adjusting device on a transformer winding.
  * <p>
- * TapChanger 包含 LNode、SubEquipment 和 EqFunction， 用于描述变压器调压功能及相关的一次/二次设备。
+ * TapChanger contains LNode, SubEquipment and EqFunction, describing the
+ * transformer voltage-regulation function and the related primary/secondary
+ * equipment.
  * <p>
  * Schema:
  *
@@ -38,19 +40,19 @@ import java.util.List;
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclTapChanger {
-    /** 分接头名称 (name) */
+    /** Tap changer name (name) */
     private String name;
-    /** 描述 (desc) */
+    /** Description (desc) */
     private String desc;
-    /** 分接头类型 (type) */
+    /** Tap changer type (type) */
     private String type;
-    /** 是否为虚拟设备 (virtual) */
+    /** Whether it is a virtual device (virtual) */
     private Boolean virtual;
-    /** 逻辑节点引用列表 (LNode) */
+    /** List of logical node references (LNode) */
     private final List<SclLNode> lNodes = new ArrayList<>();
-    /** 子设备列表 (SubEquipment) */
+    /** List of sub-equipment (SubEquipment) */
     private final List<SclSubEquipment> subEquipments = new ArrayList<>();
-    /** 设备功能列表 (EqFunction) */
+    /** List of equipment functions (EqFunction) */
     private final List<SclEqFunction> eqFunctions = new ArrayList<>();
 
     public SclTapChanger addLNode(SclLNode lNode) {

@@ -23,24 +23,24 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * 目录服务 —— 服务器目录（8.3.1）/ 逻辑设备目录（8.3.2）/ 逻辑节点目录（8.3.3）。
+ * Directory service —— server directory (8.3.1) / logical device directory (8.3.2) / logical node directory (8.3.3).
  * <p>
- * 各方法返回完整结果列表，分页（referenceAfter / pageSize）由 handler 层处理。 全部数据值/定义/控制块值见
- * {@link SclAllValuesService}，数据目录见 {@link SclDataDirectoryService}。
+ * Each method returns the complete result list; paging (referenceAfter / pageSize) is handled by the handler layer. See
+ * {@link SclAllValuesService} for all data values/definitions/control block values, and {@link SclDataDirectoryService} for the data directory.
  */
 public final class SclDirectoryService {
 
     private SclDirectoryService() {
     }
 
-    // ==================== 服务器目录（8.3.1） ====================
+    // ==================== Server directory (8.3.1) ====================
 
     /**
-     * 获取指定 IED 下、指定 AP 作用域内的所有逻辑设备实例名。
+     * Gets the names of all logical device instances under the given IED and within the scope of the given AP.
      *
      * @param ap
-     *            当前关联的访问点（限定在该 AP 下查找）
-     * @return 逻辑设备实例名列表
+     *            the currently associated access point (lookup limited to this AP)
+     * @return list of logical device instance names
      */
     public static List<String> getServerDirectory(SclAccessPoint ap) {
         List<String> names = new ArrayList<>();
@@ -53,20 +53,20 @@ public final class SclDirectoryService {
         return names;
     }
 
-    // ==================== 逻辑设备目录（8.3.2） ====================
+    // ==================== Logical device directory (8.3.2) ====================
 
     /**
-     * 获取逻辑设备目录（LN 名称列表）。
+     * Gets the logical device directory (list of LN names).
      * <p>
-     * 当 {@code ldName} 非空时，返回该 LD 下所有 LN 的短名称（如 {@code LLN0}、{@code PIOC1}）； 当
-     * {@code ldName} 为空时，返回指定 AP 下所有 LD 的所有 LN 的完整引用（如
-     * {@code LD0/LLN0}、{@code LD0/PIOC1}）。
+     * When {@code ldName} is not empty, returns the short names of all LNs under that LD (e.g. {@code LLN0}, {@code PIOC1});
+     * when {@code ldName} is empty, returns the full references of all LNs under all LDs of the given AP (e.g.
+     * {@code LD0/LLN0}, {@code LD0/PIOC1}).
      *
      * @param ap
-     *            当前关联的访问点（限定在该 AP 下查找）
+     *            the currently associated access point (lookup limited to this AP)
      * @param ldName
-     *            逻辑设备实例名，为空时返回全站 LN
-     * @return LN 名称列表，LD 不存在时返回 null
+     *            logical device instance name; when empty, returns all LNs in the station
+     * @return list of LN names, or null if the LD does not exist
      */
     public static List<String> getLogicalDeviceDirectory(SclAccessPoint ap, String ldName) {
         if (ldName != null) {
@@ -114,30 +114,30 @@ public final class SclDirectoryService {
         return names;
     }
 
-    // ==================== 逻辑节点目录（8.3.3） ====================
+    // ==================== Logical node directory (8.3.3) ====================
 
     /**
-     * 获取逻辑节点目录（按 ACSI 类收集名称）。
+     * Gets the logical node directory (collects names by ACSI class).
      * <p>
-     * 各 ACSI 类返回内容：
+     * Content returned per ACSI class:
      * <ul>
-     * <li>{@code DATA_OBJECT} — 完整 DO 引用（{@code ldName/lnFullName.doName}），含 SDO
-     * 递归</li>
-     * <li>{@code DATA_SET} — 数据集名称</li>
+     * <li>{@code DATA_OBJECT} — full DO reference ({@code ldName/lnFullName.doName}), including SDO
+     * recursion</li>
+     * <li>{@code DATA_SET} — data set names</li>
      * <li>{@code BRCB} / {@code URCB} / {@code LCB} / {@code GOCB} / {@code MSVCB}
-     * — 控制块名称</li>
-     * <li>{@code LOG} — 日志引用名</li>
+     * — control block names</li>
+     * <li>{@code LOG} — log reference names</li>
      * </ul>
      *
      * @param doc
-     *            SCL 文档（可为 null）
+     *            SCL document (may be null)
      * @param lns
-     *            已解析的 LN 列表
+     *            list of resolved LNs
      * @param ldName
-     *            逻辑设备名（DO 类型需要以此作为前缀）
+     *            logical device name (used as prefix for DO types)
      * @param acsiClass
-     *            ACSI 类（见 {@link CmsAcsiClass}）
-     * @return 名称列表（未找到时返回空列表而非 null）
+     *            ACSI class (see {@link CmsAcsiClass})
+     * @return list of names (returns an empty list rather than null when nothing is found)
      */
     public static List<String> getLogicalNodeDirectory(SclDocument doc, List<SclLN> lns, String ldName, int acsiClass) {
         SclDataTypeTemplates templates = doc != null ? doc.dataTypeTemplates() : null;

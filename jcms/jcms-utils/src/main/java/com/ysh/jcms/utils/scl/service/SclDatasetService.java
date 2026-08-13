@@ -11,15 +11,15 @@ import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.ref.SclRefParser;
 
 /**
- * 数据集（DataSet）相关的 SCL 操作服务。
+ * SCL operation service for data sets (DataSet).
  * <p>
- * 收编
+ * Consolidates the duplicated SCL parsing logic in the
  * GetDataSetDirectory、GetDataSetValues、SetDataSetValues、CreateDataSet、DeleteDataSet
- * handler 中的重复 SCL 解析逻辑。
+ * handlers.
  */
 public class SclDatasetService {
 
-    /** 数据集引用解析结果。 */
+    /** Data set reference resolution result. */
     public static class DataSetResolution {
         public final SclLDevice device;
         public final SclLN ln;
@@ -33,17 +33,17 @@ public class SclDatasetService {
     }
 
     /**
-     * 解析数据集引用字符串 {@code "LD0/LLN0.dsName"}，返回 LD/LN/DataSet 三元组。
+     * Resolves a data set reference string {@code "LD0/LLN0.dsName"} and returns the LD/LN/DataSet triple.
      * <p>
-     * 在指定 AP 作用域内查找。
+     * Looks up within the scope of the given AP.
      *
      * @param ied
-     *            IED 模型
+     *            IED model
      * @param ap
-     *            当前关联的访问点
+     *            the currently associated access point
      * @param ref
-     *            引用字符串，格式为 {@code ldInst/lnName.dsName}
-     * @return 解析结果，若任一环节失败则返回 {@code null}
+     *            reference string, format {@code ldInst/lnName.dsName}
+     * @return resolution result, or {@code null} if any step fails
      */
     public static DataSetResolution resolveDataSet(SclIED ied, SclAccessPoint ap, String ref) {
         if (ref == null || !SclRefParser.isValid(ref))
@@ -72,13 +72,13 @@ public class SclDatasetService {
     }
 
     /**
-     * 解析数据集引用字符串 {@code "LD0/LLN0.dsName"}，返回 LD/LN/DataSet 三元组。
+     * Resolves a data set reference string {@code "LD0/LLN0.dsName"} and returns the LD/LN/DataSet triple.
      *
      * @param ied
-     *            IED 模型
+     *            IED model
      * @param ref
-     *            引用字符串，格式为 {@code ldInst/lnName.dsName}
-     * @return 解析结果，若任一环节失败则返回 {@code null}
+     *            reference string, format {@code ldInst/lnName.dsName}
+     * @return resolution result, or {@code null} if any step fails
      */
     public static DataSetResolution resolveDataSet(SclIED ied, String ref) {
         if (ref == null || !SclRefParser.isValid(ref))
@@ -107,17 +107,17 @@ public class SclDatasetService {
     }
 
     /**
-     * 解析数据集引用字符串，仅返回 LN（DataSet 可能不存在，用于创建场景）。
+     * Resolves a data set reference string and returns only the LN (the DataSet may not exist; used for creation scenarios).
      * <p>
-     * 在指定 AP 作用域内查找。
+     * Looks up within the scope of the given AP.
      *
      * @param ied
-     *            IED 模型
+     *            IED model
      * @param ap
-     *            当前关联的访问点
+     *            the currently associated access point
      * @param ref
-     *            引用字符串，格式为 {@code ldInst/lnName.dsName}
-     * @return LN，若任一环节失败则返回 {@code null}
+     *            reference string, format {@code ldInst/lnName.dsName}
+     * @return LN, or {@code null} if any step fails
      */
     public static SclLN resolveLn(SclIED ied, SclAccessPoint ap, String ref) {
         if (ref == null || !SclRefParser.isValid(ref))
@@ -135,11 +135,11 @@ public class SclDatasetService {
     }
 
     /**
-     * 从引用字符串中提取 dsName。
+     * Extracts the dsName from a reference string.
      *
      * @param ref
-     *            引用字符串，格式为 {@code ldInst/lnName.dsName}
-     * @return dsName，若解析失败则返回 {@code null}
+     *            reference string, format {@code ldInst/lnName.dsName}
+     * @return dsName, or {@code null} if parsing fails
      */
     public static String extractDsName(String ref) {
         if (ref == null || !SclRefParser.isValid(ref))
@@ -148,17 +148,17 @@ public class SclDatasetService {
     }
 
     /**
-     * 将引用字符串解析为 FCDA。
+     * Parses a reference string into an FCDA.
      * <p>
-     * 在指定 AP 作用域内查找。
+     * Looks up within the scope of the given AP.
      *
      * @param ied
-     *            IED 模型
+     *            IED model
      * @param ap
-     *            当前关联的访问点
+     *            the currently associated access point
      * @param ref
-     *            成员引用，格式为 {@code ldInst/lnClass.lnInst/doName.daName}
-     * @return FCDA，若解析失败则返回 {@code null}
+     *            member reference, format {@code ldInst/lnClass.lnInst/doName.daName}
+     * @return FCDA, or {@code null} if parsing fails
      */
     public static SclFCDA parseRefToFcda(SclIED ied, SclAccessPoint ap, String ref) {
         if (ref == null || ref.isEmpty() || !SclRefParser.isValid(ref))
@@ -185,13 +185,13 @@ public class SclDatasetService {
     }
 
     /**
-     * 将引用字符串解析为 FCDA。
+     * Parses a reference string into an FCDA.
      *
      * @param ied
-     *            IED 模型
+     *            IED model
      * @param ref
-     *            成员引用，格式为 {@code ldInst/lnClass.lnInst/doName.daName}
-     * @return FCDA，若解析失败则返回 {@code null}
+     *            member reference, format {@code ldInst/lnClass.lnInst/doName.daName}
+     * @return FCDA, or {@code null} if parsing fails
      */
     public static SclFCDA parseRefToFcda(SclIED ied, String ref) {
         if (ref == null || ref.isEmpty() || !SclRefParser.isValid(ref))

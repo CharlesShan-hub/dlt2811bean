@@ -35,7 +35,7 @@ public class SclServices {
     private SclReportSettings reportSettings;
     private SclGSESettings gseSettings;
 
-    // ==================== 其余 tServices 能力元素（tServices 完整覆盖） ====================
+    // ==================== Remaining tServices capability elements (complete tServices coverage) ====================
 
     private Integer nameLength;
 

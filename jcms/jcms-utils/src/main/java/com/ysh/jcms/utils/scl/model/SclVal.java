@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * 数据属性值元素 (Val)，用于 DAI 或类似元素的数值表示。
+ * Data attribute value element (Val), representing the value of DAI or similar elements.
  * <p>
  * Schema:
  *
@@ -28,8 +28,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclVal {
-    /** 数值字符串 (normalizedString) */
+    /** Numeric string (normalizedString) */
     private String value;
-    /** 定值组编号 (sGroup), 用于定值组服务 */
+    /** Setting group number (sGroup), used by the setting group service */
     private Integer sGroup;
 }

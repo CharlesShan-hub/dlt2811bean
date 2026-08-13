@@ -38,32 +38,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * "读所有" 值服务 —— 全部数据值（8.3.4）/ 全部数据定义（8.3.5）/ 全部控制块值（8.3.6）。
+ * "Read all" values service —— all data values (8.3.4) / all data definitions (8.3.5) / all control block values (8.3.6).
  * <p>
- * 各方法返回完整结果列表，分页（referenceAfter / pageSize）由 handler 层处理。 控制块值（8.3.6）会 overlay
- * 运行时状态，与 GetXxxCBValues 行为对齐。
+ * Each method returns the complete result list; paging (referenceAfter / pageSize) is handled by the handler layer. Control block
+ * values (8.3.6) overlay runtime state, aligned with the GetXxxCBValues behavior.
  */
 public final class SclAllValuesService {
 
     private SclAllValuesService() {
     }
 
-    // ==================== 全部数据值（8.3.4） ====================
+    // ==================== All data values (8.3.4) ====================
 
     /**
-     * 获取全部数据值（展开到 DA 级别）。
+     * Gets all data values (expanded to DA level).
      * <p>
-     * 按标准 8.3.4，返回指定 LN 下所有 DA 的值（不含功能约束 SE）， 而非 DO 级别的单一值。
+     * Per standard 8.3.4, returns the values of all DAs under the given LN (excluding the functional constraint SE), instead of a
+     * single value at DO level.
      *
      * @param doc
-     *            SCL 文档
+     *            SCL document
      * @param ied
-     *            当前关联的 IED
+     *            the currently associated IED
      * @param lns
-     *            已解析的 LN 列表
+     *            list of resolved LNs
      * @param fc
-     *            FC 过滤码（null 或空表示不过滤）
-     * @return 数据值条目列表
+     *            FC filter code (null or empty means no filter)
+     * @return list of data value entries
      */
     public static List<CmsDataValueEntry> getAllDataValues(SclDocument doc, SclIED ied, List<SclLN> lns, String fc) {
         SclDataTypeTemplates templates = doc.dataTypeTemplates();
@@ -78,7 +79,7 @@ public final class SclAllValuesService {
         return entries;
     }
 
-    /** 展开 LN 下所有 DO 的 DA，递归处理 SDO。 */
+    /** Expands the DAs of all DOs under the LN, handling SDOs recursively. */
     private static void collectDoDaEntries(SclDocument doc, SclLN ln, SclDataTypeTemplates templates, String base, String fc,
             List<CmsDataValueEntry> entries) {
         if (ln.lnType() == null || ln.lnType().isEmpty())
@@ -98,10 +99,10 @@ public final class SclAllValuesService {
         }
     }
 
-    /** 收集 DO 下所有 DA 的值（含 SDO 递归）。 */
+    /** Collects the values of all DAs under a DO (including SDO recursion). */
     private static void collectDaEntries(SclDocument doc, SclLN ln, String doPrefix, SclDOType doType, String fc,
             List<CmsDataValueEntry> entries, SclDataTypeTemplates templates) {
-        // 普通 DA
+        // Ordinary DA
         for (SclDA da : doType.das()) {
             if (fc != null && !fc.isEmpty() && !"XX".equalsIgnoreCase(fc)) {
                 if (!fc.equalsIgnoreCase(da.fc()))
@@ -113,7 +114,7 @@ public final class SclAllValuesService {
                 entries.add(new CmsDataValueEntry().reference(fullRef).value(DataConverter.toCmsData(dv)));
             }
         }
-        // SDO 递归
+        // SDO recursion
         for (SclSDO sdo : doType.sdos()) {
             String sdoTypeId = sdo.type();
             if (sdoTypeId == null || sdoTypeId.isEmpty())
@@ -125,18 +126,18 @@ public final class SclAllValuesService {
         }
     }
 
-    // ==================== 全部数据定义（8.3.5） ====================
+    // ==================== All data definitions (8.3.5) ====================
 
     /**
-     * 获取全部数据定义。
+     * Gets all data definitions.
      *
      * @param doc
-     *            SCL 文档
+     *            SCL document
      * @param lns
-     *            已解析的 LN 列表
+     *            list of resolved LNs
      * @param fc
-     *            FC 过滤码（null 或空表示不过滤）
-     * @return 数据定义条目列表
+     *            FC filter code (null or empty means no filter)
+     * @return list of data definition entries
      */
     public static List<CmsDataDefinitionEntry> getAllDataDefinition(SclDocument doc, List<SclLN> lns, String fc) {
         SclDataTypeTemplates templates = doc.dataTypeTemplates();
@@ -149,7 +150,7 @@ public final class SclAllValuesService {
                 continue;
 
             for (SclDO doDef : lnt.dos()) {
-                // FC 过滤
+                // FC filter
                 if (fc != null) {
                     SclDOType doType = doDef.type() != null ? templates.findDoTypeById(doDef.type()) : null;
                     if (doType == null)
@@ -210,16 +211,16 @@ public final class SclAllValuesService {
         return def;
     }
 
-    // ==================== 全部控制块值（8.3.6） ====================
+    // ==================== All control block values (8.3.6) ====================
 
     /**
-     * 获取全部控制块值。
+     * Gets all control block values.
      *
      * @param lns
-     *            已解析的 LN 列表
+     *            list of resolved LNs
      * @param acsiClass
-     *            ACSI 类（BRCB/URCB/LCB/GOCB/MSVCB）
-     * @return 控制块值条目列表
+     *            ACSI class (BRCB/URCB/LCB/GOCB/MSVCB)
+     * @return list of control block value entries
      */
     public static List<CmsCbValueEntry> getAllCbValues(List<SclLN> lns, int acsiClass) {
         List<CmsCbValueEntry> entries = new ArrayList<>();
@@ -270,10 +271,10 @@ public final class SclAllValuesService {
         return result;
     }
 
-    // ==================== 运行时状态 overlay（8.3.6 与 GetXxxCBValues 行为对齐）
+    // ==================== Runtime state overlay (8.3.6, aligned with the GetXxxCBValues behavior)
     // ====================
 
-    /** 完整控制块引用：{@code ldInst/lnName.cbName}（与 Set 服务使用的引用格式一致）。 */
+    /** Full control block reference: {@code ldInst/lnName.cbName} (consistent with the reference format used by the Set service). */
     private static String fullRef(SclLN ln, String cbName) {
         SclLDevice ld = ln.parentLd();
         if (ld == null || ld.inst() == null) {
@@ -342,7 +343,7 @@ public final class SclAllValuesService {
         return choice;
     }
 
-    // ==================== 内部数据结构 ====================
+    // ==================== Internal data structure ====================
 
     private static final class CbPair {
         final String ref;

@@ -10,7 +10,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import static com.ysh.jcms.utils.scl.reader.SclReader.*;
 
-/** 解析 IED 下的 {@code <Services>} 及其子元素（ReportSettings / GSESettings）。 */
+/** Parses {@code <Services>} under IED and its child elements (ReportSettings / GSESettings). */
 public class SclServicesParser {
 
     private SclServicesParser() {
@@ -181,7 +181,7 @@ public class SclServicesParser {
         return services;
     }
 
-    /** SMVSettings：收第一个 SmpRate 子元素文本（其余子元素跳过）。 */
+    /** SMVSettings: captures the text of the first SmpRate child element (remaining children are skipped). */
     private static void parseSmvSettings(XMLStreamReader reader, SclServices services) throws XMLStreamException {
         while (reader.hasNext()) {
             int event = reader.nextTag();
@@ -197,7 +197,7 @@ public class SclServicesParser {
         }
     }
 
-    /** SettingGroups：收 SGEdit / ConfSG 子元素存在性（其 resvTms 等深属性不展开）。 */
+    /** SettingGroups: captures the existence of SGEdit / ConfSG child elements (deep attributes such as resvTms are not expanded). */
     private static void parseSettingGroups(XMLStreamReader reader, SclServices services) throws XMLStreamException {
         services.settingGroups(true);
         while (reader.hasNext()) {

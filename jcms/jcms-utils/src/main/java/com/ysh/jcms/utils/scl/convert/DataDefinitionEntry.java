@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 
 /**
- * 数据定义条目 —— 引用 + CDC 类型 + CmsDataDefinition 结构定义。
+ * Data definition entry —— reference + CDC type + CmsDataDefinition structure definition.
  */
 @Getter
 @Accessors(fluent = true)

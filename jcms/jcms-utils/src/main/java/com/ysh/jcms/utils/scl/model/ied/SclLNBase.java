@@ -27,14 +27,15 @@ public class SclLNBase {
     private String desc;
     private String lnType;
     /**
-     * IED 类型标识。
+     * IED type identifier.
      * <p>
-     * 注意：非 IEC 61850-6 2007B 标准属性——标准中 iedType 仅存在于 LNodeType/DOType/DAType 模板； LN
-     * 元素上的 iedType 系厂商扩展，保留用于宽容解析。
+     * Note: Not a standard attribute of IEC 61850-6 2007B - in the standard,
+     * iedType only exists in the LNodeType/DOType/DAType templates; the iedType on
+     * the LN element is a vendor extension, kept for lenient parsing.
      */
     private String iedType;
 
-    /** 所属逻辑设备（解析时由 SclLDevice.addLn 建立，用于推导完整控制块引用）。 */
+    /** The logical device this LN belongs to (established by SclLDevice.addLn during parsing, used to derive full control block references). */
     private transient SclLDevice parentLd;
 
     private final List<SclDOI> dois = new ArrayList<>();
