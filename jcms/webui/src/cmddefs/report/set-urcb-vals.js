@@ -62,7 +62,8 @@ d) 所有控制块均设置成功时返回 Response+，部分或全部失败时�
 e) 某控制块的所有属性均设置成功的情况下，该控制块 result 的内容应为空。某控制块的部分属性设置失败的情况下，该控制块 result 中应包含设置失败的属性，设置成功的属性不需列入。
 `,
   params: [
-    { key: 'ref', label: 'URCB 引用 ref', type: 'cb-ref-input', cb: 'urcb', required: true },
+    { key: 'ln', label: '逻辑节点', type: 'ln-cascade', required: true },
+    { key: 'ref', label: 'URCB 引用 ref', type: 'cb-select', cb: 'urcb', required: true, dependsOn: 'ln' },
     { key: 'rpt-id', label: '报告标识 rpt-id', type: 'text', required: false, placeholder: 'VisibleString129', inline: 'name' },
     { key: 'dat-set', label: '数据集 dat-set', type: 'text', required: false, placeholder: 'LD/LN.dsName', inline: 'name' },
     { key: 'opt-flds', label: '选项字段 opt-flds', type: 'number', required: false, placeholder: 'RCBOptFlds 位掩码', inline: 'mask' },

@@ -79,7 +79,7 @@ export async function ensureAllDefData(lnRef) {
 /** 数据集引用缓存（get-dataset-values 用），key 为 lnRef（如 "LD0/LLN0"）。 */
 export const datasetRefs = reactive({})
 
-/** 控制块引用缓存（cb-ref-input 用），key 为 "lnRef|acsiKey"（如 "LD0/LLN0|brcb"）。 */
+/** 控制块引用缓存（cb-select 用），key 为 "lnRef|acsiKey"（如 "LD0/LLN0|brcb"）。 */
 export const cbRefs = reactive({})
 
 /**

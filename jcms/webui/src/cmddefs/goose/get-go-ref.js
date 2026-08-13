@@ -41,7 +41,8 @@ GetGoReference-ErrorPDU ::= ServiceError`,
 | serviceError | | ServiceError |
 `,
   params: [
-    { key: 'ref', label: 'GoCB 引用 ref', type: 'cb-ref-input', cb: 'gocb', required: true },
+    { key: 'ln', label: '逻辑节点', type: 'ln-cascade', required: true },
+    { key: 'ref', label: 'GoCB 引用 ref', type: 'cb-select', cb: 'gocb', required: true, dependsOn: 'ln' },
     { key: 'offsets', label: '成员偏移 offsets', type: 'text', required: true, placeholder: '空格分隔，如 "0 1 2"' },
   ],
 }

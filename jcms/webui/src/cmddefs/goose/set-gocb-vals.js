@@ -36,7 +36,8 @@ SetGoCBValues-ErrorPDU ::= SEQUENCE {
 | result[1..n] | | ServiceError |
 `,
   params: [
-    { key: 'ref', label: 'GoCB 引用 ref', type: 'cb-ref-input', cb: 'gocb', required: true },
+    { key: 'ln', label: '逻辑节点', type: 'ln-cascade', required: true },
+    { key: 'ref', label: 'GoCB 引用 ref', type: 'cb-select', cb: 'gocb', required: true, dependsOn: 'ln' },
     { key: 'go-id', label: 'GOOSE ID go-id', type: 'text', required: false, placeholder: 'VisibleString129', inline: 'cfg' },
     { key: 'dat-set', label: '数据集 dat-set', type: 'text', required: false, placeholder: 'LD/LN.dsName', inline: 'cfg' },
     { key: 'go-ena', label: 'GOOSE 使能 go-ena', type: 'switch', required: false },

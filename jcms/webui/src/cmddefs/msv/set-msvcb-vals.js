@@ -42,7 +42,8 @@ SetMSVCBValues-ErrorPDU ::= SEQUENCE {
 | result[1..n] | | ServiceError |
 `,
   params: [
-    { key: 'ref', label: 'MSVCB 引用 ref', type: 'cb-ref-input', cb: 'msvcb', required: true },
+    { key: 'ln', label: '逻辑节点', type: 'ln-cascade', required: true },
+    { key: 'ref', label: 'MSVCB 引用 ref', type: 'cb-select', cb: 'msvcb', required: true, dependsOn: 'ln' },
     { key: 'msv-id', label: 'MSV 标识 msv-id', type: 'text', required: false, placeholder: 'VisibleString129', inline: 'cfg' },
     { key: 'dat-set', label: '数据集 dat-set', type: 'text', required: false, placeholder: 'LD/LN.dsName', inline: 'cfg' },
     { key: 'smp-mod', label: '采样模式 smp-mod', type: 'number', required: false, placeholder: '0/1/2', inline: 'smp' },

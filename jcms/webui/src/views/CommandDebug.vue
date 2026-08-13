@@ -77,10 +77,7 @@
         :ds-ref-exists="dsRefExists"
         :ds-ref-name-list="dsRefNameList"
         :ds-ref-invalid="dsRefInvalid"
-        :on-cb-ref-ld="onCbRefLd"
-        :on-cb-ref-ln="onCbRefLn"
-        :cb-ref-lns="cbRefLns"
-        :cb-ref-names="cbRefNames"
+        :cb-options="cbOptions"
         @run="run"
         @run-cmd="runCmd"
         @disconnect-tcp="disconnectTcp"
@@ -258,33 +255,6 @@ function dsRefInvalid(o) {
   return hasAfter ? !exists : exists
 }
 
-// ── cb-ref-input（单个控制块引用三选，如 set-brcb-vals 的 ref） ──
-
-function onCbRefLd(key) {
-  const o = form[key]
-  if (!o) return
-  o.ln = ''
-  o.cb = ''
-  if (o.ld) ensureLdLns(o.ld)
-}
-
-function onCbRefLn(key) {
-  const o = form[key]
-  if (!o) return
-  o.cb = ''
-}
-
-function cbRefLns(o) {
-  return o && o.ld ? ldLns[o.ld] || [] : []
-}
-
-function cbRefNames(o, acsiKey) {
-  if (!o || !o.ld || !o.ln || !acsiKey) return []
-  const ref = `${o.ld}/${o.ln}`
-  if (!cbRefs[`${ref}|${acsiKey}`]) ensureCbRefs(ref, acsiKey)
-  return cbRefs[`${ref}|${acsiKey}`] || []
-}
-
 const refOptions = computed(() => {
   if (props.cmd === 'ln-dir') return lnDirRefs
   if (props.cmd === 'all-cb') return allCbRefs
@@ -303,6 +273,18 @@ const datasetOptions = computed(() => {
 
 /** SGCB 控制块名选项：标准约定每个 LN 一个 SGCB，名为 SG1（组数由 numOfSG 配置决定） */
 const sgcbOptions = ['SG1']
+
+/** 控制块选项（cb-select 用）：依赖 ln-cascade 选中的 LN，从 ln-dir 拉取对应 ACSI 类的控制块名 */
+const cbOptions = computed(() => {
+  const p = def.value.params.find((x) => x.type === 'cb-select')
+  if (!p) return []
+  const lnKey = p.dependsOn || 'ln'
+  const o = form[lnKey]
+  if (!o || !o.ld || !o.ln || !p.cb) return []
+  const ref = `${o.ld}/${o.ln}`
+  if (!cbRefs[`${ref}|${p.cb}`]) ensureCbRefs(ref, p.cb)
+  return cbRefs[`${ref}|${p.cb}`] || []
+})
 
 /** ds-member-after 下拉选项：当前 LN + 数据集下的成员引用列表 */
 const dsMemberAfterOptions = computed(() => {
@@ -432,9 +414,6 @@ const formValid = computed(() => {
       // ds-ref-input: 需要 LD + LN + 数据集名称完整；selectOnly（如删除数据集）要求已存在，否则按 create/append 语义校验
       if (!v || !v.ld || !v.ln || !v.name) return false
       if (p.selectOnly ? !dsRefExists(v) : dsRefInvalid(v)) return false
-    } else if (p.type === 'cb-ref-input') {
-      // cb-ref-input: 需要 LD + LN + 控制块名称完整
-      if (!v || !v.ld || !v.ln || !v.cb) return false
     } else if (p.type === 'refs-list') {
       const rows = v || []
       const hasValid = p.cascade

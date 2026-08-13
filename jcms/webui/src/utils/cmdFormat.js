@@ -102,10 +102,11 @@ export function buildCmd(cmd, params, form, opts = {}) {
       }
     } else if (p.type === 'ln-cascade') {
       const o = v || {}
-      // 如果存在依赖该 ln-cascade 的 dataset-select / sgcb-select 参数，则跳过（由它们产生 --ds / --ref）
+      // 如果存在依赖该 ln-cascade 的 dataset-select / sgcb-select / cb-select 参数，则跳过（由它们产生 --ds / --ref）
       const hasDatasetSelect = params.some(x => x.type === 'dataset-select' && x.dependsOn === p.key)
       const hasSgcbSelect = params.some(x => x.type === 'sgcb-select' && x.dependsOn === p.key)
-      if (hasDatasetSelect || hasSgcbSelect) {
+      const hasCbSelect = params.some(x => x.type === 'cb-select' && x.dependsOn === p.key)
+      if (hasDatasetSelect || hasSgcbSelect || hasCbSelect) {
         // 不输出 --ln
       } else if (o.ld) {
         const ref = opts.cmdProp === 'ld-dir' && p.key === 'after' && form.ld
@@ -129,10 +130,12 @@ export function buildCmd(cmd, params, form, opts = {}) {
       if (v && lnVal && lnVal.ld && lnVal.ln) {
         parts.push('--ref', `"${lnVal.ld}/${lnVal.ln}.${v}"`)
       }
-    } else if (p.type === 'cb-ref-input') {
-      // cb-ref-input: LD + LN + 控制块名称 → --<key> "LD/LN.cbName"
-      if (v && v.ld && v.ln && v.cb) {
-        parts.push(`--${p.key}`, `"${v.ld}/${v.ln}.${v.cb}"`)
+    } else if (p.type === 'cb-select') {
+      // cb-select: 与 ln-cascade 组合为 --<key> "LD/LN.<控制块名>"
+      const lnKey = p.dependsOn || 'ln'
+      const lnVal = form[lnKey]
+      if (v && lnVal && lnVal.ld && lnVal.ln) {
+        parts.push(`--${p.key}`, `"${lnVal.ld}/${lnVal.ln}.${v}"`)
       }
     } else if (p.type === 'ds-ref-input') {
       // ds-ref-input: LD + LN + 数据集名称 → --ds "LD/LN.dsName"

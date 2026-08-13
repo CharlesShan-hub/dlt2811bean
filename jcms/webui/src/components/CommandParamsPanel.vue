@@ -86,6 +86,14 @@
               placeholder="请先选择逻辑节点"
               empty-label="（不选）"
             />
+            <!-- 控制块选择：依赖 ln-cascade 选中的 LN，从 ln-dir 拉取控制块名称（BRCB/URCB/LCB/GoCB/MSVCB） -->
+            <UiSelect
+              v-else-if="p.type === 'cb-select'"
+              v-model="form[p.key]"
+              :options="cbOptions"
+              placeholder="请先选择逻辑节点"
+              empty-label="（不选）"
+            />
             <!-- 数据集引用三选：LD → LN → 数据集名称（create-dataset 可输入；selectOnly 时仅下拉选择） -->
             <div v-else-if="p.type === 'ds-ref-input'" class="ds-ref-row">
               <UiSelect
@@ -269,6 +277,7 @@ const props = defineProps({
   refsListOptions: Array,
   datasetOptions: Array,
   sgcbOptions: Array,
+  cbOptions: Array,
   dsMemberAfterOptions: Array,
   dsMemberOptions: Array,
   lnRef: String,
@@ -299,11 +308,6 @@ const props = defineProps({
   dsRefExists: Function,
   dsRefNameList: Function,
   dsRefInvalid: Function,
-  // cb-ref-input 专用
-  onCbRefLd: Function,
-  onCbRefLn: Function,
-  cbRefLns: Function,
-  cbRefNames: Function,
 })
 
 const emit = defineEmits([

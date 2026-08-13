@@ -41,7 +41,8 @@ GetGOOSEElementNumber-ErrorPDU ::= ServiceError`,
 | serviceError | | ServiceError |
 `,
   params: [
-    { key: 'ref', label: 'GoCB 引用 ref', type: 'cb-ref-input', cb: 'gocb', required: true },
+    { key: 'ln', label: '逻辑节点', type: 'ln-cascade', required: true },
+    { key: 'ref', label: 'GoCB 引用 ref', type: 'cb-select', cb: 'gocb', required: true, dependsOn: 'ln' },
     { key: 'refs', label: '成员引用 refs', type: 'refs-list', required: true, placeholder: 'LD/LN.DO，如 LD0/LLN0.DO1' },
     { key: 'fcs', label: '成员 FC 列表 fcs', type: 'text', required: true, placeholder: '与 refs 对应，空格分隔，如 "1 6"' },
   ],
