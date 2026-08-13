@@ -94,6 +94,34 @@ export async function ensureDatasetRefs(lnRef) {
 /** 清空数据集缓存（断开连接时）。 */
 export function clearDatasetRefs() {
   Object.keys(datasetRefs).forEach(k => delete datasetRefs[k])
+  clearDatasetMemberRefs()
+}
+
+/** 数据集成员引用缓存（get-dataset-dir 用），key 为 "lnRef.dsName"（如 "LD0/LLN0.dsAlarm"）。 */
+export const datasetMemberRefs = reactive({})
+
+/**
+ * 拉取某数据集的所有成员引用（经 get-dataset-dir 查询，幂等）。
+ * @param {string} lnRef 如 "LD0/LLN0"
+ * @param {string} dsName 数据集名称，如 "dsAlarm"
+ * @returns {Promise<string[]>} 成员引用列表，如 ["LD0/GGIO1.Alm1", "LD0/GGIO1.Alm2"]
+ */
+export async function ensureDatasetMemberRefs(lnRef, dsName) {
+  if (!lnRef || !dsName) return []
+  const key = `${lnRef}.${dsName}`
+  if (datasetMemberRefs[key]) return datasetMemberRefs[key]
+  try {
+    const res = await executeJson(`get-dataset-dir --ds ${lnRef}.${dsName} --auto-pull true --json`)
+    datasetMemberRefs[key] = res && Array.isArray(res.memberData) ? res.memberData.map(m => m.reference).filter(Boolean) : []
+  } catch {
+    datasetMemberRefs[key] = []
+  }
+  return datasetMemberRefs[key]
+}
+
+/** 清空数据集成员引用缓存（断开连接时）。 */
+function clearDatasetMemberRefs() {
+  Object.keys(datasetMemberRefs).forEach(k => delete datasetMemberRefs[k])
 }
 
 /** 清空 all-def 数据缓存（断开连接时）。 */

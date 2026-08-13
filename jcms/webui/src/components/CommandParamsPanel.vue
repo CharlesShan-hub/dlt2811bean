@@ -114,6 +114,14 @@
                 <span v-else-if="form.after && !dsRefExists(form[p.key])" class="ds-ref-invalid-tag">不存在</span>
               </div>
             </div>
+            <!-- 数据集成员引用 after 下拉（get-dataset-dir / get-dataset-values 用） -->
+            <UiSelect
+              v-else-if="p.type === 'ds-member-after'"
+              v-model="form[p.key]"
+              :options="['', ...dsMemberAfterOptions]"
+              :placeholder="p.placeholder"
+              empty-label="（不选）"
+            />
             <UiSelect
               v-else-if="p.type === 'ln-ref-select'"
               v-model="form[p.key]"
@@ -245,6 +253,7 @@ const props = defineProps({
   fcRowOptions: Array,
   refsListOptions: Array,
   datasetOptions: Array,
+  dsMemberAfterOptions: Array,
   lnRef: String,
   connMsg: String,
   connMsgOk: Boolean,

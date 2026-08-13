@@ -48,6 +48,7 @@
         :fc-row-options="fcRowOptions"
         :refs-list-options="refsListOptions"
         :dataset-options="datasetOptions"
+        :ds-member-after-options="dsMemberAfterOptions"
         :ln-ref="lnRef"
         :conn-msg="connMsg"
         :conn-msg-ok="connMsgOk"
@@ -136,7 +137,7 @@ import { marked } from 'marked'
 import { CMD_DEFS } from '../cmddefs/index.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
 import { pushTerminal } from '../terminalLog.js'
-import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, datasetRefs, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs, ensureDatasetRefs } from '../ldCache.js'
+import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, datasetRefs, datasetMemberRefs, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs, ensureDatasetRefs, ensureDatasetMemberRefs } from '../ldCache.js'
 import { buildCmd, highlightCmdStr, syntaxHighlightJson, parseResult, parseCmd } from '../utils/cmdFormat.js'
 import { FC_OPTIONS } from '../cmddefs/common.js'
 import { useSplitPane } from '../composables/useSplitPane.js'
@@ -265,6 +266,19 @@ const datasetOptions = computed(() => {
   if (!o || !o.ld || !o.ln) return []
   const lnRef = `${o.ld}/${o.ln}`
   return datasetRefs[lnRef] || []
+})
+
+/** ds-member-after 下拉选项：当前 LN + 数据集下的成员引用列表 */
+const dsMemberAfterOptions = computed(() => {
+  const p = def.value.params.find((x) => x.type === 'ds-member-after')
+  if (!p) return []
+  const lnKey = p.dependsOn || 'ln'
+  const o = form[lnKey]
+  if (!o || !o.ld || !o.ln) return []
+  const dsName = form.ds
+  if (!dsName) return []
+  const key = `${o.ld}/${o.ln}.${dsName}`
+  return datasetMemberRefs[key] || []
 })
 
 const refsListOptions = computed(() => allLnRefs)
@@ -447,6 +461,18 @@ watch([() => form.ln?.ld, () => form.ln?.ln], async ([ld, ln]) => {
   form.ds = '' // 清除数据集选择
   if (ld && ln) {
     await ensureDatasetRefs(`${ld}/${ln}`)
+  }
+})
+
+// get-dataset-values / get-dataset-dir: 数据集变化时加载成员引用
+watch(() => form.ds, async (dsName) => {
+  if (!['get-dataset-values', 'get-dataset-dir'].includes(props.cmd)) return
+  if (!dsName) return
+  const o = form.ln
+  if (!o || !o.ld || !o.ln) return
+  const key = `${o.ld}/${o.ln}.${dsName}`
+  if (!datasetMemberRefs[key]) {
+    await ensureDatasetMemberRefs(`${o.ld}/${o.ln}`, dsName)
   }
 })
 
