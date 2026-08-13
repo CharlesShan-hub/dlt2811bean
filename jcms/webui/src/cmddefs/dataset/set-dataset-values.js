@@ -45,8 +45,8 @@ c) 指定了 referenceAfter 的情况下，应从 referenceAfter 成员之后按
 d) 所有数据集值设置成功时返回 Response+，部分或全部失败时返回 Response-。在 Response-中，依次返回每个数据集值的设置结果。
 `,
   params: [
-    { key: 'ds', label: '数据集引用', type: 'text', required: true, placeholder: 'LD/LN.dsName，如 PROT/LLN0.dsRelayEna' },
-    { key: 'values', label: '成员值列表', type: 'text', required: true, placeholder: '空格分隔，如 "10 20 30"' },
-    { key: 'after', label: '分页游标 after', type: 'text', required: false, placeholder: '（可选）从该引用之后继续设置' },
+    { key: 'ds', label: '数据集引用', type: 'ds-ref-input', required: true, selectOnly: true },
+    { key: 'values', label: '成员值列表', type: 'values-list', required: true },
+    { key: 'after', label: '分页游标 after', type: 'ds-member-after', required: false, placeholder: '（可选）从该成员之后开始设置' },
   ],
 }

@@ -119,9 +119,32 @@ export async function ensureDatasetMemberRefs(lnRef, dsName) {
   return datasetMemberRefs[key]
 }
 
+/** 数据集成员完整数据缓存（含 reference + fc），key 为 "lnRef.dsName"（如 "LD0/LLN0.dsAlarm"）。 */
+export const datasetMembers = reactive({})
+
+/**
+ * 拉取某数据集的所有成员完整数据（含 reference + fc，经 get-dataset-dir 查询，幂等）。
+ * @param {string} lnRef 如 "LD0/LLN0"
+ * @param {string} dsName 数据集名称，如 "dsAlarm"
+ * @returns {Promise<Array<{reference: string, fc: string}>>} 成员完整数据列表
+ */
+export async function ensureDatasetMembers(lnRef, dsName) {
+  if (!lnRef || !dsName) return []
+  const key = `${lnRef}.${dsName}`
+  if (datasetMembers[key]) return datasetMembers[key]
+  try {
+    const res = await executeJson(`get-dataset-dir --ds ${lnRef}.${dsName} --auto-pull true --json`)
+    datasetMembers[key] = res && Array.isArray(res.memberData) ? res.memberData.filter(m => m.reference) : []
+  } catch {
+    datasetMembers[key] = []
+  }
+  return datasetMembers[key]
+}
+
 /** 清空数据集成员引用缓存（断开连接时）。 */
 function clearDatasetMemberRefs() {
   Object.keys(datasetMemberRefs).forEach(k => delete datasetMemberRefs[k])
+  Object.keys(datasetMembers).forEach(k => delete datasetMembers[k])
 }
 
 /** 清空 all-def 数据缓存（断开连接时）。 */

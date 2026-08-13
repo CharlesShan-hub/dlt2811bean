@@ -122,6 +122,12 @@
               :placeholder="p.placeholder"
               empty-label="（不选）"
             />
+            <!-- 数据集成员值列表编辑（set-dataset-values 用） -->
+            <ValuesListEditor
+              v-else-if="p.type === 'values-list'"
+              v-model="form[p.key]"
+              :members="filteredDsMemberOptions"
+            />
             <UiSelect
               v-else-if="p.type === 'ln-ref-select'"
               v-model="form[p.key]"
@@ -238,6 +244,7 @@ import UiButton from './ui/UiButton.vue'
 import UiInput from './ui/UiInput.vue'
 import UiSelect from './ui/UiSelect.vue'
 import UiSwitch from './ui/UiSwitch.vue'
+import ValuesListEditor from './ValuesListEditor.vue'
 
 const props = defineProps({
   def: Object,
@@ -254,6 +261,7 @@ const props = defineProps({
   refsListOptions: Array,
   datasetOptions: Array,
   dsMemberAfterOptions: Array,
+  dsMemberOptions: Array,
   lnRef: String,
   connMsg: String,
   connMsgOk: Boolean,
@@ -295,6 +303,16 @@ const emit = defineEmits([
 ])
 
 const connectCmd = defineModel('connectCmd', { default: '' })
+
+/** 根据 after 选择过滤成员列表：只显示从 after 位置开始的成员 */
+const filteredDsMemberOptions = computed(() => {
+  const members = props.dsMemberOptions
+  if (!Array.isArray(members) || members.length === 0) return []
+  const after = props.form?.after
+  if (!after) return members
+  const idx = members.findIndex(m => m.reference === after)
+  return idx >= 0 ? members.slice(idx) : members
+})
 </script>
 
 <style scoped>

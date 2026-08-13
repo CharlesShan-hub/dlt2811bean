@@ -49,6 +49,7 @@
         :refs-list-options="refsListOptions"
         :dataset-options="datasetOptions"
         :ds-member-after-options="dsMemberAfterOptions"
+        :ds-member-options="dsMemberOptions"
         :ln-ref="lnRef"
         :conn-msg="connMsg"
         :conn-msg-ok="connMsgOk"
@@ -137,7 +138,7 @@ import { marked } from 'marked'
 import { CMD_DEFS } from '../cmddefs/index.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
 import { pushTerminal } from '../terminalLog.js'
-import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, datasetRefs, datasetMemberRefs, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs, ensureDatasetRefs, ensureDatasetMemberRefs } from '../ldCache.js'
+import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, datasetRefs, datasetMemberRefs, datasetMembers, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs, ensureDatasetRefs, ensureDatasetMemberRefs, ensureDatasetMembers } from '../ldCache.js'
 import { buildCmd, highlightCmdStr, syntaxHighlightJson, parseResult, parseCmd } from '../utils/cmdFormat.js'
 import { FC_OPTIONS } from '../cmddefs/common.js'
 import { useSplitPane } from '../composables/useSplitPane.js'
@@ -272,13 +273,30 @@ const datasetOptions = computed(() => {
 const dsMemberAfterOptions = computed(() => {
   const p = def.value.params.find((x) => x.type === 'ds-member-after')
   if (!p) return []
-  const lnKey = p.dependsOn || 'ln'
-  const o = form[lnKey]
-  if (!o || !o.ld || !o.ln) return []
-  const dsName = form.ds
-  if (!dsName) return []
-  const key = `${o.ld}/${o.ln}.${dsName}`
+  let ld, ln, dsName
+  if (props.cmd === 'set-dataset-values') {
+    // ds-ref-input 模式：form.ds 是 {ld, ln, name}
+    const o = form.ds
+    if (!o || !o.ld || !o.ln || !o.name) return []
+    ld = o.ld; ln = o.ln; dsName = o.name
+  } else {
+    // 普通 ln-cascade + dataset-select 模式
+    const lnKey = p.dependsOn || 'ln'
+    const o = form[lnKey]
+    if (!o || !o.ld || !o.ln) return []
+    ld = o.ld; ln = o.ln; dsName = form.ds
+    if (!dsName) return []
+  }
+  const key = `${ld}/${ln}.${dsName}`
   return datasetMemberRefs[key] || []
+})
+
+const dsMemberOptions = computed(() => {
+  if (props.cmd !== 'set-dataset-values') return []
+  const o = form.ds
+  if (!o || !o.ld || !o.ln || !o.name) return []
+  const key = `${o.ld}/${o.ln}.${o.name}`
+  return datasetMembers[key] || []
 })
 
 const refsListOptions = computed(() => allLnRefs)
@@ -290,7 +308,9 @@ const rightTitle = computed(() => {
   return def.value.asn1 ? 'ASN.1' : '服务说明'
 })
 
-const form = reactive({})
+const form = reactive({
+  values: [],
+})
 const busy = ref(false)
 const result = ref(null)
 const connectCmd = ref('')
@@ -473,6 +493,20 @@ watch(() => form.ds, async (dsName) => {
   const key = `${o.ld}/${o.ln}.${dsName}`
   if (!datasetMemberRefs[key]) {
     await ensureDatasetMemberRefs(`${o.ld}/${o.ln}`, dsName)
+  }
+})
+
+// set-dataset-values: ds-ref-input 变化时加载成员引用
+watch([() => form.ds?.ld, () => form.ds?.ln, () => form.ds?.name], async ([ld, ln, name]) => {
+  if (props.cmd !== 'set-dataset-values') return
+  form.values = []
+  if (!ld || !ln || !name) return
+  const key = `${ld}/${ln}.${name}`
+  if (!datasetMemberRefs[key]) {
+    await ensureDatasetMemberRefs(`${ld}/${ln}`, name)
+  }
+  if (!datasetMembers[key]) {
+    await ensureDatasetMembers(`${ld}/${ln}`, name)
   }
 })
 

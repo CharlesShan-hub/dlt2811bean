@@ -56,6 +56,8 @@ export function useCommandForm(form, opts = {}) {
         form[p.key] = { ld: '', ln: '', name: '' }
       } else if (p.type === 'refs-list') {
         form[p.key] = p.cascade ? [{ ld: '', ln: '', do: '', sdo: '', da: '', fc: '', value: '', type: 'visible-string' }] : ['']
+      } else if (p.type === 'values-list') {
+        form[p.key] = []
       } else {
         form[p.key] = p.default ?? (p.type === 'switch' ? false : '')
       }

@@ -199,6 +199,10 @@ export function buildCmd(cmd, params, form, opts = {}) {
           parts.push('--after', `"${afterParts.join(delim)}"`)
         }
       }
+    } else if (cmd === 'set-dataset-values' && p.key === 'values' && v !== '' && v !== null && v !== undefined) {
+      // set-dataset-values 的 values 是空格分隔列表，需引号包裹
+      const val = Array.isArray(v) ? v.filter(x => x !== '').join(' ') : String(v)
+      parts.push('--values', `"${val}"`)
     } else if (p.key === 'refs' && v !== '' && v !== null && v !== undefined) {
       parts.push(`--${p.key}`, `"${String(v)}"`)
     } else if (v !== '' && v !== null && v !== undefined) {

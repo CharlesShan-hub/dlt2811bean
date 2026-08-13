@@ -220,14 +220,18 @@ async function onToggle(node) {
       const res = await executeJson(cmd)
       detailRaw.value = JSON.stringify(res, null, 2)
 
-      // data-set 节点：将 memberData 映射到表格
+      // data-set 节点：将 memberData 映射到表格，并解析成员数据类型（data-def 为主，all-def 缓存兜底）
       if (node.type === 'data-set' && res && Array.isArray(res.memberData)) {
-        dirEntries.value = res.memberData.map(m => ({
+        const attrs = res.memberData.map(m => ({
           fc: m.fc,
           attr: m.reference,
           fullRef: m.reference,
+        }))
+        const defMap = await resolveDataSetMemberTypes(attrs)
+        dirEntries.value = attrs.map(a => ({
+          ...a,
           value: null,
-          type: '',
+          type: defMap[a.fullRef] || '',
         }))
       }
     } finally {
@@ -460,6 +464,62 @@ function choiceTypeToType(choiceType) {
     17: 'check',
   }
   return map[choiceType] || 'visible-string'
+}
+
+/** 数据集成员类型解析：优先 get-data-def，缺省时用 all-def 缓存兜底（FCD 取 cdcType，FDCA 取 DA 结构类型）。 */
+async function resolveDataSetMemberTypes(attrs) {
+  const defMap = {}
+  const typeKeys = ['boolean','int8','int16','int32','int64','int8u','int16u','int32u','int64u',
+    'float32','float64','octet-string','visible-string','unicode-string',
+    'timestamp','quality','check']
+  const refs = attrs.map(a => a.fullRef).join(' ')
+  if (refs) {
+    try {
+      const defRes = await executeJson(`get-data-def --refs "${refs}" --json`)
+      const defList = Array.isArray(defRes) ? defRes : (defRes?.data || [])
+      for (let i = 0; i < defList.length && i < attrs.length; i++) {
+        const entry = defList[i]
+        if (!entry) continue
+        if (entry.cdcType) {
+          defMap[attrs[i].fullRef] = entry.cdcType
+        } else if (entry.definition && typeof entry.definition === 'object') {
+          for (const k of typeKeys) {
+            if (Object.prototype.hasOwnProperty.call(entry.definition, k)) {
+              defMap[attrs[i].fullRef] = k
+              break
+            }
+          }
+        }
+      }
+    } catch { /* data-def 失败时走缓存兜底 */ }
+  }
+  // 兜底：按 LN 分组查 all-def 缓存
+  const missing = attrs.filter(a => !defMap[a.fullRef])
+  const byLn = {}
+  for (const a of missing) {
+    const slashIdx = a.fullRef.indexOf('/')
+    const dotIdx = a.fullRef.indexOf('.', slashIdx)
+    if (slashIdx < 0 || dotIdx < 0) continue
+    const lnRef = a.fullRef.slice(0, dotIdx)
+    const path = a.fullRef.slice(dotIdx + 1).split('.')
+    ;(byLn[lnRef] = byLn[lnRef] || []).push({ a, path })
+  }
+  for (const [lnRef, items] of Object.entries(byLn)) {
+    const allDefData = await ensureAllDefData(lnRef)
+    for (const { a, path } of items) {
+      const doInfo = allDefData[path[0]]
+      if (!doInfo) continue
+      if (path.length === 1) {
+        // FCD：DO 级别 → cdcType
+        if (doInfo.cdcType) defMap[a.fullRef] = doInfo.cdcType
+      } else {
+        // FDCA：DO.DA → structure 里 DA 的类型
+        const member = doInfo.structure?.find(s => s.name === path[1])
+        if (member && member.type) defMap[a.fullRef] = member.type
+      }
+    }
+  }
+  return defMap
 }
 </script>
 
