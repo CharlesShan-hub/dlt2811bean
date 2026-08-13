@@ -42,8 +42,8 @@ CreateDataSet-ErrorPDU ::= ServiceError`,
 接收到的请求中未指定 referenceAfter 时，应创建一个新的数据集。接收到的请求中指定了 referenceAfter 时，应在现有数据集之后增加新的成员，referenceAfter 为现有数据集的最后一个成员。预定义的数据集或已关联报告控制块的数据集应不允许增加新成员。数据集成员为 FCD 或 FDCA。
 `,
   params: [
-    { key: 'ds', label: '数据集引用', type: 'text', required: true, placeholder: 'LD/LN.dsName，如 PROT/LLN0.dsNewDs' },
-    { key: 'members', label: '成员列表', type: 'text', required: true, placeholder: '如 "PROT/GGIO1.ST.Ind1,ST PROT/GGIO1.MX.AnIn1,MX"' },
-    { key: 'after', label: '分页游标 after', type: 'text', required: false, placeholder: '（可选）从该引用之后继续创建' },
+    { key: 'ds', label: '数据集引用', type: 'ds-ref-input', required: true },
+    { key: 'after', label: '分页游标 after', type: 'text', required: false, readonly: true, placeholder: '选择已存在的数据集后将自动填充' },
+    { key: 'refs', label: '成员列表', type: 'refs-list', cascade: true, membersFormat: true, required: true },
   ],
 }

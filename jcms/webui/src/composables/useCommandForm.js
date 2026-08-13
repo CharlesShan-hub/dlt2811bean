@@ -52,6 +52,8 @@ export function useCommandForm(form, opts = {}) {
         form[p.key] = { ld: '', ln: '' }
       } else if (p.type === 'dataset-select') {
         form[p.key] = ''
+      } else if (p.type === 'ds-ref-input') {
+        form[p.key] = { ld: '', ln: '', name: '' }
       } else if (p.type === 'refs-list') {
         form[p.key] = p.cascade ? [{ ld: '', ln: '', do: '', sdo: '', da: '', fc: '', value: '', type: 'visible-string' }] : ['']
       } else {

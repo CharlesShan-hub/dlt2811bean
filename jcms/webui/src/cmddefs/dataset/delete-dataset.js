@@ -27,6 +27,6 @@ DeleteDataSet-ErrorPDU ::= ServiceError`,
 | serviceError | ServiceError |
 `,
   params: [
-    { key: 'ds', label: '数据集引用', type: 'text', required: true, placeholder: 'LD/LN.dsName，如 PROT/LLN0.dsNewDs' },
+    { key: 'ds', label: '数据集引用', type: 'ds-ref-input', required: true, selectOnly: true },
   ],
 }

@@ -119,6 +119,11 @@ export function buildCmd(cmd, params, form, opts = {}) {
       if (v && lnVal && lnVal.ld && lnVal.ln) {
         parts.push('--ds', `"${lnVal.ld}/${lnVal.ln}.${v}"`)
       }
+    } else if (p.type === 'ds-ref-input') {
+      // ds-ref-input: LD + LN + 数据集名称 → --ds "LD/LN.dsName"
+      if (v && v.ld && v.ln && v.name) {
+        parts.push('--ds', `"${v.ld}/${v.ln}.${v.name}"`)
+      }
     } else if (p.type === 'ln-ref-select') {
       if (v) {
         parts.push(`--${p.key}`, String(v))
@@ -177,7 +182,8 @@ export function buildCmd(cmd, params, form, opts = {}) {
         parts.push(`--${p.key}`, `"${refs.join(delim)}"`)
         const hasFc = fcs.some(f => f)
         if (hasFc) {
-          parts.push('--fc', `"${fcs.join(delim)}"`)
+          const fcParam = p.membersFormat ? '--fcs' : '--fc'
+          parts.push(fcParam, `"${fcs.join(delim)}"`)
         }
         // set-data-values 额外输出 --values 列表
         // 注意：JSON 值中的 " 需要转义为 \"，否则 tokenizer 会误判引号边界

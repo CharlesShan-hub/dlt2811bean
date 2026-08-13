@@ -1,12 +1,25 @@
 <template>
   <div ref="wrapEl" class="ui-select">
-    <button type="button" class="ui-select__trigger" :class="{ disabled }" :disabled="disabled" @click="toggle">
-      <span class="ui-select__value" :class="{ placeholder: !currentLabel }">
-        <span v-if="currentColor" class="ui-select__dot" :style="{ background: currentColor }"></span>
-        {{ currentLabel || (loading ? '加载中...' : placeholder) }}
-      </span>
-      <span class="ui-select__arrow" :class="{ open }">▾</span>
-    </button>
+    <div class="ui-select__trigger" :class="{ disabled, editable, error }" @click="onTriggerClick">
+      <input
+        v-if="editable"
+        ref="inputEl"
+        class="ui-select__input"
+        :value="modelValue"
+        :placeholder="placeholder"
+        :disabled="disabled"
+        @input="onInput"
+        @focus="openMenu"
+        @click.stop
+      />
+      <template v-else>
+        <span class="ui-select__value" :class="{ placeholder: !currentLabel }">
+          <span v-if="currentColor" class="ui-select__dot" :style="{ background: currentColor }"></span>
+          {{ currentLabel || (loading ? '加载中...' : placeholder) }}
+        </span>
+      </template>
+      <span class="ui-select__arrow" :class="{ open }" @click.stop="toggle">▾</span>
+    </div>
 
     <transition name="ui-select">
       <div v-if="open" ref="menuEl" class="ui-select__menu" :style="menuStyle">
@@ -41,12 +54,17 @@ const props = defineProps({
   loading: Boolean,
   /** 禁用：仅展示当前选中项，不可打开选择（如协议固定值的参数） */
   disabled: Boolean,
+  /** 可编辑：允许输入自定义值，同时保留下拉选择（combo box 风格） */
+  editable: Boolean,
+  /** 错误状态：边框变红，用于表单校验 */
+  error: Boolean,
 })
 
 const emit = defineEmits(['update:modelValue'])
 
 const open = ref(false)
 const wrapEl = ref(null)
+const inputEl = ref(null)
 const menuEl = ref(null)
 const menuStyle = ref({})
 
@@ -76,11 +94,24 @@ const currentColor = computed(() => {
   return o !== undefined ? optColor(o) : ''
 })
 
+function onInput(e) {
+  emit('update:modelValue', e.target.value)
+}
+
+function onTriggerClick() {
+  if (props.editable) {
+    inputEl.value?.focus()
+    openMenu()
+  } else {
+    toggle()
+  }
+}
+
 function toggle() {
   open.value ? close() : openMenu()
 }
 
-/** 打开浮层：按触发按钮位置 fixed 定位，避免被滚动容器裁剪。 */
+/** 打开浮层：按触发位置 fixed 定位，避免被滚动容器裁剪。 */
 function openMenu() {
   const r = wrapEl.value.getBoundingClientRect()
   menuStyle.value = { top: `${r.bottom + 4}px`, left: `${r.left}px`, width: `${r.width}px` }
@@ -145,15 +176,32 @@ onBeforeUnmount(close)
   border-color: var(--text-muted);
 }
 
-.ui-select__trigger.disabled,
-.ui-select__trigger:disabled {
+.ui-select__trigger.disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
 
-.ui-select__trigger.disabled:hover,
-.ui-select__trigger:disabled:hover {
+.ui-select__trigger.disabled:hover {
   border-color: var(--border);
+}
+
+/* editable 模式：去掉内边距，让 input 填满 */
+.ui-select__trigger.editable {
+  cursor: text;
+  padding: 0;
+  overflow: hidden;
+}
+
+.ui-select__trigger.editable:hover {
+  border-color: var(--border);
+}
+
+.ui-select__trigger.editable:focus-within {
+  border-color: var(--accent);
+}
+
+.ui-select__trigger.error {
+  border-color: var(--red) !important;
 }
 
 .ui-select__value {
@@ -169,11 +217,32 @@ onBeforeUnmount(close)
   color: var(--text-muted);
 }
 
+.ui-select__input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 10px 0 10px 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.ui-select__input:disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
 .ui-select__arrow {
   color: var(--text-muted);
   font-size: 12px;
   flex-shrink: 0;
   transition: transform 0.2s;
+}
+
+.ui-select__trigger.editable .ui-select__arrow {
+  padding: 10px 12px;
 }
 
 .ui-select__arrow.open {

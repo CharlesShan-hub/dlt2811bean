@@ -31,6 +31,7 @@
               v-if="p.type === 'text'"
               v-model="form[p.key]"
               :placeholder="p.placeholder"
+              :readonly="p.readonly"
             />
             <UiInput
               v-else-if="p.type === 'number'"
@@ -77,6 +78,42 @@
               placeholder="请先选择逻辑节点"
               empty-label="（不选）"
             />
+            <!-- 数据集引用三选：LD → LN → 数据集名称（create-dataset 可输入；selectOnly 时仅下拉选择） -->
+            <div v-else-if="p.type === 'ds-ref-input'" class="ds-ref-row">
+              <UiSelect
+                v-model="form[p.key].ld"
+                :options="ldCache"
+                placeholder="LD"
+                empty-label="（不选）"
+                @update:modelValue="onDsRefLd(p.key)"
+              />
+              <UiSelect
+                v-model="form[p.key].ln"
+                :options="dsRefLns(form[p.key])"
+                placeholder="LN"
+                empty-label="（不选）"
+                @update:modelValue="onDsRefLn(p.key)"
+              />
+              <UiSelect
+                v-if="p.selectOnly"
+                v-model="form[p.key].name"
+                :options="dsRefNameList(form[p.key])"
+                placeholder="数据集名称"
+                empty-label="（不选）"
+              />
+              <div v-else class="ds-ref-name-wrapper">
+                <UiSelect
+                  v-model="form[p.key].name"
+                  :options="dsRefNameList(form[p.key])"
+                  placeholder="数据集名称，如 dsMySet"
+                  empty-label="（不选）"
+                  editable
+                  :error="dsRefInvalid(form[p.key])"
+                />
+                <span v-if="!form.after && dsRefExists(form[p.key])" class="ds-ref-exists-tag">已存在</span>
+                <span v-else-if="form.after && !dsRefExists(form[p.key])" class="ds-ref-invalid-tag">不存在</span>
+              </div>
+            </div>
             <UiSelect
               v-else-if="p.type === 'ln-ref-select'"
               v-model="form[p.key]"
@@ -114,7 +151,7 @@
                     />
                   </div>
                   <div class="refs-row">
-                    <button v-if="!p.single" type="button" class="glass glass-danger refs-del" title="删除该引用" @click="removeRefs(i)">✕</button>
+                    <button v-if="!p.single" type="button" class="glass glass-danger refs-del" title="删除该引用" @click="removeRefs(i)"><X :size="14" /></button>
                     <UiSelect
                       v-model="r.sdo"
                       :options="rowSdoOptions(r)"
@@ -164,7 +201,7 @@
                     :placeholder="p.placeholder"
                     empty-label="（不选）"
                   />
-                  <button v-if="!p.single" type="button" class="glass glass-danger refs-del" title="删除该引用" @click="removeRefs(i)">✕</button>
+                  <button v-if="!p.single" type="button" class="glass glass-danger refs-del" title="删除该引用" @click="removeRefs(i)"><X :size="14" /></button>
                 </div>
               </template>
               <button v-if="!p.single" type="button" class="glass glass-accent refs-add" @click="addRefs">＋ 添加引用</button>
@@ -185,6 +222,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import X from '@lucide/vue/dist/esm/icons/x.mjs'
 import ConnectForm from './ConnectForm.vue'
 import ApPicker from './ApPicker.vue'
 import UiCard from './ui/UiCard.vue'
@@ -213,6 +251,7 @@ const props = defineProps({
   simpleParams: Array,
   paramRows: Array,
   formValid: Boolean,
+  datasetRefs: Object,
   // 以下函数由父级通过 useCommandForm 提供
   cascadeLns: Function,
   onCascadeLd: Function,
@@ -227,6 +266,13 @@ const props = defineProps({
   rowSdoOptions: Function,
   rowDaOptions: Function,
   onRowDa: Function,
+  // ds-ref-input 专用
+  onDsRefLd: Function,
+  onDsRefLn: Function,
+  dsRefLns: Function,
+  dsRefExists: Function,
+  dsRefNameList: Function,
+  dsRefInvalid: Function,
 })
 
 const emit = defineEmits([
@@ -348,6 +394,12 @@ const connectCmd = defineModel('connectCmd', { default: '' })
 
 .refs-del {
   flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ── 级联 ── */
@@ -359,6 +411,37 @@ const connectCmd = defineModel('connectCmd', { default: '' })
 .cascade-pair .ui-select {
   flex: 1;
   min-width: 0;
+}
+
+/* ── 数据集引用三选（ds-ref-input） ── */
+.ds-ref-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.ds-ref-row .ui-select {
+  flex: 1;
+  min-width: 0;
+}
+
+.ds-ref-name-wrapper {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ds-ref-exists-tag {
+  font-size: 11px;
+  color: var(--red);
+  font-weight: 600;
+}
+.ds-ref-invalid-tag {
+  font-size: 11px;
+  color: var(--red);
+  font-weight: 600;
 }
 
 /* ── 类型提示 ── */

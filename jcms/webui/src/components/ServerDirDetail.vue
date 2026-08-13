@@ -30,7 +30,7 @@
               :class="{ 'row-selected': selectedAttr === entry.attr }"
               @click="selectRow(entry)"
             >
-              <td><span class="fc-badge">{{ entry.fc }}</span></td>
+              <td><span class="fc-badge" :title="FC_DESC_MAP[entry.fc] || entry.fc">{{ entry.fc }}</span></td>
               <td class="cell-attr">{{ entry.attr }}</td>
               <td class="cell-value">
                 <button
@@ -78,6 +78,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import EyeIcon from '@lucide/vue/dist/esm/icons/eye.mjs'
+import { FC_DESC_MAP } from '../cmddefs/common.js'
 
 const MAX_VAL_LEN = 40
 

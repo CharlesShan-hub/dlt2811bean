@@ -15,21 +15,24 @@ export const P_VERSION = { key: 'version', label: '协议版本 version', type: 
  * XX 放首位作为默认（select 默认取 options[0]），即不过滤。
  */
 export const FC_OPTIONS = [
-  { value: '', label: '（不选）' },
-  { value: 'XX', label: 'XX' },
-  { value: 'ST', label: 'ST' },
-  { value: 'MX', label: 'MX' },
-  { value: 'SP', label: 'SP' },
-  { value: 'SV', label: 'SV' },
-  { value: 'CF', label: 'CF' },
-  { value: 'DC', label: 'DC' },
-  { value: 'SG', label: 'SG' },
-  { value: 'SE', label: 'SE' },
-  { value: 'SR', label: 'SR' },
-  { value: 'OR', label: 'OR' },
-  { value: 'BL', label: 'BL' },
-  { value: 'EX', label: 'EX' },
+  { value: '', label: '（不选）', desc: '' },
+  { value: 'XX', label: 'XX', desc: '通配（任意）' },
+  { value: 'ST', label: 'ST', desc: '状态值 Status' },
+  { value: 'MX', label: 'MX', desc: '测量值 Measurand' },
+  { value: 'SP', label: 'SP', desc: '设定值 Setpoint' },
+  { value: 'SV', label: 'SV', desc: '取代值 Substitution' },
+  { value: 'CF', label: 'CF', desc: '配置 Configuration' },
+  { value: 'DC', label: 'DC', desc: '描述 Description' },
+  { value: 'SG', label: 'SG', desc: '定值组 Setting group' },
+  { value: 'SE', label: 'SE', desc: '定值组可编辑 Setting group editable' },
+  { value: 'SR', label: 'SR', desc: '服务响应 Service response' },
+  { value: 'OR', label: 'OR', desc: '运行报告 Operating report' },
+  { value: 'BL', label: 'BL', desc: '联锁 Block' },
+  { value: 'EX', label: 'EX', desc: '扩展 Extension' },
 ]
+
+/** FC 代码 → 描述映射 */
+export const FC_DESC_MAP = Object.fromEntries(FC_OPTIONS.filter(o => o.value).map(o => [o.value, o.desc]))
 
 /**
  * 数据类型选项（用于设置数据值时的类型选择）。

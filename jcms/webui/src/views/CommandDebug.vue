@@ -54,6 +54,7 @@
         :simple-params="simpleParams"
         :param-rows="paramRows"
         :form-valid="formValid"
+        :dataset-refs="datasetRefs"
         :cascade-lns="cascadeLns"
         :on-cascade-ld="onCascadeLd"
         :cascade-ld-disabled="cascadeLdDisabled"
@@ -67,6 +68,12 @@
         :row-sdo-options="rowSdoOptions"
         :row-da-options="rowDaOptions"
         :on-row-da="onRowDa"
+        :on-ds-ref-ld="onDsRefLd"
+        :on-ds-ref-ln="onDsRefLn"
+        :ds-ref-lns="dsRefLns"
+        :ds-ref-exists="dsRefExists"
+        :ds-ref-name-list="dsRefNameList"
+        :ds-ref-invalid="dsRefInvalid"
         @run="run"
         @run-cmd="runCmd"
         @disconnect-tcp="disconnectTcp"
@@ -202,6 +209,48 @@ function cascadeLdDisabled(p) {
   return props.cmd === 'ld-dir' && p.key === 'after' && !!form.ld
 }
 
+// ── ds-ref-input（create-dataset 用） ──
+
+function dsRefLns(o) {
+  return o && o.ld ? ldLns[o.ld] || [] : []
+}
+
+function onDsRefLd(key) {
+  const o = form[key]
+  if (!o) return
+  o.ln = ''
+  o.name = ''
+  if (o.ld) ensureLdLns(o.ld)
+}
+
+function onDsRefLn(key) {
+  const o = form[key]
+  if (!o) return
+  o.name = ''
+  if (o.ld && o.ln) {
+    ensureDatasetRefs(`${o.ld}/${o.ln}`)
+  }
+}
+
+function dsRefExists(o) {
+  if (!o || !o.ld || !o.ln || !o.name) return false
+  const refs = datasetRefs[`${o.ld}/${o.ln}`] || []
+  return refs.includes(o.name)
+}
+
+function dsRefNameList(o) {
+  if (!o || !o.ld || !o.ln) return []
+  return datasetRefs[`${o.ld}/${o.ln}`] || []
+}
+
+/** ds-ref-input 无效判定：无 after 时名称不能已存在，有 after 时名称必须已存在 */
+function dsRefInvalid(o) {
+  if (!o || !o.ld || !o.ln || !o.name) return false
+  const exists = dsRefExists(o)
+  const hasAfter = form.after && String(form.after).trim() !== ''
+  return hasAfter ? !exists : exists
+}
+
 const refOptions = computed(() => {
   if (props.cmd === 'ln-dir') return lnDirRefs
   if (props.cmd === 'all-cb') return allCbRefs
@@ -310,6 +359,10 @@ const formValid = computed(() => {
     } else if (p.type === 'dataset-select') {
       // dataset-select 需要在 ln-cascade 有完整 LD/LN 时才有值
       if (!v) return false
+    } else if (p.type === 'ds-ref-input') {
+      // ds-ref-input: 需要 LD + LN + 数据集名称完整；selectOnly（如删除数据集）要求已存在，否则按 create/append 语义校验
+      if (!v || !v.ld || !v.ln || !v.name) return false
+      if (p.selectOnly ? !dsRefExists(v) : dsRefInvalid(v)) return false
     } else if (p.type === 'refs-list') {
       const rows = v || []
       const hasValid = p.cascade
@@ -397,6 +450,23 @@ watch([() => form.ln?.ld, () => form.ln?.ln], async ([ld, ln]) => {
   }
 })
 
+// create-dataset: 选择已存在的数据集名称时，自动调用 get-dataset-dir 获取最后一个成员作为 after
+watch(() => form.ds?.name, async (name) => {
+  if (props.cmd !== 'create-dataset') return
+  form.after = ''
+  if (!form.ds?.ld || !form.ds?.ln || !name) return
+  if (!dsRefExists(form.ds)) return
+  const ref = `${form.ds.ld}/${form.ds.ln}.${name}`
+  try {
+    const res = await executeJson(`get-dataset-dir --ds ${ref} --auto-pull true --json`)
+    if (res && Array.isArray(res.memberData) && res.memberData.length > 0) {
+      form.after = res.memberData[res.memberData.length - 1].reference
+    }
+  } catch {
+    // 静默失败，after 保持为空
+  }
+})
+
 // cmd 切换时重置表单 + 加载 negotiate 默认值
 watch(() => props.cmd, async () => {
   result.value = null
@@ -461,6 +531,28 @@ async function runCmd(cmdLine) {
       } else {
         connMsg.value = '命令已执行'
         connMsgOk.value = true
+      }
+    }
+    // 创建/删除数据集后刷新缓存
+    if (['create-dataset', 'delete-dataset'].includes(props.cmd)) {
+      const ds = form.ds
+      if (ds && ds.ld && ds.ln) {
+        const lnRef = `${ds.ld}/${ds.ln}`
+        delete datasetRefs[lnRef]
+        await ensureDatasetRefs(lnRef)
+        // 创建数据集后，进入追加模式：自动填充 after 为最后一个成员
+        if (props.cmd === 'create-dataset') {
+          const name = ds.name
+          if (name) {
+            const ref = `${ds.ld}/${ds.ln}.${name}`
+            try {
+              const res = await executeJson(`get-dataset-dir --ds ${ref} --auto-pull true --json`)
+              if (res && Array.isArray(res.memberData) && res.memberData.length > 0) {
+                form.after = res.memberData[res.memberData.length - 1].reference
+              }
+            } catch { /* 静默 */ }
+          }
+        }
       }
     }
   } catch (e) {
