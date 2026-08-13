@@ -34,4 +34,56 @@ public class SclServices {
 
     private SclReportSettings reportSettings;
     private SclGSESettings gseSettings;
+
+    // ==================== 其余 tServices 能力元素（tServices 完整覆盖） ====================
+
+    private Integer nameLength;
+
+    private Boolean settingGroups;
+    private Boolean sgEdit;
+    private Boolean confSG;
+
+    private Boolean dataObjectDirectory;
+    private Boolean setDataSetValue;
+
+    private Integer dynDataSetMax;
+    private Integer dynDataSetMaxAttributes;
+
+    private String logSettingsLogEna;
+    private String logSettingsTrgOps;
+    private String logSettingsIntgPd;
+
+    private String smvSettingsSmpRate;
+
+    private Boolean gooseFixedOffs;
+
+    private Integer smvscMax;
+    private String smvscDelivery;
+
+    private Integer confSigRefMax;
+
+    private Boolean clientServicesGoose;
+    private Boolean clientServicesGsse;
+    private Boolean clientServicesBufReport;
+    private Boolean clientServicesUnbufReport;
+    private Boolean clientServicesReadLog;
+    private Boolean clientServicesSv;
+    private Boolean clientServicesSupportsLdName;
+
+    private Boolean confLdName;
+
+    private Integer supSubscriptionMaxGo;
+    private Integer supSubscriptionMaxSv;
+
+    private Boolean valueHandlingSetToRO;
+
+    private Boolean redProtHsr;
+    private Boolean redProtPrp;
+    private Boolean redProtRstp;
+
+    private Boolean timeSyncProtSntp;
+    private Boolean timeSyncProtC37_238;
+    private Boolean timeSyncProtOther;
+
+    private Boolean commProtIpv6;
 }

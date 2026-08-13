@@ -4,7 +4,7 @@ import com.ysh.jcms.utils.scl.model.control.SclGSEControl;
 import com.ysh.jcms.utils.scl.model.control.SclLogControl;
 import com.ysh.jcms.utils.scl.model.control.SclReportControl;
 import com.ysh.jcms.utils.scl.model.control.SclSampledValueControl;
-
+import com.ysh.jcms.utils.scl.model.control.SclSmvOpts;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -90,7 +90,29 @@ public class SclControlBlockParser {
         sv.nofASDU(getAttr(reader, "nofASDU"));
         sv.multicast(getAttr(reader, "multicast"));
         sv.securityEnable(getAttr(reader, "securityEnable"));
-        skipElement(reader);
+        sv.smpMod(getAttr(reader, "smpMod"));
+
+        while (reader.hasNext()) {
+            int event = reader.nextTag();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("SmvOpts".equals(reader.getLocalName())) {
+                    SclSmvOpts opts = new SclSmvOpts();
+                    opts.refreshTime(boolAttr(reader, "refreshTime"));
+                    opts.sampleSynchronized(boolAttr(reader, "sampleSynchronized"));
+                    opts.sampleRate(boolAttr(reader, "sampleRate"));
+                    opts.dataSet(boolAttr(reader, "dataSet"));
+                    opts.security(boolAttr(reader, "security"));
+                    opts.timestamp(boolAttr(reader, "timestamp"));
+                    opts.synchSourceId(boolAttr(reader, "synchSourceId"));
+                    sv.smvOpts(opts);
+                    skipElement(reader);
+                } else {
+                    skipElement(reader);
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                break;
+            }
+        }
         return sv;
     }
 }

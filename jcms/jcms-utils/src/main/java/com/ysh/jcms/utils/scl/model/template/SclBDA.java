@@ -24,6 +24,10 @@ public class SclBDA {
     private String sAddr;
     private Integer count;
     private Boolean valImport;
+    /** 触发条件（tBDA 继承 agTrgOps，可选）。 */
+    private Boolean dchg;
+    private Boolean qchg;
+    private Boolean dupd;
 
     private final List<SclVal> vals = new ArrayList<>();
 

@@ -4,6 +4,7 @@ import com.ysh.jcms.utils.scl.SclParseException;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessControl;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclAssociation;
+import com.ysh.jcms.utils.scl.model.ied.SclCertificate;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
@@ -75,6 +76,12 @@ public class SclIedParser {
                     case "ServerAt" :
                         ap.serverAt(parseServerAt(reader));
                         break;
+                    case "GOOSESecurity" :
+                        ap.addGooseSecurity(parseCertificate(reader));
+                        break;
+                    case "SMVSecurity" :
+                        ap.addSmvSecurity(parseCertificate(reader));
+                        break;
                     case "Services" :
                         // AccessPoint-level services (overrides IED-level)
                         skipElement(reader);
@@ -95,6 +102,36 @@ public class SclIedParser {
         sa.apName(getAttr(reader, "apName"));
         skipElement(reader);
         return sa;
+    }
+
+    /** 解析 {@code <GOOSESecurity>} / {@code <SMVSecurity>} 证书（tCertificate）。 */
+    private static SclCertificate parseCertificate(XMLStreamReader reader) throws XMLStreamException {
+        SclCertificate cert = new SclCertificate();
+        cert.xferNumber(getAttr(reader, "xferNumber"));
+        cert.serialNumber(getAttr(reader, "serialNumber"));
+        while (reader.hasNext()) {
+            int event = reader.nextTag();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                switch (reader.getLocalName()) {
+                    case "Subject" :
+                        cert.subjectCommonName(getAttr(reader, "commonName"));
+                        cert.subjectIdHierarchy(getAttr(reader, "idHierarchy"));
+                        skipElement(reader);
+                        break;
+                    case "IssuerName" :
+                        cert.issuerCommonName(getAttr(reader, "commonName"));
+                        cert.issuerIdHierarchy(getAttr(reader, "idHierarchy"));
+                        skipElement(reader);
+                        break;
+                    default :
+                        skipElement(reader);
+                        break;
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                break;
+            }
+        }
+        return cert;
     }
 
     // ==================== Server ====================

@@ -26,7 +26,12 @@ public class SclLNBase {
     private String inst;
     private String desc;
     private String lnType;
-    /** IED 类型标识（厂商扩展属性，国际 schema 的 tLN 无此属性，国网 SCD 常见）。 */
+    /**
+     * IED 类型标识。
+     * <p>
+     * 注意：非 IEC 61850-6 2007B 标准属性——标准中 iedType 仅存在于 LNodeType/DOType/DAType 模板； LN
+     * 元素上的 iedType 系厂商扩展，保留用于宽容解析。
+     */
     private String iedType;
 
     /** 所属逻辑设备（解析时由 SclLDevice.addLn 建立，用于推导完整控制块引用）。 */

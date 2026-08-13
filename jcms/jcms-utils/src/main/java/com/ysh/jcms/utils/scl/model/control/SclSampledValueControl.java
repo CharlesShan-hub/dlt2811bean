@@ -20,4 +20,8 @@ public class SclSampledValueControl {
     private String nofASDU;
     private String multicast;
     private String securityEnable;
+    /** 采样模式（tSampledValueControl.smpMod，如 SmpPerPeriod）。 */
+    private String smpMod;
+    /** {@code <SmvOpts>} 子元素。 */
+    private SclSmvOpts smvOpts;
 }

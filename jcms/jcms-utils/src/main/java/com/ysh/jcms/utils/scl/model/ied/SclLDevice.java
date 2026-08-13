@@ -17,7 +17,12 @@ public class SclLDevice {
     private String inst;
     private String desc;
     private String ldName;
-    /** LD 配置版本号（厂商/国网扩展属性，IEC 61850-6 2007B schema 的 tLDevice 无此属性）。 */
+    /**
+     * LD 配置版本号。
+     * <p>
+     * 注意：非 IEC 61850-6 2007B 标准属性（tLDevice 只有 inst/ldName）——系国网 Q/GDW 1396 / 厂商扩展，
+     * 真实国网 SCD 常见，保留用于宽容解析。
+     */
     private String confRev;
     private SclAccessControl accessControl;
 

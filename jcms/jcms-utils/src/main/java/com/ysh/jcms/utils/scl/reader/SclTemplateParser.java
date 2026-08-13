@@ -185,6 +185,9 @@ public class SclTemplateParser {
         bda.sAddr(getAttr(reader, "sAddr"));
         bda.count(intAttr(reader, "count"));
         bda.valImport(boolAttr(reader, "valImport"));
+        bda.dchg(boolAttr(reader, "dchg"));
+        bda.qchg(boolAttr(reader, "qchg"));
+        bda.dupd(boolAttr(reader, "dupd"));
 
         while (reader.hasNext()) {
             int event = reader.nextTag();

@@ -5,6 +5,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Accessors(chain = true, fluent = true)
@@ -17,4 +20,19 @@ public class SclAccessPoint {
     private Boolean kdc = false;
     private SclServer server;
     private SclServerAt serverAt;
+
+    /** {@code <GOOSESecurity>} 证书（tAccessPoint，maxOccurs=7）。 */
+    private final List<SclCertificate> gooseSecurity = new ArrayList<>();
+    /** {@code <SMVSecurity>} 证书（tAccessPoint，maxOccurs=7）。 */
+    private final List<SclCertificate> smvSecurity = new ArrayList<>();
+
+    public SclAccessPoint addGooseSecurity(SclCertificate cert) {
+        this.gooseSecurity.add(cert);
+        return this;
+    }
+
+    public SclAccessPoint addSmvSecurity(SclCertificate cert) {
+        this.smvSecurity.add(cert);
+        return this;
+    }
 }
