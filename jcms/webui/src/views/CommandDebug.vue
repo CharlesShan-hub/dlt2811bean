@@ -77,6 +77,10 @@
         :ds-ref-exists="dsRefExists"
         :ds-ref-name-list="dsRefNameList"
         :ds-ref-invalid="dsRefInvalid"
+        :on-cb-ref-ld="onCbRefLd"
+        :on-cb-ref-ln="onCbRefLn"
+        :cb-ref-lns="cbRefLns"
+        :cb-ref-names="cbRefNames"
         @run="run"
         @run-cmd="runCmd"
         @disconnect-tcp="disconnectTcp"
@@ -139,7 +143,7 @@ import { marked } from 'marked'
 import { CMD_DEFS } from '../cmddefs/index.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
 import { pushTerminal } from '../terminalLog.js'
-import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, datasetRefs, datasetMemberRefs, datasetMembers, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs, ensureDatasetRefs, ensureDatasetMemberRefs, ensureDatasetMembers } from '../ldCache.js'
+import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, datasetRefs, datasetMemberRefs, datasetMembers, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs, ensureDatasetRefs, ensureDatasetMemberRefs, ensureDatasetMembers, ensureCbRefs, cbRefs } from '../ldCache.js'
 import { buildCmd, highlightCmdStr, syntaxHighlightJson, parseResult, parseCmd } from '../utils/cmdFormat.js'
 import { FC_OPTIONS } from '../cmddefs/common.js'
 import { useSplitPane } from '../composables/useSplitPane.js'
@@ -252,6 +256,33 @@ function dsRefInvalid(o) {
   const exists = dsRefExists(o)
   const hasAfter = form.after && String(form.after).trim() !== ''
   return hasAfter ? !exists : exists
+}
+
+// ── cb-ref-input（单个控制块引用三选，如 set-brcb-vals 的 ref） ──
+
+function onCbRefLd(key) {
+  const o = form[key]
+  if (!o) return
+  o.ln = ''
+  o.cb = ''
+  if (o.ld) ensureLdLns(o.ld)
+}
+
+function onCbRefLn(key) {
+  const o = form[key]
+  if (!o) return
+  o.cb = ''
+}
+
+function cbRefLns(o) {
+  return o && o.ld ? ldLns[o.ld] || [] : []
+}
+
+function cbRefNames(o, acsiKey) {
+  if (!o || !o.ld || !o.ln || !acsiKey) return []
+  const ref = `${o.ld}/${o.ln}`
+  if (!cbRefs[`${ref}|${acsiKey}`]) ensureCbRefs(ref, acsiKey)
+  return cbRefs[`${ref}|${acsiKey}`] || []
 }
 
 const refOptions = computed(() => {
@@ -401,6 +432,9 @@ const formValid = computed(() => {
       // ds-ref-input: 需要 LD + LN + 数据集名称完整；selectOnly（如删除数据集）要求已存在，否则按 create/append 语义校验
       if (!v || !v.ld || !v.ln || !v.name) return false
       if (p.selectOnly ? !dsRefExists(v) : dsRefInvalid(v)) return false
+    } else if (p.type === 'cb-ref-input') {
+      // cb-ref-input: 需要 LD + LN + 控制块名称完整
+      if (!v || !v.ld || !v.ln || !v.cb) return false
     } else if (p.type === 'refs-list') {
       const rows = v || []
       const hasValid = p.cascade

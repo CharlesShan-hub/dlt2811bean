@@ -1,26 +1,28 @@
 <template>
-  <div class="tree-page">
-    <ServerDirTree
-      :connected="connected"
-      :lds="lds"
-      :search-query="searchQuery"
-      :search-results="searchResults"
-      :search-loading="searchLoading"
-      @toggle="onToggle"
-      @toggle-acsi="onToggleAcsi"
-      @update:search-query="searchQuery = $event"
-      @select-result="onSelectResult"
-    />
-    <ServerDirDetail
-      :selected="selected"
-      :detail-loading="detailLoading"
-      :dir-entries="dirEntries"
-      :detail-raw="detailRaw"
-      :edit-error="editError"
-      :editing-ref="editingRef"
-      @edit-entry="startEdit"
-    />
-  </div>
+  <SvcPage section="8.3" title="目录与数据" chip="Directory" desc="服务器/逻辑设备/逻辑节点目录、数据值读写与定义查询">
+    <div class="tree-page">
+      <ServerDirTree
+        :connected="connected"
+        :lds="lds"
+        :search-query="searchQuery"
+        :search-results="searchResults"
+        :search-loading="searchLoading"
+        @toggle="onToggle"
+        @toggle-acsi="onToggleAcsi"
+        @update:search-query="searchQuery = $event"
+        @select-result="onSelectResult"
+      />
+      <ServerDirDetail
+        :selected="selected"
+        :detail-loading="detailLoading"
+        :dir-entries="dirEntries"
+        :detail-raw="detailRaw"
+        :edit-error="editError"
+        :editing-ref="editingRef"
+        @edit-entry="startEdit"
+      />
+    </div>
+  </SvcPage>
   <ComplexValueEditor
     v-model="editValue"
     :visible="editorVisible"
@@ -33,6 +35,7 @@
 <script setup>
 import { ref, reactive, watch } from 'vue'
 import { executeJson } from '../api/cms.js'
+import SvcPage from '../components/SvcPage.vue'
 import ServerDirTree from '../components/ServerDirTree.vue'
 import ServerDirDetail from '../components/ServerDirDetail.vue'
 import ComplexValueEditor from '../components/ComplexValueEditor.vue'

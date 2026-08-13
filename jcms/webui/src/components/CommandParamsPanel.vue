@@ -299,6 +299,11 @@ const props = defineProps({
   dsRefExists: Function,
   dsRefNameList: Function,
   dsRefInvalid: Function,
+  // cb-ref-input 专用
+  onCbRefLd: Function,
+  onCbRefLn: Function,
+  cbRefLns: Function,
+  cbRefNames: Function,
 })
 
 const emit = defineEmits([

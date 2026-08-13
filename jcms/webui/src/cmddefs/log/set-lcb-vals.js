@@ -54,7 +54,7 @@ b) 设置序列中含有logEna且其值为False时，应先设置logEna为False�
 c) 设置序列为空时，应返回Response+，不对日志控制块做任何修改。
 `,
   params: [
-    { key: 'ref', label: 'LCB 引用 ref', type: 'text', required: true, placeholder: 'LD/LN.lcbName，如 LD0/LLN0.lcb1' },
+    { key: 'ref', label: 'LCB 引用 ref', type: 'cb-ref-input', cb: 'lcb', required: true },
     { key: 'dat-set', label: '数据集 dat-set', type: 'text', required: false, placeholder: 'LD/LN.dsName', inline: 'cfg' },
     { key: 'log-ref', label: '日志引用 log-ref', type: 'text', required: false, placeholder: 'ObjectReference', inline: 'cfg' },
     { key: 'trg-ops', label: '触发条件 trg-ops', type: 'number', required: false, placeholder: '位掩码 1/2/4/8/16', inline: 'mask' },

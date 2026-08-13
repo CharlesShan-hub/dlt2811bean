@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.dataset.getDataSetValues;
 
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.util.CmsRequestHelper;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.pdu.dataset.CmsGetDataSetValuesRequest;
 import lombok.Getter;
@@ -17,8 +18,7 @@ public class GetDataSetValuesDao extends BaseDao {
     @Override
     public CmsType toRequest() {
         CmsGetDataSetValuesRequest req = new CmsGetDataSetValuesRequest().datasetReference(datasetReference);
-        if (referenceAfter != null && !referenceAfter.isEmpty())
-            req.referenceAfter(referenceAfter);
+        CmsRequestHelper.setIfNotEmpty(req::referenceAfter, referenceAfter);
         return req;
     }
 }

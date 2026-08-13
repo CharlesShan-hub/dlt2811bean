@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.report.getBrcbValues;
 
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.util.CmsRequestHelper;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.scalar.CmsObjectReference;
 import com.ysh.jcms.core.pdu.report.CmsGetBrcbValuesRequest;
@@ -19,11 +20,7 @@ public class GetBrcbValuesDao extends BaseDao {
     @Override
     public CmsType toRequest() {
         CmsGetBrcbValuesRequest req = new CmsGetBrcbValuesRequest();
-        if (refs != null) {
-            for (String ref : refs) {
-                req.reference.add(new CmsObjectReference(ref));
-            }
-        }
+        CmsRequestHelper.addAll(refs, req.reference, CmsObjectReference::new);
         return req;
     }
 }

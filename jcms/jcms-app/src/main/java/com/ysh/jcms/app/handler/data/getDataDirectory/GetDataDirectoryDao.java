@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.data.getDataDirectory;
 
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.util.CmsRequestHelper;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.pdu.data.CmsGetDataDirectoryRequest;
 import lombok.Getter;
@@ -18,8 +19,7 @@ public class GetDataDirectoryDao extends BaseDao {
     @Override
     public CmsType toRequest() {
         CmsGetDataDirectoryRequest req = new CmsGetDataDirectoryRequest().dataReference(dataReference);
-        if (referenceAfter != null && !referenceAfter.isEmpty())
-            req.referenceAfter(referenceAfter);
+        CmsRequestHelper.setIfNotEmpty(req::referenceAfter, referenceAfter);
         return req;
     }
 }

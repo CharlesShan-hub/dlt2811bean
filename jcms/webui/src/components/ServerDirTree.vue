@@ -1,6 +1,5 @@
 <template>
   <div class="tree-panel">
-    <h2 class="panel-title">目录树</h2>
     <!-- 搜索框：输入即过滤 LD/LN，扁平展示命中结果 -->
     <div class="tree-search">
       <Search :size="14" class="tree-search-icon" />
@@ -83,14 +82,6 @@ function highlight(text) {
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
-}
-
-.panel-title {
-  font-size: 14px;
-  font-weight: 600;
-  padding: 20px 20px 12px;
-  color: var(--text-primary);
   flex-shrink: 0;
 }
 

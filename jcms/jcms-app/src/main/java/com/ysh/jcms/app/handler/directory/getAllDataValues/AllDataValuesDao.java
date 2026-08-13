@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.handler.directory.getAllDataValues;
 
+import com.ysh.jcms.app.util.CmsRequestHelper;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllDataValuesRequest;
 import lombok.Getter;
@@ -43,8 +44,7 @@ public class AllDataValuesDao extends BaseDao {
     @Override
     public CmsType toRequest() {
         CmsGetAllDataValuesRequest req = new CmsGetAllDataValuesRequest();
-        if (referenceAfter != null && !referenceAfter.isEmpty())
-            req.referenceAfter(referenceAfter);
+        CmsRequestHelper.setIfNotEmpty(req::referenceAfter, referenceAfter);
         if (ldName != null) {
             req.reference.altLdName(ldName);
         } else if (lnReference != null) {

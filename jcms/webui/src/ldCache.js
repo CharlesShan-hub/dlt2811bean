@@ -1,6 +1,11 @@
 import { reactive } from 'vue'
 import { executeJson } from './api/cms.js'
 
+/** ln-dir --acsi 的数字编码（与后端 LnDirConsole 一致）。 */
+export const ACSI_NUM = {
+  'data-object': 1, 'data-set': 2, brcb: 3, urcb: 4, lcb: 5, log: 6, sgcb: 7, gocb: 8, msvcb: 10,
+}
+
 /**
  * 逻辑设备（LD）共享缓存：连接建立后由 server-dir 填充。
  * 目录树 / 服务器目录页面的引用选择都从这取，避免重复请求。
@@ -73,6 +78,33 @@ export async function ensureAllDefData(lnRef) {
 
 /** 数据集引用缓存（get-dataset-values 用），key 为 lnRef（如 "LD0/LLN0"）。 */
 export const datasetRefs = reactive({})
+
+/** 控制块引用缓存（cb-ref-input 用），key 为 "lnRef|acsiKey"（如 "LD0/LLN0|brcb"）。 */
+export const cbRefs = reactive({})
+
+/**
+ * 拉取某 LN 下指定控制块类的名称列表（经 ln-dir --acsi 查询，幂等）。
+ * @param {string} lnRef 如 "LD0/LLN0"
+ * @param {string} acsiKey 控制块类 key，如 "brcb"、"urcb"、"lcb"、"gocb"、"msvcb"
+ * @returns {Promise<string[]>} 控制块名称列表，如 ["brcbAlarm"]
+ */
+export async function ensureCbRefs(lnRef, acsiKey) {
+  if (!lnRef) return []
+  const key = `${lnRef}|${acsiKey}`
+  if (cbRefs[key]) return cbRefs[key]
+  try {
+    const res = await executeJson(`ln-dir --ln ${lnRef} --acsi ${ACSI_NUM[acsiKey]} --auto-pull true --json`)
+    cbRefs[key] = res && Array.isArray(res.reference) ? res.reference : []
+  } catch {
+    cbRefs[key] = []
+  }
+  return cbRefs[key]
+}
+
+/** 清空控制块引用缓存（断开连接时）。 */
+export function clearCbRefs() {
+  for (const k of Object.keys(cbRefs)) delete cbRefs[k]
+}
 
 /**
  * 拉取某 LN 下的数据集名称列表（经 ln-dir --acsi data-set 查询，幂等）。

@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.log.getLcbValues;
 
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.util.CmsRequestHelper;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.scalar.CmsObjectReference;
 import com.ysh.jcms.core.pdu.log.CmsGetLcbValuesRequest;
@@ -19,11 +20,7 @@ public class GetLcbValuesDao extends BaseDao {
     @Override
     public CmsType toRequest() {
         CmsGetLcbValuesRequest req = new CmsGetLcbValuesRequest();
-        if (refs != null) {
-            for (String ref : refs) {
-                req.reference.add(new CmsObjectReference(ref));
-            }
-        }
+        CmsRequestHelper.addAll(refs, req.reference, CmsObjectReference::new);
         return req;
     }
 }

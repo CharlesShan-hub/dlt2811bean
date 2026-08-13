@@ -42,7 +42,7 @@ startTime表示查询服务的起始时间，stopTime表示查询服务的截止
 查询得到的日志条目过多且无法在一次响应中返回时，服务器应设置moreFollows为TRUE，以通知客户未能返回全部查询结果。客户可以用时间和ID再一次发起查询请求。
 `,
   params: [
-    { key: 'ref', label: '日志控制块引用 ref', type: 'text', required: true, placeholder: 'LD/LN.lcbName，如 LD0/LLN0.lcblog' },
+    { key: 'ref', label: '日志控制块引用 ref', type: 'cb-ref-input', cb: 'lcb', required: true },
     { key: 'start', label: '起始时间 start', type: 'number', required: false, placeholder: '毫秒时间戳（可选）' },
     { key: 'stop', label: '截止时间 stop', type: 'number', required: false, placeholder: '毫秒时间戳（可选）' },
     { key: 'entry-after', label: '起始条目 ID entry-after', type: 'text', required: false, placeholder: 'EntryID（可选）' },

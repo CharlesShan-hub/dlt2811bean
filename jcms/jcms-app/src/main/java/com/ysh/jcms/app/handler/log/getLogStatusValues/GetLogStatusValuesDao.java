@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.log.getLogStatusValues;
 
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.util.CmsRequestHelper;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.scalar.CmsObjectReference;
 import com.ysh.jcms.core.pdu.log.CmsGetLogStatusValuesRequest;
@@ -19,11 +20,7 @@ public class GetLogStatusValuesDao extends BaseDao {
     @Override
     public CmsType toRequest() {
         CmsGetLogStatusValuesRequest req = new CmsGetLogStatusValuesRequest();
-        if (refs != null) {
-            for (String ref : refs) {
-                req.logReference.add(new CmsObjectReference(ref));
-            }
-        }
+        CmsRequestHelper.addAll(refs, req.logReference, CmsObjectReference::new);
         return req;
     }
 }

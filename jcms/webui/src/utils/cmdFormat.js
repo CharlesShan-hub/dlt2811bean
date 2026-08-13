@@ -129,6 +129,11 @@ export function buildCmd(cmd, params, form, opts = {}) {
       if (v && lnVal && lnVal.ld && lnVal.ln) {
         parts.push('--ref', `"${lnVal.ld}/${lnVal.ln}.${v}"`)
       }
+    } else if (p.type === 'cb-ref-input') {
+      // cb-ref-input: LD + LN + 控制块名称 → --<key> "LD/LN.cbName"
+      if (v && v.ld && v.ln && v.cb) {
+        parts.push(`--${p.key}`, `"${v.ld}/${v.ln}.${v.cb}"`)
+      }
     } else if (p.type === 'ds-ref-input') {
       // ds-ref-input: LD + LN + 数据集名称 → --ds "LD/LN.dsName"
       if (v && v.ld && v.ln && v.name) {
