@@ -33,4 +33,9 @@ QueryLogAfter-ErrorPDU ::= ServiceError`,
 | **Response-** | | |
 | serviceError | | ServiceError |
 `,
+  params: [
+    { key: 'ref', label: '日志控制块引用 ref', type: 'text', required: true, placeholder: 'LD/LN.lcbName，如 LD0/LLN0.lcblog' },
+    { key: 'entry', label: '起始条目 ID entry', type: 'text', required: true, placeholder: 'EntryID，8 字节' },
+    { key: 'start', label: '起始时间 start', type: 'number', required: false, placeholder: '毫秒时间戳（可选）' },
+  ],
 }

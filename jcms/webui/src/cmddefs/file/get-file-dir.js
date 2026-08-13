@@ -49,4 +49,8 @@ a) startTime和stopTime表示文件目录的起始和截止时间，返回结果
 b) pathName应采用完整路径名，格式为"/××××××"。
 
 > 注：pathName中不要求支持"*""?"等通配符，具体实现时，厂商可自主决定。`,
+  params: [
+    { key: 'path', label: '路径筛选 path', type: 'text', required: false, placeholder: '如 /config（可选）' },
+    { key: 'after', label: '起始条目 after', type: 'text', required: false, placeholder: '从该文件名之后开始（可选）' },
+  ],
 }

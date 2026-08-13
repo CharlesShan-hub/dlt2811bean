@@ -23,4 +23,7 @@ DeleteFile-ErrorPDU ::= ServiceError`,
 | **Response+** | | |
 | **Response-** | | |
 | serviceError | | ServiceError |`,
+  params: [
+    { key: 'file', label: '文件路径 file', type: 'text', required: true, placeholder: '如 /config/myfile.txt' },
+  ],
 }

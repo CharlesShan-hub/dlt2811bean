@@ -111,49 +111,11 @@ async function onToggle(node) {
 
         const refs = attrs.map(a => a.fullRef).join(' ')
 
-        // Get values and definitions in parallel
-        const [valRes, defRes] = await Promise.all([
+        // 并行：读值 + 解析类型（get-data-def 为主，all-def 缓存兜底）
+        const [valRes, defMap] = await Promise.all([
           executeJson(`get-data-values --refs "${refs}" --json`),
-          executeJson(`get-data-def --refs "${refs}" --json`),
+          resolveRefTypes(attrs),
         ])
-
-        const defList = Array.isArray(defRes) ? defRes : (defRes?.data || [])
-        const defMap = {}
-        const typeKeys = ['boolean','int8','int16','int32','int64','int8u','int16u','int32u','int64u',
-          'float32','float64','octet-string','visible-string','unicode-string',
-          'timestamp','quality','check']
-        for (let i = 0; i < defList.length && i < attrs.length; i++) {
-          const entry = defList[i]
-          if (entry) {
-            if (entry.cdcType) {
-              defMap[attrs[i].fullRef] = entry.cdcType
-            } else if (entry.definition && typeof entry.definition === 'object') {
-              for (const k of typeKeys) {
-                if (Object.prototype.hasOwnProperty.call(entry.definition, k)) {
-                  defMap[attrs[i].fullRef] = k
-                  break
-                }
-              }
-            }
-          }
-        }
-        // fallback: 从 all-def 缓存查 DA 类型
-        const doName = node.ref.split('.').pop()
-        const lnRef = node.ref.slice(0, node.ref.lastIndexOf('.'))
-        if (lnRef) {
-          const allDefData = await ensureAllDefData(lnRef)
-          const doInfo = allDefData[doName]
-          if (doInfo && doInfo.structure.length) {
-            for (const a of attrs) {
-              if (!defMap[a.fullRef]) {
-                const member = doInfo.structure.find(s => s.name === a.attr)
-                if (member && member.type) {
-                  defMap[a.fullRef] = member.type
-                }
-              }
-            }
-          }
-        }
 
         const valList = Array.isArray(valRes) ? valRes : (valRes?.value || [])
         const valMap = {}
@@ -228,7 +190,7 @@ async function onToggle(node) {
           attr: m.reference,
           fullRef: m.reference,
         }))
-        const defMap = await resolveDataSetMemberTypes(attrs)
+        const defMap = await resolveRefTypes(attrs)
         dirEntries.value = attrs.map(a => ({
           ...a,
           value: null,
@@ -462,8 +424,8 @@ function choiceTypeToType(choiceType) {
   return map[choiceType] || 'visible-string'
 }
 
-/** 数据集成员类型解析：优先 get-data-def，缺省时用 all-def 缓存兜底（FCD 取 cdcType，FDCA 取 DA 结构类型）。 */
-async function resolveDataSetMemberTypes(attrs) {
+/** 引用类型解析（DO 节点与数据集成员共用）：优先 get-data-def，缺省时用 all-def 缓存兜底（FCD 取 cdcType，FDCA 取 DA 结构类型）。 */
+async function resolveRefTypes(attrs) {
   const defMap = {}
   const typeKeys = ['boolean','int8','int16','int32','int64','int8u','int16u','int32u','int64u',
     'float32','float64','octet-string','visible-string','unicode-string',

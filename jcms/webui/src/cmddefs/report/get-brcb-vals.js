@@ -40,4 +40,7 @@ a) 一帧报文无法返回所有缓存报告控制块的值时，服务器应�
 
 b) 请求队列中的某一个控制块无法访问时，应返回错误原因，并继续处理下一个控制块。
 `,
+  params: [
+    { key: 'refs', label: 'BRCB 引用', type: 'refs-list', required: true, placeholder: 'LD/LN.brcbName，如 LD0/LLN0.brcbAlarm' },
+  ],
 }

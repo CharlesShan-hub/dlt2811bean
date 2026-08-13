@@ -32,4 +32,7 @@ GetMSVCBValues-ErrorPDU ::= ServiceError`,
 | **Response-** | | |
 | serviceError | | ServiceError |
 `,
+  params: [
+    { key: 'refs', label: 'MSVCB 引用', type: 'refs-list', required: true, placeholder: 'LD/SV.msvcbName，如 LD0/SV1.msvcb01' },
+  ],
 }

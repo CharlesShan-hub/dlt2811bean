@@ -78,11 +78,13 @@ public final class DataConverter {
                         return new CmsData().alt_octet_string(val.getBytes(StandardCharsets.UTF_8));
                     if (bType.startsWith("BIT_STRING"))
                         return new CmsData().alt_bit_string(val.getBytes(StandardCharsets.UTF_8));
-                    CmsPrinter.consoleOnly("[DEBUG] DataConverter.toCmsData UNKNOWN bType=" + dv.bType() + " ref=" + dv.ref() + " falling back to string");
+                    CmsPrinter.consoleOnly(
+                            "[DEBUG] DataConverter.toCmsData UNKNOWN bType=" + dv.bType() + " ref=" + dv.ref() + " falling back to string");
                     return fillString(val);
             }
         } catch (Exception e) {
-            CmsPrinter.consoleOnly("[DEBUG] DataConverter.toCmsData ERROR bType=" + dv.bType() + " ref=" + dv.ref() + " val=" + val + " ex=" + e.getMessage());
+            CmsPrinter.consoleOnly("[DEBUG] DataConverter.toCmsData ERROR bType=" + dv.bType() + " ref=" + dv.ref() + " val=" + val + " ex="
+                    + e.getMessage());
             return fillString(val);
         }
     }

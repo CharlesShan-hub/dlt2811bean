@@ -44,4 +44,7 @@ GetLogStatusValues-ErrorPDU ::= ServiceError`,
 | **Response-** | | |
 | serviceError | | ServiceError |
 `,
+  params: [
+    { key: 'refs', label: 'LCB 引用', type: 'refs-list', required: true, placeholder: 'LD/LN.lcbName，如 LD0/LLN0.lcblog' },
+  ],
 }

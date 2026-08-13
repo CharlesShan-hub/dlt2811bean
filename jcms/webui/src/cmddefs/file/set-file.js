@@ -41,4 +41,8 @@ a) 根据写入文件的长度，客户应发起多个SetFile请求。第一个�
 b) startPosition等于0时，表示客户放弃写入后续数据，服务器应关闭并删除未完成的文件。
 
 c) 文件写入结束时，服务器应保存所写的文件。客户长时间未写入后续数据的情况下，服务器应具有超时机制，自动关闭并删除不完整的文件。`,
+  params: [
+    { key: 'local', label: '本地文件路径 local', type: 'text', required: true, placeholder: '如 D:/data/myfile.txt' },
+    { key: 'remote', label: '远程目标路径 remote', type: 'text', required: true, placeholder: '如 /config/myfile.txt' },
+  ],
 }

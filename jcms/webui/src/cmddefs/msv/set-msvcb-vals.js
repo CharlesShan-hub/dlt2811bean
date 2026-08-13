@@ -41,4 +41,13 @@ SetMSVCBValues-ErrorPDU ::= SEQUENCE {
 | **Response-** | | |
 | result[1..n] | | ServiceError |
 `,
+  params: [
+    { key: 'ref', label: 'MSVCB 引用 ref', type: 'text', required: true, placeholder: 'LD/SV.msvcbName，如 LD0/SV1.msvcb01' },
+    { key: 'msv-id', label: 'MSV 标识 msv-id', type: 'text', required: false, placeholder: 'VisibleString129', inline: 'cfg' },
+    { key: 'dat-set', label: '数据集 dat-set', type: 'text', required: false, placeholder: 'LD/LN.dsName', inline: 'cfg' },
+    { key: 'smp-mod', label: '采样模式 smp-mod', type: 'number', required: false, placeholder: '0/1/2', inline: 'smp' },
+    { key: 'smp-rate', label: '采样率 smp-rate', type: 'number', required: false, placeholder: 'INT16U', inline: 'smp' },
+    { key: 'opt-flds', label: '选项字段 opt-flds', type: 'number', required: false, placeholder: 'MSVCBOptFlds 位掩码' },
+    { key: 'sv-ena', label: '采样值使能 sv-ena', type: 'switch', required: false },
+  ],
 }

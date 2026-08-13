@@ -32,4 +32,7 @@ GetGoCBValues-ErrorPDU ::= ServiceError`,
 | **Response-** | | |
 | serviceError | | ServiceError |
 `,
+  params: [
+    { key: 'refs', label: 'GoCB 引用', type: 'refs-list', required: true, placeholder: 'LD/LN.gocbName，如 LD0/LLN0.gocb1' },
+  ],
 }

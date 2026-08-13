@@ -63,8 +63,8 @@ public class SetDataSetValuesServer extends BaseServerHandler<CmsSetDataSetValue
             String fcdaRef = fcda.buildFcdaRef();
             Navigator nav = Navigator.go(doc, ap, fcdaRef);
             int err = DataWriterResolver.setValue(nav, valueStr);
-            CmsPrinter.consoleOnly("[DEBUG] set-dataset-values fcdaRef=" + fcdaRef + " valueStr=" + valueStr + " nav.valid="
-                    + nav.isValid() + " result=" + err);
+            CmsPrinter.consoleOnly("[DEBUG] set-dataset-values fcdaRef=" + fcdaRef + " valueStr=" + valueStr + " nav.valid=" + nav.isValid()
+                    + " result=" + err);
             if (nav.isValid() && err == CmsServiceError.NO_ERROR) {
                 successCount++;
             }
