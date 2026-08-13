@@ -42,7 +42,9 @@ public class AllDataValuesDao extends BaseDao {
 
     @Override
     public CmsType toRequest() {
-        CmsGetAllDataValuesRequest req = new CmsGetAllDataValuesRequest().referenceAfter(referenceAfter);
+        CmsGetAllDataValuesRequest req = new CmsGetAllDataValuesRequest();
+        if (referenceAfter != null && !referenceAfter.isEmpty())
+            req.referenceAfter(referenceAfter);
         if (ldName != null) {
             req.reference.altLdName(ldName);
         } else if (lnReference != null) {

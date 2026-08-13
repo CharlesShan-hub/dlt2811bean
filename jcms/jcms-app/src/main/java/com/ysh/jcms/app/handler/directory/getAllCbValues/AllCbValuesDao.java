@@ -35,7 +35,9 @@ public class AllCbValuesDao extends BaseDao {
 
     @Override
     public CmsType toRequest() {
-        CmsGetAllCbValuesRequest req = new CmsGetAllCbValuesRequest().referenceAfter(referenceAfter).acsiClass(acsiClass);
+        CmsGetAllCbValuesRequest req = new CmsGetAllCbValuesRequest().acsiClass(acsiClass);
+        if (referenceAfter != null && !referenceAfter.isEmpty())
+            req.referenceAfter(referenceAfter);
         if (ldName != null) {
             req.reference.altLdName(ldName);
         } else if (lnReference != null) {

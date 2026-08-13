@@ -24,7 +24,7 @@ public class ApCfgHandler extends CommandHandler<BaseDao, BaseClientHandler<Base
 
     public ApCfgHandler() {
         super(CommandInfo.AP_CFG);
-        Param p = Param.of("source", "", null, String.class, false);
+        Param p = Param.of("source", null, null, String.class, false);
         param(p, "AP 来源: scd=从 SCD 读, list=从 defaultAps 列表读");
     }
 

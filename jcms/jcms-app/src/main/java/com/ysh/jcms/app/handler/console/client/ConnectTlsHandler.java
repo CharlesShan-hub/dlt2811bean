@@ -25,13 +25,13 @@ public class ConnectTlsHandler extends CommandHandler<BaseDao, BaseClientHandler
         super(CommandInfo.CONNECT_TLS);
         Param p1 = Param.of("host", "127.0.0.1", null, String.class, false);
         param(p1, "服务器地址（默认 127.0.0.1）");
-        Param p2 = Param.of("sap-ref", "", null, String.class, false);
+        Param p2 = Param.of("sap-ref", null, null, String.class, false);
         param(p2, "ServerAccessPoint 引用（如 C_B5041X/S1）");
-        Param p3 = Param.of("apduSize", "", null, String.class, false);
+        Param p3 = Param.of("apduSize", null, null, String.class, false);
         param(p3, "APDU 大小");
-        Param p4 = Param.of("asduSize", "", null, String.class, false);
+        Param p4 = Param.of("asduSize", null, null, String.class, false);
         param(p4, "ASDU 大小");
-        Param p5 = Param.of("protocolVersion", "", null, String.class, false);
+        Param p5 = Param.of("protocolVersion", null, null, String.class, false);
         param(p5, "协议版本");
     }
 

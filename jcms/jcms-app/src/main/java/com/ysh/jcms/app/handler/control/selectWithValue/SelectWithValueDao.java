@@ -41,7 +41,7 @@ public class SelectWithValueDao extends BaseDao {
             req.ctlNum(Integer.parseInt(ctlNum));
         }
 
-        if (test != null)
+        if (test != null && !test.isEmpty())
             req.test(Boolean.parseBoolean(test));
 
         if (check != null && !check.isEmpty()) {

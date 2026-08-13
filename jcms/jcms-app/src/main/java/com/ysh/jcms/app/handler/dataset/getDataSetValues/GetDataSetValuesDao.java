@@ -16,6 +16,9 @@ public class GetDataSetValuesDao extends BaseDao {
 
     @Override
     public CmsType toRequest() {
-        return new CmsGetDataSetValuesRequest().datasetReference(datasetReference).referenceAfter(referenceAfter);
+        CmsGetDataSetValuesRequest req = new CmsGetDataSetValuesRequest().datasetReference(datasetReference);
+        if (referenceAfter != null && !referenceAfter.isEmpty())
+            req.referenceAfter(referenceAfter);
+        return req;
     }
 }

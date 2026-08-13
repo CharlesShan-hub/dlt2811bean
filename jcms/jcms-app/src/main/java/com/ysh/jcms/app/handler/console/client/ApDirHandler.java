@@ -32,9 +32,9 @@ public class ApDirHandler extends CommandHandler<BaseDao, BaseClientHandler<Base
 
     public ApDirHandler() {
         super(CommandInfo.AP_DIR);
-        Param p1 = Param.of("scd", "", null, String.class, false);
+        Param p1 = Param.of("scd", null, null, String.class, false);
         param(p1, "SCD 文件路径（默认取配置 server.sclFiles[0]）");
-        Param p2 = Param.of("ied", "", null, String.class, false);
+        Param p2 = Param.of("ied", null, null, String.class, false);
         param(p2, "只列出指定 IED 的 AP（如 C_B5041X）");
     }
 

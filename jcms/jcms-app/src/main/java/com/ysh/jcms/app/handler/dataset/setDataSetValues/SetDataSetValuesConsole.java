@@ -14,7 +14,7 @@ public class SetDataSetValuesConsole extends CommandHandler<SetDataSetValuesDao,
         param(p, "数据集引用，如 LD0/LLN0.dsAlarm");
         Param p2 = Param.of("values", null, "values", List.class, true);
         param(p2, "数据值列表（空格分隔），如 aa bb cc");
-        Param p3 = Param.of("after", "", "referenceAfter", String.class, false);
+        Param p3 = Param.of("after", null, "referenceAfter", String.class, false);
         param(p3, "起始引用（分页截取，不传则从头开始）");
         Param p4 = Param.of("delimiter", null, null, String.class, false);
         param(p4, "列表分隔符（默认空格，可指定逗号、竖线等）");

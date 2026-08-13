@@ -22,7 +22,9 @@ public class CreateDataSetDao extends BaseDao {
 
     @Override
     public CmsType toRequest() {
-        CmsCreateDataSetRequest req = new CmsCreateDataSetRequest().datasetReference(datasetReference).referenceAfter(referenceAfter);
+        CmsCreateDataSetRequest req = new CmsCreateDataSetRequest().datasetReference(datasetReference);
+        if (referenceAfter != null && !referenceAfter.isEmpty())
+            req.referenceAfter(referenceAfter);
         if (memberRefs != null && memberFcs != null) {
             int size = Math.min(memberRefs.size(), memberFcs.size());
             for (int i = 0; i < size; i++) {

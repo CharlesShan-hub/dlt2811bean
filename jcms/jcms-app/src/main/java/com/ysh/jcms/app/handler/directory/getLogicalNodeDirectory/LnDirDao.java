@@ -35,7 +35,9 @@ public class LnDirDao extends BaseDao {
 
     @Override
     public CmsType toRequest() {
-        CmsGetLogicalNodeDirectoryRequest req = new CmsGetLogicalNodeDirectoryRequest().acsiClass(acsiClass).referenceAfter(referenceAfter);
+        CmsGetLogicalNodeDirectoryRequest req = new CmsGetLogicalNodeDirectoryRequest().acsiClass(acsiClass);
+        if (referenceAfter != null && !referenceAfter.isEmpty())
+            req.referenceAfter(referenceAfter);
         if (ldName != null) {
             req.reference.altLdName(ldName);
         } else if (lnReference != null) {

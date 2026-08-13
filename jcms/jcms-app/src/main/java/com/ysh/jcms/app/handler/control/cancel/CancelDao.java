@@ -37,7 +37,7 @@ public class CancelDao extends BaseDao {
             req.ctlNum(Integer.parseInt(ctlNum));
         }
 
-        if (test != null)
+        if (test != null && !test.isEmpty())
             req.test(Boolean.parseBoolean(test));
 
         return req;

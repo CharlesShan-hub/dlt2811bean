@@ -31,7 +31,7 @@ public class MaxEntriesHandler extends CommandHandler<BaseDao, BaseClientHandler
 
     public MaxEntriesHandler() {
         super(CommandInfo.MAX_ENTRIES);
-        Param p = Param.of("value", "", null, String.class, false);
+        Param p = Param.of("value", null, null, String.class, false);
         param(p, "最大返回条数（0 恢复默认）");
     }
 

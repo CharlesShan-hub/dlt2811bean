@@ -24,11 +24,11 @@ public class NegCfgHandler extends CommandHandler<BaseDao, BaseClientHandler<Bas
 
     public NegCfgHandler() {
         super(CommandInfo.NEG_CFG);
-        Param p1 = Param.of("apdu", "", null, String.class, false);
+        Param p1 = Param.of("apdu", null, null, String.class, false);
         param(p1, "APDU 大小");
-        Param p2 = Param.of("asdu", "", null, String.class, false);
+        Param p2 = Param.of("asdu", null, null, String.class, false);
         param(p2, "ASDU 大小");
-        Param p3 = Param.of("version", "", null, String.class, false);
+        Param p3 = Param.of("version", null, null, String.class, false);
         param(p3, "协议版本");
     }
 

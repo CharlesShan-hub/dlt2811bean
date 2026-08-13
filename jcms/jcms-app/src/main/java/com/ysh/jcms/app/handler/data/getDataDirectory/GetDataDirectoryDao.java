@@ -17,6 +17,9 @@ public class GetDataDirectoryDao extends BaseDao {
 
     @Override
     public CmsType toRequest() {
-        return new CmsGetDataDirectoryRequest().dataReference(dataReference).referenceAfter(referenceAfter);
+        CmsGetDataDirectoryRequest req = new CmsGetDataDirectoryRequest().dataReference(dataReference);
+        if (referenceAfter != null && !referenceAfter.isEmpty())
+            req.referenceAfter(referenceAfter);
+        return req;
     }
 }

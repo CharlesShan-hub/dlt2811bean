@@ -20,7 +20,9 @@ public class SetDataSetValuesDao extends BaseDao {
 
     @Override
     public CmsType toRequest() {
-        CmsSetDataSetValuesRequest req = new CmsSetDataSetValuesRequest().datasetReference(datasetReference).referenceAfter(referenceAfter);
+        CmsSetDataSetValuesRequest req = new CmsSetDataSetValuesRequest().datasetReference(datasetReference);
+        if (referenceAfter != null && !referenceAfter.isEmpty())
+            req.referenceAfter(referenceAfter);
         if (values != null) {
             for (String val : values) {
                 CmsData data = new CmsData();

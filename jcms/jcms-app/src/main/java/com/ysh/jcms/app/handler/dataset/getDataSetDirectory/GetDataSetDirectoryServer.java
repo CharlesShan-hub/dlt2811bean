@@ -39,8 +39,11 @@ public class GetDataSetDirectoryServer extends BaseServerHandler<CmsGetDataSetDi
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         SclDataSet dataSet = dsr.dataSet;
-        String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
+        boolean refAfterPresent = req.isPresent("referenceAfter");
+        String refAfter = refAfterPresent ? req.referenceAfter.value() : null;
 
+        log.info("GetDataSetDirectory DEBUG: dataset='{}', fcDas.size={}, refAfterPresent={}, refAfter='{}'",
+                ref, dataSet.fcDas().size(), refAfterPresent, refAfter);
         CmsGetDataSetDirectoryResponse resp = new CmsGetDataSetDirectoryResponse();
         int ps = pageSize(), count = 0;
 

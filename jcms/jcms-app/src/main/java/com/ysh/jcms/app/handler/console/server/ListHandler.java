@@ -17,7 +17,7 @@ public class ListHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseD
 
     public ListHandler() {
         super(CommandInfo.LIST_AP);
-        Param p1 = Param.of("limit", "", null, String.class, false);
+        Param p1 = Param.of("limit", null, null, String.class, false);
         param(p1, "数量（不传则列出全部）");
         Param p2 = Param.of("offset", "0", null, String.class, false);
         param(p2, "起始索引");
