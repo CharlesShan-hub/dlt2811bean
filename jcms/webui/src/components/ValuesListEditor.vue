@@ -3,19 +3,32 @@
     <div v-for="(m, i) in members" :key="i" class="value-row">
       <span class="value-index">{{ i + 1 }}</span>
       <span class="value-ref" :title="m.reference">{{ m.reference }} <span class="value-fc">[{{ m.fc }}]</span></span>
-      <UiInput
-        :model-value="modelValue[i]"
-        :placeholder="'输入值 (' + (m.typeHint || 'string') + ')'"
-        @update:model-value="onInput(i, $event)"
-      />
+      <span class="value-type">{{ m.typeHint || 'string' }}</span>
+      <button
+        type="button"
+        class="glass glass-accent value-btn"
+        :class="{ 'value-btn--has': modelValue[i] }"
+        :title="'点击编辑值' + (m.typeHint ? ' (类型: ' + m.typeHint + ')' : '')"
+        @click="openEditor(i)"
+      >
+        {{ modelValue[i] || '点击输入值' }}
+      </button>
     </div>
     <p v-if="!members.length" class="empty-tip">请先选择数据集</p>
+
+    <ComplexValueEditor
+      :model-value="editingValue"
+      :visible="editorVisible"
+      :type="editorType"
+      @update:visible="editorVisible = $event"
+      @confirm="onEditorConfirm"
+    />
   </div>
 </template>
 
 <script setup>
-import { watch } from 'vue'
-import UiInput from './ui/UiInput.vue'
+import { ref, watch } from 'vue'
+import ComplexValueEditor from './ComplexValueEditor.vue'
 
 const props = defineProps({
   modelValue: {
@@ -30,6 +43,26 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
+// ── 弹窗编辑状态 ──
+const editorVisible = ref(false)
+const editingIndex = ref(-1)
+const editingValue = ref('')
+const editorType = ref('')
+
+function openEditor(index) {
+  editingIndex.value = index
+  editingValue.value = props.modelValue[index] ?? ''
+  editorType.value = props.members[index]?.typeHint || ''
+  editorVisible.value = true
+}
+
+function onEditorConfirm(val) {
+  const arr = [...props.modelValue]
+  while (arr.length < props.members.length) arr.push('')
+  arr[editingIndex.value] = val
+  emit('update:modelValue', arr)
+}
+
 // 当成员列表变化时，确保 modelValue 数组长度匹配
 watch(() => props.members.length, (len) => {
   if (len > 0 && props.modelValue.length !== len) {
@@ -40,14 +73,6 @@ watch(() => props.members.length, (len) => {
     emit('update:modelValue', arr)
   }
 })
-
-function onInput(index, value) {
-  const arr = [...props.modelValue]
-  // 确保数组长度足够
-  while (arr.length < props.members.length) arr.push('')
-  arr[index] = value
-  emit('update:modelValue', arr)
-}
 </script>
 
 <style scoped>
@@ -97,9 +122,36 @@ function onInput(index, value) {
   border-radius: 3px;
 }
 
-.value-row .ui-input {
+.value-type {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent, #4fc3f7);
+  background: color-mix(in srgb, var(--accent, #4fc3f7) 15%, transparent);
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.value-btn {
   flex: 1;
   min-width: 0;
+  height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
+  font-family: var(--font-mono, monospace);
+  text-align: left;
+  cursor: pointer;
+  border-radius: 6px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.value-btn--has {
+  color: var(--text-primary);
 }
 
 .empty-tip {

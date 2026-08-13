@@ -123,22 +123,74 @@ export async function ensureDatasetMemberRefs(lnRef, dsName) {
 export const datasetMembers = reactive({})
 
 /**
- * 拉取某数据集的所有成员完整数据（含 reference + fc，经 get-dataset-dir 查询，幂等）。
+ * 拉取某数据集的所有成员完整数据（含 reference + fc + typeHint，经 get-dataset-dir 查询，幂等）。
+ * 跨查 all-def 获取每个成员的数据类型。即使缓存已存在也会重新解析类型（应对旧缓存无 typeHint 的情况）。
  * @param {string} lnRef 如 "LD0/LLN0"
  * @param {string} dsName 数据集名称，如 "dsAlarm"
- * @returns {Promise<Array<{reference: string, fc: string}>>} 成员完整数据列表
+ * @returns {Promise<Array<{reference: string, fc: string, typeHint: string}>>} 成员完整数据列表
  */
 export async function ensureDatasetMembers(lnRef, dsName) {
   if (!lnRef || !dsName) return []
   const key = `${lnRef}.${dsName}`
-  if (datasetMembers[key]) return datasetMembers[key]
-  try {
-    const res = await executeJson(`get-dataset-dir --ds ${lnRef}.${dsName} --auto-pull true --json`)
-    datasetMembers[key] = res && Array.isArray(res.memberData) ? res.memberData.filter(m => m.reference) : []
-  } catch {
-    datasetMembers[key] = []
+  const cached = datasetMembers[key]
+  if (cached) {
+    // 缓存已存在且所有成员都有 typeHint，直接返回
+    if (cached.length > 0 && cached.every(m => m.typeHint)) return cached
   }
-  return datasetMembers[key]
+  // 缓存不存在或缺少 typeHint：重新拉取并解析类型
+  if (!cached) {
+    try {
+      const res = await executeJson(`get-dataset-dir --ds ${lnRef}.${dsName} --auto-pull true --json`)
+      const members = res && Array.isArray(res.memberData) ? res.memberData.filter(m => m.reference) : []
+      datasetMembers[key] = members
+    } catch {
+      datasetMembers[key] = []
+    }
+  }
+  // 跨查 all-def 补充类型（无论新旧缓存都执行）
+  const members = datasetMembers[key]
+  if (!members || members.length === 0) return members
+  // 收集所有唯一 LN ref，提前加载 all-def
+  const lnRefs = new Set()
+  for (const m of members) {
+    const parts = m.reference.split('/')
+    if (parts.length >= 2) {
+      const ln = parts[1].split('.')[0]
+      lnRefs.add(`${parts[0]}/${ln}`)
+    }
+  }
+  await Promise.all([...lnRefs].map(lr => ensureAllDefData(lr)))
+  let changed = false
+  for (const m of members) {
+    const ref = m.reference                           // e.g. "LD0/GGIO1.Mod.ctlModel"
+    const firstDot = ref.indexOf('.')
+    if (firstDot < 0) continue
+    const lr = ref.substring(0, firstDot)             // e.g. "LD0/GGIO1"
+    const remainder = ref.substring(firstDot + 1)      // e.g. "Mod.ctlModel"
+    const lastDot = remainder.lastIndexOf('.')
+    if (lastDot < 0) continue
+    const doName = remainder.substring(0, lastDot)    // e.g. "Mod"
+    const daName = remainder.substring(lastDot + 1)   // e.g. "ctlModel"
+    // 调试：输出 allDefData 结构
+    if (typeof window !== 'undefined') {
+      const allDefKeys = Object.keys(allDefData[lr] || {})
+      const doEntry = allDefData[lr]?.[doName]
+      const daNames = doEntry?.structure?.map(s => `${s.name}:${s.type}`).join(', ') || 'N/A'
+      console.log(`[typeHint] allDefData[${lr}] keys:`, allDefKeys)
+      console.log(`[typeHint] 查找 doName="${doName}", daName="${daName}" → structure: [${daNames}]`)
+    }
+    const doEntry = allDefData[lr]?.[doName]
+    if (doEntry?.structure) {
+      const da = doEntry.structure.find(s => s.name === daName)
+      if (da?.type && m.typeHint !== da.type) {
+        m.typeHint = da.type
+        changed = true
+      }
+    }
+  }
+  // 替换数组引用触发响应式更新
+  if (changed) datasetMembers[key] = [...members]
+  return members
 }
 
 /** 清空数据集成员引用缓存（断开连接时）。 */

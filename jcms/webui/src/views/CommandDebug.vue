@@ -505,9 +505,7 @@ watch([() => form.ds?.ld, () => form.ds?.ln, () => form.ds?.name], async ([ld, l
   if (!datasetMemberRefs[key]) {
     await ensureDatasetMemberRefs(`${ld}/${ln}`, name)
   }
-  if (!datasetMembers[key]) {
-    await ensureDatasetMembers(`${ld}/${ln}`, name)
-  }
+  await ensureDatasetMembers(`${ld}/${ln}`, name)
 })
 
 // create-dataset: 选择已存在的数据集名称时，自动调用 get-dataset-dir 获取最后一个成员作为 after

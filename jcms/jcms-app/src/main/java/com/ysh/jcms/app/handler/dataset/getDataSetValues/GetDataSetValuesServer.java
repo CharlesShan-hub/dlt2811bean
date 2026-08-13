@@ -7,6 +7,7 @@ import com.ysh.jcms.core.pdu.dataset.CmsGetDataSetValuesRequest;
 import com.ysh.jcms.core.pdu.dataset.CmsGetDataSetValuesResponse;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.convert.DataConverter;
+import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.scl.convert.DataValueResolver;
 import com.ysh.jcms.utils.scl.convert.DataValueEntry;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
@@ -54,7 +55,8 @@ public class GetDataSetValuesServer extends BaseServerHandler<CmsGetDataSetValue
                 }
                 continue;
             }
-            DataValueEntry dv = DataValueResolver.resolve(doc, fcda.buildFcdaRef(), fcda.fc());
+            Navigator nav = Navigator.go(doc, ap, fcda.buildFcdaRef());
+            DataValueEntry dv = DataValueResolver.resolve(nav, fcda.fc());
             if (dv != null && dv.val() != null && !dv.val().isEmpty()) {
                 resp.value.add(DataConverter.toCmsData(dv));
                 if (++count >= ps)
