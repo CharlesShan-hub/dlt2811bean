@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.handler.console.client;
 
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.console.*;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.BaseDao;
@@ -16,9 +17,9 @@ public class HelpHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseD
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) {
-        ConsolePrinter.gray("");
-        ConsolePrinter.gray(String.format("  %-16s  %s", "命令", "说明"));
-        ConsolePrinter.gray(String.format("  %-16s  %s", "---------", "----"));
+        CmsPrinter.gray("");
+        CmsPrinter.gray(String.format("  %-16s  %s", "命令", "说明"));
+        CmsPrinter.gray(String.format("  %-16s  %s", "---------", "----"));
         for (CommandHandler h : console.handlers().values()) {
             if (h.name().equals("help"))
                 continue;
@@ -38,8 +39,8 @@ public class HelpHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseD
                 }
                 line.append("]");
             }
-            ConsolePrinter.gray(line.toString());
+            CmsPrinter.gray(line.toString());
         }
-        ConsolePrinter.gray("");
+        CmsPrinter.gray("");
     }
 }

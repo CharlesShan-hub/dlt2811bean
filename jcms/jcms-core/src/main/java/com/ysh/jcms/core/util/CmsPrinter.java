@@ -1,7 +1,7 @@
-package com.ysh.jcms.app.console;
+package com.ysh.jcms.core.util;
 
 import com.ysh.jcms.data.InnerBase;
-import com.ysh.jcms.core.util.CmsFormatUtil;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,9 +9,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Function;
 
-public final class ConsolePrinter {
+public final class CmsPrinter {
 
-    private ConsolePrinter() {
+    private CmsPrinter() {
     }
 
     private static final String RST = "\u001B[0m";
@@ -77,6 +77,7 @@ public final class ConsolePrinter {
     public static void info(String msg) {
         println(CYAN + "  " + msg + RST);
     }
+
     /** 输出 JSON 成功响应：{"success":true}。 */
     public static void success() {
         raw("{\"success\":true}");
@@ -91,6 +92,7 @@ public final class ConsolePrinter {
     public static void error(String msg) {
         raw("{\"success\":false,\"info\":\"" + CmsFormatUtil.escapeJson(msg) + "\",\"data\":null}");
     }
+
     public static void gray(String msg) {
         println(GRY + "  " + msg + RST);
     }

@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.console.client;
 import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.BaseDao;
@@ -51,6 +51,6 @@ public class NegCfgHandler extends CommandHandler<BaseDao, BaseClientHandler<Bas
         data.put("asduSize", neg.asduSize());
         data.put("protocolVersion", neg.protocolVersion());
         data.put("modelVersion", neg.modelVersion());
-        ConsolePrinter.outputJson(data);
+        CmsPrinter.outputJson(data);
     }
 }

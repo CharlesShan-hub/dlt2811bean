@@ -39,6 +39,7 @@ import ComplexValueEditor from '../components/ComplexValueEditor.vue'
 import { ldCache, refreshLds, ensureAllDefData, ensureAllLnRefs, allLnRefs } from '../ldCache.js'
 import { ACSI_DEFS } from '../acsiDefs.js'
 import { buildDoTree } from '../utils/treeBuilder.js'
+import { findSafeDelimiter } from '../utils/listJoin.js'
 
 const props = defineProps({
   connected: Boolean,
@@ -420,12 +421,7 @@ async function onEditorConfirm(val) {
   }
   editError.value = ''
   try {
-    const allVals = [entry.fullRef, val]
-    const safeDelim = (candidates) => candidates.find(d => allVals.every(v => !v.includes(d)))
-    let delim = safeDelim([' ', ',', ';', '|', '::'])
-    if (!delim) {
-      delim = ' '
-    }
+    const delim = findSafeDelimiter([entry.fullRef, val])
     let cmd = `set-data-values --refs "${entry.fullRef}" --values "${val}"`
     if (delim !== ' ') {
       cmd = `set-data-values --delimiter "${delim}" --refs "${entry.fullRef}" --values "${val}"`

@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler;
 
-import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public abstract class BaseHandler {
      */
     protected static void trace(String msg) {
         if (CmsConfigLoader.load().client().console().tracePdu()) {
-            ConsolePrinter.consoleOnly(msg);
+            CmsPrinter.consoleOnly(msg);
         }
     }
 
@@ -35,7 +35,7 @@ public abstract class BaseHandler {
      */
     public static void traceSession(String msg) {
         if (CmsConfigLoader.load().client().console().sessionTrace()) {
-            ConsolePrinter.consoleOnly("[SESSION] " + msg);
+            CmsPrinter.consoleOnly("[SESSION] " + msg);
         }
     }
 }

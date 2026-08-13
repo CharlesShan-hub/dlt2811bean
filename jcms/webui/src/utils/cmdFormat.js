@@ -2,6 +2,8 @@
  * 命令格式化 & 工具函数
  */
 
+import { joinList, findSafeDelimiter } from './listJoin.js'
+
 export function escHtml(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
@@ -100,9 +102,10 @@ export function buildCmd(cmd, params, form, opts = {}) {
       }
     } else if (p.type === 'ln-cascade') {
       const o = v || {}
-      // 如果存在依赖该 ln-cascade 的 dataset-select 参数，则跳过（由 dataset-select 产生 --ds）
+      // 如果存在依赖该 ln-cascade 的 dataset-select / sgcb-select 参数，则跳过（由它们产生 --ds / --ref）
       const hasDatasetSelect = params.some(x => x.type === 'dataset-select' && x.dependsOn === p.key)
-      if (hasDatasetSelect) {
+      const hasSgcbSelect = params.some(x => x.type === 'sgcb-select' && x.dependsOn === p.key)
+      if (hasDatasetSelect || hasSgcbSelect) {
         // 不输出 --ln
       } else if (o.ld) {
         const ref = opts.cmdProp === 'ld-dir' && p.key === 'after' && form.ld
@@ -118,6 +121,13 @@ export function buildCmd(cmd, params, form, opts = {}) {
       const lnVal = form[lnKey]
       if (v && lnVal && lnVal.ld && lnVal.ln) {
         parts.push('--ds', `"${lnVal.ld}/${lnVal.ln}.${v}"`)
+      }
+    } else if (p.type === 'sgcb-select') {
+      // sgcb-select: 与 ln-cascade 组合为 --ref "LD/LN.<SGCB>"
+      const lnKey = p.dependsOn || 'ln'
+      const lnVal = form[lnKey]
+      if (v && lnVal && lnVal.ld && lnVal.ln) {
+        parts.push('--ref', `"${lnVal.ld}/${lnVal.ln}.${v}"`)
       }
     } else if (p.type === 'ds-ref-input') {
       // ds-ref-input: LD + LN + 数据集名称 → --ds "LD/LN.dsName"
@@ -164,18 +174,9 @@ export function buildCmd(cmd, params, form, opts = {}) {
         }
       }
       if (refs.length) {
-        // 自动选择分隔符：依次尝试常见分隔符，然后永无止境递增 |||...
+        // 自动选择安全分隔符
         const allVals = [...refs, ...values.filter(v => v), ...fcs.filter(f => f)]
-        const safeDelim = (candidates) => candidates.find(d => allVals.every(v => !v.includes(d)))
-        let delim = safeDelim([' ', ',', ';', '|', '::'])
-        if (!delim) {
-          let n = 2
-          while (!delim) {
-            const d = '|'.repeat(n)
-            if (allVals.every(v => !v.includes(d))) delim = d
-            else n++
-          }
-        }
+        const delim = findSafeDelimiter(allVals)
         if (delim !== ' ') {
           parts.push('--delimiter', `"${delim}"`)
         }
@@ -200,9 +201,14 @@ export function buildCmd(cmd, params, form, opts = {}) {
         }
       }
     } else if (cmd === 'set-dataset-values' && p.key === 'values' && v !== '' && v !== null && v !== undefined) {
-      // set-dataset-values 的 values 是空格分隔列表，需引号包裹
-      const val = Array.isArray(v) ? v.filter(x => x !== '').join(' ') : String(v)
-      parts.push('--values', `"${val}"`)
+      // set-dataset-values 的 values 是列表，自动选择安全分隔符（避免 JSON 值中的空格干扰）
+      const values = Array.isArray(v) ? v : [String(v)]
+      const { joined, delimiter: delim } = joinList(values)
+      if (delim !== ' ') {
+        parts.push('--delimiter', `"${delim}"`)
+      }
+      // JSON 值中的 " 需要转义为 \"，否则 tokenizer 会误判引号边界
+      parts.push('--values', `"${joined.replace(/"/g, '\\"')}"`)
     } else if (p.key === 'refs' && v !== '' && v !== null && v !== undefined) {
       parts.push(`--${p.key}`, `"${String(v)}"`)
     } else if (v !== '' && v !== null && v !== undefined) {

@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.console;
 
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.console.CommandInfo.Requirement;
 import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.core.util.CmsFormatUtil;
@@ -74,7 +75,7 @@ public abstract class CmsConsole extends CmsNode {
     public boolean requireAssociated(Map<String, String> args) {
         if (connected())
             return true;
-        ConsolePrinter.error("Not associated. Use 'associate' first.");
+        CmsPrinter.error("Not associated. Use 'associate' first.");
         return false;
     }
 
@@ -85,7 +86,7 @@ public abstract class CmsConsole extends CmsNode {
     public boolean requireTcpConnected(Map<String, String> args) {
         if (clientConnected())
             return true;
-        ConsolePrinter.error("Not connected. Use 'connect' first.");
+        CmsPrinter.error("Not connected. Use 'connect' first.");
         return false;
     }
 
@@ -94,18 +95,18 @@ public abstract class CmsConsole extends CmsNode {
         String v = args.get(key);
         if (v != null && !v.isEmpty())
             return true;
-        ConsolePrinter.error("Missing --" + key + ".");
+        CmsPrinter.error("Missing --" + key + ".");
         return false;
     }
 
     /**
-     * @deprecated Use {@link ConsolePrinter#outputJson(java.util.Map)} directly.
+     * @deprecated Use {@link CmsPrinter#outputJson(java.util.Map)} directly.
      */
     @Deprecated
     public static <T> void outputList(String title, java.util.List<T> items, java.util.function.Function<T, String> formatter,
             Map<String, String> args, boolean numbered) {
         if (items == null || items.isEmpty()) {
-            ConsolePrinter.raw("{\"success\":true,\"data\":[]}");
+            CmsPrinter.raw("{\"success\":true,\"data\":[]}");
             return;
         }
         StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
@@ -115,11 +116,11 @@ public abstract class CmsConsole extends CmsNode {
             sb.append("\"").append(CmsFormatUtil.escapeJson(formatter.apply(items.get(i)))).append("\"");
         }
         sb.append("]}");
-        ConsolePrinter.raw(sb.toString());
+        CmsPrinter.raw(sb.toString());
     }
 
     /**
-     * @deprecated Use {@link ConsolePrinter#outputJson(java.util.Map)} directly.
+     * @deprecated Use {@link CmsPrinter#outputJson(java.util.Map)} directly.
      */
     @Deprecated
     public static <T> void outputList(String title, java.util.List<T> items, java.util.function.Function<T, String> formatter,
@@ -143,7 +144,7 @@ public abstract class CmsConsole extends CmsNode {
             }
         }
         if (autoExec != null && !autoExec.isEmpty()) {
-            ConsolePrinter.gray("Auto-exec: " + autoExec);
+            CmsPrinter.gray("Auto-exec: " + autoExec);
             for (String cmd : autoExec.split(";")) {
                 String trimmed = cmd.trim();
                 if (!trimmed.isEmpty())
@@ -221,9 +222,9 @@ public abstract class CmsConsole extends CmsNode {
     // ── command parsing ──
 
     public boolean executeLine(String raw) {
-        // ConsolePrinter.gray("LOG1 executeLine: cmd=\"" + raw + "\"");
+        // CmsPrinter.gray("LOG1 executeLine: cmd=\"" + raw + "\"");
         List<String> tokens = tokenize(raw);
-        // ConsolePrinter.gray("LOG2 executeLine: tokens=" + tokens);
+        // CmsPrinter.gray("LOG2 executeLine: tokens=" + tokens);
         if (tokens.isEmpty())
             return true;
 
@@ -232,7 +233,7 @@ public abstract class CmsConsole extends CmsNode {
 
         CommandHandler handler = handlers.get(cmdName);
         if (handler == null) {
-            ConsolePrinter.error("Unknown command: " + cmdName + "  (type 'help')");
+            CmsPrinter.error("Unknown command: " + cmdName + "  (type 'help')");
             return false;
         }
 
@@ -255,15 +256,15 @@ public abstract class CmsConsole extends CmsNode {
                     }
                 }
             }
-            // ConsolePrinter.gray("LOG3 executeLine: args=" + args);
+            // CmsPrinter.gray("LOG3 executeLine: args=" + args);
 
             Requirement req = handler.requirement();
             if (req == Requirement.ASSOCIATED && !connected()) {
-                ConsolePrinter.error("Not associated. Use 'associate' first.");
+                CmsPrinter.error("Not associated. Use 'associate' first.");
                 return false;
             }
             if (req == Requirement.CONNECTED && !clientConnected()) {
-                ConsolePrinter.error("Not connected. Use 'connect' first.");
+                CmsPrinter.error("Not connected. Use 'connect' first.");
                 return false;
             }
 
@@ -272,7 +273,7 @@ public abstract class CmsConsole extends CmsNode {
             String msg = e.getMessage();
             if (msg == null)
                 msg = e.getClass().getSimpleName();
-            ConsolePrinter.error(msg);
+            CmsPrinter.error(msg);
             return false;
         }
         return true;

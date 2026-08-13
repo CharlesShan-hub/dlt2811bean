@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.console.api;
 
 import com.ysh.jcms.app.console.CmsClientConsole;
-import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.core.util.CmsFormatUtil;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpExchange;
@@ -46,7 +46,7 @@ public class CliApiServer {
         server.createContext("/ui", this::handleStatic);
         server.createContext("/", this::handleStatic);
         server.start();
-        ConsolePrinter.gray("CliApiServer started on port " + port);
+        CmsPrinter.gray("CliApiServer started on port " + port);
     }
 
     public void stop() {
@@ -75,14 +75,14 @@ public class CliApiServer {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream capturePs = new PrintStream(baos, true, "UTF-8");
 
-        ConsolePrinter.setCaptureStream(capturePs);
+        CmsPrinter.setCaptureStream(capturePs);
 
         try {
             console.executeLine(cmdLine);
         } catch (Exception e) {
             baos.write(("ERR " + e.getMessage() + "\n").getBytes("UTF-8"));
         } finally {
-            ConsolePrinter.setCaptureStream(null);
+            CmsPrinter.setCaptureStream(null);
             capturePs.close();
         }
 

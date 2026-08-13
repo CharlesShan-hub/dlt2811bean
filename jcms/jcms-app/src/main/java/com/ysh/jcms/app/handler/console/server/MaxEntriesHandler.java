@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.console.server;
 import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.BaseDao;
@@ -44,9 +44,9 @@ public class MaxEntriesHandler extends CommandHandler<BaseDao, BaseClientHandler
             int current = BaseServerHandler.getMaxPageSize();
             int configDefault = com.ysh.jcms.utils.config.CmsConfigLoader.load().protocol().maxArraySize();
             if (current <= 0) {
-                ConsolePrinter.info("max-entries = " + configDefault + " (default, from config)");
+                CmsPrinter.info("max-entries = " + configDefault + " (default, from config)");
             } else {
-                ConsolePrinter.info("max-entries = " + current + " (override, config default is " + configDefault + ")");
+                CmsPrinter.info("max-entries = " + current + " (override, config default is " + configDefault + ")");
             }
             return;
         }
@@ -54,9 +54,9 @@ public class MaxEntriesHandler extends CommandHandler<BaseDao, BaseClientHandler
         int v = Integer.parseInt(value);
         BaseServerHandler.setMaxPageSize(v);
         if (v <= 0) {
-            ConsolePrinter.info("max-entries restored to default (config)");
+            CmsPrinter.info("max-entries restored to default (config)");
         } else {
-            ConsolePrinter.info("max-entries = " + v + " (set)");
+            CmsPrinter.info("max-entries = " + v + " (set)");
         }
     }
 }

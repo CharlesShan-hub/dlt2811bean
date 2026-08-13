@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.console.client;
 
 import com.ysh.jcms.app.console.CmsConsole;
-import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.handler.BaseClientHandler;
@@ -23,6 +23,6 @@ public class DisconnectHandler extends CommandHandler<BaseDao, BaseClientHandler
         }
         console.close();
         BaseHandler.traceSession("TCP Disconnected");
-        ConsolePrinter.success("Disconnected.");
+        CmsPrinter.success("Disconnected.");
     }
 }

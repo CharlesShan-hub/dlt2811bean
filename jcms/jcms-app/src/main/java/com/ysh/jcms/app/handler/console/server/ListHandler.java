@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.console.server;
 import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.BaseDao;
@@ -26,7 +26,7 @@ public class ListHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseD
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         if (!console.sclManager().loaded()) {
-            ConsolePrinter.error("SCL not loaded.");
+            CmsPrinter.error("SCL not loaded.");
             return;
         }
 
@@ -36,7 +36,7 @@ public class ListHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseD
         }
 
         if (aps.isEmpty()) {
-            ConsolePrinter.gray("No access points found.");
+            CmsPrinter.gray("No access points found.");
             return;
         }
 
@@ -48,11 +48,11 @@ public class ListHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseD
 
         int to = Math.min(offset + limit, aps.size());
         if (offset >= aps.size()) {
-            ConsolePrinter.gray("Offset out of range (max " + (aps.size() - 1) + ").");
+            CmsPrinter.gray("Offset out of range (max " + (aps.size() - 1) + ").");
             return;
         }
         List<String> display = aps.subList(offset, to);
 
-        ConsolePrinter.list("Access Points (" + aps.size() + " total)", display, s -> s);
+        CmsPrinter.list("Access Points (" + aps.size() + " total)", display, s -> s);
     }
 }

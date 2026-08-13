@@ -36,4 +36,8 @@ GetEditSGValue-ErrorPDU ::= ServiceError`,
 
 功能约束 fc 的值为 SG 或 SE。
 `,
+  params: [
+    { key: 'refs', label: '定值引用', type: 'refs-list', required: true, placeholder: 'LD/LN.DO.DA，如 PROT/OCPTOC2.StrVal' },
+    { key: 'fc', label: '功能约束 fc', type: 'select', required: false, options: [{ value: 'SG', label: 'SG（定值组）' }, { value: 'SE', label: 'SE（编辑缓冲区）' }] },
+  ],
 }

@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.console;
 
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.handler.console.client.*;
 import com.ysh.jcms.app.handler.console.LogHandler;
 import com.ysh.jcms.app.handler.console.ClearHandler;
@@ -143,7 +144,7 @@ public class CmsClientConsole extends CmsConsole {
                 apiServer = new CliApiServer(apiPort, this);
                 apiServer.start();
             } catch (Exception e) {
-                ConsolePrinter.gray("ApiServer not started (port " + apiPort + "): " + e.getMessage());
+                CmsPrinter.gray("ApiServer not started (port " + apiPort + "): " + e.getMessage());
             }
         }
     }

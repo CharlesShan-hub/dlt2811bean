@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.console.client;
 
 import com.ysh.jcms.app.console.CmsConsole;
-import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
@@ -45,7 +45,7 @@ public class ConnectHandler extends CommandHandler<BaseDao, BaseClientHandler<Ba
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         if (console.connected()) {
-            ConsolePrinter.error("Already connected. Type 'disconnect' first.");
+            CmsPrinter.error("Already connected. Type 'disconnect' first.");
             return;
         }
 
@@ -67,7 +67,7 @@ public class ConnectHandler extends CommandHandler<BaseDao, BaseClientHandler<Ba
         }
 
         if (secure) {
-            ConsolePrinter.info("TLS connecting to " + host + ":" + port + " ...");
+            CmsPrinter.info("TLS connecting to " + host + ":" + port + " ...");
             SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
             sslContext.init(null, new X509TrustManager[]{new X509TrustManager() {
                 public void checkClientTrusted(X509Certificate[] chain, String authType) {
@@ -81,7 +81,7 @@ public class ConnectHandler extends CommandHandler<BaseDao, BaseClientHandler<Ba
             console.connectTls(host, port, sslContext);
             BaseHandler.traceSession("TLS Connected: " + host + ":" + port);
         } else {
-            ConsolePrinter.info("Connecting to " + host + ":" + port + " ...");
+            CmsPrinter.info("Connecting to " + host + ":" + port + " ...");
             console.connect(host, port);
             BaseHandler.traceSession("TCP Connected: " + host + ":" + port);
         }
@@ -89,11 +89,11 @@ public class ConnectHandler extends CommandHandler<BaseDao, BaseClientHandler<Ba
         // 只给了 host → 纯 connect，不做 negotiate/associate
         if (sapRef == null || sapRef.isEmpty()) {
             String msg = (secure ? "TLS " : "") + "Connected: " + host + ":" + port;
-            ConsolePrinter.success(msg);
+            CmsPrinter.success(msg);
             return;
         }
 
-        ConsolePrinter.info("Connected, negotiating parameters ...");
+        CmsPrinter.info("Connected, negotiating parameters ...");
 
         NegotiateClientDao negotiateDao = new NegotiateClientDao();
         String apduStr = args.get("apdu");
@@ -108,11 +108,11 @@ public class ConnectHandler extends CommandHandler<BaseDao, BaseClientHandler<Ba
 
         console.getClient(NegotiateClient.class).execute(negotiateDao);
 
-        ConsolePrinter.info("Negotiated, associating with " + sapRef + " ...");
+        CmsPrinter.info("Negotiated, associating with " + sapRef + " ...");
 
         console.getClient(AssociateClient.class).execute(new AssociateDao().sapRef(sapRef).secure(secure || apSecure));
 
         String msg = (secure ? "TLS " : "") + "Associated: " + sapRef;
-        ConsolePrinter.success(msg);
+        CmsPrinter.success(msg);
     }
 }

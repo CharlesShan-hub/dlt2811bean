@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.console;
 
 import com.ysh.jcms.app.console.CmsConsole;
-import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
@@ -67,11 +67,11 @@ public class LogHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseDa
 
         if ("false".equalsIgnoreCase(val) || "off".equalsIgnoreCase(val)) {
             cfg.tracePdu(false);
-            ConsolePrinter.info("trace-pdu = false");
+            CmsPrinter.info("trace-pdu = false");
         } else {
             boolean newVal = !current;
             cfg.tracePdu(newVal);
-            ConsolePrinter.info("trace-pdu = " + newVal);
+            CmsPrinter.info("trace-pdu = " + newVal);
         }
     }
 
@@ -81,17 +81,17 @@ public class LogHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseDa
 
         if ("false".equalsIgnoreCase(val) || "off".equalsIgnoreCase(val)) {
             cfg.sessionTrace(false);
-            ConsolePrinter.info("session-trace = false");
+            CmsPrinter.info("session-trace = false");
         } else {
             boolean newVal = !current;
             cfg.sessionTrace(newVal);
-            ConsolePrinter.info("session-trace = " + newVal);
+            CmsPrinter.info("session-trace = " + newVal);
         }
     }
 
     private void showStatus() {
         CmsConfig.Client.Console cfg = CmsConfigLoader.load().client().console();
-        ConsolePrinter.info("trace-pdu = " + cfg.tracePdu());
-        ConsolePrinter.info("session-trace = " + cfg.sessionTrace());
+        CmsPrinter.info("trace-pdu = " + cfg.tracePdu());
+        CmsPrinter.info("session-trace = " + cfg.sessionTrace());
     }
 }

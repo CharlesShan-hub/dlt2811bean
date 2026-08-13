@@ -48,6 +48,7 @@
         :fc-row-options="fcRowOptions"
         :refs-list-options="refsListOptions"
         :dataset-options="datasetOptions"
+        :sgcb-options="sgcbOptions"
         :ds-member-after-options="dsMemberAfterOptions"
         :ds-member-options="dsMemberOptions"
         :ln-ref="lnRef"
@@ -268,6 +269,9 @@ const datasetOptions = computed(() => {
   const lnRef = `${o.ld}/${o.ln}`
   return datasetRefs[lnRef] || []
 })
+
+/** SGCB 控制块名选项：标准约定每个 LN 一个 SGCB，名为 SG1（组数由 numOfSG 配置决定） */
+const sgcbOptions = ['SG1']
 
 /** ds-member-after 下拉选项：当前 LN + 数据集下的成员引用列表 */
 const dsMemberAfterOptions = computed(() => {

@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.console.client;
 
 import com.ysh.jcms.app.console.CmsConsole;
-import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
@@ -38,7 +38,7 @@ public class ConnectTlsHandler extends CommandHandler<BaseDao, BaseClientHandler
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         if (console.connected()) {
-            ConsolePrinter.error("Already connected. Type 'disconnect' first.");
+            CmsPrinter.error("Already connected. Type 'disconnect' first.");
             return;
         }
 
@@ -46,7 +46,7 @@ public class ConnectTlsHandler extends CommandHandler<BaseDao, BaseClientHandler
         int port = CmsConfigLoader.load().server().sslPort();
         String sapRef = args.get("sap-ref");
 
-        ConsolePrinter.info("TLS connecting to " + host + ":" + port + " ...");
+        CmsPrinter.info("TLS connecting to " + host + ":" + port + " ...");
 
         SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
         sslContext.init(null, new X509TrustManager[]{new X509TrustManager() {
@@ -63,11 +63,11 @@ public class ConnectTlsHandler extends CommandHandler<BaseDao, BaseClientHandler
 
         // 只给了 host → 纯 connect，不做 negotiate/associate
         if (sapRef == null || sapRef.isEmpty()) {
-            ConsolePrinter.success("TLS connected: " + host + ":" + port);
+            CmsPrinter.success("TLS connected: " + host + ":" + port);
             return;
         }
 
-        ConsolePrinter.info("TLS connected, negotiating parameters ...");
+        CmsPrinter.info("TLS connected, negotiating parameters ...");
 
         NegotiateClientDao negotiateDao = new NegotiateClientDao();
         String apduStr = args.get("apduSize");
@@ -82,10 +82,10 @@ public class ConnectTlsHandler extends CommandHandler<BaseDao, BaseClientHandler
 
         console.getClient(NegotiateClient.class).execute(negotiateDao);
 
-        ConsolePrinter.info("Negotiated, associating with " + sapRef + " ...");
+        CmsPrinter.info("Negotiated, associating with " + sapRef + " ...");
 
         console.getClient(AssociateClient.class).execute(new AssociateDao().sapRef(sapRef).secure(true));
 
-        ConsolePrinter.success("TLS associated: " + sapRef);
+        CmsPrinter.success("TLS associated: " + sapRef);
     }
 }

@@ -1,3 +1,5 @@
+import { TYPE_OPTIONS } from '../common.js'
+
 export default {
   title: '设置编辑定值组值 set-edit-sg (8.6.3)',
   desc: '设置编辑缓冲区中的定值',
@@ -35,4 +37,9 @@ SetEditSGValue-ErrorPDU ::= SEQUENCE {
 
 设置编辑定值组值的功能约束自动识别为 SE。所有编辑定值组值设置成功时返回 Response+，部分或全部失败时返回 Response-。在 Response-中，依次返回每个编辑定值组值的设置结果。
 `,
+  params: [
+    { key: 'refs', label: '定值引用', type: 'refs-list', cascade: true, required: true },
+    { key: 'values', label: '定值列表 values', type: 'text', required: true, placeholder: '与 refs 一一对应，空格分隔，如 "100 5 2"' },
+    { key: 'type', label: '数据类型 type', type: 'select', required: false, options: TYPE_OPTIONS },
+  ],
 }

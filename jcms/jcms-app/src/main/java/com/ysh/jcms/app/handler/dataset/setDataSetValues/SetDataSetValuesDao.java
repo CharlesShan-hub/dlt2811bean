@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.handler.dataset.setDataSetValues;
 
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.core.data.choice.CmsData;
 import com.ysh.jcms.core.data.core.CmsType;
@@ -24,6 +25,7 @@ public class SetDataSetValuesDao extends BaseDao {
         if (referenceAfter != null && !referenceAfter.isEmpty())
             req.referenceAfter(referenceAfter);
         if (values != null) {
+            CmsPrinter.consoleOnly("[DEBUG] set-dataset-values ds=" + datasetReference + " values=" + values);
             for (String val : values) {
                 CmsData data = new CmsData();
                 fillCmsData(data, val);

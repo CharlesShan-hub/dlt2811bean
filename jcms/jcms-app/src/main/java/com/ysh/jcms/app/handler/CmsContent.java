@@ -15,7 +15,7 @@ package com.ysh.jcms.app.handler;
  *     &#64;code
  *     CmsContent<SvrDirDao> c = new CmsContent<>(new SvrDirDao().referenceAfter("..."), "true");
  *     console.getClient(SvrDirClient.class).executeResult(c);
- *     ConsolePrinter.outputJson(c.res());
+ *     CmsPrinter.outputJson(c.res());
  * }
  * </pre>
  */

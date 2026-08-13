@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.console.client;
 import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.BaseDao;
@@ -46,7 +46,7 @@ public class ApDirHandler extends CommandHandler<BaseDao, BaseClientHandler<Base
             scd = CmsConfigLoader.load().server().getResolvedSclFile();
         }
         if (scd == null || scd.isEmpty()) {
-            ConsolePrinter.error("SCL 未加载。请用 --scd <path> 指定 SCD 文件，或在配置中设置 server.sclFiles。");
+            CmsPrinter.error("SCL 未加载。请用 --scd <path> 指定 SCD 文件，或在配置中设置 server.sclFiles。");
             return;
         }
 
@@ -55,7 +55,7 @@ public class ApDirHandler extends CommandHandler<BaseDao, BaseClientHandler<Base
             // 轻量扫描：只取 IED/AccessPoint 名称，大文件也秒级完成
             apsByIed = SclReader.scanAccessPoints(Paths.get(scd));
         } catch (Exception e) {
-            ConsolePrinter.error("SCL 解析失败: " + scd + " - " + e.getMessage());
+            CmsPrinter.error("SCL 解析失败: " + scd + " - " + e.getMessage());
             return;
         }
 
@@ -63,7 +63,7 @@ public class ApDirHandler extends CommandHandler<BaseDao, BaseClientHandler<Base
         String iedFilter = args.get("ied");
         if (iedFilter != null && !iedFilter.isEmpty()) {
             if (!apsByIed.containsKey(iedFilter)) {
-                ConsolePrinter.error("IED 不存在: " + iedFilter);
+                CmsPrinter.error("IED 不存在: " + iedFilter);
                 return;
             }
             apsByIed = new LinkedHashMap<>(Collections.singletonMap(iedFilter, apsByIed.get(iedFilter)));
@@ -81,6 +81,6 @@ public class ApDirHandler extends CommandHandler<BaseDao, BaseClientHandler<Base
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("scd", scd);
         data.put("accessPoints", refs);
-        ConsolePrinter.outputJson(data);
+        CmsPrinter.outputJson(data);
     }
 }

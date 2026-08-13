@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.handler;
 
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.info.CmsServiceInfo;
@@ -24,7 +25,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
      *     CmsContent<SvrDirDao> c = new CmsContent<>(new SvrDirDao());
      *     c.req().referenceAfter("...");
      *     console.getClient(SvrDirClient.class).executeResult(c);
-     *     ConsolePrinter.outputJson(c.res());
+     *     CmsPrinter.outputJson(c.res());
      * }
      * </pre>
      */

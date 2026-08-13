@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.handler.dataset.getDataSetValues;
 
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.pdu.dataset.CmsGetDataSetValuesError;
@@ -58,6 +59,7 @@ public class GetDataSetValuesServer extends BaseServerHandler<CmsGetDataSetValue
             Navigator nav = Navigator.go(doc, ap, fcda.buildFcdaRef());
             DataValueEntry dv = DataValueResolver.resolve(nav, fcda.fc());
             if (dv != null && dv.val() != null && !dv.val().isEmpty()) {
+                CmsPrinter.consoleOnly("[DEBUG] fcdaRef=" + fcda.buildFcdaRef() + " bType=" + dv.bType() + " val=" + dv.val());
                 resp.value.add(DataConverter.toCmsData(dv));
                 if (++count >= ps)
                     break;

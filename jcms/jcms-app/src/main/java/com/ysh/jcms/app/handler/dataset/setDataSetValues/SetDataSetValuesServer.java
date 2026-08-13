@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.handler.dataset.setDataSetValues;
 
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.util.CmsDataUtil;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;
@@ -61,7 +62,10 @@ public class SetDataSetValuesServer extends BaseServerHandler<CmsSetDataSetValue
 
             String fcdaRef = fcda.buildFcdaRef();
             Navigator nav = Navigator.go(doc, ap, fcdaRef);
-            if (nav.isValid() && DataWriterResolver.setValue(nav, valueStr) == CmsServiceError.NO_ERROR) {
+            int err = DataWriterResolver.setValue(nav, valueStr);
+            CmsPrinter.consoleOnly("[DEBUG] set-dataset-values fcdaRef=" + fcdaRef + " valueStr=" + valueStr + " nav.valid="
+                    + nav.isValid() + " result=" + err);
+            if (nav.isValid() && err == CmsServiceError.NO_ERROR) {
                 successCount++;
             }
         }

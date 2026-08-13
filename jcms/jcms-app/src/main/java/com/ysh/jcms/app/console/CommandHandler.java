@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.console;
 
+import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.app.handler.CmsContent;
@@ -154,7 +155,7 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
         D dao = daoClass.getDeclaredConstructor().newInstance();
         bindParams(dao, args);
         console.getClient(clientClass).execute(dao);
-        ConsolePrinter.success(info().name() + " sent");
+        CmsPrinter.success(info().name() + " sent");
     }
 
     /** Execute a data-query command (outputs JSON result). */
@@ -164,7 +165,7 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
         bindParams(dao, args);
         CmsContent<D> c = new CmsContent<>(dao, args.get("auto-pull"));
         console.getClient(clientClass).executeResult(c);
-        ConsolePrinter.outputJson(c.res());
+        CmsPrinter.outputJson(c.res());
     }
 
     private void requireDaoClient() {
@@ -180,7 +181,7 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
             if (p.required()) {
                 String value = args.get(p.cliName());
                 if (value == null || value.trim().isEmpty()) {
-                    ConsolePrinter.error("Missing required parameter: --" + p.cliName() + " (" + p.desp() + ")");
+                    CmsPrinter.error("Missing required parameter: --" + p.cliName() + " (" + p.desp() + ")");
                     return false;
                 }
             }
