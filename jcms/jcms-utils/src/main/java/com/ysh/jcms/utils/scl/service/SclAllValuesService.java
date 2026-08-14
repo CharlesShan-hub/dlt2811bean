@@ -8,6 +8,8 @@ import com.ysh.jcms.core.data.sequence.block.CmsBrcb;
 import com.ysh.jcms.core.data.sequence.block.CmsGoCb;
 import com.ysh.jcms.core.data.sequence.block.CmsLcb;
 import com.ysh.jcms.core.data.sequence.block.CmsMsvcb;
+import com.ysh.jcms.core.data.sequence.block.CmsSgcb;
+import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.core.data.sequence.common.CmsDataDefinitionStructElem;
 import com.ysh.jcms.core.data.sequence.directory.CmsCbValueEntry;
 import com.ysh.jcms.core.data.sequence.directory.CmsDataDefinitionEntry;
@@ -268,6 +270,11 @@ public final class SclAllValuesService {
                     result.add(new CbPair(sv.name(), overlayMsvcb(ln, sv.name(), CbConverter.msvcbFrom(sv))));
                 }
                 break;
+            case CmsAcsiClass.SGCB :
+                for (CbPair pair : collectSgcb(ln)) {
+                    result.add(pair);
+                }
+                break;
             default :
                 break;
         }
@@ -348,6 +355,36 @@ public final class SclAllValuesService {
             choice.altMsvcb = rt;
         }
         return choice;
+    }
+
+    // ==================== SGCB (Setting Group Control Block) ====================
+
+    private static List<CbPair> collectSgcb(SclLN ln) {
+        List<CbPair> result = new ArrayList<>();
+        int numOfSG = CmsConfigLoader.load().protocol().setting().numOfSG();
+        for (int i = 1; i <= numOfSG; i++) {
+            String sgName = "SG" + i;
+            CmsCbValueChoice choice = overlaySgcb(ln, sgName, null);
+            result.add(new CbPair(sgName, choice));
+        }
+        return result;
+    }
+
+    private static CmsCbValueChoice overlaySgcb(SclLN ln, String sgName, CmsCbValueChoice unused) {
+        String ref = fullRef(ln, sgName);
+        if (ref == null) {
+            ref = ln.getFullName() + "." + sgName;
+        }
+        CmsSgcb rt = CbStateManager.SGCB.get(ref);
+        if (rt != null) {
+            return new CmsCbValueChoice().altSgcb(rt);
+        }
+        // Fallback: create a default SGCB entry
+        int numOfSG = CmsConfigLoader.load().protocol().setting().numOfSG();
+        CmsSgcb sgcb = new CmsSgcb().numOfSG(numOfSG).actSG(1).editSG(1);
+        sgcb.tActEdt.now();
+        sgcb.setPresent("resvTms", false);
+        return new CmsCbValueChoice().altSgcb(sgcb);
     }
 
     // ==================== Internal data structure ====================

@@ -10,6 +10,11 @@ import com.ysh.jcms.utils.transport.service.ServiceHandler;
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.app.handler.report.report.ReportEngine;
 import com.ysh.jcms.utils.scl.SclDocument;
+import com.ysh.jcms.utils.scl.state.CbStateManager;
+import com.ysh.jcms.utils.scl.model.ied.SclIED;
+import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl.model.ied.SclLN;
+import com.ysh.jcms.core.data.sequence.block.CmsSgcb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +98,7 @@ public class CmsNode {
                     if (sclDoc != null) {
                         new ReportEngine(sclDoc);
                         log.info("ReportEngine initialized with SCL document");
+                        initSgcb(sclDoc);
                     } else {
                         log.warn("No SCL document available - ReportEngine not initialized");
                     }
@@ -128,6 +134,26 @@ public class CmsNode {
 
     public void close() {
         client.close();
+    }
+
+    // ==================== SGCB initialization ====================
+
+    private static void initSgcb(SclDocument sclDoc) {
+        int numOfSG = CmsConfigLoader.load().protocol().setting().numOfSG();
+        for (SclIED ied : sclDoc.ieds()) {
+            for (SclLDevice ld : ied.lDevices()) {
+                for (SclLN ln : ld.findLnsByClass("LLN0")) {
+                    String prefix = ld.inst() + "/" + ln.getFullName() + ".SG";
+                    for (int i = 1; i <= numOfSG; i++) {
+                        CmsSgcb sgcb = new CmsSgcb().numOfSG(numOfSG).actSG(1).editSG(1);
+                        sgcb.tActEdt.now();
+                        sgcb.setPresent("resvTms", false);
+                        CbStateManager.SGCB.put(prefix + i, sgcb);
+                    }
+                }
+            }
+        }
+        log.info("SGCB entries initialized: numOfSG={}, total={}", numOfSG, CbStateManager.SGCB.size());
     }
 
     /**

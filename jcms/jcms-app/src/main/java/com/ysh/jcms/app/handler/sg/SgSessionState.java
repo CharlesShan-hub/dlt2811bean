@@ -92,8 +92,8 @@ public class SgSessionState {
         /**
          * Immutable snapshot of the entire SgcState.
          * <p>
-         * Standard Memento pattern: Originator (SgcState) creates a Memento
-         * before mutation, and restores from it to rollback.
+         * Standard Memento pattern: Originator (SgcState) creates a Memento before
+         * mutation, and restores from it to rollback.
          */
         public static class Memento {
             private final int actSG;
@@ -110,17 +110,16 @@ public class SgSessionState {
         }
 
         /**
-         * Capture current state into a Memento.
-         * {@code editValues} and {@code committedValues} are defensively copied.
+         * Capture current state into a Memento. {@code editValues} and
+         * {@code committedValues} are defensively copied.
          */
         public Memento saveToMemento() {
-            return new Memento(actSG.get(), editSG.get(),
-                    new HashMap<>(editValues), new HashMap<>(committedValues));
+            return new Memento(actSG.get(), editSG.get(), new HashMap<>(editValues), new HashMap<>(committedValues));
         }
 
         /**
-         * Restore state from a previously captured Memento.
-         * Replaces all fields atomically.
+         * Restore state from a previously captured Memento. Replaces all fields
+         * atomically.
          */
         public void restoreFromMemento(Memento m) {
             this.actSG.set(m.actSG);
@@ -135,8 +134,8 @@ public class SgSessionState {
     // ── Caretaker (static) ────────────────────────────────────────
 
     /**
-     * Save the session's current state as a Memento.
-     * Returns {@code null} if no state exists for the session.
+     * Save the session's current state as a Memento. Returns {@code null} if no
+     * state exists for the session.
      */
     public static SgcState.Memento saveState(String sessionId) {
         SgcState state = SESSION_STATES.get(sessionId);
@@ -144,8 +143,8 @@ public class SgSessionState {
     }
 
     /**
-     * Restore the session's state from a previously saved Memento.
-     * Does nothing if no state exists for the session.
+     * Restore the session's state from a previously saved Memento. Does nothing if
+     * no state exists for the session.
      */
     public static void restoreState(String sessionId, SgcState.Memento memento) {
         SgcState state = SESSION_STATES.get(sessionId);

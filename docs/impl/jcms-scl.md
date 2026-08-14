@@ -126,7 +126,8 @@ scl/
     ├── SclConformanceCheck.java — 校验引擎（纯静态，R1 命名 + R2 结构 + R3 通信参数）
     ├── GwLdInst.java            — §7.1.3 LD 实例名表（LD0/MEAS/PROT/CTRL/PIGO/PISV/RPIT/RCD/MUGO/MUSV）
     ├── GwSubNetwork.java        — §6.5.1 子网名表（Subnetwork_Stationbus/Processbus）
-    └── GwLnPrefix.java          — 附录 I LN 前缀示例表（CB/QG/PctDif/Lin…，INFO 级）
+    ├── GwLnPrefix.java          — 附录 I LN 前缀示例表（CB/QG/PctDif/Lin…，INFO 级）
+    └── GwRequiredDo.java        — 附录 A/B 必选 DO 表（29 个 LN 类的 M 集合，§7.1.5）
 ```
 
 ---
@@ -364,6 +365,7 @@ CmsData data = DataConverter.toCmsData(dv);
 | R2 结构 | §6.2 | LD/LN 宜含中文 desc；DOI 宜含 desc + dU 赋值 | WARN |
 | R2 结构 | §7.2.2 | dsParameter 必须 FC=SP；dsSetting 必须 FC=SG | ERROR |
 | R2 结构 | §7.1.3 | 数据集成员不得跨 LD | ERROR |
+| R4 模板 | §7.1.5 + 附录 A/B | 附录覆盖的 LN 类的 LNodeType 必须含全部 M 必选 DO（如 PDIF 需 Mod/Beh/Health/NamPlt/Str/Op） | ERROR |
 | R3 通信 | §6.5.2 | GSE APPID 必须为 4 位十六进制且 ≤ 3FFF | ERROR |
 | R3 通信 | §6.5.3 | SMV APPID 必须为 4 位十六进制且在 4000~7FFF | ERROR |
 | R3 通信 | §6.5.2/6.5.3 | VLAN-ID 必须为 3 位十六进制 | ERROR |
@@ -415,7 +417,7 @@ CmsData data = DataConverter.toCmsData(dv);
 - **convert**：`DataValueResolverTest`、`DataDefinitionResolverTest`、`DataConverterTest`、`TypeMapperTest`、`ValueMapperTest`、`DataSetResolverTest`、`CbConverterTest`、`DataWriterResolverTest`
 - **service**：`SclDirectoryServiceTest`（8.3 目录）、`SclControlBlockServiceTest`（控制块 ref 解析 + 运行时 overlay）
 - **state**：`CbStateStoreTest`（RUNTIME / ASSOCIATION 分层存储 + 门面生命周期）
-- **conformance**：`SclConformanceCheckTest`（sample 发现断言 + 手工构造文档覆盖 R1/R2/R3 全部规则族）
+- **conformance**：`SclConformanceCheckTest`（sample 发现断言 + 手工构造文档覆盖 R1/R2/R3/R4 全部规则族，含必选 DO 表）
 
 ---
 
@@ -430,6 +432,6 @@ CmsData data = DataConverter.toCmsData(dv);
 5. **轻量扫描扩展**：`SclReader.scanLdLns()`（IED/AP → LD/LN 秒级目录），与 `scanAccessPoints`/`read` 共用防 XXE 的 `createSafeFactory()`。
 6. **清理历史计划文档**：删除源码目录内过期的 `PLAN.md`，后续方向并入本文档。
 7. **service / state 补单测**：新增 3 个测试类（见上节），共 26 个用例。
-8. **国网 Q/GDW 1396 符合性校验**：新增 `conformance` 子包（校验引擎 + 规则表枚举），配置 `scl.conformanceMode` 切换 LOOSE/STRICT；SclManager 加载后自动跑并缓存结果，新增 `scl-check` 控制台命令按需查询（R1 命名 + R2 结构 + R3 通信参数，共 13 条规则）。
+8. **国网 Q/GDW 1396 符合性校验**：新增 `conformance` 子包（校验引擎 + 规则表枚举），配置 `scl.conformanceMode` 切换 LOOSE/STRICT；SclManager 加载后自动跑并缓存结果，新增 `scl-check` 控制台命令按需查询（R1 命名 + R2 结构 + R3 通信参数 + R4 必选 DO，共 14 条规则）。
 
-仍可继续推进的方向：SCL 序列化回写、轻量扫描覆盖数据集/控制块候选、CID 与 ICD 细分、`findLdInst` 索引化；国网侧：R4 附录 A/B 必选 DO 表校验（Phase C）、字段级"国网未使用"注释标注（Phase D）、收集真实"六统一"国网 SCD 提炼规则。
+仍可继续推进的方向：SCL 序列化回写、轻量扫描覆盖数据集/控制块候选、CID 与 ICD 细分、`findLdInst` 索引化；国网侧：字段级"国网未使用"注释标注（Phase D）、附录 C/D 数据类型与 DO 排序一致性校验、收集真实"六统一"国网 SCD 提炼规则。

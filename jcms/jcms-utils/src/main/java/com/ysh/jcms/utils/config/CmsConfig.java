@@ -193,8 +193,8 @@ public class CmsConfig {
         /**
          * 国网 Q/GDW 1396 符合性校验模式: LOOSE=仅国际标准(默认), STRICT=国网严格模式.
          * <p>
-         * LOOSE keeps the historical behaviour; STRICT runs the Q/GDW 1396
-         * conformance check after loading the SCL file.
+         * LOOSE keeps the historical behaviour; STRICT runs the Q/GDW 1396 conformance
+         * check after loading the SCL file.
          */
         private String conformanceMode = "LOOSE";
     }

@@ -37,7 +37,7 @@ import java.util.Set;
  * prefixes (Appendix I)</li>
  * <li>R2 structure — minimal LN set per LD (§7.1.1), GOOSE/SV access-point
  * separation (§7.1.2), IED nameplate and Chinese descriptions (§6.2), data set
- * scope (§7.1.3 / §7.2.2)</li>
+ * scope (§7.1.3 / §7.2.2), mandatory DOs in LNodeType (Appendix A/B)</li>
  * <li>R3 communication parameters — APPID / VLAN-ID ranges and typical GSE
  * timings (§6.5.2 / §6.5.3)</li>
  * </ul>
@@ -201,6 +201,45 @@ public final class SclConformanceCheck {
                         issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_STRUCTURE).clause("7.1.1")
                                 .ref(ref)
                                 .message("LD must contain at least 3 LNs (LLN0, LPHD and one application LN); found " + ld.lns().size()));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * §7.1.5 + Appendix A/B - the referenced LNodeType must contain all mandatory
+     * DOs.
+     */
+    private static void checkRequiredDo(SclDocument doc, List<SclConformanceIssue> issues) {
+        SclDataTypeTemplates templates = doc.dataTypeTemplates();
+        if (templates == null)
+            return;
+        for (SclIED ied : doc.ieds()) {
+            for (SclAccessPoint ap : ied.accessPoints()) {
+                SclServer srv = ap.server();
+                if (srv == null)
+                    continue;
+                for (SclLDevice ld : srv.lDevices()) {
+                    for (SclLN ln : ld.lns()) {
+                        GwRequiredDo rule = GwRequiredDo.byLnClass(ln.lnClass());
+                        if (rule == null || isBlank(ln.lnType()))
+                            continue;
+                        SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
+                        if (lnt == null)
+                            continue;
+                        Set<String> present = new HashSet<>();
+                        for (SclDO doDef : lnt.dos()) {
+                            present.add(doDef.name());
+                        }
+                        for (String required : rule.dos()) {
+                            if (!present.contains(required)) {
+                                issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_LN_TEMPLATE)
+                                        .clause("7.1.5 a").ref(ied.name() + "/" + ld.inst() + "/" + ln.getFullName())
+                                        .message("LNodeType '" + ln.lnType() + "' of " + ln.lnClass() + " is missing mandatory DO '"
+                                                + required + "' (Appendix A/B of Q/GDW 1396)"));
+                            }
+                        }
                     }
                 }
             }

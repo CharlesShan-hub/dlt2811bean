@@ -4,6 +4,7 @@ import com.ysh.jcms.core.data.sequence.block.CmsBrcb;
 import com.ysh.jcms.core.data.sequence.block.CmsGoCb;
 import com.ysh.jcms.core.data.sequence.block.CmsLcb;
 import com.ysh.jcms.core.data.sequence.block.CmsMsvcb;
+import com.ysh.jcms.core.data.sequence.block.CmsSgcb;
 
 /**
  * Unified facade for control block runtime state.
@@ -22,6 +23,10 @@ import com.ysh.jcms.core.data.sequence.block.CmsMsvcb;
  * SGCB is not in this list: its state (actSG/editSG/edit buffer) is
  * session-level, managed by SgSessionState in jcms-app, and the field lifecycle
  * is already annotated with {@code @CbField} on CmsSgcb.
+ *
+ * Runtime SGCB entries are stored in {@link #SGCB} and initialized at server
+ * startup from the numOfSG config; per-session state (actSG/editSG) is overlaid
+ * via SgSessionState.
  */
 public final class CbStateManager {
 
@@ -36,6 +41,10 @@ public final class CbStateManager {
     public static final CbStateStore<CmsGoCb> GOCB = new CbStateStore<>();
     /** MSVCB runtime state. */
     public static final CbStateStore<CmsMsvcb> MSVCB = new CbStateStore<>();
+    /**
+     * SGCB runtime entries, initialized at server startup from the numOfSG config.
+     */
+    public static final CbStateStore<CmsSgcb> SGCB = new CbStateStore<>();
 
     /** Association-level state (reserved for URCB per-association fields). */
     public static final CbAssociationStore<CmsBrcb> ASSOCIATION = new CbAssociationStore<>();
@@ -51,6 +60,7 @@ public final class CbStateManager {
         LCB.clear();
         GOCB.clear();
         MSVCB.clear();
+        SGCB.clear();
         ASSOCIATION.clear();
     }
 }

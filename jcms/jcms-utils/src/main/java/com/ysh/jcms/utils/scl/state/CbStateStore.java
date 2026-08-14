@@ -45,4 +45,9 @@ public final class CbStateStore<T extends CmsSequence> {
     public void clear() {
         state.clear();
     }
+
+    /** Returns the number of entries currently stored. */
+    public int size() {
+        return state.size();
+    }
 }

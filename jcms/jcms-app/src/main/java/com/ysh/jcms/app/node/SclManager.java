@@ -76,12 +76,11 @@ public class SclManager {
     /**
      * Runs the Q/GDW 1396 conformance check when the configured mode is STRICT.
      * <p>
-     * Findings are cached for later querying via {@link #conformanceIssues()}
-     * and logged once per load; LOOSE mode keeps the historical behaviour.
+     * Findings are cached for later querying via {@link #conformanceIssues()} and
+     * logged once per load; LOOSE mode keeps the historical behaviour.
      */
     private void runConformanceCheck() {
-        this.conformanceMode = SclConformanceMode
-                .from(CmsConfigLoader.load().scl().conformanceMode());
+        this.conformanceMode = SclConformanceMode.from(CmsConfigLoader.load().scl().conformanceMode());
         if (document == null || conformanceMode == SclConformanceMode.LOOSE) {
             this.conformanceIssues = Collections.emptyList();
             return;
@@ -91,15 +90,13 @@ public class SclManager {
         for (SclConformanceIssue issue : conformanceIssues) {
             if (issue.severity() == SclConformanceSeverity.ERROR) {
                 errors++;
-                log.warn("[Q/GDW 1396 {}] {} | clause {} | ref {}", issue.severity(), issue.message(), issue.clause(),
-                        issue.ref());
+                log.warn("[Q/GDW 1396 {}] {} | clause {} | ref {}", issue.severity(), issue.message(), issue.clause(), issue.ref());
             } else {
-                log.info("[Q/GDW 1396 {}] {} | clause {} | ref {}", issue.severity(), issue.message(), issue.clause(),
-                        issue.ref());
+                log.info("[Q/GDW 1396 {}] {} | clause {} | ref {}", issue.severity(), issue.message(), issue.clause(), issue.ref());
             }
         }
-        log.info("Q/GDW 1396 conformance check: {} findings ({} errors, {} warnings)",
-                conformanceIssues.size(), errors, conformanceIssues.size() - errors);
+        log.info("Q/GDW 1396 conformance check: {} findings ({} errors, {} warnings)", conformanceIssues.size(), errors,
+                conformanceIssues.size() - errors);
     }
 
     public SclDocument document() {

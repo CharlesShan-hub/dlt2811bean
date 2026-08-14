@@ -4,8 +4,8 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.SclDocument;
@@ -23,9 +23,9 @@ import java.util.Map;
  * 本地配置命令（无需连接）: 按 Q/GDW 1396-2012《IEC 61850 工程继电保护应用模型》校验 SCL 文件。
  *
  * <p>
- * 校验基于已解析的完整 {@link SclDocument} 模型（比 ap-dir 的轻量扫描重，适合中小文件按需检查）。
- * 默认模式取配置 scl.conformanceMode（未配置或为 LOOSE 时需显式 --mode strict 才执行国网检查），
- * 也可用 --mode loose 显式跳过国网规则。
+ * 校验基于已解析的完整 {@link SclDocument} 模型（比 ap-dir 的轻量扫描重，适合中小文件按需检查）。 默认模式取配置
+ * scl.conformanceMode（未配置或为 LOOSE 时需显式 --mode strict 才执行国网检查）， 也可用 --mode loose
+ * 显式跳过国网规则。
  */
 public class ConformanceHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseDao>> {
 

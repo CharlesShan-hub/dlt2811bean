@@ -16,6 +16,9 @@ import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.input.SclFCDA;
+import com.ysh.jcms.utils.scl.model.template.SclDO;
+import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.scl.model.template.SclLNodeType;
 import com.ysh.jcms.utils.scl.reader.SclReader;
 import org.junit.Test;
 
@@ -323,5 +326,57 @@ public class SclConformanceCheckTest {
                 && i.message().contains("no LPHD")));
         assertTrue(issues.stream().anyMatch(i -> i.severity() == SclConformanceSeverity.ERROR
                 && i.message().contains("at least 3 LNs")));
+    }
+
+    // ==================== R4 mandatory DO (Appendix A/B) ====================
+
+    @Test
+    public void testSampleRequiredDo() {
+        List<SclConformanceIssue> issues = checkSample(SclConformanceMode.STRICT);
+        // sample TVTRa lacks NamPlt, which is mandatory for TVTR
+        assertTrue(issues.stream().anyMatch(i -> i.severity() == SclConformanceSeverity.ERROR
+                && "LN-TEMPLATE".equals(i.category()) && "E1Q1SB1/C1/TVTR1".equals(i.ref())
+                && i.message().contains("NamPlt")));
+        // RSYNa carries the full mandatory set
+        assertFalse(issues.stream().anyMatch(i -> "LN-TEMPLATE".equals(i.category())
+                && i.ref().contains("RSYN")));
+    }
+
+    @Test
+    public void testRequiredDoChecked() {
+        // complete PDIF type passes
+        SclDocument ok = buildIedDoc("PROT", "PDIF");
+        SclLN pdifOk = lnOfClass(ok, "PDIF");
+        pdifOk.lnType("PDIFt");
+        attachTemplate(ok, "PDIFt", "Mod", "Beh", "Health", "NamPlt", "Str", "Op");
+        assertFalse(errors(SclConformanceCheck.check(ok, SclConformanceMode.STRICT)).stream()
+                .anyMatch(i -> "LN-TEMPLATE".equals(i.category())));
+
+        // PDIF type missing Str fails
+        SclDocument bad = buildIedDoc("PROT", "PDIF");
+        SclLN pdifBad = lnOfClass(bad, "PDIF");
+        pdifBad.lnType("PDIFt");
+        attachTemplate(bad, "PDIFt", "Mod", "Beh", "Health", "NamPlt", "Op");
+        assertTrue(errors(SclConformanceCheck.check(bad, SclConformanceMode.STRICT)).stream()
+                .anyMatch(i -> "LN-TEMPLATE".equals(i.category()) && i.message().contains("Str")));
+    }
+
+    private static SclLN lnOfClass(SclDocument doc, String lnClass) {
+        for (SclLN ln : doc.ieds().get(0).accessPoints().get(0).server().lDevices().get(0).lns()) {
+            if (lnClass.equals(ln.lnClass()))
+                return ln;
+        }
+        return null;
+    }
+
+    private static void attachTemplate(SclDocument doc, String id, String... dos) {
+        SclLNodeType lnt = new SclLNodeType();
+        lnt.id(id);
+        for (String d : dos) {
+            lnt.addDo(new SclDO().name(d));
+        }
+        SclDataTypeTemplates templates = new SclDataTypeTemplates();
+        templates.addLNodeType(lnt);
+        doc.dataTypeTemplates(templates);
     }
 }
