@@ -32,6 +32,6 @@ GetSGCBValues-ErrorPDU ::= ServiceError`,
 | serviceError | | ServiceError |
 `,
   params: [
-    { key: 'refs', label: 'SGCB 引用', type: 'refs-list', required: true, placeholder: 'LD/LN.SG1，如 PROT/DeZonePTOC1.SG1' },
+    { key: 'refs', label: 'SGCB 引用', type: 'refs-list', cascade: true },
   ],
 }

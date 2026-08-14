@@ -157,6 +157,15 @@ export function buildCmd(cmd, params, form, opts = {}) {
         for (const row of rows) {
           if (!row.ld || !row.ln) continue
           let ref = `${row.ld}/${row.ln}`
+          // sgcb-vals: 级联只选 LD/LN，自动补 .SG，跳过 DO/SDO/DA/FC
+          if (cmd === 'sgcb-vals') {
+            ref += '.SG'
+            refs.push(ref)
+            fcs.push('')
+            values.push('')
+            types.push('')
+            continue
+          }
           if (row.do) ref += `.${row.do}`
           // data-dir: SDO/DA 作为 --after 分页游标，不拼入 ref
           if (cmd === 'data-dir') {

@@ -271,8 +271,12 @@ const datasetOptions = computed(() => {
   return datasetRefs[lnRef] || []
 })
 
-/** SGCB 控制块名选项：标准约定每个 LN 一个 SGCB，名为 SG1（组数由 numOfSG 配置决定） */
-const sgcbOptions = ['SG1']
+/** SGCB 控制块名选项：仅当选中 LLN0 逻辑节点时显示 SG（标准约定 SGCB 只挂在 LLN0 下） */
+const sgcbOptions = computed(() => {
+  const o = form.ln
+  if (o && o.ln === 'LLN0') return ['SG1']
+  return []
+})
 
 /** 控制块选项（cb-select 用）：依赖 ln-cascade 选中的 LN，从 ln-dir 拉取对应 ACSI 类的控制块名 */
 const cbOptions = computed(() => {

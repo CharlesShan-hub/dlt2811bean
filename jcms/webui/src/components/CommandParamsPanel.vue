@@ -172,14 +172,23 @@
                       empty-label="（不选）"
                       @update:modelValue="onRowLn(r)"
                     />
-                    <UiSelect
-                      v-model="r.do"
-                      :options="rowDoOptions(r)"
-                      placeholder="DO"
-                      empty-label="（不选）"
-                      @update:modelValue="onRowDo(r)"
-                    />
+                    <!-- sgcb-vals: 级联只选 LD/LN，自动补 .SG -->
+                    <template v-if="cmd === 'sgcb-vals'">
+                      <span class="sgcb-suffix">.SG</span>
+                      <button v-if="!p.single" type="button" class="glass glass-danger refs-del" title="删除该引用" @click="removeRefs(i)"><X :size="14" /></button>
+                    </template>
+                    <template v-else>
+                      <UiSelect
+                        v-model="r.do"
+                        :options="rowDoOptions(r)"
+                        placeholder="DO"
+                        empty-label="（不选）"
+                        @update:modelValue="onRowDo(r)"
+                      />
+                    </template>
                   </div>
+                  <!-- sgcb-vals: 无 DO/SDO/DA/FC 行 -->
+                  <template v-if="cmd !== 'sgcb-vals'">
                   <div class="refs-row">
                     <button v-if="!p.single" type="button" class="glass glass-danger refs-del" title="删除该引用" @click="removeRefs(i)"><X :size="14" /></button>
                     <UiSelect
@@ -221,6 +230,7 @@
                       {{ r._resolvedType || '（类型）' }}
                     </span>
                   </div>
+                  </template>
                 </div>
               </template>
               <template v-else>
@@ -445,6 +455,21 @@ const filteredDsMemberOptions = computed(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.sgcb-suffix {
+  flex-shrink: 0;
+  padding: 0 10px;
+  height: 32px;
+  line-height: 32px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent, #4a9eff);
+  background: var(--bg-tertiary, rgba(255,255,255,0.05));
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  white-space: nowrap;
+  font-family: var(--font-mono, 'Fira Code', 'Cascadia Code', monospace);
 }
 
 /* ── 级联 ── */

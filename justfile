@@ -239,18 +239,31 @@ single-client:
 # ║  顶层工作流                                ║
 # ╚═══════════════════════════════════════════╝
 
-[windows]
-java-quick:
-    powershell -NoProfile -File scripts/quick-java-win.ps1
-
-[unix]
-java-quick:
-    chmod +x scripts/quick-java-unix.sh && ./scripts/quick-java-unix.sh
+# 分级编译：复用已验证的 single-j-*-install 积木，按改动的模块层级选档
+#   java-quick1 — single-j-app-install（app）
+#   java-quick2 — + single-j-utils-install（utils + app）
+#   java-quick3 — + single-j-core-install（core + utils + app）
+#   java-quick4 — + single-j-data-install（全量，改动 data / 首次构建）
+java-quick1: single-j-app-install
+java-quick2: single-j-utils-install single-j-app-install
+java-quick3: single-j-core-install single-j-utils-install single-j-app-install
+java-quick4: single-j-data-install single-j-core-install single-j-utils-install single-j-app-install
+java-quick: java-quick4
 
 run-server: single-check-lock single-server
 run-client: single-check-lock single-client
-build-java-run-server:single-lock java-quick single-unlock run-server
-build-java-run-client:single-lock java-quick single-unlock run-client
+# 带档位：build-java-run-server [1|2|3|4]，内部调用 java-quick{{tier}}（默认 4 全量）
+build-java-run-server tier='4':
+    just single-lock
+    just java-quick{{tier}}
+    just single-unlock
+    just run-server
+
+build-java-run-client tier='4':
+    just single-lock
+    just java-quick{{tier}}
+    just single-unlock
+    just run-client
 
 # ── UI 组合 ──
 

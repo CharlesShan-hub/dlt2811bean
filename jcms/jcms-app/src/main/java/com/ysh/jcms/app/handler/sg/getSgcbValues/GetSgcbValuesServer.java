@@ -13,6 +13,8 @@ import com.ysh.jcms.core.pdu.sg.CmsGetSgcbValuesResponse;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.core.info.CmsServiceInfo;
+import com.ysh.jcms.utils.scl.model.ied.SclIED;
+import com.ysh.jcms.utils.scl.state.CbStateManager;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
@@ -26,6 +28,9 @@ public class GetSgcbValuesServer extends BaseServerHandler<CmsGetSgcbValuesReque
     protected Frame onDecodeSuccess(Session session, CmsGetSgcbValuesRequest req, int reqId) {
         log.info("GetSGCBValues from {}: reqId={}, {} refs", session.sessionId(), reqId, req.sgcbReference.size());
 
+        SclIED ied = requireIed(session, reqId);
+        requireAp(session, reqId);
+
         CmsGetSgcbValuesResponse resp = new CmsGetSgcbValuesResponse();
 
         CmsConfig.Protocol.Setting setting = CmsConfigLoader.load().protocol().setting();
@@ -35,8 +40,11 @@ public class GetSgcbValuesServer extends BaseServerHandler<CmsGetSgcbValuesReque
             CmsSgcbValueChoice choice;
             if (!setting.sgDefaultEnabled()) {
                 choice = new CmsSgcbValueChoice().altError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
-            } else {
+            } else if (CbStateManager.SGCB.get(ref) != null) {
                 choice = new CmsSgcbValueChoice().altValue(buildSgcb(ref, session, setting.numOfSG()));
+            } else {
+                log.warn("GetSGCBValues: ref '{}' not found in SGCB cache (only LLN0.SG is valid)", ref);
+                choice = new CmsSgcbValueChoice().altError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
             resp.sgscb.add(choice);
         }

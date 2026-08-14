@@ -9,6 +9,6 @@ public class ConfirmEditSgValuesConsole extends CommandHandler<ConfirmEditSgValu
     public ConfirmEditSgValuesConsole() {
         super(CommandInfo.CONFIRM_EDIT_SG, false);
         Param p = Param.of("ref", null, "sgcbReference", String.class, true);
-        param(p, "SGCB 引用，如 PROT/DeZonePTOC1.SG1");
+        param(p, "SGCB 引用，如 PROT/LLN0.SG（仅 LLN0 下有效）");
     }
 }
