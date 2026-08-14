@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Equipment function (EqFunction), a function definition mounted under GeneralEquipment or TapChanger.
+ * Equipment function (EqFunction), a function definition mounted under
+ * GeneralEquipment or TapChanger.
  * <p>
  * EqFunction may contain LNode, GeneralEquipment and EqSubFunction, describing
  * the specific automation functions carried by the primary equipment.

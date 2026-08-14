@@ -40,8 +40,8 @@ public final class CmsDataTypeMap {
     }
 
     /**
-     * Maps a bType string to the CHOICE selector value of CmsDataDefinition. Returns
-     * SEL_BOOLEAN (default fallback) when unrecognized.
+     * Maps a bType string to the CHOICE selector value of CmsDataDefinition.
+     * Returns SEL_BOOLEAN (default fallback) when unrecognized.
      */
     public static int toSelector(String bType) {
         if (bType == null)
@@ -106,7 +106,8 @@ public final class CmsDataTypeMap {
     }
 
     /**
-     * Gets the length constraint of VisibleString. VisString255 → 255, VisString64 → 64, others → 0
+     * Gets the length constraint of VisibleString. VisString255 → 255, VisString64
+     * → 64, others → 0
      */
     public static int visibleStringLength(String bType) {
         if (bType == null)

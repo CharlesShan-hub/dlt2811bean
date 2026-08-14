@@ -7,7 +7,8 @@ import com.ysh.jcms.utils.scl.ref.SclRef;
 /**
  * DataSet/FCDA reference converter.
  * <p>
- * Bidirectional conversion between FCDA and reference string, based on {@link SclRef} and {@link Navigator}.
+ * Bidirectional conversion between FCDA and reference string, based on
+ * {@link SclRef} and {@link Navigator}.
  */
 public final class DataSetResolver {
 
@@ -54,7 +55,8 @@ public final class DataSetResolver {
     /**
      * Parses an FCDA object from a reference string.
      * <p>
-     * Locates the LN via Navigator, extracts lnClass/lnInst/prefix and fills them into the FCDA.
+     * Locates the LN via Navigator, extracts lnClass/lnInst/prefix and fills them
+     * into the FCDA.
      */
     public static SclFCDA parseRef(Navigator nav) {
         if (!nav.isValid() || nav.ln() == null)

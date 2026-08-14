@@ -10,8 +10,9 @@ import java.util.List;
 /**
  * Function, describing a function in the substation automation system.
  * <p>
- * Function may contain LNode, SubFunction, GeneralEquipment and ConductingEquipment,
- * used to associate primary equipment with secondary functions.
+ * Function may contain LNode, SubFunction, GeneralEquipment and
+ * ConductingEquipment, used to associate primary equipment with secondary
+ * functions.
  * <p>
  * Schema:
  *

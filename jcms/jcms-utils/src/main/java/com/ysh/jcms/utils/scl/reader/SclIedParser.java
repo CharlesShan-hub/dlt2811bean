@@ -17,7 +17,10 @@ import javax.xml.stream.XMLStreamReader;
 
 import static com.ysh.jcms.utils.scl.reader.SclReader.*;
 
-/** Parses the structural skeleton of {@code <IED>}: AccessPoint / Server / LDevice / LN. */
+/**
+ * Parses the structural skeleton of {@code <IED>}: AccessPoint / Server /
+ * LDevice / LN.
+ */
 public class SclIedParser {
 
     private SclIedParser() {
@@ -104,7 +107,10 @@ public class SclIedParser {
         return sa;
     }
 
-    /** Parses {@code <GOOSESecurity>} / {@code <SMVSecurity>} certificates (tCertificate). */
+    /**
+     * Parses {@code <GOOSESecurity>} / {@code <SMVSecurity>} certificates
+     * (tCertificate).
+     */
     private static SclCertificate parseCertificate(XMLStreamReader reader) throws XMLStreamException {
         SclCertificate cert = new SclCertificate();
         cert.xferNumber(getAttr(reader, "xferNumber"));

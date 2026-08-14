@@ -11,7 +11,10 @@ import javax.xml.stream.XMLStreamReader;
 
 import static com.ysh.jcms.utils.scl.reader.SclReader.*;
 
-/** Parses functional nodes under Substation: Function / SubFunction / EqFunction / EqSubFunction. */
+/**
+ * Parses functional nodes under Substation: Function / SubFunction / EqFunction
+ * / EqSubFunction.
+ */
 public class SclFunctionParser {
 
     private SclFunctionParser() {

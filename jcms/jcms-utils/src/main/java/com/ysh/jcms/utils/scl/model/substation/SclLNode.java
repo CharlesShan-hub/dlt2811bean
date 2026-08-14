@@ -6,11 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * Logical node reference (LNode), mounted at any level of the Substation structure.
+ * Logical node reference (LNode), mounted at any level of the Substation
+ * structure.
  * <p>
- * Used to associate SA system functions with primary equipment. In SSD files the
- * functions are not yet assigned to an IED, while in SCD files they point to the
- * LN in a specific IED.
+ * Used to associate SA system functions with primary equipment. In SSD files
+ * the functions are not yet assigned to an IED, while in SCD files they point
+ * to the LN in a specific IED.
  * <p>
  * Schema:
  *

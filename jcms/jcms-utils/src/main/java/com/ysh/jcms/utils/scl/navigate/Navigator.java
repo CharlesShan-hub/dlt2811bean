@@ -14,7 +14,8 @@ import java.util.List;
 /**
  * Reference navigator — SclRef → model elements.
  * <p>
- * Core entry: {@link #go(SclDocument, SclRef)}. All lookup operations ultimately locate model elements via SclRef.
+ * Core entry: {@link #go(SclDocument, SclRef)}. All lookup operations
+ * ultimately locate model elements via SclRef.
  */
 public class Navigator {
 
@@ -77,7 +78,10 @@ public class Navigator {
         return navigate(ied, SclRefParser.parse(ref), null);
     }
 
-    /** Navigate by string within the document + specified IED (with dataTypeTemplates access capability) */
+    /**
+     * Navigate by string within the document + specified IED (with
+     * dataTypeTemplates access capability)
+     */
     public static Navigator go(SclDocument doc, SclIED ied, String ref) {
         if (doc == null || ied == null || ref == null || !SclRefParser.isValid(ref))
             return empty();
@@ -119,7 +123,8 @@ public class Navigator {
         // DO level and above: find the DOI
         SclDOI doi = ln.findDoiByName(sclRef.doName());
         if (doi == null) {
-            // The DO may be defined in the template but not in the instance (e.g. Beh) → return a Navigator without
+            // The DO may be defined in the template but not in the instance (e.g. Beh) →
+            // return a Navigator without
             // DOI so downstream falls back to template lookup
             return new Navigator(doc, ied, ld, ln, null, null, null, sclRef);
         }
@@ -141,14 +146,17 @@ public class Navigator {
         }
 
         if (!sdiFound) {
-            // SDI not found in the instance → may be an SDO-level reference (template-level SDO without an instance
-            // SDI); return a partial Navigator (with DOI, without SDI/DAI) so downstream falls back to template lookup
+            // SDI not found in the instance → may be an SDO-level reference (template-level
+            // SDO without an instance
+            // SDI); return a partial Navigator (with DOI, without SDI/DAI) so downstream
+            // falls back to template lookup
             return new Navigator(doc, ied, ld, ln, doi, null, null, sclRef);
         }
 
         SclDAI dai = (currentSdi != null) ? currentSdi.findDaiByName(sclRef.daName()) : doi.findDaiByName(sclRef.daName());
         if (dai == null) {
-            // DAI not found in the instance → return a partial Navigator (with DOI, without DAI) so downstream falls
+            // DAI not found in the instance → return a partial Navigator (with DOI, without
+            // DAI) so downstream falls
             // back to template lookup
             return new Navigator(doc, ied, ld, ln, doi, currentSdi, null, sclRef);
         }
@@ -172,7 +180,8 @@ public class Navigator {
 
         SclDOI doi = ln.findDoiByName(sclRef.doName());
         if (doi == null) {
-            // The DO may be defined in the template but not in the instance (e.g. Beh) → return a Navigator without
+            // The DO may be defined in the template but not in the instance (e.g. Beh) →
+            // return a Navigator without
             // DOI so downstream falls back to template lookup
             return new Navigator(doc, null, ld, ln, null, null, null, sclRef);
         }
@@ -232,7 +241,8 @@ public class Navigator {
      * @param ied
      *            the IED object
      * @param ap
-     *            the currently associated access point (when non-null, lookup is limited to this AP)
+     *            the currently associated access point (when non-null, lookup is
+     *            limited to this AP)
      * @param ldName
      *            the LD name (when non-empty, returns all LNs under this LD)
      * @param lnReference
@@ -299,7 +309,8 @@ public class Navigator {
     }
 
     /**
-     * Reverse lookup: finds the LD instance name containing the given LN in the specified IED.
+     * Reverse lookup: finds the LD instance name containing the given LN in the
+     * specified IED.
      *
      * @param ied
      *            the IED object

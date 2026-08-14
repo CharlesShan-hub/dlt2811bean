@@ -14,8 +14,8 @@ import javax.xml.stream.XMLStreamReader;
 import static com.ysh.jcms.utils.scl.reader.SclReader.*;
 
 /**
- * Parses primary equipment under Substation: ConductingEquipment / SubEquipment / PowerTransformer /
- * TransformerWinding / TapChanger / GeneralEquipment.
+ * Parses primary equipment under Substation: ConductingEquipment / SubEquipment
+ * / PowerTransformer / TransformerWinding / TapChanger / GeneralEquipment.
  */
 public class SclEquipmentParser {
 

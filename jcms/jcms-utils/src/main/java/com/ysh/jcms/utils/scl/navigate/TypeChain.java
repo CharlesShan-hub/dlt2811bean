@@ -5,8 +5,9 @@ import com.ysh.jcms.utils.scl.model.template.*;
 /**
  * Type chain tracer.
  * <p>
- * Starting from the LN's lnType, traces along the {@code LNodeType → DO → DOType → DA → bType} chain,
- * supporting nested SDI/BDA tracing.
+ * Starting from the LN's lnType, traces along the
+ * {@code LNodeType → DO → DOType → DA → bType} chain, supporting nested SDI/BDA
+ * tracing.
  * <p>
  * Usage:
  *
@@ -140,9 +141,11 @@ public class TypeChain {
     // ==================== Quick methods ====================
 
     /**
-     * Quick resolution: starting from lnType, resolves a reference to bType in one step.
+     * Quick resolution: starting from lnType, resolves a reference to bType in one
+     * step.
      * <p>
-     * Reference formats: {@code DO.DA}, {@code DO.SDI.BDA} or {@code DO.SDO[.SDO...].DA}
+     * Reference formats: {@code DO.DA}, {@code DO.SDI.BDA} or
+     * {@code DO.SDO[.SDO...].DA}
      *
      * @param lnTypeId
      *            the id of the LNodeType

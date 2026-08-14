@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Line, a transmission line between substations or a connection line within a substation.
+ * Line, a transmission line between substations or a connection line within a
+ * substation.
  * <p>
  * Line may contain LNode, GeneralEquipment, Function, ConductingEquipment and
  * ConnectivityNode, and is associated with Voltage information.

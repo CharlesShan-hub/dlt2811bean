@@ -6,7 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * Reusable text element (tText), used by all elements that require a text description.
+ * Reusable text element (tText), used by all elements that require a text
+ * description.
  * <p>
  * Schema:
  *

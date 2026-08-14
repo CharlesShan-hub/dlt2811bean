@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * General equipment (GeneralEquipment), mounted at any level of the Substation structure.
+ * General equipment (GeneralEquipment), mounted at any level of the Substation
+ * structure.
  * <p>
  * Represents other primary equipment that cannot be classified under
  * ConductingEquipment, such as batteries (BAT), AC filters (AXN), etc.

@@ -108,32 +108,31 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     }
 
     /**
-     * Internal pagination loop. Reads state from the content and writes back
-     * accumulated results. Calls {@link #onSuccess(Frame, BaseDao)} for each page,
-     * and {@link #setPaginationCursor(BaseDao, String)} to advance the cursor.
+     * Internal pagination loop. Uses {@link PaginationIterator} to send
+     * requests and decode responses. Calls {@link #onSuccess(Frame, BaseDao)}
+     * for each page, and {@link #setPaginationCursor(BaseDao, String)} to
+     * advance the cursor.
      */
     private Frame sendWithPagination(CmsServiceInfo sc, D dao, CmsContent<D> content) throws IOException {
         PaginationContext ctx = content.paginationContext();
         ctx.setLastMoreFollows(false);
         ctx.setLastReference(null);
+
+        PaginationIterator.ErrorDecoder errDecoder = frame -> {
+            onError(frame);
+            return "Request failed for " + sc;
+        };
+        PaginationIterator<Frame> it = new PaginationIterator<>(node, sc, dao,
+                frame -> frame, errDecoder);
+
         Frame frame = null;
         int iterations = 0;
-        do {
+        while (it.hasNext()) {
             if (++iterations > MAX_AUTO_PULL_ITERATIONS) {
                 log.warn("Auto-pull exceeded {} iterations for {}, aborting", MAX_AUTO_PULL_ITERATIONS, sc);
                 break;
             }
-            byte[] pdu = dao.toRequest().encode();
-            trace(">>>\n" + dao.toRequest());
-            if (node == null)
-                throw new IOException("BaseClientHandler node not set");
-            frame = node.sendRequest(sc, pdu);
-            if (frame == null)
-                throw new IOException("Request timed out for " + sc);
-            if (frame.header().err()) {
-                onError(frame);
-                break;
-            }
+            frame = it.next();
             onSuccess(frame, dao);
             if (content.autoPull() && ctx.isLastMoreFollows()) {
                 String ref = ctx.getLastReference();
@@ -148,7 +147,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
             } else {
                 break;
             }
-        } while (true);
+        }
         afterAll(dao);
         return frame;
     }

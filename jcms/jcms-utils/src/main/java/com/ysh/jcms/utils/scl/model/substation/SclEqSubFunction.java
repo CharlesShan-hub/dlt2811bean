@@ -10,8 +10,8 @@ import java.util.List;
 /**
  * Equipment sub-function (EqSubFunction), the nested child level of EqFunction.
  * <p>
- * EqSubFunction can be nested recursively, containing LNode, GeneralEquipment as
- * well as more fine-grained EqSubFunction.
+ * EqSubFunction can be nested recursively, containing LNode, GeneralEquipment
+ * as well as more fine-grained EqSubFunction.
  * <p>
  * Schema:
  *
@@ -48,7 +48,9 @@ public class SclEqSubFunction {
     private final List<SclLNode> lNodes = new ArrayList<>();
     /** List of general equipment (GeneralEquipment) */
     private final List<SclGeneralEquipment> generalEquipments = new ArrayList<>();
-    /** List of equipment sub-functions (EqSubFunction), supporting recursive nesting */
+    /**
+     * List of equipment sub-functions (EqSubFunction), supporting recursive nesting
+     */
     private final List<SclEqSubFunction> eqSubFunctions = new ArrayList<>();
 
     public SclEqSubFunction addLNode(SclLNode lNode) {

@@ -10,7 +10,8 @@ import com.ysh.jcms.utils.scl.model.control.SclSampledValueControl;
 /**
  * Control block → CMS protocol type converter.
  * <p>
- * Converts control block definitions in the SCL model into {@link CmsCbValueChoice} protocol objects.
+ * Converts control block definitions in the SCL model into
+ * {@link CmsCbValueChoice} protocol objects.
  */
 public final class CbConverter {
 

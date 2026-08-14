@@ -45,4 +45,7 @@ public class CmsAcsiClass extends CmsEnum<CmsAcsiClass> {
         this();
         value(value);
     }
+    public static boolean isControlBlock(int acsiClass) {
+        return acsiClass == BRCB || acsiClass == URCB || acsiClass == LCB || acsiClass == SGCB || acsiClass == GOCB || acsiClass == MSVCB;
+    }
 }

@@ -6,11 +6,11 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
- * The {@code <GOOSESecurity>} / {@code <SMVSecurity>} certificates of AccessPoint (tCertificate
- * / tCert).
+ * The {@code <GOOSESecurity>} / {@code <SMVSecurity>} certificates of
+ * AccessPoint (tCertificate / tCert).
  * <p>
- * Flattened modeling: the commonName + idHierarchy of the two tCert child elements
- * Subject / IssuerName are exposed directly as fields.
+ * Flattened modeling: the commonName + idHierarchy of the two tCert child
+ * elements Subject / IssuerName are exposed directly as fields.
  */
 @Getter
 @Setter

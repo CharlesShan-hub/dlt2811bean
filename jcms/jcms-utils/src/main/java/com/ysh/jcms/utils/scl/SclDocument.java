@@ -35,11 +35,16 @@ public class SclDocument {
     private SclDataTypeTemplates dataTypeTemplates;
     private final List<String> unsupportedElements = new ArrayList<>();
 
-    /** Lazy index: IED name → IED (built on first lookup, invalidated by addIed). */
+    /**
+     * Lazy index: IED name → IED (built on first lookup, invalidated by addIed).
+     */
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private transient Map<String, SclIED> iedIndex;
-    /** Lazy cache: all LD instance names (built on first lookup, invalidated by addIed). */
+    /**
+     * Lazy cache: all LD instance names (built on first lookup, invalidated by
+     * addIed).
+     */
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private transient List<String> ldNamesCache;

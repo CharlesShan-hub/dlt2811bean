@@ -35,7 +35,10 @@ public class SclLNBase {
      */
     private String iedType;
 
-    /** The logical device this LN belongs to (established by SclLDevice.addLn during parsing, used to derive full control block references). */
+    /**
+     * The logical device this LN belongs to (established by SclLDevice.addLn during
+     * parsing, used to derive full control block references).
+     */
     private transient SclLDevice parentLd;
 
     private final List<SclDOI> dois = new ArrayList<>();

@@ -6,7 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * Vendor private extension element (Private), which may appear in all elements derived from tBaseElement.
+ * Vendor private extension element (Private), which may appear in all elements
+ * derived from tBaseElement.
  * <p>
  * Schema:
  *

@@ -23,10 +23,13 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * Directory service —— server directory (8.3.1) / logical device directory (8.3.2) / logical node directory (8.3.3).
+ * Directory service —— server directory (8.3.1) / logical device directory
+ * (8.3.2) / logical node directory (8.3.3).
  * <p>
- * Each method returns the complete result list; paging (referenceAfter / pageSize) is handled by the handler layer. See
- * {@link SclAllValuesService} for all data values/definitions/control block values, and {@link SclDataDirectoryService} for the data directory.
+ * Each method returns the complete result list; paging (referenceAfter /
+ * pageSize) is handled by the handler layer. See {@link SclAllValuesService}
+ * for all data values/definitions/control block values, and
+ * {@link SclDataDirectoryService} for the data directory.
  */
 public final class SclDirectoryService {
 
@@ -36,7 +39,8 @@ public final class SclDirectoryService {
     // ==================== Server directory (8.3.1) ====================
 
     /**
-     * Gets the names of all logical device instances under the given IED and within the scope of the given AP.
+     * Gets the names of all logical device instances under the given IED and within
+     * the scope of the given AP.
      *
      * @param ap
      *            the currently associated access point (lookup limited to this AP)
@@ -58,14 +62,16 @@ public final class SclDirectoryService {
     /**
      * Gets the logical device directory (list of LN names).
      * <p>
-     * When {@code ldName} is not empty, returns the short names of all LNs under that LD (e.g. {@code LLN0}, {@code PIOC1});
-     * when {@code ldName} is empty, returns the full references of all LNs under all LDs of the given AP (e.g.
+     * When {@code ldName} is not empty, returns the short names of all LNs under
+     * that LD (e.g. {@code LLN0}, {@code PIOC1}); when {@code ldName} is empty,
+     * returns the full references of all LNs under all LDs of the given AP (e.g.
      * {@code LD0/LLN0}, {@code LD0/PIOC1}).
      *
      * @param ap
      *            the currently associated access point (lookup limited to this AP)
      * @param ldName
-     *            logical device instance name; when empty, returns all LNs in the station
+     *            logical device instance name; when empty, returns all LNs in the
+     *            station
      * @return list of LN names, or null if the LD does not exist
      */
     public static List<String> getLogicalDeviceDirectory(SclAccessPoint ap, String ldName) {
@@ -121,8 +127,8 @@ public final class SclDirectoryService {
      * <p>
      * Content returned per ACSI class:
      * <ul>
-     * <li>{@code DATA_OBJECT} — full DO reference ({@code ldName/lnFullName.doName}), including SDO
-     * recursion</li>
+     * <li>{@code DATA_OBJECT} — full DO reference
+     * ({@code ldName/lnFullName.doName}), including SDO recursion</li>
      * <li>{@code DATA_SET} — data set names</li>
      * <li>{@code BRCB} / {@code URCB} / {@code LCB} / {@code GOCB} / {@code MSVCB}
      * — control block names</li>
@@ -137,7 +143,8 @@ public final class SclDirectoryService {
      *            logical device name (used as prefix for DO types)
      * @param acsiClass
      *            ACSI class (see {@link CmsAcsiClass})
-     * @return list of names (returns an empty list rather than null when nothing is found)
+     * @return list of names (returns an empty list rather than null when nothing is
+     *         found)
      */
     public static List<String> getLogicalNodeDirectory(SclDocument doc, List<SclLN> lns, String ldName, int acsiClass) {
         SclDataTypeTemplates templates = doc != null ? doc.dataTypeTemplates() : null;

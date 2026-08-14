@@ -18,7 +18,8 @@ import java.util.List;
 /**
  * Data value resolver.
  * <p>
- * Based on the {@link Navigator} + {@link TypeChain} building blocks, looks up the DAI value by reference path and traces the bType. Usage:
+ * Based on the {@link Navigator} + {@link TypeChain} building blocks, looks up
+ * the DAI value by reference path and traces the bType. Usage:
  *
  * <pre>
  * {
@@ -76,7 +77,8 @@ public final class DataValueResolver {
                 if (daiVal != null)
                     return new DataValueEntry(ref, daiVal, bType);
             }
-            // Instance DAI has no value → fall back to the template DA/BDA default value (in real SCD files, common values are written in the DOType template)
+            // Instance DAI has no value → fall back to the template DA/BDA default value
+            // (in real SCD files, common values are written in the DOType template)
             String tpl = templateDefault(nav);
             if (tpl != null)
                 return new DataValueEntry(ref, tpl, bType);
@@ -87,7 +89,9 @@ public final class DataValueResolver {
         return resolveDoLevel(nav, ref, fc);
     }
 
-    /** DO level value lookup (FC filtering is needed to determine which DA to take) */
+    /**
+     * DO level value lookup (FC filtering is needed to determine which DA to take)
+     */
     private static DataValueEntry resolveDoLevel(Navigator nav, String ref, String fc) {
         SclDOI doi = nav.doi();
         if (doi == null)
@@ -134,7 +138,8 @@ public final class DataValueResolver {
                     return new DataValueEntry(ref, val, bType);
                 }
             }
-            // Instance DAI has no value → fall back to the template default value of the DA in DOType
+            // Instance DAI has no value → fall back to the template default value of the DA
+            // in DOType
             String tpl = firstTemplateVal(da.vals());
             if (tpl != null) {
                 String bType = resolveDaBType(nav, da.name());
@@ -149,7 +154,8 @@ public final class DataValueResolver {
                         String bType = resolveSdiBdaBType(nav, da.name(), sdai.name());
                         return new DataValueEntry(ref, val, bType);
                     }
-                    // The DAI of an instance SDI has no value → fall back to the BDA template default value in DAType
+                    // The DAI of an instance SDI has no value → fall back to the BDA template
+                    // default value in DAType
                     String bdaTpl = templateBdaDefault(nav, da.name(), sdai.name());
                     if (bdaTpl != null) {
                         String bType = resolveSdiBdaBType(nav, da.name(), sdai.name());
@@ -178,9 +184,10 @@ public final class DataValueResolver {
     }
 
     /**
-     * DA level template default value fallback: follows the TypeChain along the full reference to find the default Val of
-     * the DOType's DA (or the DAType's BDA). Supports two paths — DO.DA without SDI and DO.SDI.BDA with a single-level
-     * SDI (consistent with the existing type resolution).
+     * DA level template default value fallback: follows the TypeChain along the
+     * full reference to find the default Val of the DOType's DA (or the DAType's
+     * BDA). Supports two paths — DO.DA without SDI and DO.SDI.BDA with a
+     * single-level SDI (consistent with the existing type resolution).
      */
     private static String templateDefault(Navigator nav) {
         if (nav.document().dataTypeTemplates() == null || nav.ln().lnType() == null)
@@ -199,7 +206,10 @@ public final class DataValueResolver {
         return bda != null ? firstTemplateVal(bda.vals()) : null;
     }
 
-    /** DO level (without FC filtering): looks up the template default value by DA name. */
+    /**
+     * DO level (without FC filtering): looks up the template default value by DA
+     * name.
+     */
     private static String templateDefaultByName(Navigator nav, String daName) {
         if (nav.document().dataTypeTemplates() == null || nav.ln().lnType() == null || nav.ref().doName() == null)
             return null;
@@ -208,7 +218,10 @@ public final class DataValueResolver {
         return da != null ? firstTemplateVal(da.vals()) : null;
     }
 
-    /** Fallback to the BDA template default value when the DAI inside an SDI has no value. */
+    /**
+     * Fallback to the BDA template default value when the DAI inside an SDI has no
+     * value.
+     */
     private static String templateBdaDefault(Navigator nav, String sdiName, String bdaName) {
         if (nav.document().dataTypeTemplates() == null || nav.ln().lnType() == null)
             return null;

@@ -10,7 +10,10 @@ import javax.xml.stream.XMLStreamReader;
 
 import static com.ysh.jcms.utils.scl.reader.SclReader.*;
 
-/** Parses {@code <Services>} under IED and its child elements (ReportSettings / GSESettings). */
+/**
+ * Parses {@code <Services>} under IED and its child elements (ReportSettings /
+ * GSESettings).
+ */
 public class SclServicesParser {
 
     private SclServicesParser() {
@@ -181,7 +184,10 @@ public class SclServicesParser {
         return services;
     }
 
-    /** SMVSettings: captures the text of the first SmpRate child element (remaining children are skipped). */
+    /**
+     * SMVSettings: captures the text of the first SmpRate child element (remaining
+     * children are skipped).
+     */
     private static void parseSmvSettings(XMLStreamReader reader, SclServices services) throws XMLStreamException {
         while (reader.hasNext()) {
             int event = reader.nextTag();
@@ -197,7 +203,10 @@ public class SclServicesParser {
         }
     }
 
-    /** SettingGroups: captures the existence of SGEdit / ConfSG child elements (deep attributes such as resvTms are not expanded). */
+    /**
+     * SettingGroups: captures the existence of SGEdit / ConfSG child elements (deep
+     * attributes such as resvTms are not expanded).
+     */
     private static void parseSettingGroups(XMLStreamReader reader, SclServices services) throws XMLStreamException {
         services.settingGroups(true);
         while (reader.hasNext()) {

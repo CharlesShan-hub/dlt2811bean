@@ -1,22 +1,22 @@
 package com.ysh.jcms.app.handler.directory.getAllDataDefinition;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.app.handler.ServiceException;
+import com.ysh.jcms.app.handler.CursorSlicer;
 import com.ysh.jcms.core.data.choice.CmsReferenceChoice;
-import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.data.sequence.directory.CmsDataDefinitionEntry;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllDataDefinitionError;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllDataDefinitionRequest;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllDataDefinitionResponse;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.scl.service.SclAllValuesService;
-import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 
 import java.util.List;
 
@@ -75,14 +75,6 @@ public class AllDataDefServer extends BaseServerHandler<CmsGetAllDataDefinitionR
 
     /** Apply referenceAfter pagination to a list of CmsDataDefinitionEntry. */
     private static List<CmsDataDefinitionEntry> afterEntries(List<CmsDataDefinitionEntry> items, String refAfter, int reqId) {
-        if (refAfter == null || refAfter.isEmpty())
-            return items;
-        for (int i = 0; i < items.size(); i++) {
-            String ref = items.get(i).reference.value();
-            if (refAfter.equals(ref)) {
-                return items.subList(i + 1, items.size());
-            }
-        }
-        throw new ServiceException(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        return CursorSlicer.after(items, refAfter, e -> e.reference.value(), reqId);
     }
 }

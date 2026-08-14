@@ -6,7 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * Rated voltage (Voltage), derived from tValueWithUnit, with unit fixed to V (volt).
+ * Rated voltage (Voltage), derived from tValueWithUnit, with unit fixed to V
+ * (volt).
  * <p>
  * Schema:
  *
@@ -32,7 +33,9 @@ import lombok.experimental.Accessors;
 public class SclVoltage {
     /** Voltage value (decimal) */
     private String value;
-    /** Unit multiplier (multiplier), e.g. "k" (kilovolt), "M" (megavolt), "" (volt) */
+    /**
+     * Unit multiplier (multiplier), e.g. "k" (kilovolt), "M" (megavolt), "" (volt)
+     */
     private String multiplier;
     /** Unit (unit), fixed to "V" */
     private String unit;

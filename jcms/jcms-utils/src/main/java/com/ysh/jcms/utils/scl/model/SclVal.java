@@ -6,7 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * Data attribute value element (Val), representing the value of DAI or similar elements.
+ * Data attribute value element (Val), representing the value of DAI or similar
+ * elements.
  * <p>
  * Schema:
  *

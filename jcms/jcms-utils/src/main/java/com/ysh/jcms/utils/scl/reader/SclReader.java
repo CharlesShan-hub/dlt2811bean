@@ -23,10 +23,11 @@ import static javax.xml.stream.XMLStreamConstants.*;
 /**
  * SCL XML file parser.
  * <p>
- * Uses StAX (XMLStreamReader) to parse SCL/ICD/CID/SSD files in a streaming manner, converting the XML into a plain
- * SclDocument POJO model.
+ * Uses StAX (XMLStreamReader) to parse SCL/ICD/CID/SSD files in a streaming
+ * manner, converting the XML into a plain SclDocument POJO model.
  * <p>
- * Single responsibility: only performs XML → POJO mapping, containing no business logic.
+ * Single responsibility: only performs XML → POJO mapping, containing no
+ * business logic.
  */
 public class SclReader {
 
@@ -74,8 +75,10 @@ public class SclReader {
             }
         }
 
-        // Determine the file type by content structure (2007B is only the IEC 61850 Ed.2 version number and cannot
-        // distinguish file kinds): contains <Substation> → SCD; single IED without Substation → ICD (CID is
+        // Determine the file type by content structure (2007B is only the IEC 61850
+        // Ed.2 version number and cannot
+        // distinguish file kinds): contains <Substation> → SCD; single IED without
+        // Substation → ICD (CID is
         // structurally identical, temporarily classified as ICD); otherwise UNKNOWN
         if (stats.hasSubstation) {
             document.fileType(SclDocument.SclFileType.SCD);
@@ -128,7 +131,10 @@ public class SclReader {
     // ======================== Lightweight scan (AccessPoint / LD-LN directory)
     // ========================
 
-    /** Creates a secure XML factory with DTD and external entities disabled (XXE protection). */
+    /**
+     * Creates a secure XML factory with DTD and external entities disabled (XXE
+     * protection).
+     */
     private static XMLInputFactory createSafeFactory() {
         XMLInputFactory factory = XMLInputFactory.newInstance();
         factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
@@ -137,10 +143,12 @@ public class SclReader {
     }
 
     /**
-     * Lightweight scan of the IED → AccessPoint names in an SCL file without building the full model.
+     * Lightweight scan of the IED → AccessPoint names in an SCL file without
+     * building the full model.
      * <p>
-     * Only reads the name attributes of IED / AccessPoint elements and skips everything else, so even an SCD with
-     * hundreds of IEDs and tens of MB completes in seconds, without getting stuck on full model parsing
+     * Only reads the name attributes of IED / AccessPoint elements and skips
+     * everything else, so even an SCD with hundreds of IEDs and tens of MB
+     * completes in seconds, without getting stuck on full model parsing
      * (LNodeType/DO/DA/templates, etc.).
      *
      * @param path
@@ -187,11 +195,13 @@ public class SclReader {
     }
 
     /**
-     * Lightweight scan of the IED → AP → (LD, LN) directory in an SCL file without building the full model.
+     * Lightweight scan of the IED → AP → (LD, LN) directory in an SCL file without
+     * building the full model.
      * <p>
-     * Only reads the name attributes of IED / AccessPoint / Server / LDevice / LN, skipping all details such as
-     * instance data, control blocks, and templates; suitable for providing a second-level directory for frontend
-     * candidate lists (LD/LN source for data set / control block dropdowns).
+     * Only reads the name attributes of IED / AccessPoint / Server / LDevice / LN,
+     * skipping all details such as instance data, control blocks, and templates;
+     * suitable for providing a second-level directory for frontend candidate lists
+     * (LD/LN source for data set / control block dropdowns).
      *
      * @param path
      *            SCL file path
@@ -304,7 +314,10 @@ public class SclReader {
         return reader.getElementText();
     }
 
-    /** Skips an unknown element (recursively skips all child elements until END_ELEMENT is reached) */
+    /**
+     * Skips an unknown element (recursively skips all child elements until
+     * END_ELEMENT is reached)
+     */
     public static void skipElement(XMLStreamReader reader) throws XMLStreamException {
         int depth = 1;
         while (depth > 0 && reader.hasNext()) {
@@ -316,7 +329,9 @@ public class SclReader {
         }
     }
 
-    /** Reads the text child of the current element (e.g. {@code <Val>content</Val>}) */
+    /**
+     * Reads the text child of the current element (e.g. {@code <Val>content</Val>})
+     */
     public static String parseSimpleElementText(XMLStreamReader reader) throws XMLStreamException {
         String text = reader.getElementText();
         return text != null ? text.trim() : null;

@@ -9,7 +9,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Access point resolution service —— resolves IED + AccessPoint from sapRef.
  * <p>
- * Used by the Associate service to locate the access point requested by the client when establishing a connection.
+ * Used by the Associate service to locate the access point requested by the
+ * client when establishing a connection.
  */
 public final class SclAccessPointService {
 
@@ -35,7 +36,8 @@ public final class SclAccessPointService {
      * @param scl
      *            SCL document
      * @param sapRef
-     *            access point reference, format {@code IEDName[/AccessPointName]}, the default AP name is {@code S1}
+     *            access point reference, format {@code IEDName[/AccessPointName]},
+     *            the default AP name is {@code S1}
      * @return resolution result, or {@code null} if the IED or AP does not exist
      */
     public static ResolvedAp resolve(SclDocument scl, String sapRef) {
@@ -58,7 +60,10 @@ public final class SclAccessPointService {
         return new ResolvedAp(ied, ap);
     }
 
-    /** Takes the first IED with an access point and its first AP; returns {@code null} if no access point is available. */
+    /**
+     * Takes the first IED with an access point and its first AP; returns
+     * {@code null} if no access point is available.
+     */
     public static ResolvedAp resolveDefault(SclDocument scl) {
         if (scl == null)
             return null;

@@ -33,7 +33,8 @@ public class SclDatasetService {
     }
 
     /**
-     * Resolves a data set reference string {@code "LD0/LLN0.dsName"} and returns the LD/LN/DataSet triple.
+     * Resolves a data set reference string {@code "LD0/LLN0.dsName"} and returns
+     * the LD/LN/DataSet triple.
      * <p>
      * Looks up within the scope of the given AP.
      *
@@ -72,7 +73,8 @@ public class SclDatasetService {
     }
 
     /**
-     * Resolves a data set reference string {@code "LD0/LLN0.dsName"} and returns the LD/LN/DataSet triple.
+     * Resolves a data set reference string {@code "LD0/LLN0.dsName"} and returns
+     * the LD/LN/DataSet triple.
      *
      * @param ied
      *            IED model
@@ -107,7 +109,8 @@ public class SclDatasetService {
     }
 
     /**
-     * Resolves a data set reference string and returns only the LN (the DataSet may not exist; used for creation scenarios).
+     * Resolves a data set reference string and returns only the LN (the DataSet may
+     * not exist; used for creation scenarios).
      * <p>
      * Looks up within the scope of the given AP.
      *
@@ -157,7 +160,8 @@ public class SclDatasetService {
      * @param ap
      *            the currently associated access point
      * @param ref
-     *            member reference, format {@code ldInst/lnClass.lnInst/doName.daName}
+     *            member reference, format
+     *            {@code ldInst/lnClass.lnInst/doName.daName}
      * @return FCDA, or {@code null} if parsing fails
      */
     public static SclFCDA parseRefToFcda(SclIED ied, SclAccessPoint ap, String ref) {
@@ -190,7 +194,8 @@ public class SclDatasetService {
      * @param ied
      *            IED model
      * @param ref
-     *            member reference, format {@code ldInst/lnClass.lnInst/doName.daName}
+     *            member reference, format
+     *            {@code ldInst/lnClass.lnInst/doName.daName}
      * @return FCDA, or {@code null} if parsing fails
      */
     public static SclFCDA parseRefToFcda(SclIED ied, String ref) {

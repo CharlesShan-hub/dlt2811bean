@@ -38,10 +38,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * "Read all" values service —— all data values (8.3.4) / all data definitions (8.3.5) / all control block values (8.3.6).
+ * "Read all" values service —— all data values (8.3.4) / all data definitions
+ * (8.3.5) / all control block values (8.3.6).
  * <p>
- * Each method returns the complete result list; paging (referenceAfter / pageSize) is handled by the handler layer. Control block
- * values (8.3.6) overlay runtime state, aligned with the GetXxxCBValues behavior.
+ * Each method returns the complete result list; paging (referenceAfter /
+ * pageSize) is handled by the handler layer. Control block values (8.3.6)
+ * overlay runtime state, aligned with the GetXxxCBValues behavior.
  */
 public final class SclAllValuesService {
 
@@ -53,8 +55,9 @@ public final class SclAllValuesService {
     /**
      * Gets all data values (expanded to DA level).
      * <p>
-     * Per standard 8.3.4, returns the values of all DAs under the given LN (excluding the functional constraint SE), instead of a
-     * single value at DO level.
+     * Per standard 8.3.4, returns the values of all DAs under the given LN
+     * (excluding the functional constraint SE), instead of a single value at DO
+     * level.
      *
      * @param doc
      *            SCL document
@@ -271,10 +274,14 @@ public final class SclAllValuesService {
         return result;
     }
 
-    // ==================== Runtime state overlay (8.3.6, aligned with the GetXxxCBValues behavior)
+    // ==================== Runtime state overlay (8.3.6, aligned with the
+    // GetXxxCBValues behavior)
     // ====================
 
-    /** Full control block reference: {@code ldInst/lnName.cbName} (consistent with the reference format used by the Set service). */
+    /**
+     * Full control block reference: {@code ldInst/lnName.cbName} (consistent with
+     * the reference format used by the Set service).
+     */
     private static String fullRef(SclLN ln, String cbName) {
         SclLDevice ld = ln.parentLd();
         if (ld == null || ld.inst() == null) {

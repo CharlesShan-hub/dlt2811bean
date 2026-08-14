@@ -8,16 +8,20 @@ import com.ysh.jcms.core.data.sequence.block.CmsMsvcb;
 /**
  * Unified facade for control block runtime state.
  * <p>
- * Standard 7.6.1 defines six control blocks: BRCB, URCB, LCB, SGCB, GoCB, MSVCB. Lifecycle layering (corresponding to the
- * {@code CbFieldScope} of {@code @CbField}):
+ * Standard 7.6.1 defines six control blocks: BRCB, URCB, LCB, SGCB, GoCB,
+ * MSVCB. Lifecycle layering (corresponding to the {@code CbFieldScope} of
+ * {@code @CbField}):
  * <ul>
- * <li><b>ENGINEERING</b> — no storage, reads the SCL model directly (read-only base)</li>
- * <li><b>RUNTIME</b> —
- * {@link #RCB}/{@link #LCB}/{@link #GOCB}/{@link #MSVCB}, effective in-process</li>
- * <li><b>ASSOCIATION</b> — {@link #ASSOCIATION}, isolated by session, cleared when the connection is closed</li>
+ * <li><b>ENGINEERING</b> — no storage, reads the SCL model directly (read-only
+ * base)</li>
+ * <li><b>RUNTIME</b> — {@link #RCB}/{@link #LCB}/{@link #GOCB}/{@link #MSVCB},
+ * effective in-process</li>
+ * <li><b>ASSOCIATION</b> — {@link #ASSOCIATION}, isolated by session, cleared
+ * when the connection is closed</li>
  * </ul>
- * SGCB is not in this list: its state (actSG/editSG/edit buffer) is session-level, managed by SgSessionState in jcms-app, and the
- * field lifecycle is already annotated with {@code @CbField} on CmsSgcb.
+ * SGCB is not in this list: its state (actSG/editSG/edit buffer) is
+ * session-level, managed by SgSessionState in jcms-app, and the field lifecycle
+ * is already annotated with {@code @CbField} on CmsSgcb.
  */
 public final class CbStateManager {
 

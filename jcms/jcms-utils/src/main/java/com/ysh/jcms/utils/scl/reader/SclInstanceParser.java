@@ -14,7 +14,10 @@ import javax.xml.stream.XMLStreamReader;
 
 import static com.ysh.jcms.utils.scl.reader.SclReader.*;
 
-/** Parses data content under LN: DataSet / FCDA / Inputs / ExtRef / DOI / SDI / DAI. */
+/**
+ * Parses data content under LN: DataSet / FCDA / Inputs / ExtRef / DOI / SDI /
+ * DAI.
+ */
 public class SclInstanceParser {
 
     private SclInstanceParser() {

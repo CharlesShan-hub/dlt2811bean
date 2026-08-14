@@ -27,7 +27,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Consolidates the duplicated SCL parsing logic in the
  * GetBrcbValues、GetUrcbValues、GetLcbValues、GetGoCbValues、GetMsvcbValues
- * handlers, and uniformly provides methods to build control block objects from the SCL model.
+ * handlers, and uniformly provides methods to build control block objects from
+ * the SCL model.
  */
 public class SclControlBlockService {
 
@@ -39,7 +40,8 @@ public class SclControlBlockService {
     // ==================== BRCB (8.7.2) ====================
 
     /**
-     * Resolves a buffered ReportControl by ref, merging SCL default values and runtime state.
+     * Resolves a buffered ReportControl by ref, merging SCL default values and
+     * runtime state.
      * <p>
      * Looks up within the scope of the given AP.
      *
@@ -56,7 +58,8 @@ public class SclControlBlockService {
     }
 
     /**
-     * Resolves a buffered ReportControl by ref, merging SCL default values and runtime state.
+     * Resolves a buffered ReportControl by ref, merging SCL default values and
+     * runtime state.
      *
      * @param ied
      *            IED model
@@ -87,7 +90,8 @@ public class SclControlBlockService {
     // ==================== URCB (8.7.4) ====================
 
     /**
-     * Resolves an unbuffered ReportControl by ref, merging SCL default values and runtime state.
+     * Resolves an unbuffered ReportControl by ref, merging SCL default values and
+     * runtime state.
      * <p>
      * Looks up within the scope of the given AP.
      *
@@ -104,7 +108,8 @@ public class SclControlBlockService {
     }
 
     /**
-     * Resolves an unbuffered ReportControl by ref, merging SCL default values and runtime state.
+     * Resolves an unbuffered ReportControl by ref, merging SCL default values and
+     * runtime state.
      *
      * @param ied
      *            IED model
@@ -214,7 +219,8 @@ public class SclControlBlockService {
      * @param ied
      *            IED model
      * @param ap
-     *            the currently associated access point; when {@code null}, looks up within the whole IED
+     *            the currently associated access point; when {@code null}, looks up
+     *            within the whole IED
      * @param ref
      *            reference string
      * @return LCB object, or {@code null} if not found
@@ -239,7 +245,8 @@ public class SclControlBlockService {
     // ==================== GoCB (8.10.2) ====================
 
     /**
-     * Resolves a GSEControl by ref, preferring the cache (written by SetGoCBValues).
+     * Resolves a GSEControl by ref, preferring the cache (written by
+     * SetGoCBValues).
      *
      * @param ied
      *            IED model
@@ -252,14 +259,16 @@ public class SclControlBlockService {
     }
 
     /**
-     * Resolves a GSEControl by ref, preferring the cache (written by SetGoCBValues).
+     * Resolves a GSEControl by ref, preferring the cache (written by
+     * SetGoCBValues).
      * <p>
      * Looks up within the scope of the given AP.
      *
      * @param ied
      *            IED model
      * @param ap
-     *            the currently associated access point; when {@code null}, looks up within the whole IED
+     *            the currently associated access point; when {@code null}, looks up
+     *            within the whole IED
      * @param ref
      *            reference string
      * @return GoCB object, or {@code null} if not found
@@ -297,7 +306,8 @@ public class SclControlBlockService {
     // ==================== MSVCB (8.11.2) ====================
 
     /**
-     * Resolves a SampledValueControl by ref, preferring the cache (written by SetMSVCBValues).
+     * Resolves a SampledValueControl by ref, preferring the cache (written by
+     * SetMSVCBValues).
      *
      * @param ied
      *            IED model
@@ -310,14 +320,16 @@ public class SclControlBlockService {
     }
 
     /**
-     * Resolves a SampledValueControl by ref, preferring the cache (written by SetMSVCBValues).
+     * Resolves a SampledValueControl by ref, preferring the cache (written by
+     * SetMSVCBValues).
      * <p>
      * Looks up within the scope of the given AP.
      *
      * @param ied
      *            IED model
      * @param ap
-     *            the currently associated access point; when {@code null}, looks up within the whole IED
+     *            the currently associated access point; when {@code null}, looks up
+     *            within the whole IED
      * @param ref
      *            reference string
      * @return MSVCB object, or {@code null} if not found
@@ -355,9 +367,11 @@ public class SclControlBlockService {
     // ==================== Internal helper methods ====================
 
     /**
-     * Finds a buffered (buffered=true) or unbuffered (buffered=false) ReportControl.
+     * Finds a buffered (buffered=true) or unbuffered (buffered=false)
+     * ReportControl.
      * <p>
-     * Looks up within the scope of the given AP; when ap is {@code null}, looks up within the whole IED.
+     * Looks up within the scope of the given AP; when ap is {@code null}, looks up
+     * within the whole IED.
      */
     private static SclReportControl findReportControl(SclIED ied, SclAccessPoint ap, String ref, boolean buffered) {
         if (!SclRefParser.isValid(ref))
@@ -406,7 +420,10 @@ public class SclControlBlockService {
         return Navigator.findLd(ap, ldName);
     }
 
-    /** Finds a GSEControl in the given LD device (supports exact and prefix matching). */
+    /**
+     * Finds a GSEControl in the given LD device (supports exact and prefix
+     * matching).
+     */
     private static CmsGoCb findGocbInDevice(SclLDevice device, String lnPart, String cbName, String ref) {
         // Try findLnByFullName first (exact match)
         SclLN ln = device.findLnByFullName(lnPart);
@@ -432,7 +449,10 @@ public class SclControlBlockService {
         return null;
     }
 
-    /** Finds a SampledValueControl in the given LD device (supports exact and prefix matching). */
+    /**
+     * Finds a SampledValueControl in the given LD device (supports exact and prefix
+     * matching).
+     */
     private static CmsMsvcb findMsvcbInDevice(SclLDevice device, String lnPart, String cbName, String ref) {
         // Try exact name match first
         SclLN ln = device.findLnByFullName(lnPart);

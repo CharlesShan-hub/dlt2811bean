@@ -1,22 +1,22 @@
 package com.ysh.jcms.app.handler.directory.getAllCbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.app.handler.ServiceException;
-import com.ysh.jcms.core.data.enumerate.CmsServiceError;
+import com.ysh.jcms.app.handler.CursorSlicer;
+import com.ysh.jcms.core.data.choice.CmsReferenceChoice;
 import com.ysh.jcms.core.data.enumerate.CmsAcsiClass;
 import com.ysh.jcms.core.data.sequence.directory.CmsCbValueEntry;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllCbValuesError;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllCbValuesRequest;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllCbValuesResponse;
-import com.ysh.jcms.core.data.choice.CmsReferenceChoice;
+import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.scl.service.SclAllValuesService;
-import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
+import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 
 import java.util.List;
 
@@ -84,15 +84,7 @@ public class AllCbValuesServer extends BaseServerHandler<CmsGetAllCbValuesReques
 
     /** Apply referenceAfter pagination to a list of CmsCbValueEntry. */
     private static List<CmsCbValueEntry> afterEntries(List<CmsCbValueEntry> items, String refAfter, int reqId) {
-        if (refAfter == null || refAfter.isEmpty())
-            return items;
-        for (int i = 0; i < items.size(); i++) {
-            String ref = items.get(i).reference.value();
-            if (refAfter.equals(ref)) {
-                return items.subList(i + 1, items.size());
-            }
-        }
-        throw new ServiceException(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        return CursorSlicer.after(items, refAfter, e -> e.reference.value(), reqId);
     }
 
     private static boolean isValidAcsiClass(int acsiClass) {

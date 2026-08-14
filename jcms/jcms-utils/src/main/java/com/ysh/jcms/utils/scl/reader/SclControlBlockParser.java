@@ -12,7 +12,8 @@ import javax.xml.stream.XMLStreamReader;
 import static com.ysh.jcms.utils.scl.reader.SclReader.*;
 
 /**
- * Parses control blocks under LN: ReportControl / LogControl / GSEControl / SampledValueControl.
+ * Parses control blocks under LN: ReportControl / LogControl / GSEControl /
+ * SampledValueControl.
  */
 public class SclControlBlockParser {
 

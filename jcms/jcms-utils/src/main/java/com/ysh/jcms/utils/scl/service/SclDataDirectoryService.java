@@ -21,9 +21,11 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Data directory service (8.4.3) —— lists DOs at LN level, DAs/including fc at DO level, and DAs at SDO level.
+ * Data directory service (8.4.3) —— lists DOs at LN level, DAs/including fc at
+ * DO level, and DAs at SDO level.
  * <p>
- * At DO level, entries from the instance ({@code doi}) and the template are merged to avoid duplicates.
+ * At DO level, entries from the instance ({@code doi}) and the template are
+ * merged to avoid duplicates.
  */
 public final class SclDataDirectoryService {
 
@@ -31,7 +33,8 @@ public final class SclDataDirectoryService {
     }
 
     /**
-     * Gets the data directory (lists DOs at LN level, DAs/including fc at DO level, and DAs at SDO level).
+     * Gets the data directory (lists DOs at LN level, DAs/including fc at DO level,
+     * and DAs at SDO level).
      *
      * @param doc
      *            SCL document
@@ -122,7 +125,10 @@ public final class SclDataDirectoryService {
         return entries;
     }
 
-    /** Appends DA/SDO directory entries from the DOType template (skipping existing ones). */
+    /**
+     * Appends DA/SDO directory entries from the DOType template (skipping existing
+     * ones).
+     */
     private static void addTemplateDirs(SclDocument doc, SclLN ln, String doName, Set<String> seen, List<CmsSubRefEntry> entries) {
         SclDataTypeTemplates templates = doc.dataTypeTemplates();
         if (templates == null || ln.lnType() == null || ln.lnType().isEmpty())

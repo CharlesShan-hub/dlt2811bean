@@ -16,8 +16,8 @@ import javax.xml.stream.XMLStreamReader;
 import static com.ysh.jcms.utils.scl.reader.SclReader.*;
 
 /**
- * Parses the container structure of {@code <Substation>}: VoltageLevel / Bay / Terminal /
- * ConnectivityNode / LNode.
+ * Parses the container structure of {@code <Substation>}: VoltageLevel / Bay /
+ * Terminal / ConnectivityNode / LNode.
  */
 public class SclSubstationParser {
 

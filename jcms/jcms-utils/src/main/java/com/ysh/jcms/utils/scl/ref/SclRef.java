@@ -10,7 +10,8 @@ import java.util.Objects;
 /**
  * SCL reference — the universal index key in the model.
  * <p>
- * Reference format: {@code [IEDName/]LDInst/LNName[.DO][[.SDI]...][.DA][FC]} <br>
+ * Reference format: {@code [IEDName/]LDInst/LNName[.DO][[.SDI]...][.DA][FC]}
+ * <br>
  * e.g.: {@code E1Q1SB1/C1/MMXU1.Volts.sVC.offset}
  */
 @Getter

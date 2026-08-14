@@ -30,7 +30,10 @@ public class SclIED {
 
     private final List<SclAccessPoint> accessPoints = new ArrayList<>();
 
-    /** Lazy index: LD instance name → LD (built on first lDevice() call, invalidated on addAccessPoint). */
+    /**
+     * Lazy index: LD instance name → LD (built on first lDevice() call, invalidated
+     * on addAccessPoint).
+     */
     private transient Map<String, SclLDevice> ldByInst;
 
     public SclIED addAccessPoint(SclAccessPoint accessPoint) {

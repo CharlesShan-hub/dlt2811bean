@@ -13,7 +13,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Data value writer (SetDataValues service).
  * <p>
- * Finds the DAI by reference path (virtually creates it if necessary), validates and sets the value.
+ * Finds the DAI by reference path (virtually creates it if necessary),
+ * validates and sets the value.
  */
 public final class DataWriterResolver {
     private static final Logger log = LoggerFactory.getLogger(DataWriterResolver.class);
@@ -25,7 +26,8 @@ public final class DataWriterResolver {
      * Sets a data value. Virtually creates the DAI/DOI/SDI if it does not exist.
      *
      * @param nav
-     *            Navigator already navigated to the target point (must contain the LN)
+     *            Navigator already navigated to the target point (must contain the
+     *            LN)
      * @param value
      *            string value
      * @return CmsServiceError.NO_ERROR, or an error code

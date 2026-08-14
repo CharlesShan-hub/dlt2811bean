@@ -7,10 +7,12 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
 
 /**
- * Control block state store at the ASSOCIATION layer: concurrent storage isolated by session (sessionId).
+ * Control block state store at the ASSOCIATION layer: concurrent storage
+ * isolated by session (sessionId).
  * <p>
- * Lifecycle: cleared when the connection is closed ({@link #removeSession(String)}), corresponding to per-association
- * instance fields such as URCB ({@code @CbField(scope = CbFieldScope.ASSOCIATION)}).
+ * Lifecycle: cleared when the connection is closed
+ * ({@link #removeSession(String)}), corresponding to per-association instance
+ * fields such as URCB ({@code @CbField(scope = CbFieldScope.ASSOCIATION)}).
  */
 public final class CbAssociationStore<T extends CmsSequence> {
 
@@ -20,7 +22,10 @@ public final class CbAssociationStore<T extends CmsSequence> {
         return bySession.computeIfAbsent(sessionId, k -> new ConcurrentHashMap<>());
     }
 
-    /** Gets the state of the given reference under the given session; returns {@code null} if not set. */
+    /**
+     * Gets the state of the given reference under the given session; returns
+     * {@code null} if not set.
+     */
     public T get(String sessionId, String ref) {
         ConcurrentMap<String, T> b = bySession.get(sessionId);
         return b != null ? b.get(ref) : null;
@@ -44,7 +49,10 @@ public final class CbAssociationStore<T extends CmsSequence> {
         }
     }
 
-    /** Removes all association-level state of the whole session (association release hook). */
+    /**
+     * Removes all association-level state of the whole session (association release
+     * hook).
+     */
     public void removeSession(String sessionId) {
         bySession.remove(sessionId);
     }

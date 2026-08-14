@@ -26,7 +26,8 @@ public class ValueMapper {
     // ==================== Value conversion ====================
 
     /**
-     * Converts a string value to the corresponding Java type according to the bType.
+     * Converts a string value to the corresponding Java type according to the
+     * bType.
      */
     public Optional<Object> mapValue(String bType, String value) {
         if (value == null)

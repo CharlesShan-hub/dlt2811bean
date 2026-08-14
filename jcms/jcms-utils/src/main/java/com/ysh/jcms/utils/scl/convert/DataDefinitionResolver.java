@@ -18,8 +18,9 @@ import java.util.List;
 /**
  * Data definition resolver.
  * <p>
- * Looks up the data type definition by reference path and returns a {@link DataDefinitionEntry}. Based on {@link Navigator} +
- * {@link TypeChain} building blocks.
+ * Looks up the data type definition by reference path and returns a
+ * {@link DataDefinitionEntry}. Based on {@link Navigator} + {@link TypeChain}
+ * building blocks.
  */
 public final class DataDefinitionResolver {
 
@@ -166,7 +167,8 @@ public final class DataDefinitionResolver {
     public static CmsDataDefinition toDataDefinition(String bType) {
         if (bType == null)
             return nullDataDefinition();
-        // Normalize to lowercase, strip underscores and surrounding spaces to avoid case/format variants
+        // Normalize to lowercase, strip underscores and surrounding spaces to avoid
+        // case/format variants
         String key = bType.trim().replace("_", "").replace("-", "").toLowerCase();
         switch (key) {
             case "boolean" :
