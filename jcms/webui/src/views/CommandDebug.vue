@@ -64,7 +64,7 @@
         :add-refs="addRefs"
         :remove-refs="removeRefs"
         :row-do-options="rowDoOptions"
-        :on-row-ld="onRowLd"
+        :on-row-ld="onRowLdForSgcb"
         :on-row-ln="onRowLn"
         :on-row-do="onRowDo"
         :on-row-sdo="onRowSdo"
@@ -388,6 +388,33 @@ const {
   getLnRef: () => lnRef.value,
   lnRequiredCmds: ['ln-dir', 'all-data', 'all-def', 'all-cb', 'get-dataset-values', 'get-dataset-dir'],
 })
+
+/* ====== sgcb-vals 专用：LD 选定后自动固定 LLN0 + 加载 SGCB 名称 ====== */
+
+async function loadSgcbNames(row) {
+  if (!row.ld) return
+  const ref = `${row.ld}/LLN0`
+  const names = await ensureCbRefs(ref, 'sgcb')
+  row._sgcbNames = names || []
+  row._sgcbName = (names && names.length > 0) ? names[0] : 'SG'
+}
+
+const onRowLdForSgcb = (row) => {
+  if (props.cmd === 'sgcb-vals') {
+    row.ln = 'LLN0'
+    row.do = ''
+    row.sdo = ''
+    row.da = ''
+    row._sgcbNames = []
+    row._sgcbName = ''
+    if (row.ld) {
+      ensureLdLns(row.ld)
+      loadSgcbNames(row)
+    }
+  } else {
+    onRowLd(row)
+  }
+}
 
 const formValid = computed(() => {
   if (isConnect.value) return true

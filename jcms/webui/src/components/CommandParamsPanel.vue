@@ -165,19 +165,20 @@
                       empty-label="（不选）"
                       @update:modelValue="onRowLd(r)"
                     />
-                    <UiSelect
-                      v-model="r.ln"
-                      :options="r.ld ? ldLns[r.ld] || [] : []"
-                      placeholder="LN"
-                      empty-label="（不选）"
-                      @update:modelValue="onRowLn(r)"
-                    />
-                    <!-- sgcb-vals: 级联只选 LD/LN，自动补 .SG -->
+                    <!-- sgcb-vals: LN 固定为 LLN0，SGCB 名称从目录树动态读取 -->
                     <template v-if="cmd === 'sgcb-vals'">
-                      <span class="sgcb-suffix">.SG</span>
+                      <span class="sgcb-suffix sgcb-ln">{{ r.ln || 'LLN0' }}</span>
+                      <span class="sgcb-suffix sgcb-name">{{ r._sgcbName || '…' }}</span>
                       <button v-if="!p.single" type="button" class="glass glass-danger refs-del" title="删除该引用" @click="removeRefs(i)"><X :size="14" /></button>
                     </template>
                     <template v-else>
+                      <UiSelect
+                        v-model="r.ln"
+                        :options="r.ld ? ldLns[r.ld] || [] : []"
+                        placeholder="LN"
+                        empty-label="（不选）"
+                        @update:modelValue="onRowLn(r)"
+                      />
                       <UiSelect
                         v-model="r.do"
                         :options="rowDoOptions(r)"
@@ -470,6 +471,14 @@ const filteredDsMemberOptions = computed(() => {
   border-radius: 6px;
   white-space: nowrap;
   font-family: var(--font-mono, 'Fira Code', 'Cascadia Code', monospace);
+}
+
+.sgcb-ln {
+  color: var(--text-primary, #e0e0e0);
+}
+
+.sgcb-name {
+  color: var(--green, #4caf7d);
 }
 
 /* ── 级联 ── */
