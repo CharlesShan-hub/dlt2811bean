@@ -1,7 +1,9 @@
 package com.ysh.jcms.app.handler.directory.getAllDataValues;
 
 import com.ysh.jcms.app.handler.base.BaseServerHandler;
+import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.app.handler.support.CursorSlicer;
+import com.ysh.jcms.core.data.choice.CmsData;
 import com.ysh.jcms.core.data.choice.CmsReferenceChoice;
 import com.ysh.jcms.core.data.sequence.directory.CmsDataValueEntry;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllDataValuesError;
@@ -49,6 +51,23 @@ public class AllDataValuesServer extends BaseServerHandler<CmsGetAllDataValuesRe
 
         // Get all entries from service
         List<CmsDataValueEntry> allEntries = SclAllValuesService.getAllDataValues(doc, ied, lns, fcFilter);
+
+        // When FC=SG, overlay values from SgSessionState
+        if ("SG".equals(fcFilter)) {
+            SgSessionState.SgcState state = SgSessionState.getState(session.sessionId());
+            for (CmsDataValueEntry entry : allEntries) {
+                byte[] val = state.getCommittedValue(entry.reference.value());
+                if (val != null) {
+                    try {
+                        CmsData data = new CmsData();
+                        data.decode(val);
+                        entry.value = data;
+                    } catch (Exception e) {
+                        log.warn("AllDataValues: failed to decode SG value for ref={}", entry.reference.value(), e);
+                    }
+                }
+            }
+        }
 
         // Apply referenceAfter pagination
         List<CmsDataValueEntry> entries = afterEntries(allEntries, refAfter, reqId);

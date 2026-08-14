@@ -7,16 +7,24 @@ export default {
         svEna         [1] IMPLICIT BOOLEAN OPTIONAL,
         msvID         [2] IMPLICIT VisibleString129 OPTIONAL,
         datSet        [3] IMPLICIT ObjectReference OPTIONAL,
-        smpMod        [4] IMPLICIT SmpMod OPTIONAL,
-        smpRate       [5] IMPLICIT INT16U OPTIONAL,
-        optFlds       [6] IMPLICIT MSVOptFlds OPTIONAL
+        smpMod        [5] IMPLICIT SmpMod OPTIONAL,
+        smpRate       [6] IMPLICIT INT16U OPTIONAL,
+        optFlds       [7] IMPLICIT MSVOptFlds OPTIONAL
     }
 }
 
 SetMSVCBValues-ResponsePDU ::= NULL
 
 SetMSVCBValues-ErrorPDU ::= SEQUENCE {
-    result           [0] IMPLICIT SEQUENCE OF ServiceError
+    result           [0] IMPLICIT SEQUENCE OF SEQUENCE {
+        error         [0] IMPLICIT ServiceError OPTIONAL,
+        svEna         [1] IMPLICIT ServiceError OPTIONAL,
+        msvID         [2] IMPLICIT ServiceError OPTIONAL,
+        datSet        [3] IMPLICIT ServiceError OPTIONAL,
+        smpMod        [5] IMPLICIT ServiceError OPTIONAL,
+        smpRate       [6] IMPLICIT ServiceError OPTIONAL,
+        optFlds       [7] IMPLICIT ServiceError OPTIONAL
+    }
 }`,
   doc: `## 协议原文
 

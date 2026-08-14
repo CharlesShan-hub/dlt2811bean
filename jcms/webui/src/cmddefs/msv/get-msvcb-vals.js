@@ -6,9 +6,9 @@ export default {
 }
 
 GetMSVCBValues-ResponsePDU ::= SEQUENCE {
-    errorMsvcb       [0] IMPLICIT SEQUENCE OF CHOICE {
+    msvcb            [0] IMPLICIT SEQUENCE OF CHOICE {
         error         [0] IMPLICIT ServiceError,
-        msvcb         [1] IMPLICIT MSVCB
+        value         [1] IMPLICIT MSVCB
     },
     moreFollows      [1] IMPLICIT BOOLEAN DEFAULT TRUE
 }

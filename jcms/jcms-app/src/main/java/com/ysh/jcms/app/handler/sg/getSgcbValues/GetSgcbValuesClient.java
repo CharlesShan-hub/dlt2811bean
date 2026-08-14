@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.sg.getSgcbValues;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
+import com.ysh.jcms.app.handler.support.CmsClientOperator;
 import com.ysh.jcms.core.pdu.sg.CmsGetSgcbValuesError;
 import com.ysh.jcms.core.pdu.sg.CmsGetSgcbValuesResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;
@@ -24,6 +25,6 @@ public class GetSgcbValuesClient extends BaseClientHandler<GetSgcbValuesDao> {
     @Override
     protected void onSuccess(Frame frame, GetSgcbValuesDao dao) throws IOException {
         CmsGetSgcbValuesResponse resp = decodeResp(frame, new CmsGetSgcbValuesResponse());
-        content().res(resp);
+        CmsClientOperator.accumulatePage(content(), resp, "sgscb");
     }
 }

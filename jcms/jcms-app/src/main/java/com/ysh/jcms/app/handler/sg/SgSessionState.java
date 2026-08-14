@@ -15,8 +15,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <ul>
  * <li><b>editValues</b> — SE (Set Edit) buffer, written by SetEditSGValue, read
  * by GetEditSGValue when fc=SE</li>
- * <li><b>committedValues</b> — SG (Setting Group) layer, promoted from
- * editValues by ConfirmEditSGValues, read by GetEditSGValue when fc=SG</li>
+ * <li><b>committedValues</b> — SG (Setting Group) layer, keyed by group number.
+ * Promoted from editValues by ConfirmEditSGValues into the current editSG
+ * group, read by GetEditSGValue/GetDataValues when fc=SG from the current actSG
+ * group.</li>
  * </ul>
  */
 public class SgSessionState {
@@ -40,10 +42,11 @@ public class SgSessionState {
          */
         private final ConcurrentMap<String, byte[]> editValues = new ConcurrentHashMap<>();
         /**
-         * SG (Setting Group) committed values: ref -> encoded CmsData bytes. Promoted
-         * from editValues by ConfirmEditSGValues.
+         * SG (Setting Group) committed values: groupNumber -> (ref -> encoded CmsData
+         * bytes). Promoted from editValues by ConfirmEditSGValues into the current
+         * editSG group.
          */
-        private final ConcurrentMap<String, byte[]> committedValues = new ConcurrentHashMap<>();
+        private final ConcurrentMap<Integer, ConcurrentMap<String, byte[]>> committedValues = new ConcurrentHashMap<>();
 
         public int getActSG() {
             return actSG.get();
@@ -75,16 +78,49 @@ public class SgSessionState {
 
         // ── SG (committed) layer ──
 
-        /** Move all edit values to the committed layer. */
+        /**
+         * Move all edit values to the committed layer of the current editSG group.
+         */
         public void commitEditValues() {
-            committedValues.putAll(editValues);
+            int group = editSG.get();
+            ConcurrentMap<String, byte[]> groupValues = committedValues.computeIfAbsent(group, k -> new ConcurrentHashMap<>());
+            groupValues.putAll(editValues);
             editValues.clear();
         }
-        public byte[] getCommittedValue(String ref) {
-            return committedValues.get(ref);
+
+        /**
+         * Get the committed value of a ref from the given group.
+         *
+         * @param ref
+         *            the data reference
+         * @param group
+         *            the group number (1-based)
+         * @return encoded CmsData bytes, or {@code null} if not set
+         */
+        public byte[] getCommittedValue(String ref, int group) {
+            ConcurrentMap<String, byte[]> groupValues = committedValues.get(group);
+            return groupValues != null ? groupValues.get(ref) : null;
         }
+
+        /**
+         * Get the committed value of a ref from the current actSG group.
+         */
+        public byte[] getCommittedValue(String ref) {
+            return getCommittedValue(ref, actSG.get());
+        }
+
+        /**
+         * Get all committed values for a specific group.
+         */
+        public ConcurrentMap<String, byte[]> getCommittedValues(int group) {
+            return committedValues.get(group);
+        }
+
+        /**
+         * Get all committed values for the current actSG group.
+         */
         public ConcurrentMap<String, byte[]> getCommittedValues() {
-            return committedValues;
+            return getCommittedValues(actSG.get());
         }
 
         // ── Memento ────────────────────────────────────────────────
@@ -99,9 +135,9 @@ public class SgSessionState {
             private final int actSG;
             private final int editSG;
             private final Map<String, byte[]> editValues;
-            private final Map<String, byte[]> committedValues;
+            private final Map<Integer, Map<String, byte[]>> committedValues;
 
-            Memento(int actSG, int editSG, Map<String, byte[]> editValues, Map<String, byte[]> committedValues) {
+            Memento(int actSG, int editSG, Map<String, byte[]> editValues, Map<Integer, Map<String, byte[]>> committedValues) {
                 this.actSG = actSG;
                 this.editSG = editSG;
                 this.editValues = editValues;
@@ -114,7 +150,11 @@ public class SgSessionState {
          * {@code committedValues} are defensively copied.
          */
         public Memento saveToMemento() {
-            return new Memento(actSG.get(), editSG.get(), new HashMap<>(editValues), new HashMap<>(committedValues));
+            Map<Integer, Map<String, byte[]>> copiedCommitted = new HashMap<>();
+            for (Map.Entry<Integer, ConcurrentMap<String, byte[]>> entry : committedValues.entrySet()) {
+                copiedCommitted.put(entry.getKey(), new HashMap<>(entry.getValue()));
+            }
+            return new Memento(actSG.get(), editSG.get(), new HashMap<>(editValues), copiedCommitted);
         }
 
         /**
@@ -127,7 +167,9 @@ public class SgSessionState {
             this.editValues.clear();
             this.editValues.putAll(m.editValues);
             this.committedValues.clear();
-            this.committedValues.putAll(m.committedValues);
+            for (Map.Entry<Integer, Map<String, byte[]>> entry : m.committedValues.entrySet()) {
+                this.committedValues.put(entry.getKey(), new ConcurrentHashMap<>(entry.getValue()));
+            }
         }
     }
 

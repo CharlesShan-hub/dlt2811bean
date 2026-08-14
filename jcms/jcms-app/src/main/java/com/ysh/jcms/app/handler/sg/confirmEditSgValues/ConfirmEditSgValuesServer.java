@@ -28,9 +28,10 @@ public class ConfirmEditSgValuesServer extends BaseServerHandler<CmsConfirmEditS
 
         SgcState state = SgSessionState.getState(session.sessionId());
         int count = state.getEditValues().size();
+        int editGroup = state.getEditSG();
         state.commitEditValues();
-
-        log.info("ConfirmEditSGValues: committed {} values for sgcbRef={}, session={}", count, ref, session.sessionId());
+        log.info("ConfirmEditSGValues: committed {} values to group {} for sgcbRef={}, session={}", count, editGroup, ref,
+                session.sessionId());
         return ok(new CmsConfirmEditSgValuesResponse(), reqId);
     }
 }

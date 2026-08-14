@@ -41,7 +41,7 @@ public class GetEditSgValueServer extends BaseServerHandler<CmsGetEditSgValueReq
             int fcVal = entry.fc.value();
             boolean isSE = fcVal >= 0 && fcVal < CmsFCInfo.values().length && "SE".equals(CmsFCInfo.values()[fcVal].name());
 
-            byte[] val = isSE ? state.getEditValue(ref) : state.getCommittedValue(ref);
+            byte[] val = isSE ? state.getEditValue(ref) : state.getCommittedValue(ref, state.getActSG());
             if (val != null) {
                 try {
                     CmsData data = new CmsData();

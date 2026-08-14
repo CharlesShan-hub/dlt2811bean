@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.data.getDataValues;
 
 import com.ysh.jcms.app.handler.base.BaseServerHandler;
+import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.core.data.choice.CmsData;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.data.sequence.data.CmsDataRefEntry;
@@ -37,6 +38,21 @@ public class GetDataValuesServer extends BaseServerHandler<CmsGetDataValuesReque
                     continue;
 
                 String fcCode = fcCode(refEntry.isPresent("fc") ? refEntry.fc.value() : -1);
+
+                // When FC=SG, check SgSessionState first
+                if ("SG".equals(fcCode)) {
+                    byte[] val = SgSessionState.getState(session.sessionId()).getCommittedValue(ref);
+                    if (val != null) {
+                        try {
+                            CmsData data = new CmsData();
+                            data.decode(val);
+                            resp.value.add(data);
+                            continue;
+                        } catch (Exception e) {
+                            log.warn("GetDataValues: failed to decode SG value for ref={}", ref, e);
+                        }
+                    }
+                }
 
                 Navigator nav = Navigator.go(getSclDocument(session), ied, ref);
                 DataValueEntry dv = DataValueResolver.resolve(nav, fcCode);

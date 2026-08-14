@@ -5,11 +5,11 @@ export default {
     lcb              [0] IMPLICIT SEQUENCE OF SEQUENCE {
         reference     [0] IMPLICIT ObjectReference,
         logEna        [1] IMPLICIT BOOLEAN OPTIONAL,
-        dataSet       [2] IMPLICIT ObjectReference OPTIONAL,
-        optFlds       [3] IMPLICIT LCBOptFlds OPTIONAL,
+        datSet        [2] IMPLICIT ObjectReference OPTIONAL,
+        trgOps        [3] IMPLICIT TriggerConditions OPTIONAL,
         intgPd        [4] IMPLICIT INT32U OPTIONAL,
         logRef        [5] IMPLICIT ObjectReference OPTIONAL,
-        trgOps        [6] IMPLICIT TriggerConditions OPTIONAL,
+        optFlds       [6] IMPLICIT LCBOptFlds OPTIONAL,
         bufTm         [7] IMPLICIT INT32U OPTIONAL
     }
 }
@@ -17,7 +17,16 @@ export default {
 SetLCBValues-ResponsePDU ::= NULL
 
 SetLCBValues-ErrorPDU ::= SEQUENCE {
-    result           [0] IMPLICIT SEQUENCE OF ServiceError
+    result           [0] IMPLICIT SEQUENCE OF SEQUENCE {
+        error         [0] IMPLICIT ServiceError OPTIONAL,
+        logEna        [1] IMPLICIT ServiceError OPTIONAL,
+        datSet        [2] IMPLICIT ServiceError OPTIONAL,
+        trgOps        [3] IMPLICIT ServiceError OPTIONAL,
+        intgPd        [4] IMPLICIT ServiceError OPTIONAL,
+        logRef        [5] IMPLICIT ServiceError OPTIONAL,
+        optFlds       [6] IMPLICIT ServiceError OPTIONAL,
+        bufTm         [7] IMPLICIT ServiceError OPTIONAL
+    }
 }`,
   doc: `## 协议原文
 

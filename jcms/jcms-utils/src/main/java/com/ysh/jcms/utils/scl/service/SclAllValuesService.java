@@ -361,12 +361,12 @@ public final class SclAllValuesService {
 
     private static List<CbPair> collectSgcb(SclLN ln) {
         List<CbPair> result = new ArrayList<>();
-        int numOfSG = CmsConfigLoader.load().protocol().setting().numOfSG();
-        for (int i = 1; i <= numOfSG; i++) {
-            String sgName = "SG" + i;
-            CmsCbValueChoice choice = overlaySgcb(ln, sgName, null);
-            result.add(new CbPair(sgName, choice));
+        if (!"LLN0".equals(ln.lnClass())) {
+            return result;
         }
+        String sgName = "SG";
+        CmsCbValueChoice choice = overlaySgcb(ln, sgName, null);
+        result.add(new CbPair(sgName, choice));
         return result;
     }
 

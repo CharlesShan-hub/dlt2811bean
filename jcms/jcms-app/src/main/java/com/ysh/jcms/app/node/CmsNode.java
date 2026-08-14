@@ -143,13 +143,11 @@ public class CmsNode {
         for (SclIED ied : sclDoc.ieds()) {
             for (SclLDevice ld : ied.lDevices()) {
                 for (SclLN ln : ld.findLnsByClass("LLN0")) {
-                    String prefix = ld.inst() + "/" + ln.getFullName() + ".SG";
-                    for (int i = 1; i <= numOfSG; i++) {
-                        CmsSgcb sgcb = new CmsSgcb().numOfSG(numOfSG).actSG(1).editSG(1);
-                        sgcb.tActEdt.now();
-                        sgcb.setPresent("resvTms", false);
-                        CbStateManager.SGCB.put(prefix + i, sgcb);
-                    }
+                    String ref = ld.inst() + "/" + ln.getFullName() + ".SG";
+                    CmsSgcb sgcb = new CmsSgcb().numOfSG(numOfSG).actSG(1).editSG(1);
+                    sgcb.tActEdt.now();
+                    sgcb.setPresent("resvTms", false);
+                    CbStateManager.SGCB.put(ref, sgcb);
                 }
             }
         }

@@ -13,7 +13,12 @@ export default {
 SetGoCBValues-ResponsePDU ::= NULL
 
 SetGoCBValues-ErrorPDU ::= SEQUENCE {
-    result           [0] IMPLICIT SEQUENCE OF ServiceError
+    result           [0] IMPLICIT SEQUENCE OF SEQUENCE {
+        error         [0] IMPLICIT ServiceError OPTIONAL,
+        goEna         [1] IMPLICIT ServiceError OPTIONAL,
+        goID          [2] IMPLICIT ServiceError OPTIONAL,
+        datSet        [3] IMPLICIT ServiceError OPTIONAL
+    }
 }`,
   doc: `## 协议原文
 

@@ -1,7 +1,7 @@
 package com.ysh.jcms.utils.scl.service;
 
 import com.ysh.jcms.core.data.enumerate.CmsAcsiClass;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
+
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.model.control.SclGSEControl;
 import com.ysh.jcms.utils.scl.model.control.SclLogControl;
@@ -203,10 +203,7 @@ public final class SclDirectoryService {
                     break;
                 case CmsAcsiClass.SGCB :
                     if ("LLN0".equals(ln.lnClass())) {
-                        int numOfSG = CmsConfigLoader.load().protocol().setting().numOfSG();
-                        for (int i = 1; i <= numOfSG; i++) {
-                            all.add("SG" + i);
-                        }
+                        all.add("SG");
                     }
                     break;
                 default :

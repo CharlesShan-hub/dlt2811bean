@@ -6,20 +6,31 @@ export default {
         reference     [0] IMPLICIT ObjectReference,
         rptID         [1] IMPLICIT VisibleString129 OPTIONAL,
         rptEna        [2] IMPLICIT BOOLEAN OPTIONAL,
-        resv          [3] IMPLICIT BOOLEAN OPTIONAL,
-        datSet        [4] IMPLICIT ObjectReference OPTIONAL,
+        datSet        [3] IMPLICIT ObjectReference OPTIONAL,
         optFlds       [5] IMPLICIT RCBOptFlds OPTIONAL,
         bufTm         [6] IMPLICIT INT32U OPTIONAL,
-        trgOps        [7] IMPLICIT TriggerConditions OPTIONAL,
-        intgPd        [8] IMPLICIT INT32U OPTIONAL,
-        gi            [9] IMPLICIT BOOLEAN OPTIONAL
+        trgOps        [8] IMPLICIT TriggerConditions OPTIONAL,
+        intgPd        [9] IMPLICIT INT32U OPTIONAL,
+        gi            [10] IMPLICIT BOOLEAN OPTIONAL,
+        resv          [13] IMPLICIT BOOLEAN OPTIONAL
     }
 }
 
 SetURCBValues-ResponsePDU ::= NULL
 
 SetURCBValues-ErrorPDU ::= SEQUENCE {
-    result           [0] IMPLICIT SEQUENCE OF ServiceError
+    result           [0] IMPLICIT SEQUENCE OF SEQUENCE {
+        error         [0] IMPLICIT ServiceError OPTIONAL,
+        rptID         [1] IMPLICIT ServiceError OPTIONAL,
+        rptEna        [2] IMPLICIT ServiceError OPTIONAL,
+        datSet        [3] IMPLICIT ServiceError OPTIONAL,
+        optFlds       [5] IMPLICIT ServiceError OPTIONAL,
+        bufTm         [6] IMPLICIT ServiceError OPTIONAL,
+        trgOps        [8] IMPLICIT ServiceError OPTIONAL,
+        intgPd        [9] IMPLICIT ServiceError OPTIONAL,
+        gi            [10] IMPLICIT ServiceError OPTIONAL,
+        resv          [13] IMPLICIT ServiceError OPTIONAL
+    }
 }`,
   doc: `## 协议原文
 

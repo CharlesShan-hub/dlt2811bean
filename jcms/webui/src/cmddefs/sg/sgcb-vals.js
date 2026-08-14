@@ -6,10 +6,11 @@ export default {
 }
 
 GetSGCBValues-ResponsePDU ::= SEQUENCE {
-    errorOrSgcb         [0] IMPLICIT SEQUENCE OF CHOICE {
+    sgscb               [0] IMPLICIT SEQUENCE OF CHOICE {
         error             [0] IMPLICIT ServiceError,
-        sgcb              [1] IMPLICIT SGCB
-    }
+        value             [1] IMPLICIT SGCB
+    },
+    moreFollows         [1] IMPLICIT BOOLEAN DEFAULT TRUE
 }
 
 GetSGCBValues-ErrorPDU ::= ServiceError`,

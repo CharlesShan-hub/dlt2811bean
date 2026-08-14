@@ -7,21 +7,34 @@ export default {
         rptID         [1] IMPLICIT VisibleString129 OPTIONAL,
         rptEna        [2] IMPLICIT BOOLEAN OPTIONAL,
         datSet        [3] IMPLICIT ObjectReference OPTIONAL,
-        optFlds       [4] IMPLICIT RCBOptFlds OPTIONAL,
-        bufTm         [5] IMPLICIT INT32U OPTIONAL,
-        trgOps        [6] IMPLICIT TriggerConditions OPTIONAL,
-        intgPd        [7] IMPLICIT INT32U OPTIONAL,
-        gi            [8] IMPLICIT BOOLEAN OPTIONAL,
-        purgeBuf      [9] IMPLICIT BOOLEAN OPTIONAL,
-        entryID       [10] IMPLICIT EntryID OPTIONAL,
-        resvTms       [11] IMPLICIT INT16 OPTIONAL
+        optFlds       [5] IMPLICIT RCBOptFlds OPTIONAL,
+        bufTm         [6] IMPLICIT INT32U OPTIONAL,
+        trgOps        [8] IMPLICIT TriggerConditions OPTIONAL,
+        intgPd        [9] IMPLICIT INT32U OPTIONAL,
+        gi            [10] IMPLICIT BOOLEAN OPTIONAL,
+        purgeBuf      [11] IMPLICIT BOOLEAN OPTIONAL,
+        entryID       [12] IMPLICIT EntryID OPTIONAL,
+        resvTms       [14] IMPLICIT INT16 OPTIONAL
     }
 }
 
 SetBRCBValues-ResponsePDU ::= NULL
 
 SetBRCBValues-ErrorPDU ::= SEQUENCE {
-    result           [0] IMPLICIT SEQUENCE OF ServiceError
+    result           [0] IMPLICIT SEQUENCE OF SEQUENCE {
+        error         [0] IMPLICIT ServiceError OPTIONAL,
+        rptID         [1] IMPLICIT ServiceError OPTIONAL,
+        rptEna        [2] IMPLICIT ServiceError OPTIONAL,
+        datSet        [3] IMPLICIT ServiceError OPTIONAL,
+        optFlds       [5] IMPLICIT ServiceError OPTIONAL,
+        bufTm         [6] IMPLICIT ServiceError OPTIONAL,
+        trgOps        [8] IMPLICIT ServiceError OPTIONAL,
+        intgPd        [9] IMPLICIT ServiceError OPTIONAL,
+        gi            [10] IMPLICIT ServiceError OPTIONAL,
+        purgeBuf      [11] IMPLICIT ServiceError OPTIONAL,
+        entryID       [12] IMPLICIT ServiceError OPTIONAL,
+        resvTms       [14] IMPLICIT ServiceError OPTIONAL
+    }
 }`,
   doc: `## 协议原文
 
