@@ -17,6 +17,7 @@ public class CmsConfig {
     private Client client = new Client();
     private Protocol protocol = new Protocol();
     private Security security = new Security();
+    private Scl scl = new Scl();
 
     // ───────── Server ─────────
 
@@ -184,6 +185,20 @@ public class CmsConfig {
         }
     }
 
+    // ───────── SCL ─────────
+
+    @Data
+    @Accessors(fluent = true)
+    public static class Scl {
+        /**
+         * 国网 Q/GDW 1396 符合性校验模式: LOOSE=仅国际标准(默认), STRICT=国网严格模式.
+         * <p>
+         * LOOSE keeps the historical behaviour; STRICT runs the Q/GDW 1396
+         * conformance check after loading the SCL file.
+         */
+        private String conformanceMode = "LOOSE";
+    }
+
     // ───────── Merge ─────────
 
     public void merge(CmsConfig other) {
@@ -260,6 +275,10 @@ public class CmsConfig {
         }
         if (other.security != null) {
             security.enabled = other.security.enabled;
+        }
+        if (other.scl != null) {
+            if (other.scl.conformanceMode != null && !other.scl.conformanceMode.equals("LOOSE"))
+                scl.conformanceMode = other.scl.conformanceMode;
         }
         if (other.client != null && other.client.console != null) {
             if (other.client.console.autoExec != null && !other.client.console.autoExec.isEmpty())

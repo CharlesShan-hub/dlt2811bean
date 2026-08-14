@@ -21,7 +21,7 @@ public abstract class BaseHandler {
      * flag. When enabled, prints directly to the real console (bypassing the HTTP
      * API capture stream so that trace output is never included in API responses).
      */
-    protected static void trace(String msg) {
+    public static void trace(String msg) {
         if (CmsConfigLoader.load().client().console().tracePdu()) {
             CmsPrinter.consoleOnly(msg);
         }

@@ -12,25 +12,27 @@ import java.io.IOException;
 /**
  * Encapsulates sending one request and decoding one response.
  * <p>
- * Used internally by {@link BaseClientHandler#send(CmsServiceInfo, BaseDao)}
- * to replace the raw {@code do-while} loop in the pagination path.
- * Usage:
+ * Used internally by {@link BaseClientHandler#send(CmsServiceInfo, BaseDao)} to
+ * replace the raw {@code do-while} loop in the pagination path. Usage:
  *
  * <pre>
- * {@code
- * PaginationIterator<Frame> it = new PaginationIterator<>(node, sc, dao,
- *     frame -> frame,
- *     frame -> { onError(frame); return ""; });
+ * {
+ *     &#64;code
+ *     PaginationIterator<Frame> it = new PaginationIterator<>(node, sc, dao, frame -> frame, frame -> {
+ *         onError(frame);
+ *         return "";
+ *     });
  *
- * while (it.hasNext()) {
- *     Frame frame = it.next();
- *     // process frame ...
- *     it.requestNext(cursor);  // continue to next page
- * }
+ *     while (it.hasNext()) {
+ *         Frame frame = it.next();
+ *         // process frame ...
+ *         it.requestNext(cursor); // continue to next page
+ *     }
  * }
  * </pre>
  *
- * @param <T> the decoded response type
+ * @param <T>
+ *            the decoded response type
  */
 public class PaginationIterator<T> {
 
@@ -53,14 +55,18 @@ public class PaginationIterator<T> {
     }
 
     /**
-     * @param node         the CMS node
-     * @param sc           the service info
-     * @param dao          the DAO (request builder)
-     * @param decoder      decodes a Frame into the response type
-     * @param errorDecoder decodes an error frame into a human-readable message
+     * @param node
+     *            the CMS node
+     * @param sc
+     *            the service info
+     * @param dao
+     *            the DAO (request builder)
+     * @param decoder
+     *            decodes a Frame into the response type
+     * @param errorDecoder
+     *            decodes an error frame into a human-readable message
      */
-    public PaginationIterator(CmsNode node, CmsServiceInfo sc, BaseDao dao,
-                              Decoder<T> decoder, ErrorDecoder errorDecoder) {
+    public PaginationIterator(CmsNode node, CmsServiceInfo sc, BaseDao dao, Decoder<T> decoder, ErrorDecoder errorDecoder) {
         this.node = node;
         this.sc = sc;
         this.dao = dao;
@@ -69,9 +75,8 @@ public class PaginationIterator<T> {
     }
 
     /**
-     * Returns {@code true} if more requests can be sent.
-     * Returns {@code false} after an error, timeout, or explicit
-     * {@link #kill()}.
+     * Returns {@code true} if more requests can be sent. Returns {@code false}
+     * after an error, timeout, or explicit {@link #kill()}.
      */
     public boolean hasNext() {
         return alive;
@@ -80,8 +85,8 @@ public class PaginationIterator<T> {
     /**
      * Sends one request and returns the decoded response.
      * <p>
-     * Does NOT handle cursor advancement or loop control — that is the
-     * caller's responsibility.
+     * Does NOT handle cursor advancement or loop control — that is the caller's
+     * responsibility.
      */
     public T next() throws IOException {
         if (!alive)
@@ -111,8 +116,8 @@ public class PaginationIterator<T> {
     }
 
     /**
-     * Signal that the next page should be fetched.
-     * If {@code cursor} is null or empty, the iterator is exhausted.
+     * Signal that the next page should be fetched. If {@code cursor} is null or
+     * empty, the iterator is exhausted.
      */
     public void requestNext(String cursor) {
         if (cursor != null && !cursor.isEmpty()) {

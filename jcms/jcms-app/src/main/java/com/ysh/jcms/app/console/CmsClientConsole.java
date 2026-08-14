@@ -231,6 +231,7 @@ public class CmsClientConsole extends CmsConsole {
         register(new ApDirHandler());
         register(new ApCfgHandler());
         register(new NegCfgHandler());
+        register(new ConformanceHandler());
         register(new SvrDirConsole());
         register(new LdDirConsole());
         register(new LnDirConsole());

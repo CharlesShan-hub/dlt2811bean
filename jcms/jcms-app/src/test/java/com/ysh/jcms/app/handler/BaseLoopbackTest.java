@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.handler;
 
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
 import com.ysh.jcms.app.handler.connection.associate.AssociateDao;
 import com.ysh.jcms.app.handler.connection.associate.AssociateServer;

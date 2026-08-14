@@ -45,6 +45,11 @@ jcms-scl 负责解析 **SCD（Substation Configuration Description）** 和 **IC
          │  CbStateManager (CbStateStore / Association) │
          │  (六种控制块运行时状态，分层存储)              │
          └──────────────────────────────────────────────┘
+         ┌──────────────────────────────────────────────┐
+         │           conformance 系（国网符合性）        │
+         │  SclConformanceCheck (Q/GDW 1396 校验引擎)    │
+         │  GwLdInst / GwSubNetwork / GwLnPrefix 规则表  │
+         └──────────────────────────────────────────────┘
 ```
 
 ## 子包结构
@@ -113,6 +118,15 @@ scl/
     ├── CbStateManager.java      — 统一门面（RCB/LCB/GOCB/MSVCB + ASSOCIATION）
     ├── CbStateStore.java        — RUNTIME 层泛型存储（进程内，按 ref，ConcurrentHashMap）
     └── CbAssociationStore.java  — ASSOCIATION 层泛型存储（按会话隔离，连接断开清除）
+
+└── conformance/            — 国网 Q/GDW 1396 符合性校验（2026-08 新增）
+    ├── SclConformanceMode.java  — 模式枚举（LOOSE=仅国际标准 / STRICT=国网严格）
+    ├── SclConformanceSeverity.java — 严重级别（ERROR=应 / WARN=宜 / INFO=资料性）
+    ├── SclConformanceIssue.java — 单条发现（severity + category + clause + ref + message）
+    ├── SclConformanceCheck.java — 校验引擎（纯静态，R1 命名 + R2 结构 + R3 通信参数）
+    ├── GwLdInst.java            — §7.1.3 LD 实例名表（LD0/MEAS/PROT/CTRL/PIGO/PISV/RPIT/RCD/MUGO/MUSV）
+    ├── GwSubNetwork.java        — §6.5.1 子网名表（Subnetwork_Stationbus/Processbus）
+    └── GwLnPrefix.java          — 附录 I LN 前缀示例表（CB/QG/PctDif/Lin…，INFO 级）
 ```
 
 ---
@@ -326,6 +340,44 @@ CmsData data = DataConverter.toCmsData(dv);
 
 ---
 
+### 10. Conformance 系 — 国网 Q/GDW 1396 符合性校验
+
+对标对象：**Q/GDW 1396-2012《IEC 61850 工程继电保护应用模型》**（国网企业标准，文档已入库 `cms/assets/guowang/`）。国际标准管"合法的元素有哪些"，1396 管"国网必须怎么命名/组织"。
+
+**模式开关**（配置 `cms.scl.conformanceMode`，默认 `LOOSE` 完全不影响现有行为）：
+
+| 模式 | 行为 |
+|------|------|
+| `LOOSE`（默认） | 只做国际标准解析，不跑任何国网检查 |
+| `STRICT` | SclManager 加载 SCD 后自动跑校验，ERROR 打 warn 日志、WARN/INFO 打 info 日志，结果缓存可查询 |
+
+**校验规则**（`SclConformanceCheck.check(doc, mode)`，纯静态无状态）：
+
+| 规则族 | 条款 | 规则 | 级别 |
+|--------|------|------|------|
+| R1 命名 | §7.1.3 | LD 实例名 ∈ {LD0/MEAS/PROT/CTRL/PIGO/PISV/RPIT/RCD/MUGO/MUSV}，可加两位数字尾缀 | ERROR |
+| R1 命名 | §6.5.1 | SubNetwork 名宜为 Subnetwork_Stationbus / Subnetwork_Processbus | WARN |
+| R1 命名 | 附录 I | LN 前缀宜符合功能缩写示例（CB/QG/PctDif/Lin…） | INFO |
+| R2 结构 | §7.1.1 | 每个 LD 必须含 LLN0、LPHD，且至少 3 个 LN | ERROR |
+| R2 结构 | §7.1.2 | GOOSE 与 SV 服务必须分访问点建模 | ERROR |
+| R2 结构 | §6.2 | IED 必含 manufacturer/type/configVersion | ERROR |
+| R2 结构 | §6.2 | LD/LN 宜含中文 desc；DOI 宜含 desc + dU 赋值 | WARN |
+| R2 结构 | §7.2.2 | dsParameter 必须 FC=SP；dsSetting 必须 FC=SG | ERROR |
+| R2 结构 | §7.1.3 | 数据集成员不得跨 LD | ERROR |
+| R3 通信 | §6.5.2 | GSE APPID 必须为 4 位十六进制且 ≤ 3FFF | ERROR |
+| R3 通信 | §6.5.3 | SMV APPID 必须为 4 位十六进制且在 4000~7FFF | ERROR |
+| R3 通信 | §6.5.2/6.5.3 | VLAN-ID 必须为 3 位十六进制 | ERROR |
+| R3 通信 | §6.5.2 | GSE MinTime/MaxTime 典型值 2ms/5000ms | WARN |
+
+**三个入口**：
+1. **加载自动跑**：`SclManager`（jcms-app）在 `load()` 成功后按配置跑校验并打日志
+2. **查询 API**：`SclManager.conformanceIssues()` 返回最近一次加载的发现列表
+3. **控制台命令**：`scl-check [--scd path] [--mode strict|loose]` 按需校验并输出 JSON（含 severity 统计）
+
+规则表（LD 名、子网名、前缀）为 Java 枚举常量，编译期检查、零外部资源依赖；`SclConformanceMode.from()` 对配置串宽松解析，拼错值自动回落 LOOSE。
+
+---
+
 ## 使用流程（完整链路）
 
 ```
@@ -363,6 +415,7 @@ CmsData data = DataConverter.toCmsData(dv);
 - **convert**：`DataValueResolverTest`、`DataDefinitionResolverTest`、`DataConverterTest`、`TypeMapperTest`、`ValueMapperTest`、`DataSetResolverTest`、`CbConverterTest`、`DataWriterResolverTest`
 - **service**：`SclDirectoryServiceTest`（8.3 目录）、`SclControlBlockServiceTest`（控制块 ref 解析 + 运行时 overlay）
 - **state**：`CbStateStoreTest`（RUNTIME / ASSOCIATION 分层存储 + 门面生命周期）
+- **conformance**：`SclConformanceCheckTest`（sample 发现断言 + 手工构造文档覆盖 R1/R2/R3 全部规则族）
 
 ---
 
@@ -377,5 +430,6 @@ CmsData data = DataConverter.toCmsData(dv);
 5. **轻量扫描扩展**：`SclReader.scanLdLns()`（IED/AP → LD/LN 秒级目录），与 `scanAccessPoints`/`read` 共用防 XXE 的 `createSafeFactory()`。
 6. **清理历史计划文档**：删除源码目录内过期的 `PLAN.md`，后续方向并入本文档。
 7. **service / state 补单测**：新增 3 个测试类（见上节），共 26 个用例。
+8. **国网 Q/GDW 1396 符合性校验**：新增 `conformance` 子包（校验引擎 + 规则表枚举），配置 `scl.conformanceMode` 切换 LOOSE/STRICT；SclManager 加载后自动跑并缓存结果，新增 `scl-check` 控制台命令按需查询（R1 命名 + R2 结构 + R3 通信参数，共 13 条规则）。
 
-仍可继续推进的方向：SCL 序列化回写、轻量扫描覆盖数据集/控制块候选、CID 与 ICD 细分、`findLdInst` 索引化。
+仍可继续推进的方向：SCL 序列化回写、轻量扫描覆盖数据集/控制块候选、CID 与 ICD 细分、`findLdInst` 索引化；国网侧：R4 附录 A/B 必选 DO 表校验（Phase C）、字段级"国网未使用"注释标注（Phase D）、收集真实"六统一"国网 SCD 提炼规则。

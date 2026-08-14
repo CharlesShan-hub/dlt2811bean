@@ -11,16 +11,9 @@ import java.util.regex.Pattern;
  */
 public enum GwLdInst {
 
-    LD0("Common LD"),
-    MEAS("Measurement LD"),
-    PROT("Protection LD"),
-    CTRL("Control LD"),
-    PIGO("GOOSE process-bus LD"),
-    PISV("SV process-bus LD"),
-    RPIT("Smart terminal LD (Remote Process Interface Terminal)"),
-    RCD("Fault recorder LD"),
-    MUGO("Merging unit GOOSE LD"),
-    MUSV("Merging unit SV LD");
+    LD0("Common LD"), MEAS("Measurement LD"), PROT("Protection LD"), CTRL("Control LD"), PIGO("GOOSE process-bus LD"), PISV(
+            "SV process-bus LD"), RPIT("Smart terminal LD (Remote Process Interface Terminal)"), RCD(
+                    "Fault recorder LD"), MUGO("Merging unit GOOSE LD"), MUSV("Merging unit SV LD");
 
     /** Two-digit numeric suffix, e.g. "01" in PIGO01. */
     private static final Pattern SUFFIX_2DIGIT = Pattern.compile("\\d{2}");

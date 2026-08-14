@@ -24,6 +24,7 @@ public enum CommandInfo {
     AP_DIR("ap-dir", "列出 SCD 中所有可用的 AccessPoint", Requirement.NONE),
     AP_CFG("ap-cfg", "查看/修改 AP 来源配置", Requirement.NONE),
     NEG_CFG("neg-cfg", "查看/修改协商参数", Requirement.NONE),
+    SCL_CHECK("scl-check", "按 Q/GDW 1396 校验 SCL 文件（国网符合性检查）", Requirement.NONE),
 
     // ── 目录服务 ──
     SERVER_DIR("server-dir", "获取逻辑设备目录", Requirement.ASSOCIATED),

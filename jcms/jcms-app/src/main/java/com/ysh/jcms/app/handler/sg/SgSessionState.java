@@ -1,5 +1,7 @@
 package com.ysh.jcms.app.handler.sg;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -83,6 +85,72 @@ public class SgSessionState {
         }
         public ConcurrentMap<String, byte[]> getCommittedValues() {
             return committedValues;
+        }
+
+        // ── Memento ────────────────────────────────────────────────
+
+        /**
+         * Immutable snapshot of the entire SgcState.
+         * <p>
+         * Standard Memento pattern: Originator (SgcState) creates a Memento
+         * before mutation, and restores from it to rollback.
+         */
+        public static class Memento {
+            private final int actSG;
+            private final int editSG;
+            private final Map<String, byte[]> editValues;
+            private final Map<String, byte[]> committedValues;
+
+            Memento(int actSG, int editSG, Map<String, byte[]> editValues, Map<String, byte[]> committedValues) {
+                this.actSG = actSG;
+                this.editSG = editSG;
+                this.editValues = editValues;
+                this.committedValues = committedValues;
+            }
+        }
+
+        /**
+         * Capture current state into a Memento.
+         * {@code editValues} and {@code committedValues} are defensively copied.
+         */
+        public Memento saveToMemento() {
+            return new Memento(actSG.get(), editSG.get(),
+                    new HashMap<>(editValues), new HashMap<>(committedValues));
+        }
+
+        /**
+         * Restore state from a previously captured Memento.
+         * Replaces all fields atomically.
+         */
+        public void restoreFromMemento(Memento m) {
+            this.actSG.set(m.actSG);
+            this.editSG.set(m.editSG);
+            this.editValues.clear();
+            this.editValues.putAll(m.editValues);
+            this.committedValues.clear();
+            this.committedValues.putAll(m.committedValues);
+        }
+    }
+
+    // ── Caretaker (static) ────────────────────────────────────────
+
+    /**
+     * Save the session's current state as a Memento.
+     * Returns {@code null} if no state exists for the session.
+     */
+    public static SgcState.Memento saveState(String sessionId) {
+        SgcState state = SESSION_STATES.get(sessionId);
+        return state != null ? state.saveToMemento() : null;
+    }
+
+    /**
+     * Restore the session's state from a previously saved Memento.
+     * Does nothing if no state exists for the session.
+     */
+    public static void restoreState(String sessionId, SgcState.Memento memento) {
+        SgcState state = SESSION_STATES.get(sessionId);
+        if (state != null) {
+            state.restoreFromMemento(memento);
         }
     }
 }

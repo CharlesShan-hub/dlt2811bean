@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getAllDataDefinition;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
-import com.ysh.jcms.app.handler.CmsClientOperator;
+import com.ysh.jcms.app.handler.support.CmsClientOperator;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllDataDefinitionError;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllDataDefinitionResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;

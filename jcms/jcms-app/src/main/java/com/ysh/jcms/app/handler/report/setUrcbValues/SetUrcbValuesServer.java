@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.report.setUrcbValues;
 
-import com.ysh.jcms.app.handler.SetCbValuesServer;
+import com.ysh.jcms.app.handler.support.SetCbValuesServer;
 import com.ysh.jcms.app.handler.report.report.ReportEngine;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;

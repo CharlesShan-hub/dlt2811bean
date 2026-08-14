@@ -111,10 +111,9 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     }
 
     /**
-     * Internal pagination loop. Uses {@link PaginationIterator} to send
-     * requests and decode responses. Calls {@link #onSuccess(Frame, BaseDao)}
-     * for each page, and {@link #setPaginationCursor(BaseDao, String)} to
-     * advance the cursor.
+     * Internal pagination loop. Uses {@link PaginationIterator} to send requests
+     * and decode responses. Calls {@link #onSuccess(Frame, BaseDao)} for each page,
+     * and {@link #setPaginationCursor(BaseDao, String)} to advance the cursor.
      */
     private Frame sendWithPagination(CmsServiceInfo sc, D dao, CmsContent<D> content) throws IOException {
         PaginationContext ctx = content.paginationContext();
@@ -125,8 +124,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
             onError(frame);
             return "Request failed for " + sc;
         };
-        PaginationIterator<Frame> it = new PaginationIterator<>(node, sc, dao,
-                frame -> frame, errDecoder);
+        PaginationIterator<Frame> it = new PaginationIterator<>(node, sc, dao, frame -> frame, errDecoder);
 
         Frame frame = null;
         int iterations = 0;

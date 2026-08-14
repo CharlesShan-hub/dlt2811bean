@@ -17,8 +17,8 @@ public enum SclConformanceMode {
     STRICT;
 
     /**
-     * Lenient parser for config strings: any value other than "STRICT" falls
-     * back to LOOSE, so a typo in the configuration can never break startup.
+     * Lenient parser for config strings: any value other than "STRICT" falls back
+     * to LOOSE, so a typo in the configuration can never break startup.
      *
      * @param s
      *            raw config value (may be null)

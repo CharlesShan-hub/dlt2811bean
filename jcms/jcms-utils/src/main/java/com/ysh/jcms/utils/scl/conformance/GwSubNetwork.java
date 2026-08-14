@@ -8,8 +8,7 @@ package com.ysh.jcms.utils.scl.conformance;
  */
 public enum GwSubNetwork {
 
-    Subnetwork_Stationbus("Station bus"),
-    Subnetwork_Processbus("Process bus");
+    Subnetwork_Stationbus("Station bus"), Subnetwork_Processbus("Process bus");
 
     private final String desc;
 

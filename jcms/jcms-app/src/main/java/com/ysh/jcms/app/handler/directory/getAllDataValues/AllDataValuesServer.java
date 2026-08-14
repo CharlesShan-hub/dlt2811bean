@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getAllDataValues;
 
 import com.ysh.jcms.app.handler.base.BaseServerHandler;
-import com.ysh.jcms.app.handler.CursorSlicer;
+import com.ysh.jcms.app.handler.support.CursorSlicer;
 import com.ysh.jcms.core.data.choice.CmsReferenceChoice;
 import com.ysh.jcms.core.data.sequence.directory.CmsDataValueEntry;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllDataValuesError;

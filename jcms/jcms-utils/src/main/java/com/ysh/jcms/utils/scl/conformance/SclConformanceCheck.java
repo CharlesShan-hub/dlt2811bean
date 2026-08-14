@@ -17,9 +17,14 @@ import com.ysh.jcms.utils.scl.model.input.SclFCDA;
 import com.ysh.jcms.utils.scl.model.instance.SclDAI;
 import com.ysh.jcms.utils.scl.model.instance.SclDOI;
 import com.ysh.jcms.utils.scl.model.SclVal;
+import com.ysh.jcms.utils.scl.model.template.SclDO;
+import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.scl.model.template.SclLNodeType;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Q/GDW 1396-2012 conformance checker for SCL documents.
@@ -28,8 +33,8 @@ import java.util.List;
  * checker walks the parsed {@link SclDocument} model and produces
  * {@link SclConformanceIssue} findings grouped by rule family:
  * <ul>
- * <li>R1 naming — LD instance names (§7.1.3), SubNetwork names (§6.5.1),
- * LN prefixes (Appendix I)</li>
+ * <li>R1 naming — LD instance names (§7.1.3), SubNetwork names (§6.5.1), LN
+ * prefixes (Appendix I)</li>
  * <li>R2 structure — minimal LN set per LD (§7.1.1), GOOSE/SV access-point
  * separation (§7.1.2), IED nameplate and Chinese descriptions (§6.2), data set
  * scope (§7.1.3 / §7.2.2)</li>
@@ -52,6 +57,7 @@ public final class SclConformanceCheck {
     private static final String CAT_DATASET = "DATASET";
     private static final String CAT_IED_INFO = "IED-INFO";
     private static final String CAT_COMM_PARAM = "COMM-PARAM";
+    private static final String CAT_LN_TEMPLATE = "LN-TEMPLATE";
 
     private SclConformanceCheck() {
     }
@@ -85,6 +91,7 @@ public final class SclConformanceCheck {
         checkSubNetworkNaming(doc, issues);
         checkLnPrefix(doc, issues);
         checkLdMinLn(doc, issues);
+        checkRequiredDo(doc, issues);
         checkDataSetFc(doc, issues);
         checkDataSetNotCrossLd(doc, issues);
         checkAccessPointSeparation(doc, issues);
@@ -98,7 +105,10 @@ public final class SclConformanceCheck {
 
     // ==================== R1 naming ====================
 
-    /** §7.1.3 - LD instance name must be one of the ten reserved names (or + 2-digit suffix). */
+    /**
+     * §7.1.3 - LD instance name must be one of the ten reserved names (or + 2-digit
+     * suffix).
+     */
     private static void checkLdInstNaming(SclDocument doc, List<SclConformanceIssue> issues) {
         for (SclIED ied : doc.ieds()) {
             for (SclAccessPoint ap : ied.accessPoints()) {
@@ -108,10 +118,7 @@ public final class SclConformanceCheck {
                 for (SclLDevice ld : srv.lDevices()) {
                     String inst = ld.inst();
                     if (!GwLdInst.isAllowed(inst)) {
-                        issues.add(new SclConformanceIssue()
-                                .severity(SclConformanceSeverity.ERROR)
-                                .category(CAT_LD_NAMING)
-                                .clause("7.1.3")
+                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_LD_NAMING).clause("7.1.3")
                                 .ref(ied.name() + "/" + inst)
                                 .message("LD instance '" + inst + "' is not a Q/GDW 1396 logical device name (allowed: "
                                         + GwLdInst.allowedNames() + ", optionally with a 2-digit suffix)"));
@@ -121,26 +128,27 @@ public final class SclConformanceCheck {
         }
     }
 
-    /** §6.5.1 - SubNetwork should be named Subnetwork_Stationbus / Subnetwork_Processbus. */
+    /**
+     * §6.5.1 - SubNetwork should be named Subnetwork_Stationbus /
+     * Subnetwork_Processbus.
+     */
     private static void checkSubNetworkNaming(SclDocument doc, List<SclConformanceIssue> issues) {
         SclCommunication comm = doc.communication();
         if (comm == null)
             return;
         for (SclSubNetwork sn : comm.subNetworks()) {
             if (!GwSubNetwork.isAllowed(sn.name())) {
-                issues.add(new SclConformanceIssue()
-                        .severity(SclConformanceSeverity.WARN)
-                        .category(CAT_SUB_NETWORK)
-                        .clause("6.5.1")
-                        .ref(sn.name())
-                        .message("SubNetwork '" + sn.name()
-                                + "' deviates from the recommended Q/GDW 1396 names (allowed: "
+                issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.WARN).category(CAT_SUB_NETWORK).clause("6.5.1")
+                        .ref(sn.name()).message("SubNetwork '" + sn.name() + "' deviates from the recommended Q/GDW 1396 names (allowed: "
                                 + GwSubNetwork.allowedNames() + ")"));
             }
         }
     }
 
-    /** Appendix I (informative) - LN prefix should follow the functional-abbreviation examples. */
+    /**
+     * Appendix I (informative) - LN prefix should follow the
+     * functional-abbreviation examples.
+     */
     private static void checkLnPrefix(SclDocument doc, List<SclConformanceIssue> issues) {
         for (SclIED ied : doc.ieds()) {
             for (SclAccessPoint ap : ied.accessPoints()) {
@@ -151,13 +159,9 @@ public final class SclConformanceCheck {
                     for (SclLN ln : ld.lns()) {
                         String prefix = ln.prefix();
                         if (!GwLnPrefix.matches(prefix)) {
-                            issues.add(new SclConformanceIssue()
-                                    .severity(SclConformanceSeverity.INFO)
-                                    .category(CAT_LN_PREFIX)
-                                    .clause("Appendix I")
-                                    .ref(ied.name() + "/" + ld.inst() + "/" + ln.getFullName())
-                                    .message("LN prefix '" + prefix
-                                            + "' does not match any Q/GDW 1396 Appendix I example (e.g. CB, QG, PctDif, Lin)"));
+                            issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.INFO).category(CAT_LN_PREFIX)
+                                    .clause("Appendix I").ref(ied.name() + "/" + ld.inst() + "/" + ln.getFullName()).message("LN prefix '"
+                                            + prefix + "' does not match any Q/GDW 1396 Appendix I example (e.g. CB, QG, PctDif, Lin)"));
                         }
                     }
                 }
@@ -186,25 +190,27 @@ public final class SclConformanceCheck {
                             hasLphd = true;
                     }
                     if (!hasLln0) {
-                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_STRUCTURE)
-                                .clause("7.1.1").ref(ref).message("LD has no LLN0 logical node"));
+                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_STRUCTURE).clause("7.1.1")
+                                .ref(ref).message("LD has no LLN0 logical node"));
                     }
                     if (!hasLphd) {
-                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_STRUCTURE)
-                                .clause("7.1.1").ref(ref).message("LD has no LPHD logical node"));
+                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_STRUCTURE).clause("7.1.1")
+                                .ref(ref).message("LD has no LPHD logical node"));
                     }
                     if (ld.lns().size() < 3) {
-                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_STRUCTURE)
-                                .clause("7.1.1").ref(ref)
-                                .message("LD must contain at least 3 LNs (LLN0, LPHD and one application LN); found "
-                                        + ld.lns().size()));
+                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_STRUCTURE).clause("7.1.1")
+                                .ref(ref)
+                                .message("LD must contain at least 3 LNs (LLN0, LPHD and one application LN); found " + ld.lns().size()));
                     }
                 }
             }
         }
     }
 
-    /** §7.1.2 - process-bus GOOSE and SV services must be modelled on separate access points. */
+    /**
+     * §7.1.2 - process-bus GOOSE and SV services must be modelled on separate
+     * access points.
+     */
     private static void checkAccessPointSeparation(SclDocument doc, List<SclConformanceIssue> issues) {
         for (SclIED ied : doc.ieds()) {
             for (SclAccessPoint ap : ied.accessPoints()) {
@@ -222,15 +228,17 @@ public final class SclConformanceCheck {
                     }
                 }
                 if (hasGse && hasSmv) {
-                    issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_STRUCTURE)
-                            .clause("7.1.2").ref(ied.name() + "/" + ap.name())
+                    issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_STRUCTURE).clause("7.1.2")
+                            .ref(ied.name() + "/" + ap.name())
                             .message("Access point hosts both GOOSE and SV services; they must be modelled on separate access points"));
                 }
             }
         }
     }
 
-    /** §7.2.2 - dsParameter must be an FC=SP set; dsSetting must be an FC=SG set. */
+    /**
+     * §7.2.2 - dsParameter must be an FC=SP set; dsSetting must be an FC=SG set.
+     */
     private static void checkDataSetFc(SclDocument doc, List<SclConformanceIssue> issues) {
         for (SclIED ied : doc.ieds()) {
             for (SclAccessPoint ap : ied.accessPoints()) {
@@ -251,9 +259,8 @@ public final class SclConformanceCheck {
                             String ref = ied.name() + "/" + ld.inst() + "/" + ln.getFullName() + "." + ds.name();
                             for (SclFCDA fcda : ds.fcDas()) {
                                 if (!expectedFc.equals(fcda.fc())) {
-                                    issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR)
-                                            .category(CAT_DATASET).clause("7.2.2").ref(ref)
-                                            .message("Data set '" + ds.name() + "' must be an FC=" + expectedFc
+                                    issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_DATASET)
+                                            .clause("7.2.2").ref(ref).message("Data set '" + ds.name() + "' must be an FC=" + expectedFc
                                                     + " set, but member " + fcda.buildFcdaRef() + " has fc=" + fcda.fc()));
                                 }
                             }
@@ -278,10 +285,9 @@ public final class SclConformanceCheck {
                             for (SclFCDA fcda : ds.fcDas()) {
                                 String memberLd = fcda.ldInst();
                                 if (memberLd != null && !memberLd.isEmpty() && !memberLd.equals(ld.inst())) {
-                                    issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR)
-                                            .category(CAT_DATASET).clause("7.1.3").ref(ref)
-                                            .message("Data set member " + fcda.buildFcdaRef()
-                                                    + " crosses logical device '" + memberLd
+                                    issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_DATASET)
+                                            .clause("7.1.3").ref(ref)
+                                            .message("Data set member " + fcda.buildFcdaRef() + " crosses logical device '" + memberLd
                                                     + "'; data set members must stay within the owning LD"));
                                 }
                             }
@@ -292,21 +298,24 @@ public final class SclConformanceCheck {
         }
     }
 
-    /** §6.2 - IED must carry manufacturer/type/configVersion; LD/LN/DOI should carry Chinese desc and dU. */
+    /**
+     * §6.2 - IED must carry manufacturer/type/configVersion; LD/LN/DOI should carry
+     * Chinese desc and dU.
+     */
     private static void checkIedBasicInfo(SclDocument doc, List<SclConformanceIssue> issues) {
         for (SclIED ied : doc.ieds()) {
             String ref = ied.name();
             if (isBlank(ied.manufacturer())) {
-                issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_IED_INFO)
-                        .clause("6.2 c").ref(ref).message("IED is missing the manufacturer attribute"));
+                issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_IED_INFO).clause("6.2 c").ref(ref)
+                        .message("IED is missing the manufacturer attribute"));
             }
             if (isBlank(ied.type())) {
-                issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_IED_INFO)
-                        .clause("6.2 c").ref(ref).message("IED is missing the type (model) attribute"));
+                issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_IED_INFO).clause("6.2 c").ref(ref)
+                        .message("IED is missing the type (model) attribute"));
             }
             if (isBlank(ied.configVersion())) {
-                issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_IED_INFO)
-                        .clause("6.2 c").ref(ref).message("IED is missing the configVersion attribute"));
+                issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_IED_INFO).clause("6.2 c").ref(ref)
+                        .message("IED is missing the configVersion attribute"));
             }
             for (SclAccessPoint ap : ied.accessPoints()) {
                 SclServer srv = ap.server();
@@ -315,26 +324,24 @@ public final class SclConformanceCheck {
                 for (SclLDevice ld : srv.lDevices()) {
                     String ldRef = ied.name() + "/" + ld.inst();
                     if (isBlank(ld.desc())) {
-                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.WARN).category(CAT_IED_INFO)
-                                .clause("6.2 a").ref(ldRef).message("LD should carry a Chinese desc attribute"));
+                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.WARN).category(CAT_IED_INFO).clause("6.2 a")
+                                .ref(ldRef).message("LD should carry a Chinese desc attribute"));
                     }
                     for (SclLN ln : ld.lns()) {
                         String lnRef = ldRef + "/" + ln.getFullName();
                         if (isBlank(ln.desc())) {
-                            issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.WARN)
-                                    .category(CAT_IED_INFO).clause("6.2 a").ref(lnRef)
-                                    .message("LN should carry a Chinese desc attribute"));
+                            issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.WARN).category(CAT_IED_INFO)
+                                    .clause("6.2 a").ref(lnRef).message("LN should carry a Chinese desc attribute"));
                         }
                         for (SclDOI doi : ln.dois()) {
                             String doiRef = lnRef + "." + doi.name();
                             if (isBlank(doi.desc())) {
-                                issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.WARN)
-                                        .category(CAT_IED_INFO).clause("6.2 b").ref(doiRef)
-                                        .message("DOI should carry a Chinese desc attribute"));
+                                issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.WARN).category(CAT_IED_INFO)
+                                        .clause("6.2 b").ref(doiRef).message("DOI should carry a Chinese desc attribute"));
                             }
                             if (!hasDuValue(doi)) {
-                                issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.WARN)
-                                        .category(CAT_IED_INFO).clause("6.2 b").ref(doiRef)
+                                issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.WARN).category(CAT_IED_INFO)
+                                        .clause("6.2 b").ref(doiRef)
                                         .message("DOI should assign the dU data attribute (display unit) consistent with its desc"));
                             }
                         }
@@ -360,13 +367,11 @@ public final class SclConformanceCheck {
                         continue;
                     Integer hex = parseHex(appId);
                     if (hex == null || appId.length() != 4) {
-                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_COMM_PARAM)
-                                .clause("6.5.2").ref(ref)
-                                .message("GSE APPID '" + appId + "' must be a 4-digit hexadecimal value"));
+                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_COMM_PARAM).clause("6.5.2")
+                                .ref(ref).message("GSE APPID '" + appId + "' must be a 4-digit hexadecimal value"));
                     } else if (hex > 0x3FFF) {
-                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_COMM_PARAM)
-                                .clause("6.5.2").ref(ref)
-                                .message("GSE APPID '" + appId + "' is out of the 0000-3FFF range"));
+                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_COMM_PARAM).clause("6.5.2")
+                                .ref(ref).message("GSE APPID '" + appId + "' is out of the 0000-3FFF range"));
                     }
                 }
             }
@@ -387,13 +392,11 @@ public final class SclConformanceCheck {
                         continue;
                     Integer hex = parseHex(appId);
                     if (hex == null || appId.length() != 4) {
-                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_COMM_PARAM)
-                                .clause("6.5.3").ref(ref)
-                                .message("SMV APPID '" + appId + "' must be a 4-digit hexadecimal value"));
+                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_COMM_PARAM).clause("6.5.3")
+                                .ref(ref).message("SMV APPID '" + appId + "' must be a 4-digit hexadecimal value"));
                     } else if (hex < 0x4000 || hex > 0x7FFF) {
-                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_COMM_PARAM)
-                                .clause("6.5.3").ref(ref)
-                                .message("SMV APPID '" + appId + "' is out of the 4000-7FFF range"));
+                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_COMM_PARAM).clause("6.5.3")
+                                .ref(ref).message("SMV APPID '" + appId + "' is out of the 4000-7FFF range"));
                     }
                 }
             }
@@ -417,13 +420,12 @@ public final class SclConformanceCheck {
         }
     }
 
-    private static void checkVlanIdValue(List<SclConformanceIssue> issues, SclConnectedAP cap, String block,
-            String vlanId) {
+    private static void checkVlanIdValue(List<SclConformanceIssue> issues, SclConnectedAP cap, String block, String vlanId) {
         if (vlanId == null)
             return;
         if (!isHexDigits(vlanId, 3)) {
-            issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_COMM_PARAM)
-                    .clause("6.5.2").ref(cap.iedName() + "/" + cap.apName() + "/" + block)
+            issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.ERROR).category(CAT_COMM_PARAM).clause("6.5.2")
+                    .ref(cap.iedName() + "/" + cap.apName() + "/" + block)
                     .message("VLAN-ID '" + vlanId + "' must be a 3-digit hexadecimal value"));
         }
     }
@@ -439,15 +441,13 @@ public final class SclConformanceCheck {
                     String ref = cap.iedName() + "/" + cap.apName() + "/GSE(" + gse.cbName() + ")";
                     Integer minTime = parseInt(gse.minTime());
                     if (minTime != null && minTime != 2) {
-                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.WARN).category(CAT_COMM_PARAM)
-                                .clause("6.5.2").ref(ref)
-                                .message("GSE MinTime is " + minTime + "ms; typical value is 2ms"));
+                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.WARN).category(CAT_COMM_PARAM).clause("6.5.2")
+                                .ref(ref).message("GSE MinTime is " + minTime + "ms; typical value is 2ms"));
                     }
                     Integer maxTime = parseInt(gse.maxTime());
                     if (maxTime != null && maxTime != 5000) {
-                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.WARN).category(CAT_COMM_PARAM)
-                                .clause("6.5.2").ref(ref)
-                                .message("GSE MaxTime is " + maxTime + "ms; typical value is 5000ms"));
+                        issues.add(new SclConformanceIssue().severity(SclConformanceSeverity.WARN).category(CAT_COMM_PARAM).clause("6.5.2")
+                                .ref(ref).message("GSE MaxTime is " + maxTime + "ms; typical value is 5000ms"));
                     }
                 }
             }
@@ -457,8 +457,8 @@ public final class SclConformanceCheck {
     // ==================== helpers ====================
 
     /**
-     * Whether the DOI assigns the dU data attribute (display unit, template DA
-     * dU of the LPL CDC, fc=DC) with a non-empty instance value.
+     * Whether the DOI assigns the dU data attribute (display unit, template DA dU
+     * of the LPL CDC, fc=DC) with a non-empty instance value.
      */
     private static boolean hasDuValue(SclDOI doi) {
         for (SclDAI dai : doi.dais()) {
