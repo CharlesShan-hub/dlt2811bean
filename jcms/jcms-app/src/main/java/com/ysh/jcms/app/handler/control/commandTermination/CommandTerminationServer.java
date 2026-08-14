@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.control.commandTermination;
 
-import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.base.BaseServerHandler;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.pdu.control.CmsCommandTermination;
 import com.ysh.jcms.core.info.CmsServiceInfo;

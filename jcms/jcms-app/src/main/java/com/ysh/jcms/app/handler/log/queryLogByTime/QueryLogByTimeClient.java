@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.log.queryLogByTime;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.sequence.log.CmsLogDataEntry;
 import com.ysh.jcms.core.data.sequence.log.CmsLogEntry;
 import com.ysh.jcms.core.pdu.log.CmsQueryLogByTimeError;

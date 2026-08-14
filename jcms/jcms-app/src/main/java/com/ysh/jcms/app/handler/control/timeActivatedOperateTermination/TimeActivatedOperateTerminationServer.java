@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.control.timeActivatedOperateTermination;
 
-import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.base.BaseServerHandler;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.pdu.control.CmsTimeActivatedOperateTermination;
 import com.ysh.jcms.core.info.CmsServiceInfo;

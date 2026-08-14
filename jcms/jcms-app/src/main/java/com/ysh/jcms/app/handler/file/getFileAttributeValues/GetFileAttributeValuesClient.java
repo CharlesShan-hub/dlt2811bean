@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.file.getFileAttributeValues;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.file.CmsGetFileAttributeValuesError;
 import com.ysh.jcms.core.pdu.file.CmsGetFileAttributeValuesResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;

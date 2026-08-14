@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.connection.abort;
 
-import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.pdu.connection.CmsAbort;
 import lombok.Setter;

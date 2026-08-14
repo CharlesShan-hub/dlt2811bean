@@ -1,5 +1,6 @@
-package com.ysh.jcms.app.handler;
+package com.ysh.jcms.app.handler.support;
 
+import com.ysh.jcms.app.handler.base.BaseServerHandler;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 
 /**

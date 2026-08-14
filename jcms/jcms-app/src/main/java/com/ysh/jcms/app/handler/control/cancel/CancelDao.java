@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.control.cancel;
 
-import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.core.data.choice.CmsData;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.sequence.common.CmsOriginator;

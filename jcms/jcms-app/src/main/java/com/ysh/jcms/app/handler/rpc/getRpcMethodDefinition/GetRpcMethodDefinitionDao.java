@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.rpc.getRpcMethodDefinition;
 
-import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.scalar.CmsString;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcMethodDefinitionRequest;

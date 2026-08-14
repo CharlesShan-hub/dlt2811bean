@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.connection.release;
 
-import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.base.BaseServerHandler;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.pdu.connection.CmsReleaseError;
 import com.ysh.jcms.core.pdu.connection.CmsReleaseRequest;

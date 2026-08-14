@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.goose.setGoCbValues;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.sequence.goose.CmsSetGoCbResult;
 import com.ysh.jcms.core.pdu.goose.CmsSetGoCbValuesError;
 import com.ysh.jcms.core.pdu.goose.CmsSetGoCbValuesResponse;

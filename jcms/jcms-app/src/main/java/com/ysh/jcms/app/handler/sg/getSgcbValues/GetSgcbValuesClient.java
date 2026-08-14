@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.sg.getSgcbValues;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.sg.CmsGetSgcbValuesError;
 import com.ysh.jcms.core.pdu.sg.CmsGetSgcbValuesResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;

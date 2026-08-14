@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.negotiate.negotiate;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.handler.BaseHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseHandler;
 import com.ysh.jcms.core.pdu.negotiate.CmsNegotiateError;
 import com.ysh.jcms.core.pdu.negotiate.CmsNegotiateResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;

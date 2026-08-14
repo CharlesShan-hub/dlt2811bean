@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.file.deleteFile;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.file.CmsDeleteFileError;
 import com.ysh.jcms.core.pdu.file.CmsDeleteFileResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;

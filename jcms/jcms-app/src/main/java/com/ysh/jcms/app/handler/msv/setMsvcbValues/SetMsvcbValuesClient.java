@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.msv.setMsvcbValues;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.msv.CmsSetMsvcbValuesError;
 import com.ysh.jcms.core.pdu.msv.CmsSetMsvcbValuesResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;

@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.goose.getGoCbValues;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.choice.CmsGocbValueChoice;
 import com.ysh.jcms.core.data.sequence.block.CmsGoCb;
 import com.ysh.jcms.core.pdu.goose.CmsGetGoCbValuesError;

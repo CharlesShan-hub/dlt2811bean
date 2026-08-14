@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.goose.getGoReference;
 
-import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.scalar.CmsInt16U;
 import com.ysh.jcms.core.pdu.goose.CmsGetGoReferenceRequest;

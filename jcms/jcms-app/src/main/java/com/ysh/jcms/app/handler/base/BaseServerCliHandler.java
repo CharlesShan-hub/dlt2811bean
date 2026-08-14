@@ -1,4 +1,4 @@
-package com.ysh.jcms.app.handler;
+package com.ysh.jcms.app.handler.base;
 
 /**
  * Base class for CLI-based server service handlers.

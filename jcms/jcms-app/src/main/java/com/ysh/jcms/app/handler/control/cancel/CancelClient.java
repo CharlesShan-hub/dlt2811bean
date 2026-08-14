@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.control.cancel;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.control.CmsCancelError;
 import com.ysh.jcms.core.pdu.control.CmsCancelResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;

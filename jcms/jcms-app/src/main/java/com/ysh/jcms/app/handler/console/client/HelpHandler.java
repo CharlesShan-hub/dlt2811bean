@@ -2,8 +2,8 @@ package com.ysh.jcms.app.handler.console.client;
 
 import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.console.*;
-import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseDao;
 import java.util.*;
 
 public class HelpHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseDao>> {

@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.data.getDataValues;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.choice.CmsData;
 import com.ysh.jcms.core.pdu.data.CmsGetDataValuesError;
 import com.ysh.jcms.core.pdu.data.CmsGetDataValuesResponse;

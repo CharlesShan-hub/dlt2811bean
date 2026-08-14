@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.directory.getAllCbValues;
 
-import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.base.BaseServerHandler;
 import com.ysh.jcms.app.handler.CursorSlicer;
 import com.ysh.jcms.core.data.choice.CmsReferenceChoice;
 import com.ysh.jcms.core.data.enumerate.CmsAcsiClass;

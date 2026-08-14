@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.report.getUrcbValues;
 
-import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.base.BaseServerHandler;
 import com.ysh.jcms.core.data.choice.CmsUrcbValueChoice;
 import com.ysh.jcms.core.data.sequence.block.CmsBrcb;
 import com.ysh.jcms.core.data.sequence.block.CmsUrcb;

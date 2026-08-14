@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.dataset.deleteDataSet;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.dataset.CmsDeleteDataSetError;
 import com.ysh.jcms.core.pdu.dataset.CmsDeleteDataSetResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;

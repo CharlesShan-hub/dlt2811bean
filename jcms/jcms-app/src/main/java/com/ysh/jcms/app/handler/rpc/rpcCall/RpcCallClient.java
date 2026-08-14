@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.rpc.rpcCall;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.rpc.CmsRpcCallError;
 import com.ysh.jcms.core.pdu.rpc.CmsRpcCallResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;

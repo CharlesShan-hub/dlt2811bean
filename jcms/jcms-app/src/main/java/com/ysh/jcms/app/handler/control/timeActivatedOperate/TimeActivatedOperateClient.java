@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.control.timeActivatedOperate;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.control.CmsTimeActivatedOperateError;
 import com.ysh.jcms.core.pdu.control.CmsTimeActivatedOperateResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;

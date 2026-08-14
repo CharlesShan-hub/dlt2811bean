@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.log.setLcbValues;
 
 import com.ysh.jcms.core.data.bitarray.CmsLcbOptFlds;
-import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.core.data.bitarray.CmsTriggerConditions;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.sequence.log.CmsSetLcbEntry;

@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.log.setLcbValues;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.sequence.log.CmsSetLcbResult;
 import com.ysh.jcms.core.pdu.log.CmsSetLcbValuesError;
 import com.ysh.jcms.core.pdu.log.CmsSetLcbValuesResponse;

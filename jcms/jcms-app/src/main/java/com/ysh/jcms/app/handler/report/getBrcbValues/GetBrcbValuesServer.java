@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.report.getBrcbValues;
 
-import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.base.BaseServerHandler;
 import com.ysh.jcms.core.data.choice.CmsRcbValueChoice;
 import com.ysh.jcms.core.data.sequence.block.CmsBrcb;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;

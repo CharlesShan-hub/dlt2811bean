@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.control.operate;
 
-import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.core.data.bitarray.CmsCheck;
 import com.ysh.jcms.core.data.choice.CmsData;
 import com.ysh.jcms.core.data.core.CmsType;

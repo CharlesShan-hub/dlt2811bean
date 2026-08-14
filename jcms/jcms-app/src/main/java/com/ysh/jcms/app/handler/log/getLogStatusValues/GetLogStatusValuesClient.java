@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.log.getLogStatusValues;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.choice.CmsLogStatusValueChoice;
 import com.ysh.jcms.core.data.sequence.log.CmsLogStatusValue;
 import com.ysh.jcms.core.pdu.log.CmsGetLogStatusValuesError;

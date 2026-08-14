@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.sg.selectActiveSg;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.sg.CmsSelectActiveSgError;
 import com.ysh.jcms.core.pdu.sg.CmsSelectActiveSgResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;

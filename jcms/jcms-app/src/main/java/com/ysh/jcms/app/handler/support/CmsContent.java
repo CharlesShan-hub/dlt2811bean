@@ -1,4 +1,7 @@
-package com.ysh.jcms.app.handler;
+package com.ysh.jcms.app.handler.support;
+
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseDao;
 
 /**
  * 请求/响应结果容器，用于在 Client 和 Console 之间传递数据。

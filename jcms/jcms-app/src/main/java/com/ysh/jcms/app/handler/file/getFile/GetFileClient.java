@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.file.getFile;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.file.CmsGetFileError;
 import com.ysh.jcms.core.pdu.file.CmsGetFileRequest;
 import com.ysh.jcms.core.pdu.file.CmsGetFileResponse;

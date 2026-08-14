@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getAllDataValues;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.core.data.sequence.directory.CmsDataValueEntry;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllDataValuesError;

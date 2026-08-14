@@ -1,4 +1,4 @@
-package com.ysh.jcms.app.handler;
+package com.ysh.jcms.app.handler.base;
 
 import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.utils.config.CmsConfigLoader;

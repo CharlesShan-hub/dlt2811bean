@@ -1,5 +1,6 @@
-package com.ysh.jcms.app.handler;
+package com.ysh.jcms.app.handler.base;
 
+import com.ysh.jcms.app.handler.support.ServiceException;
 import com.ysh.jcms.app.node.InnerServer;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;

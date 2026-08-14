@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.data.getDataDefinition;
 
-import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.scalar.CmsFC;
 import com.ysh.jcms.core.data.sequence.data.CmsDataRefEntry;

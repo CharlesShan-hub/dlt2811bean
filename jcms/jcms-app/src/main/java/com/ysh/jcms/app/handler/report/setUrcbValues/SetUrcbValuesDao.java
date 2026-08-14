@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.report.setUrcbValues;
 
-import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.core.data.bitarray.CmsRcbOptFlds;
 import com.ysh.jcms.core.data.bitarray.CmsTriggerConditions;
 import com.ysh.jcms.core.data.core.CmsType;

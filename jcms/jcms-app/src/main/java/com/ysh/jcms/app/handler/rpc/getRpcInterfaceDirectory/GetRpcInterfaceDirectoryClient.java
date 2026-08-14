@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.rpc.getRpcInterfaceDirectory;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDirectoryError;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDirectoryResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;

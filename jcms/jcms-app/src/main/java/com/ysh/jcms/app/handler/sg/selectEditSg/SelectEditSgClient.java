@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.sg.selectEditSg;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.sg.CmsSelectEditSgError;
 import com.ysh.jcms.core.pdu.sg.CmsSelectEditSgResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;

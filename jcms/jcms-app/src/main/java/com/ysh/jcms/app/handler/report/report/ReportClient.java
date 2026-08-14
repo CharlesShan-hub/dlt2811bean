@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.report.report;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.report.CmsReport;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

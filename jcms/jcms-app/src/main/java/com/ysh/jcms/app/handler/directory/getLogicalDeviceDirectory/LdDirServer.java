@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory;
 
-import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.base.BaseServerHandler;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.data.scalar.CmsSubReference;
 import com.ysh.jcms.core.pdu.directory.CmsGetLogicalDeviceDirectoryError;

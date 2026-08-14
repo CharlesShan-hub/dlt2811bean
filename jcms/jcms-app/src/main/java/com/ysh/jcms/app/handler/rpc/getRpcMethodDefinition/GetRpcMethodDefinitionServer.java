@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.rpc.getRpcMethodDefinition;
 
-import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.base.BaseServerHandler;
 import com.ysh.jcms.app.handler.rpc.RpcRegistry;
 import com.ysh.jcms.core.data.choice.CmsRpcMethodDefChoice;
 import com.ysh.jcms.core.data.scalar.CmsString;

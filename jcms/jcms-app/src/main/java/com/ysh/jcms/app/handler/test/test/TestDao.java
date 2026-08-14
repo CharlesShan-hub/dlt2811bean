@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.test.test;
 
-import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.core.data.core.CmsNull;
 import com.ysh.jcms.core.data.core.CmsType;
 import lombok.Getter;

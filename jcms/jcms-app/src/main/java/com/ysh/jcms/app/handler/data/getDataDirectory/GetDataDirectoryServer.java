@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.data.getDataDirectory;
 
-import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.base.BaseServerHandler;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.data.sequence.data.CmsSubRefEntry;
 import com.ysh.jcms.core.pdu.data.CmsGetDataDirectoryError;

@@ -6,7 +6,7 @@ import com.ysh.jcms.core.pdu.sg.CmsGetEditSgValueError;
 import com.ysh.jcms.core.pdu.sg.CmsGetEditSgValueResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

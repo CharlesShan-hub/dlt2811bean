@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.log.queryLogAfter;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.sequence.log.CmsLogDataEntry;
 import com.ysh.jcms.core.data.sequence.log.CmsLogEntry;
 import com.ysh.jcms.core.pdu.log.CmsQueryLogAfterError;

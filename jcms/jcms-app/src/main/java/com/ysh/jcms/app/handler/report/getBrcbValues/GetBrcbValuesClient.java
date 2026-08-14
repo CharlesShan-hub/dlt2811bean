@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.report.getBrcbValues;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.report.CmsGetBrcbValuesError;
 import com.ysh.jcms.core.pdu.report.CmsGetBrcbValuesResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;

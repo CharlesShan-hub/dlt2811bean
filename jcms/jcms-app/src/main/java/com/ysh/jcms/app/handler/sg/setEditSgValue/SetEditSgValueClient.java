@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.sg.setEditSgValue;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.pdu.sg.CmsSetEditSgValueError;
 import com.ysh.jcms.core.pdu.sg.CmsSetEditSgValueResponse;

@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.file.getFileDirectory;
 
-import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.base.BaseServerHandler;
 import com.ysh.jcms.core.data.sequence.common.CmsFileEntry;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.data.sequence.common.CmsUtcTime;

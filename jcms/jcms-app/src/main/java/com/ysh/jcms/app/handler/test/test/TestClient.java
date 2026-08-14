@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.test.test;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.info.CmsServiceInfo;
 
 public class TestClient extends BaseClientHandler<TestDao> {

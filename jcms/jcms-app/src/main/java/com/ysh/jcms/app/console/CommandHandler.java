@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.console;
 
 import com.ysh.jcms.core.util.CmsPrinter;
-import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.app.handler.CmsContent;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseDao;
+import com.ysh.jcms.app.handler.support.CmsContent;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;

@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.msv.getMsvcbValues;
 
-import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.base.BaseServerHandler;
 import com.ysh.jcms.core.data.choice.CmsMsvcbValueChoice;
 import com.ysh.jcms.core.data.sequence.block.CmsMsvcb;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;

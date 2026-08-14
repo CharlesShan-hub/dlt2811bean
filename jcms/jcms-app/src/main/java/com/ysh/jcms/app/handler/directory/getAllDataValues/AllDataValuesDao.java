@@ -4,7 +4,7 @@ import com.ysh.jcms.app.util.CmsRequestHelper;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllDataValuesRequest;
 import lombok.Getter;
-import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.base.BaseDao;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 

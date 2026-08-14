@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.file.getFileDirectory;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.sequence.common.CmsFileEntry;
 import com.ysh.jcms.core.pdu.file.CmsGetFileDirectoryError;
 import com.ysh.jcms.core.pdu.file.CmsGetFileDirectoryResponse;

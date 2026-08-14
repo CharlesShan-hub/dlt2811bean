@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.connection.associate;
 
-import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.handler.BaseHandler;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseHandler;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;
 import com.ysh.jcms.core.data.sequence.common.CmsUtcTime;
 import com.ysh.jcms.core.pdu.connection.CmsAssociateError;

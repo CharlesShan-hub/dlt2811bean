@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.directory.getServerDirectory;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.enumerate.CmsObjectClass;
 import com.ysh.jcms.core.pdu.directory.CmsGetServerDirectoryRequest;
-import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.base.BaseDao;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 

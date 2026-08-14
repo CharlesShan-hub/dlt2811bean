@@ -3,8 +3,8 @@ package com.ysh.jcms.app.handler.console;
 import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.base.BaseClientHandler;
+import com.ysh.jcms.app.handler.base.BaseDao;
 import java.util.Map;
 
 public class ClearHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseDao>> {
