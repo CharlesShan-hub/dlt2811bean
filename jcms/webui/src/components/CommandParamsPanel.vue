@@ -182,7 +182,7 @@
                     <template v-else>
                       <UiSelect
                         v-model="r.ln"
-                        :options="r.ld ? ldLns[r.ld] || [] : []"
+                        :options="rowLnOptions(r)"
                         placeholder="LN"
                         empty-label="（不选）"
                         @update:modelValue="onRowLn(r)"
@@ -215,16 +215,15 @@
                       @update:modelValue="onRowDa(r)"
                     />
                     <UiSelect
-                      v-if="cmd !== 'data-dir'"
+                      v-if="cmd !== 'data-dir' && cmd !== 'set-edit-sg'"
                       v-model="r.fc"
                       :options="fcRowOptions"
-                      :disabled="!!r.da"
                       placeholder="FC"
                       empty-label="（不选）"
                     />
                   </div>
-                  <!-- 第三行：值 + 类型（仅 set-data-values） -->
-                  <div v-if="cmd === 'set-data-values'" class="refs-row">
+                  <!-- 第三行：值 + 类型（set-data-values / set-edit-sg） -->
+                  <div v-if="cmd === 'set-data-values' || cmd === 'set-edit-sg'" class="refs-row">
                     <span class="refs-label-spacer"></span>
                     <button
                       type="button"
@@ -271,6 +270,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { FC_OPTIONS } from '../cmddefs/common.js'
 import X from '@lucide/vue/dist/esm/icons/x.mjs'
 import ConnectForm from './ConnectForm.vue'
 import ApPicker from './ApPicker.vue'
@@ -292,7 +292,6 @@ const props = defineProps({
   ldCache: Array,
   ldLns: Object,
   refOptions: Array,
-  fcRowOptions: Array,
   refsListOptions: Array,
   datasetOptions: Array,
   sgcbOptions: Array,
@@ -318,6 +317,7 @@ const props = defineProps({
   onRowLn: Function,
   onRowDo: Function,
   onRowSdo: Function,
+  rowLnOptions: Function,
   rowSdoOptions: Function,
   rowDaOptions: Function,
   onRowDa: Function,
@@ -347,6 +347,8 @@ const connectCmd = defineModel('connectCmd', { default: '' })
 const sgcbCmds = ['sgcb-vals', 'select-active-sg', 'select-edit-sg', 'confirm-edit-sg']
 const isSgcbCmd = computed(() => sgcbCmds.includes(props.cmd))
 
+const fcRowOptions = computed(() => FC_OPTIONS)
+
 const filteredDsMemberOptions = computed(() => {
   const members = props.dsMemberOptions
   if (!Array.isArray(members) || members.length === 0) return []
@@ -355,6 +357,7 @@ const filteredDsMemberOptions = computed(() => {
   const idx = members.findIndex(m => m.reference === after)
   return idx >= 0 ? members.slice(idx) : members
 })
+
 </script>
 
 <style scoped>

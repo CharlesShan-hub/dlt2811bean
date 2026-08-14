@@ -45,7 +45,6 @@
         :ld-cache="ldCache"
         :ld-lns="ldLns"
         :ref-options="refOptions"
-        :fc-row-options="fcRowOptions"
         :refs-list-options="refsListOptions"
         :dataset-options="datasetOptions"
         :sgcb-options="sgcbOptions"
@@ -67,6 +66,7 @@
         :row-do-options="rowDoOptions"
         :on-row-ld="onRowLdForSgcb"
         :on-row-ln="onRowLn"
+        :row-ln-options="rowLnOptions"
         :on-row-do="onRowDo"
         :on-row-sdo="onRowSdo"
         :row-sdo-options="rowSdoOptions"
@@ -143,7 +143,6 @@ import { CONNECT_FLOW } from '../cmddefs/connect.js'
 import { pushTerminal } from '../terminalLog.js'
 import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, datasetRefs, datasetMemberRefs, datasetMembers, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs, ensureDatasetRefs, ensureDatasetMemberRefs, ensureDatasetMembers, ensureCbRefs, cbRefs, sgcbData, ensureSgcbData } from '../ldCache.js'
 import { buildCmd, highlightCmdStr, syntaxHighlightJson, parseResult, parseCmd } from '../utils/cmdFormat.js'
-import { FC_OPTIONS } from '../cmddefs/common.js'
 import { useSplitPane } from '../composables/useSplitPane.js'
 import { useCommandForm } from '../composables/useCommandForm.js'
 
@@ -341,8 +340,6 @@ const dsMemberOptions = computed(() => {
 
 const refsListOptions = computed(() => allLnRefs)
 
-const fcRowOptions = computed(() => FC_OPTIONS)
-
 const rightTitle = computed(() => {
   if (isConnect.value) return '连接流程'
   return def.value.asn1 ? 'ASN.1' : '服务说明'
@@ -387,6 +384,7 @@ const {
   addRefs,
   removeRefs,
   rowDoOptions,
+  rowLnOptions,
   onRowLd,
   onRowLn,
   onRowDo,
@@ -603,6 +601,10 @@ watch(() => props.cmd, async () => {
   result.value = null
   connectCmd.value = ''
   initForm()
+  // set-edit-sg: 级联自动按 SE 筛选（协议规定功能约束为 SE）
+  if (props.cmd === 'set-edit-sg') {
+    form.fc = 'SE'
+  }
   if (props.cmd === 'negotiate') {
     await loadNegotiateDefaults()
   }

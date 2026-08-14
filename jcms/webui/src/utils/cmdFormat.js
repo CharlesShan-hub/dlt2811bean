@@ -200,17 +200,25 @@ export function buildCmd(cmd, params, form, opts = {}) {
         }
         parts.push(`--${p.key}`, `"${refs.join(delim)}"`)
         const hasFc = fcs.some(f => f)
-        if (hasFc) {
+        // get-edit-sg / set-edit-sg: 用顶层 fc 参数（或不用），不输出 per-row fc
+        if (hasFc && cmd !== 'get-edit-sg' && cmd !== 'set-edit-sg') {
           const fcParam = p.membersFormat ? '--fcs' : '--fc'
           parts.push(fcParam, `"${fcs.join(delim)}"`)
         }
-        // set-data-values 额外输出 --values 列表
+        // set-data-values / set-edit-sg 额外输出 --values 列表
         // 注意：JSON 值中的 " 需要转义为 \"，否则 tokenizer 会误判引号边界
-        if (cmd === 'set-data-values') {
+        if (cmd === 'set-data-values' || cmd === 'set-edit-sg') {
           const nonEmptyValues = values.filter(v => v)
           if (nonEmptyValues.length) {
             const escapedVals = values.join(delim).replace(/"/g, '\\"')
             parts.push('--values', `"${escapedVals}"`)
+          }
+        }
+        // set-edit-sg 额外输出 --type（取第一个非空类型，或默认 visible-string）
+        if (cmd === 'set-edit-sg') {
+          const firstType = types.find(t => t) || 'visible-string'
+          if (firstType !== 'visible-string') {
+            parts.push('--type', firstType)
           }
         }
         // data-dir: SDO/DA 作为 --after 分页游标

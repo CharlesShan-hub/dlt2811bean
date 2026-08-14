@@ -102,13 +102,35 @@ export function useCommandForm(form, opts = {}) {
       rowDoRefs[key] = []
     }
   }
+  /** 返回 LN 选项列表，过滤已知无 DO 的 LN（直接查 rowDoRefs 缓存） */
+  function rowLnOptions(row) {
+    if (!row.ld) return []
+    const allLns = ldLns[row.ld] || []
+    const fc = String(form.fc || '').split(':')[0] || 'XX'
+    return allLns.filter(ln => {
+      const key = `${row.ld}/${ln}|${fc}`
+      // 已加载过 DO 且为空 → 过滤
+      if (key in rowDoRefs && !rowDoRefs[key].length) return false
+      return true
+    })
+  }
 
   function onRowLd(row) {
     row.ln = ''
     row.do = ''
     row.sdo = ''
     row.da = ''
-    if (row.ld) ensureLdLns(row.ld)
+    if (row.ld) {
+      ensureLdLns(row.ld).then(lns => {
+        // 预加载该 LD 下所有 LN 的 DO，以便过滤无 DO 的 LN
+        if (lns && lns.length) {
+          Promise.all(lns.map(ln => {
+            const tmpRow = { ld: row.ld, ln }
+            return loadRowDo(tmpRow).catch(() => {})
+          }))
+        }
+      })
+    }
   }
   function onRowLn(row) {
     row.do = ''
@@ -445,6 +467,7 @@ export function useCommandForm(form, opts = {}) {
     onRowDo,
     onRowSdo,
     onRowDa,
+    rowLnOptions,
     rowSdoRefs,
     rowSdoOptions,
     loadRowSdo,

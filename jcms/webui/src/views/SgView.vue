@@ -18,15 +18,17 @@
           <div class="workflow-example">
             <p class="step-label">1. 连接并选择编辑组</p>
             <pre class="cmd-block">cms connect --ap P_B5041A/S1
-cms select-edit-sg --ref "PROT/DeZonePTOC1.SG1" --num 1</pre>
-            <p class="step-label">2. 写入定值</p>
-            <pre class="cmd-block">cms set-edit-sg --refs "PROT/OCPTOC2.StrVal" --values "100" --type int32</pre>
+cms select-edit-sg --ref "PROT/LLN0.SG" --num 1</pre>
+            <p class="step-label">2. 写入定值（编辑缓冲区）</p>
+            <pre class="cmd-block">cms set-edit-sg --refs "PROT/RBRF1.StrValA" --values "100" --type int32</pre>
             <p class="step-label">3. 读取验证</p>
-            <pre class="cmd-block">cms get-edit-sg --refs "PROT/OCPTOC2.StrVal"</pre>
-            <p class="step-label">4. 提交生效</p>
-            <pre class="cmd-block">cms confirm-edit-sg --ref "PROT/DeZonePTOC1.SG1"</pre>
+            <pre class="cmd-block">cms get-edit-sg --refs "PROT/RBRF1.StrValA" --fc SE</pre>
+            <p class="step-label">4. 提交生效（编辑缓冲区 → 定值组 1）</p>
+            <pre class="cmd-block">cms confirm-edit-sg --ref "PROT/LLN0.SG"</pre>
             <p class="step-label">5. 激活定值组</p>
-            <pre class="cmd-block">cms select-active-sg --ref "PROT/DeZonePTOC1.SG1" --num 1</pre>
+            <pre class="cmd-block">cms select-active-sg --ref "PROT/LLN0.SG" --num 1</pre>
+            <p class="step-label">6. 查看 SGCB 状态</p>
+            <pre class="cmd-block">cms sgcb-vals --refs "PROT/LLN0.SG"</pre>
           </div>
         </UiCard>
       </div>
