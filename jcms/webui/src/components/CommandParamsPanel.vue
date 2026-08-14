@@ -86,6 +86,14 @@
               placeholder="请先选择逻辑节点"
               empty-label="（不选）"
             />
+            <!-- 定值组号下拉：从 sgcbData 缓存自动读取 numOfSG 生成选项 -->
+            <UiSelect
+              v-else-if="p.type === 'sgcb-num'"
+              v-model="form[p.key]"
+              :options="sgcbNumOptions"
+              placeholder="请先选择 SGCB"
+              empty-label="（不选）"
+            />
             <!-- 控制块选择：依赖 ln-cascade 选中的 LN，从 ln-dir 拉取控制块名称（BRCB/URCB/LCB/GoCB/MSVCB） -->
             <UiSelect
               v-else-if="p.type === 'cb-select'"
@@ -165,8 +173,8 @@
                       empty-label="（不选）"
                       @update:modelValue="onRowLd(r)"
                     />
-                    <!-- sgcb-vals: LN 固定为 LLN0，SGCB 名称从目录树动态读取 -->
-                    <template v-if="cmd === 'sgcb-vals'">
+                    <!-- SGCB 命令：LN 固定为 LLN0，SGCB 名称从目录树动态读取 -->
+                    <template v-if="isSgcbCmd">
                       <span class="sgcb-suffix sgcb-ln">{{ r.ln || 'LLN0' }}</span>
                       <span class="sgcb-suffix sgcb-name">{{ r._sgcbName || '…' }}</span>
                       <button v-if="!p.single" type="button" class="glass glass-danger refs-del" title="删除该引用" @click="removeRefs(i)"><X :size="14" /></button>
@@ -188,8 +196,8 @@
                       />
                     </template>
                   </div>
-                  <!-- sgcb-vals: 无 DO/SDO/DA/FC 行 -->
-                  <template v-if="cmd !== 'sgcb-vals'">
+                  <!-- SGCB 命令：无 DO/SDO/DA/FC 行 -->
+                  <template v-if="!isSgcbCmd">
                   <div class="refs-row">
                     <button v-if="!p.single" type="button" class="glass glass-danger refs-del" title="删除该引用" @click="removeRefs(i)"><X :size="14" /></button>
                     <UiSelect
@@ -288,6 +296,7 @@ const props = defineProps({
   refsListOptions: Array,
   datasetOptions: Array,
   sgcbOptions: Array,
+  sgcbNumOptions: Array,
   cbOptions: Array,
   dsMemberAfterOptions: Array,
   dsMemberOptions: Array,
@@ -334,6 +343,10 @@ const emit = defineEmits([
 const connectCmd = defineModel('connectCmd', { default: '' })
 
 /** 根据 after 选择过滤成员列表：只显示从 after 位置开始的成员 */
+/** SGCB 命令列表：使用级联 LD→LLN0→SGCB 名称模式，无 DO/SDO/DA/FC */
+const sgcbCmds = ['sgcb-vals', 'select-active-sg', 'select-edit-sg', 'confirm-edit-sg']
+const isSgcbCmd = computed(() => sgcbCmds.includes(props.cmd))
+
 const filteredDsMemberOptions = computed(() => {
   const members = props.dsMemberOptions
   if (!Array.isArray(members) || members.length === 0) return []

@@ -32,6 +32,7 @@ export function clearLnDirRefs() {
   allCbRefsKey = ''
   clearAllDefData()
   clearDatasetRefs()
+  clearSgcbData()
 }
 
 /** all-def 响应引用缓存（供 all-data / all-def 的 after 下拉），key 为 "ln|fc"。 */
@@ -81,6 +82,41 @@ export const datasetRefs = reactive({})
 
 /** 控制块引用缓存（cb-select 用），key 为 "lnRef|acsiKey"（如 "LD0/LLN0|brcb"）。 */
 export const cbRefs = reactive({})
+
+/** SGCB 完整数据缓存（从 all-cb --acsi sgcb 获取），key 为 lnRef（如 "LD0/LLN0"）。 */
+export const sgcbData = reactive({})
+
+/**
+ * 拉取某 LN 下所有 SGCB 的完整数据（经 all-cb --acsi sgcb 查询，幂等）。
+ * 缓存内容：{ "sgcbName": { numOfSG, actSG, editSG, tActEdt } }
+ * @param {string} lnRef 如 "LD0/LLN0"
+ * @returns {Promise<object>} SGCB 名 → 值的 Map
+ */
+export async function ensureSgcbData(lnRef) {
+  if (!lnRef) return {}
+  if (sgcbData[lnRef]) return sgcbData[lnRef]
+  try {
+    const res = await executeJson(`all-cb --ln ${lnRef} --acsi sgcb --auto-pull true --json`)
+    const map = {}
+    if (res && Array.isArray(res.cbValue)) {
+      for (const entry of res.cbValue) {
+        if (entry.reference && entry.value?.sgcb) {
+          const name = entry.reference.includes('.') ? entry.reference.split('.')[1] : entry.reference
+          map[name] = entry.value.sgcb
+        }
+      }
+    }
+    sgcbData[lnRef] = map
+  } catch {
+    sgcbData[lnRef] = {}
+  }
+  return sgcbData[lnRef]
+}
+
+/** 清空 SGCB 数据缓存（断开连接时）。 */
+export function clearSgcbData() {
+  Object.keys(sgcbData).forEach(k => delete sgcbData[k])
+}
 
 /**
  * 拉取某 LN 下指定控制块类的名称列表（经 ln-dir --acsi 查询，幂等）。

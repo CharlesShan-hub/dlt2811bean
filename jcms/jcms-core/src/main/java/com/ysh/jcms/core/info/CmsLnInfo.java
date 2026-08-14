@@ -50,7 +50,7 @@ public enum CmsLnInfo {
     PVPH("PVPH", "Voltage and Frequency", "电压频率", LnClass.P),
     PZSU("PZSU", "Zero Speed / Under Speed", "零速或欠速保护", LnClass.P),
 
-// ==================== R — Protection Related ====================
+    // ==================== R — Protection Related ====================
     RDRE("RDRE", "Disturbance Recording", "扰动记录功能", LnClass.R),
     RADR("RADR", "Disturbance Record Analog", "扰动记录模拟通道", LnClass.R),
     RBDR("RBDR", "Disturbance Record Binary", "扰动记录状态量通道", LnClass.R),

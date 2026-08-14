@@ -280,12 +280,12 @@ const navItems = [
     { id: 'get-dataset-dir', label: cnTitle('get-dataset-dir'), done: true },
   ] },
   { id: 'sg', label: '定值组', icon: 'Settings', done: false, children: [
-    { id: 'select-active-sg', label: cnTitle('select-active-sg'), done: false },
-    { id: 'select-edit-sg', label: cnTitle('select-edit-sg'), done: false },
+    { id: 'select-active-sg', label: cnTitle('select-active-sg'), done: true },
+    { id: 'select-edit-sg', label: cnTitle('select-edit-sg'), done: true },
     { id: 'set-edit-sg', label: cnTitle('set-edit-sg'), done: false },
-    { id: 'confirm-edit-sg', label: cnTitle('confirm-edit-sg'), done: false },
+    { id: 'confirm-edit-sg', label: cnTitle('confirm-edit-sg'), done: true },
     { id: 'get-edit-sg', label: cnTitle('get-edit-sg'), done: false },
-    { id: 'sgcb-vals', label: cnTitle('sgcb-vals'), done: false },
+    { id: 'sgcb-vals', label: cnTitle('sgcb-vals'), done: true },
   ] },
   { id: 'report', label: '报告服务', icon: 'FileText', done: false, children: [
     { id: 'get-brcb-vals', label: cnTitle('get-brcb-vals'), done: false },

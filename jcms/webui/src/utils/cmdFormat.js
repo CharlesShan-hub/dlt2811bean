@@ -157,8 +157,8 @@ export function buildCmd(cmd, params, form, opts = {}) {
         for (const row of rows) {
           if (!row.ld || !row.ln) continue
           let ref = `${row.ld}/${row.ln}`
-          // sgcb-vals: 级联只选 LD/LN，自动补 SGCB 名称（从目录树动态读取）
-          if (cmd === 'sgcb-vals') {
+          // sgcb-vals / select-active-sg / select-edit-sg / confirm-edit-sg: 级联只选 LD/LN，自动补 SGCB 名称（从目录树动态读取）
+          if (cmd === 'sgcb-vals' || cmd === 'select-active-sg' || cmd === 'select-edit-sg' || cmd === 'confirm-edit-sg') {
             const sgcbName = row._sgcbName || 'SG'
             ref += `.${sgcbName}`
             refs.push(ref)

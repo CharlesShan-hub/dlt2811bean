@@ -49,6 +49,7 @@
         :refs-list-options="refsListOptions"
         :dataset-options="datasetOptions"
         :sgcb-options="sgcbOptions"
+        :sgcb-num-options="sgcbNumOptions"
         :ds-member-after-options="dsMemberAfterOptions"
         :ds-member-options="dsMemberOptions"
         :ln-ref="lnRef"
@@ -140,7 +141,7 @@ import { marked } from 'marked'
 import { CMD_DEFS } from '../cmddefs/index.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
 import { pushTerminal } from '../terminalLog.js'
-import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, datasetRefs, datasetMemberRefs, datasetMembers, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs, ensureDatasetRefs, ensureDatasetMemberRefs, ensureDatasetMembers, ensureCbRefs, cbRefs } from '../ldCache.js'
+import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, datasetRefs, datasetMemberRefs, datasetMembers, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs, ensureDatasetRefs, ensureDatasetMemberRefs, ensureDatasetMembers, ensureCbRefs, cbRefs, sgcbData, ensureSgcbData } from '../ldCache.js'
 import { buildCmd, highlightCmdStr, syntaxHighlightJson, parseResult, parseCmd } from '../utils/cmdFormat.js'
 import { FC_OPTIONS } from '../cmddefs/common.js'
 import { useSplitPane } from '../composables/useSplitPane.js'
@@ -271,11 +272,29 @@ const datasetOptions = computed(() => {
   return datasetRefs[lnRef] || []
 })
 
-/** SGCB 控制块名选项：仅当选中 LLN0 逻辑节点时显示 SG（标准约定 SGCB 只挂在 LLN0 下） */
+/** SGCB 控制块名选项：从目录树动态加载（标准约定 SGCB 只挂在 LLN0 下） */
 const sgcbOptions = computed(() => {
   const o = form.ln
-  if (o && o.ln === 'LLN0') return ['SG1']
-  return []
+  if (!o || !o.ld || !o.ln) return []
+  const ref = `${o.ld}/${o.ln}`
+  if (!cbRefs[`${ref}|sgcb`]) ensureCbRefs(ref, 'sgcb')
+  return cbRefs[`${ref}|sgcb`] || []
+})
+
+/** SGCB 定值组号选项：从 sgcbData 缓存自动读取 numOfSG，生成 1~numOfSG 的下拉选项 */
+const sgcbNumOptions = computed(() => {
+  const refs = form.ref || []
+  if (!Array.isArray(refs) || refs.length === 0) return []
+  const row = refs[0]
+  if (!row || !row.ld || !row.ln || !row._sgcbName) return []
+  const lnRef = `${row.ld}/${row.ln}`
+  const sgcbName = row._sgcbName
+  if (!sgcbData[lnRef]) ensureSgcbData(lnRef)
+  const sg = sgcbData[lnRef]?.[sgcbName]
+  const n = sg?.numOfSG || 0
+  const opts = []
+  for (let i = 1; i <= n; i++) opts.push(String(i))
+  return opts
 })
 
 /** 控制块选项（cb-select 用）：依赖 ln-cascade 选中的 LN，从 ln-dir 拉取对应 ACSI 类的控制块名 */
@@ -397,10 +416,16 @@ async function loadSgcbNames(row) {
   const names = await ensureCbRefs(ref, 'sgcb')
   row._sgcbNames = names || []
   row._sgcbName = (names && names.length > 0) ? names[0] : 'SG'
+  // 预加载 SGCB 完整数据（含 numOfSG），供定值组号下拉使用
+  if (sgcbCmds.includes(props.cmd)) {
+    ensureSgcbData(ref)
+  }
 }
 
+const sgcbCmds = ['sgcb-vals', 'select-active-sg', 'select-edit-sg', 'confirm-edit-sg']
+
 const onRowLdForSgcb = (row) => {
-  if (props.cmd === 'sgcb-vals') {
+  if (sgcbCmds.includes(props.cmd)) {
     row.ln = 'LLN0'
     row.do = ''
     row.sdo = ''

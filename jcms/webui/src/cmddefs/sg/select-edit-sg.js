@@ -27,8 +27,7 @@ SelectEditSG-ErrorPDU ::= ServiceError`,
 | serviceError | ServiceError |
 `,
   params: [
-    { key: 'ln', label: '逻辑节点', type: 'ln-cascade', required: true },
-    { key: 'sgcb', label: '定值组控制块 sgcb', type: 'sgcb-select', required: true, dependsOn: 'ln' },
-    { key: 'num', label: '定值组号 num', type: 'number', required: true, min: 1, placeholder: '1~numOfSG' },
+    { key: 'ref', label: 'SGCB 引用', type: 'refs-list', cascade: true, single: true },
+    { key: 'num', label: '定值组号 num', type: 'sgcb-num', required: true },
   ],
 }
