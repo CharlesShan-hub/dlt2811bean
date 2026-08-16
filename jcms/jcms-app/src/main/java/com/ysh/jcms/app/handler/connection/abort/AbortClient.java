@@ -16,7 +16,7 @@ public class AbortClient extends BaseClientHandler<AbortDao> {
 
     @Override
     public void execute(AbortDao dao) throws Exception {
-        sendOneWay(CmsServiceInfo.ABORT, dao.toRequest());
+        sendOneWay(CmsServiceInfo.ABORT, dao);
     }
 
     @Override

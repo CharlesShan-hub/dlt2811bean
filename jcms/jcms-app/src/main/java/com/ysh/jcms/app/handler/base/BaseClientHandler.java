@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.base;
 
 import com.ysh.jcms.app.handler.support.CmsContent;
 import com.ysh.jcms.app.handler.support.PaginationContext;
-import com.ysh.jcms.app.handler.support.PaginationIterator;
+import com.ysh.jcms.app.handler.support.RequestExchange;
 import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.info.CmsServiceInfo;
@@ -96,44 +96,45 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
             return sendWithPagination(sc, dao, content);
         }
         // Simple non-paginated send
-        if (node == null)
-            throw new IOException("BaseClientHandler node not set");
-        byte[] pdu = dao.toRequest().encode();
-        trace(">>>\n" + dao.toRequest());
-        Frame frame = node.sendRequest(sc, pdu);
-        if (frame == null)
-            throw new IOException("Request timed out for " + sc);
-        if (frame.header().err())
-            onError(frame);
+        Frame frame = newExchange(sc, dao).exchange();
         onSuccess(frame, dao);
         afterAll(dao);
         return frame;
     }
 
     /**
-     * Internal pagination loop. Uses {@link PaginationIterator} to send requests
-     * and decode responses. Calls {@link #onSuccess(Frame, BaseDao)} for each page,
-     * and {@link #setPaginationCursor(BaseDao, String)} to advance the cursor.
+     * Build a {@link RequestExchange} for this handler's node/DAO pair. The error
+     * decoder routes negative responses through {@link #onError(Frame)} so the
+     * hook stays active on every path.
+     */
+    private RequestExchange newExchange(CmsServiceInfo sc, D dao) {
+        return new RequestExchange(node, sc, dao, frame -> {
+            onError(frame);
+            return "Request failed for " + sc;
+        });
+    }
+
+    /**
+     * Internal pagination loop. Uses {@link RequestExchange} to send one request
+     * per page and decode responses. Calls {@link #onSuccess(Frame, BaseDao)} for
+     * each page, and {@link #setPaginationCursor(BaseDao, String)} to advance the
+     * cursor.
      */
     private Frame sendWithPagination(CmsServiceInfo sc, D dao, CmsContent<D> content) throws IOException {
         PaginationContext ctx = content.paginationContext();
         ctx.setLastMoreFollows(false);
         ctx.setLastReference(null);
 
-        PaginationIterator.ErrorDecoder errDecoder = frame -> {
-            onError(frame);
-            return "Request failed for " + sc;
-        };
-        PaginationIterator<Frame> it = new PaginationIterator<>(node, sc, dao, frame -> frame, errDecoder);
+        RequestExchange exchange = newExchange(sc, dao);
 
         Frame frame = null;
         int iterations = 0;
-        while (it.hasNext()) {
+        while (true) {
             if (++iterations > MAX_AUTO_PULL_ITERATIONS) {
                 log.warn("Auto-pull exceeded {} iterations for {}, aborting", MAX_AUTO_PULL_ITERATIONS, sc);
                 break;
             }
-            frame = it.next();
+            frame = exchange.exchange();
             onSuccess(frame, dao);
             if (content.autoPull() && ctx.isLastMoreFollows()) {
                 String ref = ctx.getLastReference();
@@ -201,6 +202,11 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     protected void sendOneWay(CmsServiceInfo sc, CmsType requestObject) throws IOException {
         trace(">>>\n" + requestObject);
         sendOneWay(sc, requestObject.encode());
+    }
+
+    /** Send a one-way (fire-and-forget) request built from the DAO. */
+    protected void sendOneWay(CmsServiceInfo sc, D dao) throws IOException {
+        sendOneWay(sc, dao.toRequest());
     }
 
     /** Trace a decoded response PDU. */

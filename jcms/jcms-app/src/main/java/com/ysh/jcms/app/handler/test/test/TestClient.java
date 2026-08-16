@@ -7,6 +7,6 @@ public class TestClient extends BaseClientHandler<TestDao> {
 
     @Override
     public void execute(TestDao dao) throws Exception {
-        send(CmsServiceInfo.TEST, new byte[0]);
+        send(CmsServiceInfo.TEST, dao);
     }
 }

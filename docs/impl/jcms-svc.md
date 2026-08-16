@@ -23,7 +23,6 @@ svc（包括 C 和 Java 两边）只负责**对服务报文段的数据结构进
 ```
 svc/
 ├── connection/     # 8.2  关联服务
-├── negotiate/      # 8.15 协商服务
 ├── directory/      # 8.3  目录服务
 ├── data/           # 8.4  数据访问服务
 ├── dataset/        # 8.5  数据集服务
@@ -36,6 +35,7 @@ svc/
 ├── file/           # 8.12 文件服务
 ├── rpc/            # 8.13 RPC 服务
 ├── test/           # 8.14 测试服务
+├── negotiate/      # 8.15 协商服务
 └── other/          # 辅助类型（AssociationId, ReqId, ReferenceChoice）
 ```
 
