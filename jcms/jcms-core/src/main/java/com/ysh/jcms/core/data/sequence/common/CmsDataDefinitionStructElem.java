@@ -60,8 +60,4 @@ public class CmsDataDefinitionStructElem extends CmsSequence {
         type(v.type);
         return this;
     }
-
-    public boolean hasFc() {
-        return isPresent("fc");
-    }
 }

@@ -40,13 +40,4 @@ public class CmsGetLogicalNodeDirectoryResponse extends CmsSequence {
         this.moreFollows.value(v);
         return this;
     }
-
-    /** Convenience: extract reference strings as List. */
-    public List<String> refs() {
-        List<String> refs = new ArrayList<>();
-        for (CmsSubReference ref : reference) {
-            refs.add(ref.value());
-        }
-        return refs;
-    }
 }

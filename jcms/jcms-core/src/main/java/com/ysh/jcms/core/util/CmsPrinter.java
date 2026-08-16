@@ -17,10 +17,8 @@ public final class CmsPrinter {
     private static final String RST = "\u001B[0m";
     private static final String CYAN = "\u001B[36m";
     private static final String GRN = "\u001B[32m";
-    private static final String RED = "\u001B[31m";
     private static final String YEL = "\u001B[33m";
     private static final String GRY = "\u001B[90m";
-    private static final String BOLD = "\u001B[1m";
 
     /** Write to stdout FD as UTF-8 (console code page is 65001). */
     private static final FileOutputStream STDOUT;
@@ -78,11 +76,6 @@ public final class CmsPrinter {
         println(CYAN + "  " + msg + RST);
     }
 
-    /** 输出 JSON 成功响应：{"success":true}。 */
-    public static void success() {
-        raw("{\"success\":true}");
-    }
-
     /** 输出 JSON 成功响应：{"success":true,"info":"...","data":null}。 */
     public static void success(String msg) {
         raw("{\"success\":true,\"info\":\"" + CmsFormatUtil.escapeJson(msg) + "\",\"data\":null}");
@@ -130,16 +123,6 @@ public final class CmsPrinter {
             return;
         }
         info(title + ":");
-        for (int i = 0; i < items.size(); i++)
-            println(GRY + "    [" + i + "] " + RST + formatter.apply(items.get(i)));
-    }
-
-    /** 输出纯编号列表（不带标题行）。 */
-    public static <T> void listItems(List<T> items, Function<T, String> formatter) {
-        if (items.isEmpty()) {
-            gray("（empty）");
-            return;
-        }
         for (int i = 0; i < items.size(); i++)
             println(GRY + "    [" + i + "] " + RST + formatter.apply(items.get(i)));
     }

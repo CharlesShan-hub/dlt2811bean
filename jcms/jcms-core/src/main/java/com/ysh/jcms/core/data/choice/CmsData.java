@@ -304,71 +304,6 @@ public class CmsData extends CmsChoice {
         return this;
     }
 
-    /**
-     * Set choice and value in one call.
-     */
-    public CmsData value(int ch, Object val) {
-        choice(ch);
-        switch (ch) {
-            case CHOICE_ERROR :
-                alt_error.value((Integer) val);
-                break;
-            case CHOICE_BOOLEAN :
-                alt_boolean.value((Boolean) val);
-                break;
-            case CHOICE_INT8 :
-                alt_int8.value((Integer) val);
-                break;
-            case CHOICE_INT16 :
-                alt_int16.value((Integer) val);
-                break;
-            case CHOICE_INT32 :
-                alt_int32.value((Integer) val);
-                break;
-            case CHOICE_INT64 :
-                alt_int64.value((Long) val);
-                break;
-            case CHOICE_INT8U :
-                alt_int8u.value((Integer) val);
-                break;
-            case CHOICE_INT16U :
-                alt_int16u.value((Integer) val);
-                break;
-            case CHOICE_INT32U :
-                alt_int32u.value((Integer) val);
-                break;
-            case CHOICE_INT64U :
-                alt_int64u.value((java.math.BigInteger) val);
-                break;
-            case CHOICE_FLOAT32 :
-                alt_float32.value((Float) val);
-                break;
-            case CHOICE_FLOAT64 :
-                alt_float64.value((Double) val);
-                break;
-            case CHOICE_BIT_STRING :
-                alt_bit_string = (byte[]) val;
-                break;
-            case CHOICE_OCTET_STRING :
-                V.setVal(alt_octet_string._v, (byte[]) val);
-                break;
-            case CHOICE_VISIBLE_STRING :
-                V.setVal(alt_visible_string._v, (String) val);
-                break;
-            case CHOICE_UNICODE_STRING :
-                V.setVal(alt_unicode_string._v, (String) val);
-                break;
-            case CHOICE_DBPOS :
-                alt_dbpos.value((Integer) val);
-                break;
-            case CHOICE_TCMD :
-                alt_tcmd.value((Integer) val);
-                break;
-            // CHOICE_UTC_TIME through CHOICE_CHECK use value(CmsType) instead
-        }
-        return this;
-    }
-
     /** Copy choice selection and value from another CmsData (fluent). */
     public CmsData value(CmsData v) {
         int ch = v.choice();
@@ -489,17 +424,6 @@ public class CmsData extends CmsChoice {
         // Let base class handle the rest (via @Choice dispatch)
         super.syncToInner();
     }
-
-    /**
-     * Choice type name strings, indexed by choice() value.
-     *
-     * <pre>
-     * CHOICE_NAMES[3] = "boolean", CHOICE_NAMES[6] = "int32", etc.
-     * </pre>
-     */
-    public static final String[] CHOICE_NAMES = {"error", "array", "structure", "boolean", "int8", "int16", "int32", "int64", "int8u",
-            "int16u", "int32u", "int64u", "float32", "float64", "bit-string", "octet-string", "visible-string", "unicode-string",
-            "utc-time", "binary-time", "quality", "dbpos", "tcmd", "check"};
 
     /**
      * Convert the value of this CmsData to a human-readable string, based on the

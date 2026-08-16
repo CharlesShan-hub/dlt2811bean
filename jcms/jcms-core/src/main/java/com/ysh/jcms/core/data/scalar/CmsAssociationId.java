@@ -9,8 +9,6 @@ package com.ysh.jcms.core.data.scalar;
  */
 public class CmsAssociationId extends CmsOctetString {
 
-    public static final int MAX_LEN = 64;
-
     public CmsAssociationId() {
     }
     public CmsAssociationId(byte[] data) {

@@ -50,14 +50,12 @@ public abstract class CmsSequence extends CmsType {
     private static final class CmsFieldInfo {
         final Field field;
         final String innerName; // _v key; defaults to the Java field name
-        final boolean optional;
         final boolean sequenceOf;
         final Class<? extends CmsType> elementType;
 
-        CmsFieldInfo(Field field, String innerName, boolean optional, boolean sequenceOf, Class<? extends CmsType> elementType) {
+        CmsFieldInfo(Field field, String innerName, boolean sequenceOf, Class<? extends CmsType> elementType) {
             this.field = field;
             this.innerName = innerName;
-            this.optional = optional;
             this.sequenceOf = sequenceOf;
             this.elementType = elementType;
         }
@@ -81,7 +79,7 @@ public abstract class CmsSequence extends CmsType {
                 CmsField ann = f.getAnnotation(CmsField.class);
                 if (ann == null)
                     continue;
-                CmsFieldInfo info = new CmsFieldInfo(f, ann.inner().isEmpty() ? f.getName() : ann.inner(), ann.optional(), ann.sequenceOf(),
+                CmsFieldInfo info = new CmsFieldInfo(f, ann.inner().isEmpty() ? f.getName() : ann.inner(), ann.sequenceOf(),
                         ann.elementType());
                 fields.add(info);
                 byName.put(f.getName(), info);
@@ -268,35 +266,6 @@ public abstract class CmsSequence extends CmsType {
     }
 
     protected void setInt(String fieldName, int v) {
-        V.setField(inner._v, fieldName, v);
-    }
-
-    protected String getString(String fieldName) {
-        Object v = V.field(inner._v, fieldName);
-        return v instanceof String ? (String) v : null;
-    }
-
-    protected void setString(String fieldName, String v) {
-        V.setField(inner._v, fieldName, v);
-    }
-
-    @SuppressWarnings("unchecked")
-    protected byte[] getBytes(String fieldName) {
-        Object v = V.field(inner._v, fieldName);
-        if (v instanceof byte[])
-            return (byte[]) v;
-        if (v instanceof List) {
-            // JER hex format: decode hex string list to bytes
-            List<String> hexParts = (List<String>) v;
-            StringBuilder sb = new StringBuilder();
-            for (String h : hexParts)
-                sb.append(h.replace("0x", ""));
-            return InnerBase.unhex(sb.toString());
-        }
-        return null;
-    }
-
-    protected void setBytes(String fieldName, byte[] v) {
         V.setField(inner._v, fieldName, v);
     }
 
