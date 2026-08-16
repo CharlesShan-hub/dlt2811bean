@@ -13,7 +13,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "error");
-        obj._v.put("error", new InnerServiceError()._v);
+        obj._v.put("_", new InnerServiceError()._v);
         byte[] data = obj.encodeTest();
         InnerDataDefinition d = InnerDataDefinition.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -24,7 +24,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "array");
-        obj._v.put("array", new InnerDataDefinitionArray()._v);
+        obj._v.put("_", new InnerDataDefinitionArray()._v);
         byte[] data = obj.encodeTest();
         InnerDataDefinition d = InnerDataDefinition.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -35,7 +35,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "structure");
-        obj._v.put("structure", new InnerDataDefinitionStructure()._v);
+        obj._v.put("_", new InnerDataDefinitionStructure()._v);
         byte[] data = obj.encodeTest();
         InnerDataDefinition d = InnerDataDefinition.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -46,7 +46,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "Boolean");
-        obj._v.put("Boolean", null);
+        obj._v.put("_", null);
         // ASN.1 NULL type: just verify encode doesn't crash
         obj.encodeTest();
     }
@@ -56,7 +56,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "int8");
-        obj._v.put("int8", null);
+        obj._v.put("_", null);
         // ASN.1 NULL type: just verify encode doesn't crash
         obj.encodeTest();
     }
@@ -66,7 +66,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "int16");
-        obj._v.put("int16", null);
+        obj._v.put("_", null);
         // ASN.1 NULL type: just verify encode doesn't crash
         obj.encodeTest();
     }
@@ -76,7 +76,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "int32");
-        obj._v.put("int32", null);
+        obj._v.put("_", null);
         // ASN.1 NULL type: just verify encode doesn't crash
         obj.encodeTest();
     }
@@ -86,7 +86,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "int64");
-        obj._v.put("int64", null);
+        obj._v.put("_", null);
         // ASN.1 NULL type: just verify encode doesn't crash
         obj.encodeTest();
     }
@@ -96,7 +96,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "int8u");
-        obj._v.put("int8u", null);
+        obj._v.put("_", null);
         // ASN.1 NULL type: just verify encode doesn't crash
         obj.encodeTest();
     }
@@ -106,7 +106,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "int16u");
-        obj._v.put("int16u", null);
+        obj._v.put("_", null);
         // ASN.1 NULL type: just verify encode doesn't crash
         obj.encodeTest();
     }
@@ -116,7 +116,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "int32u");
-        obj._v.put("int32u", null);
+        obj._v.put("_", null);
         // ASN.1 NULL type: just verify encode doesn't crash
         obj.encodeTest();
     }
@@ -126,7 +126,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "int64u");
-        obj._v.put("int64u", null);
+        obj._v.put("_", null);
         // ASN.1 NULL type: just verify encode doesn't crash
         obj.encodeTest();
     }
@@ -136,7 +136,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "float32");
-        obj._v.put("float32", null);
+        obj._v.put("_", null);
         // ASN.1 NULL type: just verify encode doesn't crash
         obj.encodeTest();
     }
@@ -146,7 +146,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "float64");
-        obj._v.put("float64", null);
+        obj._v.put("_", null);
         // ASN.1 NULL type: just verify encode doesn't crash
         obj.encodeTest();
     }
@@ -156,7 +156,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "bit-string");
-        obj._v.put("bit-string", 42);
+        obj._v.put("_", 42);
         byte[] data = obj.encodeTest();
         InnerDataDefinition d = InnerDataDefinition.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -167,7 +167,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "octet-string");
-        obj._v.put("octet-string", 42);
+        obj._v.put("_", 42);
         byte[] data = obj.encodeTest();
         InnerDataDefinition d = InnerDataDefinition.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -178,7 +178,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "visible-string");
-        obj._v.put("visible-string", 42);
+        obj._v.put("_", 42);
         byte[] data = obj.encodeTest();
         InnerDataDefinition d = InnerDataDefinition.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -189,7 +189,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "unicode-string");
-        obj._v.put("unicode-string", 42);
+        obj._v.put("_", 42);
         byte[] data = obj.encodeTest();
         InnerDataDefinition d = InnerDataDefinition.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -200,7 +200,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "utc-time");
-        obj._v.put("utc-time", null);
+        obj._v.put("_", null);
         // ASN.1 NULL type: just verify encode doesn't crash
         obj.encodeTest();
     }
@@ -210,7 +210,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "binary-time");
-        obj._v.put("binary-time", null);
+        obj._v.put("_", null);
         // ASN.1 NULL type: just verify encode doesn't crash
         obj.encodeTest();
     }
@@ -220,7 +220,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "quality");
-        obj._v.put("quality", null);
+        obj._v.put("_", null);
         // ASN.1 NULL type: just verify encode doesn't crash
         obj.encodeTest();
     }
@@ -230,7 +230,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "dbpos");
-        obj._v.put("dbpos", null);
+        obj._v.put("_", null);
         // ASN.1 NULL type: just verify encode doesn't crash
         obj.encodeTest();
     }
@@ -240,7 +240,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "tcmd");
-        obj._v.put("tcmd", null);
+        obj._v.put("_", null);
         // ASN.1 NULL type: just verify encode doesn't crash
         obj.encodeTest();
     }
@@ -250,7 +250,7 @@ public class InnerDataDefinitionTest {
         InnerDataDefinition obj = new InnerDataDefinition();
         obj._v.clear();
         obj._v.put("_choice", "check");
-        obj._v.put("check", null);
+        obj._v.put("_", null);
         // ASN.1 NULL type: just verify encode doesn't crash
         obj.encodeTest();
     }

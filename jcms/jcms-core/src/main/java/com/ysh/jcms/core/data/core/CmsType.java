@@ -76,6 +76,35 @@ public abstract class CmsType {
     }
 
     /**
+     * Build a CmsType instance from its JER JSON representation.
+     * <p>
+     * The backing Inner* is populated via Jackson deserialization — the
+     * generated Inner classes carry the necessary {@code @JsonCreator} /
+     * {@code @JsonSetter} hooks, so scalars, sequences and choices all work.
+     *
+     * @param type
+     *            the concrete CmsType subclass (must have a no-arg constructor)
+     * @param json
+     *            JER JSON of the value (e.g. {@code {"visible-string": "abc"}}
+     *            for a CHOICE, {@code 42} for a scalar, {@code {"field": 0}} for
+     *            a SEQUENCE)
+     * @return the populated instance
+     * @throws RuntimeException
+     *             if construction or deserialization fails
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends CmsType> T fromJson(Class<?> type, String json) {
+        try {
+            T cms = (T) type.getDeclaredConstructor().newInstance();
+            InnerBase inner = InnerBase.MAPPER.readValue(json, cms.inner.getClass());
+            cms.inner = inner;
+            return cms;
+        } catch (Exception e) {
+            throw new RuntimeException("fromJson failed for " + type.getSimpleName() + ": " + json, e);
+        }
+    }
+
+    /**
      * Push wrapper state into the Inner* tree before encode. Subclasses with Java
      * fields that need packing (e.g. CmsBits) override this.
      */

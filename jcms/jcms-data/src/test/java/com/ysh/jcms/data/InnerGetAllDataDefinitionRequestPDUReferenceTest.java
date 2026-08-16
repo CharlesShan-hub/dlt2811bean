@@ -13,7 +13,7 @@ public class InnerGetAllDataDefinitionRequestPDUReferenceTest {
         InnerGetAllDataDefinitionRequestPDUReference obj = new InnerGetAllDataDefinitionRequestPDUReference();
         obj._v.clear();
         obj._v.put("_choice", "ldName");
-        obj._v.put("ldName", new InnerObjectName()._v);
+        obj._v.put("_", new InnerObjectName()._v);
         byte[] data = obj.encodeTest();
         InnerGetAllDataDefinitionRequestPDUReference d = InnerGetAllDataDefinitionRequestPDUReference.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -24,7 +24,7 @@ public class InnerGetAllDataDefinitionRequestPDUReferenceTest {
         InnerGetAllDataDefinitionRequestPDUReference obj = new InnerGetAllDataDefinitionRequestPDUReference();
         obj._v.clear();
         obj._v.put("_choice", "lnReference");
-        obj._v.put("lnReference", new InnerObjectReference()._v);
+        obj._v.put("_", new InnerObjectReference()._v);
         byte[] data = obj.encodeTest();
         InnerGetAllDataDefinitionRequestPDUReference d = InnerGetAllDataDefinitionRequestPDUReference.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));

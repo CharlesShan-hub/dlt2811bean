@@ -456,11 +456,11 @@ public class CmsData extends CmsChoice {
             out.put("_choice", e.getKey());
             Object val = e.getValue();
             if (val instanceof java.util.LinkedHashMap) {
-                out.put(e.getKey(), val);
+                out.put("_", val);
             } else {
                 java.util.LinkedHashMap<String, Object> w = new java.util.LinkedHashMap<>();
                 V.setVal(w, val);
-                out.put(e.getKey(), w);
+                out.put("_", w);
             }
             break;
         }
@@ -482,7 +482,7 @@ public class CmsData extends CmsChoice {
                 elem.syncToInner();
                 list.add(elem.inner);
             }
-            inner._v.put(name, list);
+            inner._v.put("_", list);
             return;
         }
 
@@ -574,7 +574,7 @@ public class CmsData extends CmsChoice {
         // Handle ARRAY/STRUCTURE (share alt_sequence, manual)
         if ("array".equals(ch) || "structure".equals(ch)) {
             selectedChoiceIndex = "array".equals(ch) ? CHOICE_ARRAY : CHOICE_STRUCTURE;
-            Object raw = inner._v.get(ch);
+            Object raw = inner._v.get("_");
             if (raw instanceof java.util.LinkedHashMap) {
                 // InnerData.setArray wraps the list as {"_": [...]}
                 raw = V.getVal((java.util.Map<String, Object>) raw);

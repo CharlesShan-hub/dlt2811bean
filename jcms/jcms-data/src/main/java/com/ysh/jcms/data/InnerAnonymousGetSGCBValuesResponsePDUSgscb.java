@@ -17,17 +17,17 @@ public class InnerAnonymousGetSGCBValuesResponsePDUSgscb extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAnonymousGetSGCBValuesResponsePDUSgscb() {
         _v.put("_choice", "error");
-        _v.put("error", new InnerServiceError()._v);
+        _v.put("_", new InnerServiceError()._v);
     }
     @JsonSetter("error")
     public void setError(Object v) {
         _v.put("_choice", "error");
-        if (v instanceof java.util.Map) { _v.put("error", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("error", _w); }
+        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
     }
     @JsonSetter("value")
     public void setValue(Object v) {
         _v.put("_choice", "value");
-        if (v instanceof java.util.Map) { _v.put("value", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("value", _w); }
+        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
     }
     public byte[] encode() {
         String _json = null;

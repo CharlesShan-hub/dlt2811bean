@@ -13,7 +13,7 @@ public class InnerAnonymousGetAllCBValuesResponsePDUCbValueValueTest {
         InnerAnonymousGetAllCBValuesResponsePDUCbValueValue obj = new InnerAnonymousGetAllCBValuesResponsePDUCbValueValue();
         obj._v.clear();
         obj._v.put("_choice", "brcb");
-        obj._v.put("brcb", new InnerBRCB()._v);
+        obj._v.put("_", new InnerBRCB()._v);
         byte[] data = obj.encodeTest();
         InnerAnonymousGetAllCBValuesResponsePDUCbValueValue d = InnerAnonymousGetAllCBValuesResponsePDUCbValueValue.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -24,7 +24,7 @@ public class InnerAnonymousGetAllCBValuesResponsePDUCbValueValueTest {
         InnerAnonymousGetAllCBValuesResponsePDUCbValueValue obj = new InnerAnonymousGetAllCBValuesResponsePDUCbValueValue();
         obj._v.clear();
         obj._v.put("_choice", "urcb");
-        obj._v.put("urcb", new InnerURCB()._v);
+        obj._v.put("_", new InnerURCB()._v);
         byte[] data = obj.encodeTest();
         InnerAnonymousGetAllCBValuesResponsePDUCbValueValue d = InnerAnonymousGetAllCBValuesResponsePDUCbValueValue.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -35,7 +35,7 @@ public class InnerAnonymousGetAllCBValuesResponsePDUCbValueValueTest {
         InnerAnonymousGetAllCBValuesResponsePDUCbValueValue obj = new InnerAnonymousGetAllCBValuesResponsePDUCbValueValue();
         obj._v.clear();
         obj._v.put("_choice", "lcb");
-        obj._v.put("lcb", new InnerLCB()._v);
+        obj._v.put("_", new InnerLCB()._v);
         byte[] data = obj.encodeTest();
         InnerAnonymousGetAllCBValuesResponsePDUCbValueValue d = InnerAnonymousGetAllCBValuesResponsePDUCbValueValue.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -46,7 +46,7 @@ public class InnerAnonymousGetAllCBValuesResponsePDUCbValueValueTest {
         InnerAnonymousGetAllCBValuesResponsePDUCbValueValue obj = new InnerAnonymousGetAllCBValuesResponsePDUCbValueValue();
         obj._v.clear();
         obj._v.put("_choice", "sgcb");
-        obj._v.put("sgcb", new InnerSGCB()._v);
+        obj._v.put("_", new InnerSGCB()._v);
         byte[] data = obj.encodeTest();
         InnerAnonymousGetAllCBValuesResponsePDUCbValueValue d = InnerAnonymousGetAllCBValuesResponsePDUCbValueValue.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -57,7 +57,7 @@ public class InnerAnonymousGetAllCBValuesResponsePDUCbValueValueTest {
         InnerAnonymousGetAllCBValuesResponsePDUCbValueValue obj = new InnerAnonymousGetAllCBValuesResponsePDUCbValueValue();
         obj._v.clear();
         obj._v.put("_choice", "gocb");
-        obj._v.put("gocb", new InnerGoCB()._v);
+        obj._v.put("_", new InnerGoCB()._v);
         byte[] data = obj.encodeTest();
         InnerAnonymousGetAllCBValuesResponsePDUCbValueValue d = InnerAnonymousGetAllCBValuesResponsePDUCbValueValue.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -68,7 +68,7 @@ public class InnerAnonymousGetAllCBValuesResponsePDUCbValueValueTest {
         InnerAnonymousGetAllCBValuesResponsePDUCbValueValue obj = new InnerAnonymousGetAllCBValuesResponsePDUCbValueValue();
         obj._v.clear();
         obj._v.put("_choice", "msvcb");
-        obj._v.put("msvcb", new InnerMSVCB()._v);
+        obj._v.put("_", new InnerMSVCB()._v);
         byte[] data = obj.encodeTest();
         InnerAnonymousGetAllCBValuesResponsePDUCbValueValue d = InnerAnonymousGetAllCBValuesResponsePDUCbValueValue.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));

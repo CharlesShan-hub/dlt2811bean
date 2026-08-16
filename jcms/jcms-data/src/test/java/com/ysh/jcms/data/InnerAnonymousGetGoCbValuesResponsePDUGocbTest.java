@@ -13,7 +13,7 @@ public class InnerAnonymousGetGoCbValuesResponsePDUGocbTest {
         InnerAnonymousGetGoCbValuesResponsePDUGocb obj = new InnerAnonymousGetGoCbValuesResponsePDUGocb();
         obj._v.clear();
         obj._v.put("_choice", "error");
-        obj._v.put("error", new InnerServiceError()._v);
+        obj._v.put("_", new InnerServiceError()._v);
         byte[] data = obj.encodeTest();
         InnerAnonymousGetGoCbValuesResponsePDUGocb d = InnerAnonymousGetGoCbValuesResponsePDUGocb.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -24,7 +24,7 @@ public class InnerAnonymousGetGoCbValuesResponsePDUGocbTest {
         InnerAnonymousGetGoCbValuesResponsePDUGocb obj = new InnerAnonymousGetGoCbValuesResponsePDUGocb();
         obj._v.clear();
         obj._v.put("_choice", "value");
-        obj._v.put("value", new InnerGoCB()._v);
+        obj._v.put("_", new InnerGoCB()._v);
         byte[] data = obj.encodeTest();
         InnerAnonymousGetGoCbValuesResponsePDUGocb d = InnerAnonymousGetGoCbValuesResponsePDUGocb.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));

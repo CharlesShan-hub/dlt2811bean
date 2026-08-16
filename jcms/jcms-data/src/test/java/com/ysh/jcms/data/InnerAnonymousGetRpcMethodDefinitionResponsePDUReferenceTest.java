@@ -13,7 +13,7 @@ public class InnerAnonymousGetRpcMethodDefinitionResponsePDUReferenceTest {
         InnerAnonymousGetRpcMethodDefinitionResponsePDUReference obj = new InnerAnonymousGetRpcMethodDefinitionResponsePDUReference();
         obj._v.clear();
         obj._v.put("_choice", "error");
-        obj._v.put("error", new InnerServiceError()._v);
+        obj._v.put("_", new InnerServiceError()._v);
         byte[] data = obj.encodeTest();
         InnerAnonymousGetRpcMethodDefinitionResponsePDUReference d = InnerAnonymousGetRpcMethodDefinitionResponsePDUReference.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -24,7 +24,7 @@ public class InnerAnonymousGetRpcMethodDefinitionResponsePDUReferenceTest {
         InnerAnonymousGetRpcMethodDefinitionResponsePDUReference obj = new InnerAnonymousGetRpcMethodDefinitionResponsePDUReference();
         obj._v.clear();
         obj._v.put("_choice", "method");
-        obj._v.put("method", new InnerAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod()._v);
+        obj._v.put("_", new InnerAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod()._v);
         byte[] data = obj.encodeTest();
         InnerAnonymousGetRpcMethodDefinitionResponsePDUReference d = InnerAnonymousGetRpcMethodDefinitionResponsePDUReference.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));

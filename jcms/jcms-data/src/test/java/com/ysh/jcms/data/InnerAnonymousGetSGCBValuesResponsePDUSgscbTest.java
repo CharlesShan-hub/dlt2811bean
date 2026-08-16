@@ -13,7 +13,7 @@ public class InnerAnonymousGetSGCBValuesResponsePDUSgscbTest {
         InnerAnonymousGetSGCBValuesResponsePDUSgscb obj = new InnerAnonymousGetSGCBValuesResponsePDUSgscb();
         obj._v.clear();
         obj._v.put("_choice", "error");
-        obj._v.put("error", new InnerServiceError()._v);
+        obj._v.put("_", new InnerServiceError()._v);
         byte[] data = obj.encodeTest();
         InnerAnonymousGetSGCBValuesResponsePDUSgscb d = InnerAnonymousGetSGCBValuesResponsePDUSgscb.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -24,7 +24,7 @@ public class InnerAnonymousGetSGCBValuesResponsePDUSgscbTest {
         InnerAnonymousGetSGCBValuesResponsePDUSgscb obj = new InnerAnonymousGetSGCBValuesResponsePDUSgscb();
         obj._v.clear();
         obj._v.put("_choice", "value");
-        obj._v.put("value", new InnerSGCB()._v);
+        obj._v.put("_", new InnerSGCB()._v);
         byte[] data = obj.encodeTest();
         InnerAnonymousGetSGCBValuesResponsePDUSgscb d = InnerAnonymousGetSGCBValuesResponsePDUSgscb.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));

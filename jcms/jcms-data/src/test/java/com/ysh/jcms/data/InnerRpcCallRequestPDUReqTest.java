@@ -13,7 +13,7 @@ public class InnerRpcCallRequestPDUReqTest {
         InnerRpcCallRequestPDUReq obj = new InnerRpcCallRequestPDUReq();
         obj._v.clear();
         obj._v.put("_choice", "reqData");
-        obj._v.put("reqData", new InnerData()._v);
+        obj._v.put("_", new InnerData()._v);
         byte[] data = obj.encodeTest();
         InnerRpcCallRequestPDUReq d = InnerRpcCallRequestPDUReq.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -24,7 +24,7 @@ public class InnerRpcCallRequestPDUReqTest {
         InnerRpcCallRequestPDUReq obj = new InnerRpcCallRequestPDUReq();
         obj._v.clear();
         obj._v.put("_choice", "callID");
-        obj._v.put("callID", new DefaultInnerOctetString());
+        obj._v.put("_", new DefaultInnerOctetString());
         byte[] data = obj.encodeTest();
         InnerRpcCallRequestPDUReq d = InnerRpcCallRequestPDUReq.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));

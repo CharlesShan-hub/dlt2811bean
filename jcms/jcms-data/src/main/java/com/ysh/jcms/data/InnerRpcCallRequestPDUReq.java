@@ -12,17 +12,17 @@ public class InnerRpcCallRequestPDUReq extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerRpcCallRequestPDUReq() {
         _v.put("_choice", "reqData");
-        _v.put("reqData", new InnerData()._v);
+        _v.put("_", new InnerData()._v);
     }
     @JsonSetter("reqData")
     public void setReqData(Object v) {
         _v.put("_choice", "reqData");
-        if (v instanceof java.util.Map) { _v.put("reqData", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("reqData", _w); }
+        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
     }
     @JsonSetter("callID")
     public void setCallID(Object v) {
         _v.put("_choice", "callID");
-        if (v instanceof java.util.Map) { _v.put("callID", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("callID", _w); }
+        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
     }
     public byte[] encode() {
         String _json = null;

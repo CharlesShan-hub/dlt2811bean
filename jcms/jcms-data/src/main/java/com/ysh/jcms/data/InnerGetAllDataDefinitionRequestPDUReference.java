@@ -12,17 +12,17 @@ public class InnerGetAllDataDefinitionRequestPDUReference extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetAllDataDefinitionRequestPDUReference() {
         _v.put("_choice", "ldName");
-        _v.put("ldName", new InnerObjectName()._v);
+        _v.put("_", new InnerObjectName()._v);
     }
     @JsonSetter("ldName")
     public void setLdName(Object v) {
         _v.put("_choice", "ldName");
-        if (v instanceof java.util.Map) { _v.put("ldName", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("ldName", _w); }
+        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
     }
     @JsonSetter("lnReference")
     public void setLnReference(Object v) {
         _v.put("_choice", "lnReference");
-        if (v instanceof java.util.Map) { _v.put("lnReference", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("lnReference", _w); }
+        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
     }
     public byte[] encode() {
         String _json = null;

@@ -13,7 +13,7 @@ public class InnerAnonymousGetURCBValuesResponsePDUUrcbTest {
         InnerAnonymousGetURCBValuesResponsePDUUrcb obj = new InnerAnonymousGetURCBValuesResponsePDUUrcb();
         obj._v.clear();
         obj._v.put("_choice", "error");
-        obj._v.put("error", new InnerServiceError()._v);
+        obj._v.put("_", new InnerServiceError()._v);
         byte[] data = obj.encodeTest();
         InnerAnonymousGetURCBValuesResponsePDUUrcb d = InnerAnonymousGetURCBValuesResponsePDUUrcb.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -24,7 +24,7 @@ public class InnerAnonymousGetURCBValuesResponsePDUUrcbTest {
         InnerAnonymousGetURCBValuesResponsePDUUrcb obj = new InnerAnonymousGetURCBValuesResponsePDUUrcb();
         obj._v.clear();
         obj._v.put("_choice", "value");
-        obj._v.put("value", new InnerURCB()._v);
+        obj._v.put("_", new InnerURCB()._v);
         byte[] data = obj.encodeTest();
         InnerAnonymousGetURCBValuesResponsePDUUrcb d = InnerAnonymousGetURCBValuesResponsePDUUrcb.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));

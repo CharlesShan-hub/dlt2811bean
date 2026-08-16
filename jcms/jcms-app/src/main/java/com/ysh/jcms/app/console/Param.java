@@ -1,10 +1,13 @@
 package com.ysh.jcms.app.console;
 
+import com.ysh.jcms.core.data.choice.CmsData;
+import com.ysh.jcms.core.data.core.CmsType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +76,13 @@ public class Param {
      */
     private String delimiter = "\\s+";
 
+    /**
+     * Element type of a {@code List.class} parameter, e.g. {@link CmsData}.
+     * When set, each split item is converted to this type; the default is
+     * {@code String} (items passed through as-is).
+     */
+    private Class<?> itemType = String.class;
+
     /** Whether the flag is required. */
     private boolean required;
 
@@ -87,7 +97,9 @@ public class Param {
      * <li>{@code Short.class / short.class} — {@link Short#parseShort}</li>
      * <li>{@code Float.class / float.class} — {@link Float#parseFloat}</li>
      * <li>{@code Double.class / double.class} — {@link Double#parseDouble}</li>
-     * <li>{@code List.class} — split by {@link #delimiter}</li>
+     * <li>{@code CmsData.class} — parsed via {@link CmsDataFiller}</li>
+     * <li>{@code List.class} — split by {@link #delimiter}; each item is
+     * converted to {@link #itemType} (default {@code String})</li>
      * </ul>
      */
     public Object convert(String rawValue) {
@@ -115,12 +127,30 @@ public class Param {
             return Float.parseFloat(value);
         if (type == Double.class || type == double.class)
             return Double.parseDouble(value);
+        if (type == CmsData.class) {
+            CmsData data = new CmsData();
+            CmsDataFiller.fillCmsData(data, value);
+            return data;
+        }
+        if (CmsType.class.isAssignableFrom(type)) {
+            return CmsType.fromJson(type, value);
+        }
         if (type == List.class) {
             // Default delimiter "\\s+" is already a regex; user-specified delimiters
             // (e.g. "|", ",") are literal strings and must be quoted to avoid regex
             // metacharacter issues.
             String splitRegex = "\\s+".equals(delimiter) ? delimiter : Pattern.quote(delimiter);
-            return Arrays.asList(value.split(splitRegex));
+            List<String> items = Arrays.asList(value.split(splitRegex));
+            if (itemType == CmsData.class) {
+                List<CmsData> data = new ArrayList<>();
+                for (String item : items) {
+                    CmsData d = new CmsData();
+                    CmsDataFiller.fillCmsData(d, item);
+                    data.add(d);
+                }
+                return data;
+            }
+            return items;
         }
         throw new IllegalArgumentException("Unsupported type: " + type);
     }

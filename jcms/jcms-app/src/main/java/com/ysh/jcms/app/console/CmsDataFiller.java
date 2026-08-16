@@ -1,4 +1,4 @@
-package com.ysh.jcms.app.util;
+package com.ysh.jcms.app.console;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,11 +11,11 @@ import com.ysh.jcms.core.data.sequence.common.CmsUtcTime;
 import java.util.Map;
 
 /**
- * Utility for converting raw string values into {@link CmsData} objects.
+ * CLI input parsing: converts a raw string value into a {@link CmsData} object.
  * <p>
  * Handles JSON object values (quality, utc-time, binary-time) and plain string
- * values (visible-string, unicode-string). Shared by {@code SetDataValuesDao}
- * and {@code SetDataSetValuesDao}.
+ * values (visible-string, unicode-string). Used by {@link Param} to convert
+ * user-supplied values before they reach the request DAO.
  */
 public final class CmsDataFiller {
 

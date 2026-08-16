@@ -17,37 +17,37 @@ public class InnerAnonymousGetAllCBValuesResponsePDUCbValueValue extends InnerBa
     private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAnonymousGetAllCBValuesResponsePDUCbValueValue() {
         _v.put("_choice", "brcb");
-        _v.put("brcb", new InnerBRCB()._v);
+        _v.put("_", new InnerBRCB()._v);
     }
     @JsonSetter("brcb")
     public void setBrcb(Object v) {
         _v.put("_choice", "brcb");
-        if (v instanceof java.util.Map) { _v.put("brcb", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("brcb", _w); }
+        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
     }
     @JsonSetter("urcb")
     public void setUrcb(Object v) {
         _v.put("_choice", "urcb");
-        if (v instanceof java.util.Map) { _v.put("urcb", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("urcb", _w); }
+        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
     }
     @JsonSetter("lcb")
     public void setLcb(Object v) {
         _v.put("_choice", "lcb");
-        if (v instanceof java.util.Map) { _v.put("lcb", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("lcb", _w); }
+        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
     }
     @JsonSetter("sgcb")
     public void setSgcb(Object v) {
         _v.put("_choice", "sgcb");
-        if (v instanceof java.util.Map) { _v.put("sgcb", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("sgcb", _w); }
+        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
     }
     @JsonSetter("gocb")
     public void setGocb(Object v) {
         _v.put("_choice", "gocb");
-        if (v instanceof java.util.Map) { _v.put("gocb", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("gocb", _w); }
+        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
     }
     @JsonSetter("msvcb")
     public void setMsvcb(Object v) {
         _v.put("_choice", "msvcb");
-        if (v instanceof java.util.Map) { _v.put("msvcb", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("msvcb", _w); }
+        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
     }
     public byte[] encode() {
         String _json = null;

@@ -13,7 +13,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "error");
-        obj._v.put("error", new InnerServiceError()._v);
+        obj._v.put("_", new InnerServiceError()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -24,7 +24,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "array");
-        obj._v.put("array", new java.util.ArrayList<>());
+        obj._v.put("_", new java.util.ArrayList<>());
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -35,7 +35,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "structure");
-        obj._v.put("structure", new java.util.ArrayList<>());
+        obj._v.put("_", new java.util.ArrayList<>());
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -46,7 +46,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "Boolean");
-        obj._v.put("Boolean", new InnerBoolean()._v);
+        obj._v.put("_", new InnerBoolean()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -57,7 +57,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "int8");
-        obj._v.put("int8", new InnerInt8()._v);
+        obj._v.put("_", new InnerInt8()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -68,7 +68,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "int16");
-        obj._v.put("int16", new InnerInt16()._v);
+        obj._v.put("_", new InnerInt16()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -79,7 +79,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "int32");
-        obj._v.put("int32", new InnerInt32()._v);
+        obj._v.put("_", new InnerInt32()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -90,7 +90,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "int64");
-        obj._v.put("int64", new InnerInt64()._v);
+        obj._v.put("_", new InnerInt64()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -101,7 +101,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "int8u");
-        obj._v.put("int8u", new InnerInt8U()._v);
+        obj._v.put("_", new InnerInt8U()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -112,7 +112,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "int16u");
-        obj._v.put("int16u", new InnerInt16U()._v);
+        obj._v.put("_", new InnerInt16U()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -123,7 +123,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "int32u");
-        obj._v.put("int32u", new InnerInt32U()._v);
+        obj._v.put("_", new InnerInt32U()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -134,7 +134,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "int64u");
-        obj._v.put("int64u", new InnerInt64U()._v);
+        obj._v.put("_", new InnerInt64U()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -145,7 +145,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "float32");
-        obj._v.put("float32", new InnerFloat32()._v);
+        obj._v.put("_", new InnerFloat32()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -156,7 +156,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "float64");
-        obj._v.put("float64", new InnerFloat64()._v);
+        obj._v.put("_", new InnerFloat64()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -170,7 +170,7 @@ public class InnerDataTest {
         java.util.LinkedHashMap<String, Object> _bs = new java.util.LinkedHashMap<>();
         _bs.put("length", 2);
         _bs.put("value", "AA");
-        obj._v.put("bit-string", _bs);
+        obj._v.put("_", _bs);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -181,7 +181,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "octet-string");
-        obj._v.put("octet-string", new DefaultInnerOctetString());
+        obj._v.put("_", new DefaultInnerOctetString());
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -192,7 +192,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "visible-string");
-        obj._v.put("visible-string", new DefaultInnerVisibleString());
+        obj._v.put("_", new DefaultInnerVisibleString());
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -203,7 +203,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "unicode-string");
-        obj._v.put("unicode-string", new DefaultInnerUtf8String());
+        obj._v.put("_", new DefaultInnerUtf8String());
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -214,7 +214,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "utc-time");
-        obj._v.put("utc-time", new InnerUtcTime()._v);
+        obj._v.put("_", new InnerUtcTime()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -225,7 +225,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "binary-time");
-        obj._v.put("binary-time", new InnerBinaryTime()._v);
+        obj._v.put("_", new InnerBinaryTime()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -236,7 +236,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "quality");
-        obj._v.put("quality", new InnerQuality()._v);
+        obj._v.put("_", new InnerQuality()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -247,7 +247,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "dbpos");
-        obj._v.put("dbpos", new InnerDbpos()._v);
+        obj._v.put("_", new InnerDbpos()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -258,7 +258,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "tcmd");
-        obj._v.put("tcmd", new InnerTcmd()._v);
+        obj._v.put("_", new InnerTcmd()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -269,7 +269,7 @@ public class InnerDataTest {
         InnerData obj = new InnerData();
         obj._v.clear();
         obj._v.put("_choice", "check");
-        obj._v.put("check", new InnerCheck()._v);
+        obj._v.put("_", new InnerCheck()._v);
         byte[] data = obj.encodeTest();
         InnerData d = InnerData.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));

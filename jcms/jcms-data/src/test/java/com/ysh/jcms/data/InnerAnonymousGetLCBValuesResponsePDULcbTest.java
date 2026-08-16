@@ -13,7 +13,7 @@ public class InnerAnonymousGetLCBValuesResponsePDULcbTest {
         InnerAnonymousGetLCBValuesResponsePDULcb obj = new InnerAnonymousGetLCBValuesResponsePDULcb();
         obj._v.clear();
         obj._v.put("_choice", "error");
-        obj._v.put("error", new InnerServiceError()._v);
+        obj._v.put("_", new InnerServiceError()._v);
         byte[] data = obj.encodeTest();
         InnerAnonymousGetLCBValuesResponsePDULcb d = InnerAnonymousGetLCBValuesResponsePDULcb.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));
@@ -24,7 +24,7 @@ public class InnerAnonymousGetLCBValuesResponsePDULcbTest {
         InnerAnonymousGetLCBValuesResponsePDULcb obj = new InnerAnonymousGetLCBValuesResponsePDULcb();
         obj._v.clear();
         obj._v.put("_choice", "value");
-        obj._v.put("value", new InnerLCB()._v);
+        obj._v.put("_", new InnerLCB()._v);
         byte[] data = obj.encodeTest();
         InnerAnonymousGetLCBValuesResponsePDULcb d = InnerAnonymousGetLCBValuesResponsePDULcb.decode(data);
         assertEquals(obj._v.get("_choice"), d._v.get("_choice"));

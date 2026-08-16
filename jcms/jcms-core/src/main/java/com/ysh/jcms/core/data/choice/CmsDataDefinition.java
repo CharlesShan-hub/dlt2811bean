@@ -207,7 +207,7 @@ public class CmsDataDefinition extends CmsChoice {
                 alt_array = new CmsDataDefinitionArray();
             alt_array.syncToInner();
             inner._v.put("_choice", "array");
-            inner._v.put("array", alt_array.inner._v);
+            inner._v.put("_", alt_array.inner._v);
             return;
         }
 
@@ -220,29 +220,29 @@ public class CmsDataDefinition extends CmsChoice {
                 elem.syncToInner();
                 list.add(elem.inner);
             }
-            inner._v.put("structure", list);
+            inner._v.put("_", list);
             return;
         }
 
         // Handle string length variants — CmsInt32 → Integer
         if (ch == CHOICE_BIT_STRING) {
             inner._v.put("_choice", "bit-string");
-            inner._v.put("bit-string", alt_bit_string_len.value());
+            inner._v.put("_", alt_bit_string_len.value());
             return;
         }
         if (ch == CHOICE_OCTET_STRING) {
             inner._v.put("_choice", "octet-string");
-            inner._v.put("octet-string", alt_octet_string_len.value());
+            inner._v.put("_", alt_octet_string_len.value());
             return;
         }
         if (ch == CHOICE_VISIBLE_STRING) {
             inner._v.put("_choice", "visible-string");
-            inner._v.put("visible-string", alt_visible_string_len.value());
+            inner._v.put("_", alt_visible_string_len.value());
             return;
         }
         if (ch == CHOICE_UNICODE_STRING) {
             inner._v.put("_choice", "unicode-string");
-            inner._v.put("unicode-string", alt_unicode_string_len.value());
+            inner._v.put("_", alt_unicode_string_len.value());
             return;
         }
 
@@ -255,14 +255,17 @@ public class CmsDataDefinition extends CmsChoice {
         Object chObj = inner._v.get("_choice");
         if (!(chObj instanceof String)) {
             // Decoded _v holds JER form ({"structure": [...]}, {"Boolean": null}, …)
-            // without _choice — pick the variant from the first non-metadata key.
-            // normalizeVariant() is NOT safe here: it wraps non-map payloads (e.g.
-            // structure's List) into {"_": ...}.
+            // without _choice — pick the variant from the first non-metadata key and
+            // move its payload into the "_" value slot. normalizeVariant() is NOT
+            // safe here: it wraps non-map payloads (e.g. structure's List) into
+            // {"_": ...}.
             for (java.util.Map.Entry<String, Object> e : inner._v.entrySet()) {
                 if (e.getKey().startsWith("_"))
                     continue;
                 chObj = e.getKey();
                 V.setChoice(inner._v, e.getKey());
+                inner._v.put("_", e.getValue());
+                inner._v.remove(e.getKey());
                 break;
             }
             if (!(chObj instanceof String))
@@ -273,7 +276,7 @@ public class CmsDataDefinition extends CmsChoice {
         // Handle array manually
         if ("array".equals(ch)) {
             selectedChoiceIndex = CHOICE_ARRAY;
-            Object sub = inner._v.get("array");
+            Object sub = inner._v.get("_");
             if (sub instanceof java.util.LinkedHashMap) {
                 alt_array = new CmsDataDefinitionArray();
                 alt_array.inner._v = (java.util.LinkedHashMap<String, Object>) sub;
@@ -286,7 +289,7 @@ public class CmsDataDefinition extends CmsChoice {
         if ("structure".equals(ch)) {
             selectedChoiceIndex = CHOICE_STRUCTURE;
             alt_structure.clear();
-            Object structObj = inner._v.get("structure");
+            Object structObj = inner._v.get("_");
             if (structObj instanceof List) {
                 for (Object elem : (List<?>) structObj) {
                     CmsDataDefinitionStructElem c = new CmsDataDefinitionStructElem();
@@ -313,25 +316,25 @@ public class CmsDataDefinition extends CmsChoice {
         // Handle string length variants
         if ("bit-string".equals(ch)) {
             selectedChoiceIndex = CHOICE_BIT_STRING;
-            Object v = inner._v.get("bit-string");
+            Object v = inner._v.get("_");
             alt_bit_string_len.value(v instanceof Number ? ((Number) v).intValue() : 0);
             return;
         }
         if ("octet-string".equals(ch)) {
             selectedChoiceIndex = CHOICE_OCTET_STRING;
-            Object v = inner._v.get("octet-string");
+            Object v = inner._v.get("_");
             alt_octet_string_len.value(v instanceof Number ? ((Number) v).intValue() : 0);
             return;
         }
         if ("visible-string".equals(ch)) {
             selectedChoiceIndex = CHOICE_VISIBLE_STRING;
-            Object v = inner._v.get("visible-string");
+            Object v = inner._v.get("_");
             alt_visible_string_len.value(v instanceof Number ? ((Number) v).intValue() : 0);
             return;
         }
         if ("unicode-string".equals(ch)) {
             selectedChoiceIndex = CHOICE_UNICODE_STRING;
-            Object v = inner._v.get("unicode-string");
+            Object v = inner._v.get("_");
             alt_unicode_string_len.value(v instanceof Number ? ((Number) v).intValue() : 0);
             return;
         }
