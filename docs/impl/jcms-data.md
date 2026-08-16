@@ -66,7 +66,7 @@ data/
 
 | key | 用途 |
 |-----|------|
-| `"_"` | 标量值（如 `{"_": 42}`） |
+| `"_"` | 标量值 / CHOICE 选中值（如 `{"_": 42}`） |
 | `"_choice"` | CHOICE 当前选中的 variant 名 |
 | `"_present_<name>"` | OPTIONAL 字段显式出现标记（`V.isPresent` / `V.setPresent`） |
 | 其他 | ASN.1 字段名，直接作为 key |
@@ -76,11 +76,11 @@ data/
 | 结构 | `_v` 内容 | 序列化结果 |
 |------|----------|-----------|
 | 标量（InnerInt32） | `{"_": 42}` | `42` |
-| CHOICE（InnerData） | `{"_choice": "int32", "int32": 42}` | `{"int32": 42}` |
+| CHOICE（InnerData） | `{"_choice": "int32", "_": 42}` | `{"int32": 42}` |
 | SEQUENCE（InnerBRCB） | `{"rptID": {...}, "rptEna": {...}}` | `{"rptID": "x", "rptEna": 1}` |
 
 - **标量**：值存 `"_"` 下，`toJsonValue()` 展开为裸值。
-- **CHOICE**：`"_choice"` 记录当前 variant，选中值存对应 key；未选中的 variant 不在 `_v`。
+- **CHOICE**：`"_choice"` 记录当前 variant，选中值统一存 `"_"` 下（与标量一致）；未选中的 variant 不在 `_v`。
 - **SEQUENCE**：每个字段一个 key；字段值是子类型（Inner\*）的 `_v`（Map）或基本类型。
 - **OPTIONAL 字段**：构造器默认不放入 `_v`（无 ASN.1 DEFAULT 的 OPTIONAL 字段被跳过），所以未赋值就不会出现在 JSON/编码结果中；要包含它，直接向 `_v` 放入该字段即可。
 
@@ -211,7 +211,7 @@ InnerBRCB back = InnerBRCB.decode(apdu);
 
 // CHOICE：用生成的 @JsonSetter 或直接操作 _v
 InnerData data = new InnerData();
-data.setInt32(42);                    // 等价于 V.setChoice(_v,"int32") + put("int32",42)
+data.setInt32(42);                    // 等价于 V.setChoice(_v,"int32") + put("_",42)
 ```
 
 - `encode()` 为严格编码；`encodeTest()` 为测试用宽松/调试编码（打印中间 JSON）。
