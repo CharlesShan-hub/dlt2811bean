@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerApdu extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerApdu() {
         _v.put("apch", new InnerApch()._v);
         _v.put("asdu", new DefaultInnerOctetString(new byte[]{ 1 }));
@@ -27,30 +26,9 @@ public class InnerApdu extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("Apdu", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode Apdu failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "Apdu"; }
     public static InnerApdu decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("Apdu", DEFAULT_ENCODING, data), InnerApdu.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerApdu.class, "Apdu", data);
     }
 }

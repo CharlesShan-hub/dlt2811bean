@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerGetAllCBValuesErrorPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetAllCBValuesErrorPDU() { _v.put("_", 1); }
     @JsonCreator
     public static InnerGetAllCBValuesErrorPDU fromJson(int v) { InnerGetAllCBValuesErrorPDU r = new InnerGetAllCBValuesErrorPDU(); r._v.put("_", v); return r; }
@@ -29,7 +28,7 @@ public class InnerGetAllCBValuesErrorPDU extends InnerBase {
         try {
             String json = InnerNative.decode("GetAllCBValuesErrorPDU", DEFAULT_ENCODING, data);
             InnerGetAllCBValuesErrorPDU r = new InnerGetAllCBValuesErrorPDU();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asInt());
             return r;

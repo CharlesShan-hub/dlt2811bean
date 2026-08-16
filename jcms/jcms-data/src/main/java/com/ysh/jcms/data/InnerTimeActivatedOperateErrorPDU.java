@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerTimeActivatedOperateErrorPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerTimeActivatedOperateErrorPDU() {
         _v.put("reference", new InnerObjectReference()._v);
         _v.put("ctlVal", new InnerData()._v);
@@ -41,30 +40,9 @@ public class InnerTimeActivatedOperateErrorPDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("TimeActivatedOperateErrorPDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode TimeActivatedOperateErrorPDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "TimeActivatedOperateErrorPDU"; }
     public static InnerTimeActivatedOperateErrorPDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("TimeActivatedOperateErrorPDU", DEFAULT_ENCODING, data), InnerTimeActivatedOperateErrorPDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerTimeActivatedOperateErrorPDU.class, "TimeActivatedOperateErrorPDU", data);
     }
 }

@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerFunctionalConstraint extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerFunctionalConstraint() { _v.put("_", "xx"); }
     @JsonCreator
     public static InnerFunctionalConstraint fromJson(String v) { InnerFunctionalConstraint r = new InnerFunctionalConstraint(); r._v.put("_", v); return r; }
@@ -20,14 +19,14 @@ public class InnerFunctionalConstraint extends InnerBase {
     public Object toJsonValue() { return _v.get("_"); }
     public byte[] encode() {
         try {
-            return InnerNative.encode("FunctionalConstraint", DEFAULT_ENCODING, MAPPER.writeValueAsString(_v.get("_")));
+            return InnerNative.encode("FunctionalConstraint", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(_v.get("_")));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     public byte[] encodeTest() {
         try {
-            return InnerNative.encode("FunctionalConstraint", DEFAULT_ENCODING, MAPPER.writeValueAsString(_v.get("_")));
+            return InnerNative.encode("FunctionalConstraint", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(_v.get("_")));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -36,9 +35,9 @@ public class InnerFunctionalConstraint extends InnerBase {
         try {
             String json = InnerNative.decode("FunctionalConstraint", DEFAULT_ENCODING, data);
             InnerFunctionalConstraint r = new InnerFunctionalConstraint();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
-            r._v.put("_", MAPPER.readValue(_node.toString(), DefaultInnerVisibleString.class));
+            r._v.put("_", InnerBase.MAPPER.readValue(_node.toString(), DefaultInnerVisibleString.class));
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

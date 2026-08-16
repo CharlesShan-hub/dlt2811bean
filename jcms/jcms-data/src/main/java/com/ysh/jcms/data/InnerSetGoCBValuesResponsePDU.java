@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerSetGoCBValuesResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSetGoCBValuesResponsePDU() { _v.put("_", null); }
     @JsonCreator
     public static InnerSetGoCBValuesResponsePDU fromJson(String v) { InnerSetGoCBValuesResponsePDU r = new InnerSetGoCBValuesResponsePDU(); r._v.put("_", v); return r; }
@@ -29,7 +28,7 @@ public class InnerSetGoCBValuesResponsePDU extends InnerBase {
         try {
             String json = InnerNative.decode("SetGoCBValuesResponsePDU", DEFAULT_ENCODING, data);
             InnerSetGoCBValuesResponsePDU r = new InnerSetGoCBValuesResponsePDU();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", null);
             return r;

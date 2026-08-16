@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerGetEditSGValueErrorPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetEditSGValueErrorPDU() { _v.put("_", 1); }
     @JsonCreator
     public static InnerGetEditSGValueErrorPDU fromJson(int v) { InnerGetEditSGValueErrorPDU r = new InnerGetEditSGValueErrorPDU(); r._v.put("_", v); return r; }
@@ -29,7 +28,7 @@ public class InnerGetEditSGValueErrorPDU extends InnerBase {
         try {
             String json = InnerNative.decode("GetEditSGValueErrorPDU", DEFAULT_ENCODING, data);
             InnerGetEditSGValueErrorPDU r = new InnerGetEditSGValueErrorPDU();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asInt());
             return r;

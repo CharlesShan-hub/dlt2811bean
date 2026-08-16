@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerCancelRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerCancelRequestPDU() {
         _v.put("reference", new InnerObjectReference()._v);
         _v.put("ctlVal", new InnerData()._v);
@@ -36,30 +35,9 @@ public class InnerCancelRequestPDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("CancelRequestPDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode CancelRequestPDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "CancelRequestPDU"; }
     public static InnerCancelRequestPDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("CancelRequestPDU", DEFAULT_ENCODING, data), InnerCancelRequestPDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerCancelRequestPDU.class, "CancelRequestPDU", data);
     }
 }

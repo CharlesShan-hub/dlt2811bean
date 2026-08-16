@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerGetEditSGValueRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetEditSGValueRequestPDU() {
         _v.put("data", new InnerGetEditSGValueRequestPDUData()._v);
     }
@@ -28,30 +27,9 @@ public class InnerGetEditSGValueRequestPDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("GetEditSGValueRequestPDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode GetEditSGValueRequestPDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "GetEditSGValueRequestPDU"; }
     public static InnerGetEditSGValueRequestPDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("GetEditSGValueRequestPDU", DEFAULT_ENCODING, data), InnerGetEditSGValueRequestPDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerGetEditSGValueRequestPDU.class, "GetEditSGValueRequestPDU", data);
     }
 }

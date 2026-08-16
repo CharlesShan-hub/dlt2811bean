@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerGetDataDefinitionRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetDataDefinitionRequestPDU() {
         _v.put("data", new InnerGetDataDefinitionRequestPDUData()._v);
     }
@@ -28,30 +27,9 @@ public class InnerGetDataDefinitionRequestPDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("GetDataDefinitionRequestPDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode GetDataDefinitionRequestPDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "GetDataDefinitionRequestPDU"; }
     public static InnerGetDataDefinitionRequestPDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("GetDataDefinitionRequestPDU", DEFAULT_ENCODING, data), InnerGetDataDefinitionRequestPDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerGetDataDefinitionRequestPDU.class, "GetDataDefinitionRequestPDU", data);
     }
 }

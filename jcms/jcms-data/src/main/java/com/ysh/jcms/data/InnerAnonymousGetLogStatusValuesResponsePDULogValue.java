@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAnonymousGetLogStatusValuesResponsePDULogValue extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAnonymousGetLogStatusValuesResponsePDULogValue() {
         _v.put("oldEntrTm", new InnerEntryTime()._v);
         _v.put("newEntrTm", new InnerEntryTime()._v);
@@ -26,30 +25,9 @@ public class InnerAnonymousGetLogStatusValuesResponsePDULogValue extends InnerBa
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("AnonymousGetLogStatusValuesResponsePDULogValue", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode AnonymousGetLogStatusValuesResponsePDULogValue failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "AnonymousGetLogStatusValuesResponsePDULogValue"; }
     public static InnerAnonymousGetLogStatusValuesResponsePDULogValue decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("AnonymousGetLogStatusValuesResponsePDULogValue", DEFAULT_ENCODING, data), InnerAnonymousGetLogStatusValuesResponsePDULogValue.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerAnonymousGetLogStatusValuesResponsePDULogValue.class, "AnonymousGetLogStatusValuesResponsePDULogValue", data);
     }
 }

@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerSelectEditSGResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSelectEditSGResponsePDU() { _v.put("_", null); }
     @JsonCreator
     public static InnerSelectEditSGResponsePDU fromJson(String v) { InnerSelectEditSGResponsePDU r = new InnerSelectEditSGResponsePDU(); r._v.put("_", v); return r; }
@@ -29,7 +28,7 @@ public class InnerSelectEditSGResponsePDU extends InnerBase {
         try {
             String json = InnerNative.decode("SelectEditSGResponsePDU", DEFAULT_ENCODING, data);
             InnerSelectEditSGResponsePDU r = new InnerSelectEditSGResponsePDU();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", null);
             return r;

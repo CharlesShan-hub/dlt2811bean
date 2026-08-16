@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerSelectWithValueRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSelectWithValueRequestPDU() {
         _v.put("reference", new InnerObjectReference()._v);
         _v.put("ctlVal", new InnerData()._v);
@@ -38,30 +37,9 @@ public class InnerSelectWithValueRequestPDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("SelectWithValueRequestPDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode SelectWithValueRequestPDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "SelectWithValueRequestPDU"; }
     public static InnerSelectWithValueRequestPDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("SelectWithValueRequestPDU", DEFAULT_ENCODING, data), InnerSelectWithValueRequestPDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerSelectWithValueRequestPDU.class, "SelectWithValueRequestPDU", data);
     }
 }

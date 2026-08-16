@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerGetFileAttributeValuesErrorPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetFileAttributeValuesErrorPDU() { _v.put("_", 1); }
     @JsonCreator
     public static InnerGetFileAttributeValuesErrorPDU fromJson(int v) { InnerGetFileAttributeValuesErrorPDU r = new InnerGetFileAttributeValuesErrorPDU(); r._v.put("_", v); return r; }
@@ -29,7 +28,7 @@ public class InnerGetFileAttributeValuesErrorPDU extends InnerBase {
         try {
             String json = InnerNative.decode("GetFileAttributeValuesErrorPDU", DEFAULT_ENCODING, data);
             InnerGetFileAttributeValuesErrorPDU r = new InnerGetFileAttributeValuesErrorPDU();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asInt());
             return r;

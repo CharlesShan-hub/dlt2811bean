@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerQueryLogAfterErrorPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerQueryLogAfterErrorPDU() { _v.put("_", 1); }
     @JsonCreator
     public static InnerQueryLogAfterErrorPDU fromJson(int v) { InnerQueryLogAfterErrorPDU r = new InnerQueryLogAfterErrorPDU(); r._v.put("_", v); return r; }
@@ -29,7 +28,7 @@ public class InnerQueryLogAfterErrorPDU extends InnerBase {
         try {
             String json = InnerNative.decode("QueryLogAfterErrorPDU", DEFAULT_ENCODING, data);
             InnerQueryLogAfterErrorPDU r = new InnerQueryLogAfterErrorPDU();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asInt());
             return r;

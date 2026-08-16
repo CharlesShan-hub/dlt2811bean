@@ -14,50 +14,25 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAnonymousGetURCBValuesResponsePDUUrcb extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAnonymousGetURCBValuesResponsePDUUrcb() {
         _v.put("_choice", "error");
         _v.put("_", new InnerServiceError()._v);
     }
+    @Override
+    protected boolean isChoice() { return true; }
     @JsonSetter("error")
     public void setError(Object v) {
         _v.put("_choice", "error");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("value")
     public void setValue(Object v) {
         _v.put("_choice", "value");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
-    public byte[] encode() {
-        String _json = null;
-        String _vStr = null;
-        try {
-            _vStr = MAPPER.writeValueAsString(_v);
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("AnonymousGetURCBValuesResponsePDUUrcb", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode AnonymousGetURCBValuesResponsePDUUrcb failed, _v=" + _vStr + ", json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        String _vStr = null;
-        try {
-            _vStr = MAPPER.writeValueAsString(_v);
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("_v: " + _vStr);
-            System.err.println("JSON: " + _json);
-            return InnerNative.encode("AnonymousGetURCBValuesResponsePDUUrcb", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encodeTest AnonymousGetURCBValuesResponsePDUUrcb failed, _v=" + _vStr + ", json=" + _json, e);
-        }
-    }
+    @Override
+    protected String typeName() { return "AnonymousGetURCBValuesResponsePDUUrcb"; }
     public static InnerAnonymousGetURCBValuesResponsePDUUrcb decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("AnonymousGetURCBValuesResponsePDUUrcb", DEFAULT_ENCODING, data), InnerAnonymousGetURCBValuesResponsePDUUrcb.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerAnonymousGetURCBValuesResponsePDUUrcb.class, "AnonymousGetURCBValuesResponsePDUUrcb", data);
     }
 }

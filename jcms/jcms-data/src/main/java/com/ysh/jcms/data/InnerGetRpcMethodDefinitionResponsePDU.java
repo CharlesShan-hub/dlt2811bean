@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerGetRpcMethodDefinitionResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetRpcMethodDefinitionResponsePDU() {
         _v.put("reference", new InnerGetRpcMethodDefinitionResponsePDUReference()._v);
         _v.put("moreFollows", new InnerBoolean()._v);
@@ -35,30 +34,9 @@ public class InnerGetRpcMethodDefinitionResponsePDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("GetRpcMethodDefinitionResponsePDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode GetRpcMethodDefinitionResponsePDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "GetRpcMethodDefinitionResponsePDU"; }
     public static InnerGetRpcMethodDefinitionResponsePDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("GetRpcMethodDefinitionResponsePDU", DEFAULT_ENCODING, data), InnerGetRpcMethodDefinitionResponsePDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerGetRpcMethodDefinitionResponsePDU.class, "GetRpcMethodDefinitionResponsePDU", data);
     }
 }

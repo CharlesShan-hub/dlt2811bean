@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerGetGoReferenceRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetGoReferenceRequestPDU() {
         _v.put("gocbReference", new InnerObjectReference()._v);
         _v.put("memberOfs", new java.util.ArrayList<>());
@@ -27,30 +26,9 @@ public class InnerGetGoReferenceRequestPDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("GetGoReferenceRequestPDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode GetGoReferenceRequestPDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "GetGoReferenceRequestPDU"; }
     public static InnerGetGoReferenceRequestPDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("GetGoReferenceRequestPDU", DEFAULT_ENCODING, data), InnerGetGoReferenceRequestPDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerGetGoReferenceRequestPDU.class, "GetGoReferenceRequestPDU", data);
     }
 }

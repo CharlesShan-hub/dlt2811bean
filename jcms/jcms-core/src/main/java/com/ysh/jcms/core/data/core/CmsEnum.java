@@ -42,11 +42,21 @@ public abstract class CmsEnum<T extends CmsEnum<T>> extends CmsScalar {
         int max();
     }
 
+    /** True for BIT STRING enumerations (hex storage); false for INTEGER (direct). */
+    private final boolean bitString;
+
     protected CmsEnum() {
+        this.bitString = false;
     }
 
     protected CmsEnum(InnerBase inner) {
+        this(inner, false);
+    }
+
+    /** @param bitString true for BIT STRING enums (store/read hex), false for INTEGER enums. */
+    protected CmsEnum(InnerBase inner, boolean bitString) {
         super(inner);
+        this.bitString = bitString;
     }
 
     /**
@@ -72,7 +82,7 @@ public abstract class CmsEnum<T extends CmsEnum<T>> extends CmsScalar {
     @SuppressWarnings("unchecked")
     public int value() {
         Object v = innerGet();
-        if (v instanceof String) {
+        if (bitString) {
             ValueRange range = VALUE_RANGE.get(getClass());
             int bits = bitsForMax(range != null ? range.max() : 0);
             return InnerBase.parseBitStringHex((String) v, bits);
@@ -88,12 +98,12 @@ public abstract class CmsEnum<T extends CmsEnum<T>> extends CmsScalar {
         if (range != null && (v < range.min() || v > range.max()))
             throw new IllegalArgumentException(
                     getClass().getSimpleName() + " out of range [" + range.min() + "," + range.max() + "]: " + v);
-        // BIT STRING types store hex strings, INTEGER types store integers directly
-        Object current = innerGet();
-        if (current instanceof String) {
+        if (bitString) {
+            // BIT STRING types store hex strings
             int bits = bitsForMax(range != null ? range.max() : 0);
             innerSet(InnerBase.bitStringHex(v, bits));
         } else {
+            // INTEGER types store integers directly
             innerSet(v);
         }
         return (T) this;

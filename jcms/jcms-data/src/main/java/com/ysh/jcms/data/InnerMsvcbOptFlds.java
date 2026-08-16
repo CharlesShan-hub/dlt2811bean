@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerMsvcbOptFlds extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerMsvcbOptFlds() { _v.put("_", "00"); }
     public InnerMsvcbOptFlds(int v) { this(); _v.put("_", InnerBase.bitStringHex(v, 5)); }
     @JsonValue
@@ -29,14 +28,14 @@ public class InnerMsvcbOptFlds extends InnerBase {
     public InnerMsvcbOptFlds(String hex) { this(); _v.put("_", hex); }
     public byte[] encode() {
         try {
-            return InnerNative.encode("MsvcbOptFlds", DEFAULT_ENCODING, MAPPER.writeValueAsString(_v.get("_")));
+            return InnerNative.encode("MsvcbOptFlds", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(_v.get("_")));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     public byte[] encodeTest() {
         try {
-            return InnerNative.encode("MsvcbOptFlds", DEFAULT_ENCODING, MAPPER.writeValueAsString(_v.get("_")));
+            return InnerNative.encode("MsvcbOptFlds", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(_v.get("_")));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -45,7 +44,7 @@ public class InnerMsvcbOptFlds extends InnerBase {
         try {
             String json = InnerNative.decode("MsvcbOptFlds", DEFAULT_ENCODING, data);
             InnerMsvcbOptFlds r = new InnerMsvcbOptFlds();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asText());
             return r;

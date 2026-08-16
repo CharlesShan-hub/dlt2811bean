@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod() {
         _v.put("version", new InnerInt32U()._v);
         _v.put("timeout", new InnerInt32U()._v);
@@ -26,30 +25,9 @@ public class InnerAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod exte
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("AnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode AnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "AnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod"; }
     public static InnerAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("AnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod", DEFAULT_ENCODING, data), InnerAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod.class, "AnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod", data);
     }
 }

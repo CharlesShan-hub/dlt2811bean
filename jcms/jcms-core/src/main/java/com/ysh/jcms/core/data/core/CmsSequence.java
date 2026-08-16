@@ -145,10 +145,11 @@ public abstract class CmsSequence extends CmsType {
                 if (sub instanceof LinkedHashMap) {
                     wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
                 }
-                // If wrapper is a CmsChoice, rebind its variant choices to the same _v
-                if (wrapper instanceof CmsChoice) {
-                    ((CmsChoice) wrapper).rebindChoices();
-                }
+                // NOTE: no rebindChoices() here for CmsChoice wrappers — at
+                // construction time the parent inner._v still holds the
+                // constructor-seeded default variant map, and rebinding would
+                // alias every variant wrapper onto it. Correct rebinding happens
+                // after decode via rebindWrappers()/rebindChoices().
                 f.set(this, wrapper);
                 injectedWrappers.put(fieldName, wrapper);
             } catch (Exception e) {
@@ -299,54 +300,11 @@ public abstract class CmsSequence extends CmsType {
         V.setField(inner._v, fieldName, v);
     }
 
-    // ── CmsType wrapper access ──────────────────────────────────────
-
-    /** Get a cached CmsType wrapper (created by injectFields). */
-    @SuppressWarnings("unchecked")
-    protected <T extends CmsType> T getWrapper(String fieldName, Class<T> wrapperType) {
-        CmsType cached = injectedWrappers.get(fieldName);
-        if (cached != null)
-            return (T) cached;
-        // Create on-demand and share _v
-        try {
-            T wrapper = wrapperType.getDeclaredConstructor().newInstance();
-            CmsFieldInfo info = SEQ_META.get(getClass()).byName.get(fieldName);
-            Object sub = inner._v.get(info != null ? info.innerName : fieldName);
-            if (sub instanceof LinkedHashMap) {
-                wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
-            }
-            injectedWrappers.put(fieldName, wrapper);
-            return wrapper;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create wrapper for " + fieldName, e);
-        }
-    }
-
-    /**
-     * Bind an externally-created CmsType wrapper to a field, replacing the
-     * auto-injected wrapper. Shares the {@code _v} sub-map so data is in-sync.
-     */
-    protected void bindWrapper(String fieldName, CmsType wrapper) {
-        injectedWrappers.put(fieldName, wrapper);
-        CmsFieldInfo info = SEQ_META.get(getClass()).byName.get(fieldName);
-        Object sub = inner._v.get(info != null ? info.innerName : fieldName);
-        if (sub instanceof LinkedHashMap) {
-            wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
-        }
-        if (wrapper instanceof CmsChoice) {
-            ((CmsChoice) wrapper).rebindChoices();
-        }
-        if (wrapper instanceof CmsSequence) {
-            ((CmsSequence) wrapper).rebindWrappers();
-        }
-    }
-
     // ── automatic sync ───────────────────────────────────────────
 
     @Override
     public void syncToInner() {
         SequenceMeta meta = SEQ_META.get(getClass());
-        detectWrapperReplacements();
         for (Map.Entry<String, CmsType> e : injectedWrappers.entrySet()) {
             CmsFieldInfo info = meta.byName.get(e.getKey());
             String innerKey = info != null ? info.innerName : e.getKey();
@@ -406,52 +364,10 @@ public abstract class CmsSequence extends CmsType {
      */
     @Override
     public void syncFromInner() {
-        detectWrapperReplacements();
         // Populate Java fields that don't share _v (e.g. CmsBits bit fields)
         for (CmsType wrapper : injectedWrappers.values()) {
             wrapper.syncFromInner();
         }
-    }
-
-    /**
-     * Detect wrapper replacements in @CmsField fields (e.g.
-     * {@code p.signedTime = new CmsUtcTime()}) and rebind.
-     */
-    private void detectWrapperReplacements() {
-        for (CmsFieldInfo info : SEQ_META.get(getClass()).fields) {
-            if (info.sequenceOf)
-                continue; // List field, not a CmsType wrapper
-            Field f = info.field;
-            if (!CmsType.class.isAssignableFrom(f.getType()))
-                continue;
-            String name = f.getName();
-            try {
-                Object val = f.get(this);
-                if (!(val instanceof CmsType))
-                    continue;
-                CmsType existing = injectedWrappers.get(name);
-                if (existing == val)
-                    continue;
-                // Register new wrapper and share _v
-                CmsType wrapper = (CmsType) val;
-                injectedWrappers.put(name, wrapper);
-                Object sub = inner._v.get(info.innerName);
-                if (sub instanceof LinkedHashMap) {
-                    wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
-                }
-                if (wrapper instanceof CmsChoice)
-                    ((CmsChoice) wrapper).rebindChoices();
-                if (wrapper instanceof CmsSequence) {
-                    ((CmsSequence) wrapper).rebindWrappers();
-                }
-            } catch (Exception e) {
-                // skip fields that fail reflection
-            }
-        }
-    }
-
-    protected void ensureInnerCacheComplete() {
-        detectWrapperReplacements();
     }
 
     // ── decode override — rebind wrappers ──────────────────────────────

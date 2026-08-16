@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerGetURCBValuesErrorPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetURCBValuesErrorPDU() { _v.put("_", 1); }
     @JsonCreator
     public static InnerGetURCBValuesErrorPDU fromJson(int v) { InnerGetURCBValuesErrorPDU r = new InnerGetURCBValuesErrorPDU(); r._v.put("_", v); return r; }
@@ -29,7 +28,7 @@ public class InnerGetURCBValuesErrorPDU extends InnerBase {
         try {
             String json = InnerNative.decode("GetURCBValuesErrorPDU", DEFAULT_ENCODING, data);
             InnerGetURCBValuesErrorPDU r = new InnerGetURCBValuesErrorPDU();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asInt());
             return r;

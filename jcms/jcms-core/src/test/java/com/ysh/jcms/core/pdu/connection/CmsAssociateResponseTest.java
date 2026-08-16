@@ -24,10 +24,10 @@ public class CmsAssociateResponseTest {
     public void roundup_with_auth() {
         CmsAuthenticationParameter p = new CmsAuthenticationParameter();
         p.signatureCertificate.value(new byte[]{0x11, 0x22});
-        p.signedTime = new CmsUtcTime()
+        p.signedTime(new CmsUtcTime()
                 .secondsSinceEpoch(987654321L)
                 .fractionOfSecond(100000)
-                .timeQuality(new CmsTimeQuality().leap_seconds_known(false));
+                .timeQuality(new CmsTimeQuality().leap_seconds_known(false)));
         p.signedValue.value(new byte[]{0x33, 0x44});
 
         CmsAssociateResponse a = new CmsAssociateResponse()

@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerSetMSVCBValuesRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSetMSVCBValuesRequestPDU() {
         _v.put("msvcb", new InnerSetMSVCBValuesRequestPDUMsvcb()._v);
     }
@@ -33,30 +32,9 @@ public class InnerSetMSVCBValuesRequestPDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("SetMSVCBValuesRequestPDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode SetMSVCBValuesRequestPDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "SetMSVCBValuesRequestPDU"; }
     public static InnerSetMSVCBValuesRequestPDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("SetMSVCBValuesRequestPDU", DEFAULT_ENCODING, data), InnerSetMSVCBValuesRequestPDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerSetMSVCBValuesRequestPDU.class, "SetMSVCBValuesRequestPDU", data);
     }
 }

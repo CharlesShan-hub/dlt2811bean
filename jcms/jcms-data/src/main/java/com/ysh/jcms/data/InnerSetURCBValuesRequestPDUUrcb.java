@@ -7,23 +7,22 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
 
 public class InnerSetURCBValuesRequestPDUUrcb extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSetURCBValuesRequestPDUUrcb() { _v.put("_", new java.util.ArrayList<>()); }
     @JsonCreator
-    public static InnerSetURCBValuesRequestPDUUrcb fromJson(Object v) { InnerSetURCBValuesRequestPDUUrcb r = new InnerSetURCBValuesRequestPDUUrcb(); r._v.put("_", MAPPER.convertValue(v, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousSetURCBValuesRequestPDUUrcb>>() {})); return r; }
+    public static InnerSetURCBValuesRequestPDUUrcb fromJson(Object v) { InnerSetURCBValuesRequestPDUUrcb r = new InnerSetURCBValuesRequestPDUUrcb(); r._v.put("_", InnerBase.MAPPER.convertValue(v, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousSetURCBValuesRequestPDUUrcb>>() {})); return r; }
     public InnerSetURCBValuesRequestPDUUrcb(java.util.List<InnerAnonymousSetURCBValuesRequestPDUUrcb> v) { this(); _v.put("_", v); }
     @JsonValue
     public Object toJsonValue() { return _v.get("_"); }
     public byte[] encode() {
         try {
-            return InnerNative.encode("SetURCBValuesRequestPDUUrcb", DEFAULT_ENCODING, MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
+            return InnerNative.encode("SetURCBValuesRequestPDUUrcb", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     public byte[] encodeTest() {
         try {
-            return InnerNative.encode("SetURCBValuesRequestPDUUrcb", DEFAULT_ENCODING, MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
+            return InnerNative.encode("SetURCBValuesRequestPDUUrcb", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -32,9 +31,9 @@ public class InnerSetURCBValuesRequestPDUUrcb extends InnerBase {
         try {
             String json = InnerNative.decode("SetURCBValuesRequestPDUUrcb", DEFAULT_ENCODING, data);
             InnerSetURCBValuesRequestPDUUrcb r = new InnerSetURCBValuesRequestPDUUrcb();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
-            r._v.put("_", MAPPER.convertValue(_node, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousSetURCBValuesRequestPDUUrcb>>() {}));
+            r._v.put("_", InnerBase.MAPPER.convertValue(_node, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousSetURCBValuesRequestPDUUrcb>>() {}));
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

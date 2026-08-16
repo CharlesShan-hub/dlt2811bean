@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerSetLCBValuesErrorPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSetLCBValuesErrorPDU() {
         _v.put("result", new InnerSetLCBValuesErrorPDUResult()._v);
     }
@@ -34,30 +33,9 @@ public class InnerSetLCBValuesErrorPDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("SetLCBValuesErrorPDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode SetLCBValuesErrorPDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "SetLCBValuesErrorPDU"; }
     public static InnerSetLCBValuesErrorPDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("SetLCBValuesErrorPDU", DEFAULT_ENCODING, data), InnerSetLCBValuesErrorPDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerSetLCBValuesErrorPDU.class, "SetLCBValuesErrorPDU", data);
     }
 }

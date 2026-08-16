@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerReleaseResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerReleaseResponsePDU() {
         _v.put("associationId", new DefaultInnerOctetString(new byte[]{ 1 }));
         _v.put("serviceError", new InnerServiceError()._v);
@@ -27,30 +26,9 @@ public class InnerReleaseResponsePDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("ReleaseResponsePDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode ReleaseResponsePDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "ReleaseResponsePDU"; }
     public static InnerReleaseResponsePDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("ReleaseResponsePDU", DEFAULT_ENCODING, data), InnerReleaseResponsePDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerReleaseResponsePDU.class, "ReleaseResponsePDU", data);
     }
 }

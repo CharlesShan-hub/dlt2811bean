@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerRpcCallResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerRpcCallResponsePDU() {
         _v.put("rspData", new InnerData()._v);
     }
@@ -26,30 +25,9 @@ public class InnerRpcCallResponsePDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("RpcCallResponsePDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode RpcCallResponsePDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "RpcCallResponsePDU"; }
     public static InnerRpcCallResponsePDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("RpcCallResponsePDU", DEFAULT_ENCODING, data), InnerRpcCallResponsePDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerRpcCallResponsePDU.class, "RpcCallResponsePDU", data);
     }
 }

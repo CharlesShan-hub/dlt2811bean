@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerInt64 extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerInt64() { _v.put("_", 1L); }
     @JsonCreator
     public static InnerInt64 fromJson(long v) { InnerInt64 r = new InnerInt64(); r._v.put("_", v); return r; }
@@ -29,7 +28,7 @@ public class InnerInt64 extends InnerBase {
         try {
             String json = InnerNative.decode("Int64", DEFAULT_ENCODING, data);
             InnerInt64 r = new InnerInt64();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asLong());
             return r;

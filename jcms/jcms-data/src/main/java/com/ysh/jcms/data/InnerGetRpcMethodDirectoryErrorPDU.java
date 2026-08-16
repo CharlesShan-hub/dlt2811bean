@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerGetRpcMethodDirectoryErrorPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetRpcMethodDirectoryErrorPDU() { _v.put("_", 1); }
     @JsonCreator
     public static InnerGetRpcMethodDirectoryErrorPDU fromJson(int v) { InnerGetRpcMethodDirectoryErrorPDU r = new InnerGetRpcMethodDirectoryErrorPDU(); r._v.put("_", v); return r; }
@@ -29,7 +28,7 @@ public class InnerGetRpcMethodDirectoryErrorPDU extends InnerBase {
         try {
             String json = InnerNative.decode("GetRpcMethodDirectoryErrorPDU", DEFAULT_ENCODING, data);
             InnerGetRpcMethodDirectoryErrorPDU r = new InnerGetRpcMethodDirectoryErrorPDU();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asInt());
             return r;

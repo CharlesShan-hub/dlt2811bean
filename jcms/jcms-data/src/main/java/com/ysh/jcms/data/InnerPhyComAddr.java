@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerPhyComAddr extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerPhyComAddr() {
         _v.put("addr", new DefaultInnerOctetString(new byte[] { 1, 1, 1, 1, 1, 1 }));
         _v.put("priority", new InnerInt8U()._v);
@@ -31,30 +30,9 @@ public class InnerPhyComAddr extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("PhyComAddr", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode PhyComAddr failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "PhyComAddr"; }
     public static InnerPhyComAddr decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("PhyComAddr", DEFAULT_ENCODING, data), InnerPhyComAddr.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerPhyComAddr.class, "PhyComAddr", data);
     }
 }

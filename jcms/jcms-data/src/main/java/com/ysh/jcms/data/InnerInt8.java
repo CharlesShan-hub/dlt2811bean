@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerInt8 extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerInt8() { _v.put("_", 1); }
     @JsonCreator
     public static InnerInt8 fromJson(int v) { InnerInt8 r = new InnerInt8(); r._v.put("_", v); return r; }
@@ -29,7 +28,7 @@ public class InnerInt8 extends InnerBase {
         try {
             String json = InnerNative.decode("Int8", DEFAULT_ENCODING, data);
             InnerInt8 r = new InnerInt8();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asInt());
             return r;

@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerGetAllCBValuesRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetAllCBValuesRequestPDU() {
         _v.put("reference", new InnerGetAllCBValuesRequestPDUReference()._v);
         _v.put("acsiClass", new InnerACSIClass()._v);
@@ -31,30 +30,9 @@ public class InnerGetAllCBValuesRequestPDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("GetAllCBValuesRequestPDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode GetAllCBValuesRequestPDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "GetAllCBValuesRequestPDU"; }
     public static InnerGetAllCBValuesRequestPDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("GetAllCBValuesRequestPDU", DEFAULT_ENCODING, data), InnerGetAllCBValuesRequestPDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerGetAllCBValuesRequestPDU.class, "GetAllCBValuesRequestPDU", data);
     }
 }

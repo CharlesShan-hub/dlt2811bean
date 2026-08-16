@@ -73,14 +73,17 @@ public abstract class CmsChoice extends CmsType {
         final Sync sync;
         final Field field; // alt_* field on this CmsChoice subclass
         final boolean isScalar; // field type extends CmsScalar
+        final Class<? extends CmsType> listElementType; // LIST variant element class
 
-        VariantInfo(int index, String name, String innerField, Sync sync, Field field, boolean isScalar) {
+        VariantInfo(int index, String name, String innerField, Sync sync, Field field, boolean isScalar,
+                Class<? extends CmsType> listElementType) {
             this.index = index;
             this.name = name;
             this.innerField = innerField;
             this.sync = sync;
             this.field = field;
             this.isScalar = isScalar;
+            this.listElementType = listElementType;
         }
     }
 
@@ -119,7 +122,20 @@ public abstract class CmsChoice extends CmsType {
                         sync = Sync.RAW;
                 }
 
-                VariantInfo vi = new VariantInfo(ann.index(), ann.name(), innerFn, sync, f, isScalar);
+                // Resolve LIST variant element type once per class (no per-decode
+                // getGenericType() reflection).
+                Class<? extends CmsType> listElem = null;
+                if (List.class.isAssignableFrom(f.getType())) {
+                    java.lang.reflect.Type gt = f.getGenericType();
+                    if (gt instanceof ParameterizedType) {
+                        java.lang.reflect.Type a0 = ((ParameterizedType) gt).getActualTypeArguments()[0];
+                        if (a0 instanceof Class) {
+                            listElem = (Class<? extends CmsType>) a0;
+                        }
+                    }
+                }
+
+                VariantInfo vi = new VariantInfo(ann.index(), ann.name(), innerFn, sync, f, isScalar, listElem);
                 byIndex.put(ann.index(), vi);
                 byName.put(ann.name(), vi);
             }
@@ -155,7 +171,7 @@ public abstract class CmsChoice extends CmsType {
      * string.
      */
     protected final void registerNullChoice(int index, String name) {
-        VariantInfo vi = new VariantInfo(index, name, null, null, null, false);
+        VariantInfo vi = new VariantInfo(index, name, null, null, null, false, null);
         variantByIndex.put(index, vi);
         variantByName.put(name, vi);
     }
@@ -199,11 +215,11 @@ public abstract class CmsChoice extends CmsType {
                 createCmsTypeWrapper(f, vi.name);
             } else if (InnerBase.class.isAssignableFrom(ft)) {
                 try {
+                    // Keep the wrapper's own _v at construction time: the parent's
+                    // "_" slot holds the constructor-seeded default variant map and
+                    // must NOT be aliased onto every variant wrapper here. Sharing
+                    // happens later via choice(int) / rebindChoices() / syncFromInner().
                     InnerBase val = (InnerBase) f.getType().getDeclaredConstructor().newInstance();
-                    Object sub = inner._v.get("_");
-                    if (sub instanceof LinkedHashMap) {
-                        val._v = (LinkedHashMap<String, Object>) sub;
-                    }
                     f.set(this, val);
                 } catch (Exception e) {
                     throw new RuntimeException("Failed to init inner field " + f.getName(), e);
@@ -224,12 +240,10 @@ public abstract class CmsChoice extends CmsType {
 
     private void createCmsTypeWrapper(Field f, String innerField) {
         try {
+            // Keep the wrapper's own _v at construction time — see injectChoices().
+            // The parent "_" slot is the constructor-seeded default variant map and
+            // must not be aliased onto every variant wrapper.
             CmsType wrapper = (CmsType) f.getType().getDeclaredConstructor().newInstance();
-            // Share _v sub-map with the value slot
-            Object sub = inner._v.get("_");
-            if (sub instanceof LinkedHashMap) {
-                wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
-            }
             f.set(this, wrapper);
         } catch (Exception e) {
             throw new RuntimeException("Failed to inject CmsChoice field " + f.getName(), e);
@@ -500,7 +514,7 @@ public abstract class CmsChoice extends CmsType {
         if (innerList == null)
             return;
 
-        Class<? extends CmsType> elemClass = inferListElemClass(vi);
+        Class<? extends CmsType> elemClass = vi.listElementType;
         if (elemClass == null)
             return;
 
@@ -518,15 +532,6 @@ public abstract class CmsChoice extends CmsType {
             elem.syncFromInner();
             list.add(elem);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private Class<? extends CmsType> inferListElemClass(VariantInfo vi) {
-        java.lang.reflect.Type gt = vi.field.getGenericType();
-        if (gt instanceof ParameterizedType) {
-            return (Class<? extends CmsType>) ((ParameterizedType) gt).getActualTypeArguments()[0];
-        }
-        return null;
     }
 
     @SuppressWarnings("unchecked")

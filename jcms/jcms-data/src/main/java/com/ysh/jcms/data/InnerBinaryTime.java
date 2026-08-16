@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerBinaryTime extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerBinaryTime() { _v.put("_", new byte[] { 1, 1, 1, 1, 1, 1 }); }
     @JsonCreator
     public static InnerBinaryTime fromJson(String v) { InnerBinaryTime r = new InnerBinaryTime(); r._v.put("_", v); return r; }
@@ -20,14 +19,14 @@ public class InnerBinaryTime extends InnerBase {
     public Object toJsonValue() { return _v.get("_"); }
     public byte[] encode() {
         try {
-            return InnerNative.encode("BinaryTime", DEFAULT_ENCODING, MAPPER.writeValueAsString(InnerBase.hex((byte[]) _v.get("_"))));
+            return InnerNative.encode("BinaryTime", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(InnerBase.hex((byte[]) _v.get("_"))));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     public byte[] encodeTest() {
         try {
-            return InnerNative.encode("BinaryTime", DEFAULT_ENCODING, MAPPER.writeValueAsString(InnerBase.hex((byte[]) _v.get("_"))));
+            return InnerNative.encode("BinaryTime", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(InnerBase.hex((byte[]) _v.get("_"))));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -36,7 +35,7 @@ public class InnerBinaryTime extends InnerBase {
         try {
             String json = InnerNative.decode("BinaryTime", DEFAULT_ENCODING, data);
             InnerBinaryTime r = new InnerBinaryTime();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asText().isEmpty() ? new byte[0] : InnerBase.unhex(_node.asText()));
             return r;

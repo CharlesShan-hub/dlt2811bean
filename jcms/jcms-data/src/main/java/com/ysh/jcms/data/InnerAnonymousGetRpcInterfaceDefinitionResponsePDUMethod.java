@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAnonymousGetRpcInterfaceDefinitionResponsePDUMethod extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAnonymousGetRpcInterfaceDefinitionResponsePDUMethod() {
         _v.put("name", new DefaultInnerVisibleString("x"));
         _v.put("version", new InnerInt32U()._v);
@@ -27,30 +26,9 @@ public class InnerAnonymousGetRpcInterfaceDefinitionResponsePDUMethod extends In
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("AnonymousGetRpcInterfaceDefinitionResponsePDUMethod", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode AnonymousGetRpcInterfaceDefinitionResponsePDUMethod failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "AnonymousGetRpcInterfaceDefinitionResponsePDUMethod"; }
     public static InnerAnonymousGetRpcInterfaceDefinitionResponsePDUMethod decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("AnonymousGetRpcInterfaceDefinitionResponsePDUMethod", DEFAULT_ENCODING, data), InnerAnonymousGetRpcInterfaceDefinitionResponsePDUMethod.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerAnonymousGetRpcInterfaceDefinitionResponsePDUMethod.class, "AnonymousGetRpcInterfaceDefinitionResponsePDUMethod", data);
     }
 }

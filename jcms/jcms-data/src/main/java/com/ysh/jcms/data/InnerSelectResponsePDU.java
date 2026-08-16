@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerSelectResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSelectResponsePDU() {
         _v.put("reference", new InnerObjectReference()._v);
     }
@@ -25,30 +24,9 @@ public class InnerSelectResponsePDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("SelectResponsePDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode SelectResponsePDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "SelectResponsePDU"; }
     public static InnerSelectResponsePDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("SelectResponsePDU", DEFAULT_ENCODING, data), InnerSelectResponsePDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerSelectResponsePDU.class, "SelectResponsePDU", data);
     }
 }

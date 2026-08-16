@@ -24,7 +24,7 @@ public class CmsDbpos extends CmsEnum<CmsDbpos> {
     public static final int BAD_STATE = 3;
 
     public CmsDbpos() {
-        super(new InnerDbpos());
+        super(new InnerDbpos(), true);
     }
     public CmsDbpos(int v) {
         this();

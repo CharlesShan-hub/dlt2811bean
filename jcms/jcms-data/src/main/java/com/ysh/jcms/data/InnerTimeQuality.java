@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerTimeQuality extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerTimeQuality() { _v.put("_", "00"); }
     public InnerTimeQuality(int v) { this(); _v.put("_", InnerBase.bitStringHex(v, 8)); }
     @JsonValue
@@ -27,14 +26,14 @@ public class InnerTimeQuality extends InnerBase {
     public InnerTimeQuality(String hex) { this(); _v.put("_", hex); }
     public byte[] encode() {
         try {
-            return InnerNative.encode("TimeQuality", DEFAULT_ENCODING, MAPPER.writeValueAsString(_v.get("_")));
+            return InnerNative.encode("TimeQuality", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(_v.get("_")));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     public byte[] encodeTest() {
         try {
-            return InnerNative.encode("TimeQuality", DEFAULT_ENCODING, MAPPER.writeValueAsString(_v.get("_")));
+            return InnerNative.encode("TimeQuality", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(_v.get("_")));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -43,7 +42,7 @@ public class InnerTimeQuality extends InnerBase {
         try {
             String json = InnerNative.decode("TimeQuality", DEFAULT_ENCODING, data);
             InnerTimeQuality r = new InnerTimeQuality();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asText());
             return r;

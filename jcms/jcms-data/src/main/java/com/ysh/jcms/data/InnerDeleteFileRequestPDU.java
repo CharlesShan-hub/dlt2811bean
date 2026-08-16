@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerDeleteFileRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerDeleteFileRequestPDU() {
         _v.put("filename", new DefaultInnerVisibleString("x"));
     }
@@ -25,30 +24,9 @@ public class InnerDeleteFileRequestPDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("DeleteFileRequestPDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode DeleteFileRequestPDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "DeleteFileRequestPDU"; }
     public static InnerDeleteFileRequestPDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("DeleteFileRequestPDU", DEFAULT_ENCODING, data), InnerDeleteFileRequestPDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerDeleteFileRequestPDU.class, "DeleteFileRequestPDU", data);
     }
 }

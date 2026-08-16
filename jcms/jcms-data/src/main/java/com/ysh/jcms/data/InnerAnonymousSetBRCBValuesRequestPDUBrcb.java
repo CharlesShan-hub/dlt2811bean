@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAnonymousSetBRCBValuesRequestPDUBrcb extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAnonymousSetBRCBValuesRequestPDUBrcb() {
         _v.put("reference", new InnerObjectReference()._v);
     }
@@ -23,30 +22,9 @@ public class InnerAnonymousSetBRCBValuesRequestPDUBrcb extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("AnonymousSetBRCBValuesRequestPDUBrcb", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode AnonymousSetBRCBValuesRequestPDUBrcb failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "AnonymousSetBRCBValuesRequestPDUBrcb"; }
     public static InnerAnonymousSetBRCBValuesRequestPDUBrcb decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("AnonymousSetBRCBValuesRequestPDUBrcb", DEFAULT_ENCODING, data), InnerAnonymousSetBRCBValuesRequestPDUBrcb.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerAnonymousSetBRCBValuesRequestPDUBrcb.class, "AnonymousSetBRCBValuesRequestPDUBrcb", data);
     }
 }

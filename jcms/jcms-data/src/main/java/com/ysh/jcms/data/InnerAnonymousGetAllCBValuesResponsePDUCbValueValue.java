@@ -14,70 +14,45 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAnonymousGetAllCBValuesResponsePDUCbValueValue extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAnonymousGetAllCBValuesResponsePDUCbValueValue() {
         _v.put("_choice", "brcb");
         _v.put("_", new InnerBRCB()._v);
     }
+    @Override
+    protected boolean isChoice() { return true; }
     @JsonSetter("brcb")
     public void setBrcb(Object v) {
         _v.put("_choice", "brcb");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("urcb")
     public void setUrcb(Object v) {
         _v.put("_choice", "urcb");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("lcb")
     public void setLcb(Object v) {
         _v.put("_choice", "lcb");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("sgcb")
     public void setSgcb(Object v) {
         _v.put("_choice", "sgcb");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("gocb")
     public void setGocb(Object v) {
         _v.put("_choice", "gocb");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("msvcb")
     public void setMsvcb(Object v) {
         _v.put("_choice", "msvcb");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
-    public byte[] encode() {
-        String _json = null;
-        String _vStr = null;
-        try {
-            _vStr = MAPPER.writeValueAsString(_v);
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("AnonymousGetAllCBValuesResponsePDUCbValueValue", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode AnonymousGetAllCBValuesResponsePDUCbValueValue failed, _v=" + _vStr + ", json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        String _vStr = null;
-        try {
-            _vStr = MAPPER.writeValueAsString(_v);
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("_v: " + _vStr);
-            System.err.println("JSON: " + _json);
-            return InnerNative.encode("AnonymousGetAllCBValuesResponsePDUCbValueValue", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encodeTest AnonymousGetAllCBValuesResponsePDUCbValueValue failed, _v=" + _vStr + ", json=" + _json, e);
-        }
-    }
+    @Override
+    protected String typeName() { return "AnonymousGetAllCBValuesResponsePDUCbValueValue"; }
     public static InnerAnonymousGetAllCBValuesResponsePDUCbValueValue decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("AnonymousGetAllCBValuesResponsePDUCbValueValue", DEFAULT_ENCODING, data), InnerAnonymousGetAllCBValuesResponsePDUCbValueValue.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerAnonymousGetAllCBValuesResponsePDUCbValueValue.class, "AnonymousGetAllCBValuesResponsePDUCbValueValue", data);
     }
 }

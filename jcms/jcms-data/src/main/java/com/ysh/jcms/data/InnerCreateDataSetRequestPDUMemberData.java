@@ -7,23 +7,22 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
 
 public class InnerCreateDataSetRequestPDUMemberData extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerCreateDataSetRequestPDUMemberData() { _v.put("_", new java.util.ArrayList<>()); }
     @JsonCreator
-    public static InnerCreateDataSetRequestPDUMemberData fromJson(Object v) { InnerCreateDataSetRequestPDUMemberData r = new InnerCreateDataSetRequestPDUMemberData(); r._v.put("_", MAPPER.convertValue(v, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousCreateDataSetRequestPDUMemberData>>() {})); return r; }
+    public static InnerCreateDataSetRequestPDUMemberData fromJson(Object v) { InnerCreateDataSetRequestPDUMemberData r = new InnerCreateDataSetRequestPDUMemberData(); r._v.put("_", InnerBase.MAPPER.convertValue(v, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousCreateDataSetRequestPDUMemberData>>() {})); return r; }
     public InnerCreateDataSetRequestPDUMemberData(java.util.List<InnerAnonymousCreateDataSetRequestPDUMemberData> v) { this(); _v.put("_", v); }
     @JsonValue
     public Object toJsonValue() { return _v.get("_"); }
     public byte[] encode() {
         try {
-            return InnerNative.encode("CreateDataSetRequestPDUMemberData", DEFAULT_ENCODING, MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
+            return InnerNative.encode("CreateDataSetRequestPDUMemberData", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     public byte[] encodeTest() {
         try {
-            return InnerNative.encode("CreateDataSetRequestPDUMemberData", DEFAULT_ENCODING, MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
+            return InnerNative.encode("CreateDataSetRequestPDUMemberData", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -32,9 +31,9 @@ public class InnerCreateDataSetRequestPDUMemberData extends InnerBase {
         try {
             String json = InnerNative.decode("CreateDataSetRequestPDUMemberData", DEFAULT_ENCODING, data);
             InnerCreateDataSetRequestPDUMemberData r = new InnerCreateDataSetRequestPDUMemberData();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
-            r._v.put("_", MAPPER.convertValue(_node, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousCreateDataSetRequestPDUMemberData>>() {}));
+            r._v.put("_", InnerBase.MAPPER.convertValue(_node, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousCreateDataSetRequestPDUMemberData>>() {}));
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerSetDataSetValuesResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSetDataSetValuesResponsePDU() { _v.put("_", null); }
     @JsonCreator
     public static InnerSetDataSetValuesResponsePDU fromJson(String v) { InnerSetDataSetValuesResponsePDU r = new InnerSetDataSetValuesResponsePDU(); r._v.put("_", v); return r; }
@@ -29,7 +28,7 @@ public class InnerSetDataSetValuesResponsePDU extends InnerBase {
         try {
             String json = InnerNative.decode("SetDataSetValuesResponsePDU", DEFAULT_ENCODING, data);
             InnerSetDataSetValuesResponsePDU r = new InnerSetDataSetValuesResponsePDU();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", null);
             return r;

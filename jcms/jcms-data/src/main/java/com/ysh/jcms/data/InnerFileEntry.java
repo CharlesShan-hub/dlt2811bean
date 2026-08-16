@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerFileEntry extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerFileEntry() {
         _v.put("fileName", new DefaultInnerVisibleString("x"));
         _v.put("fileSize", new InnerInt32U()._v);
@@ -31,30 +30,9 @@ public class InnerFileEntry extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("FileEntry", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode FileEntry failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "FileEntry"; }
     public static InnerFileEntry decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("FileEntry", DEFAULT_ENCODING, data), InnerFileEntry.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerFileEntry.class, "FileEntry", data);
     }
 }

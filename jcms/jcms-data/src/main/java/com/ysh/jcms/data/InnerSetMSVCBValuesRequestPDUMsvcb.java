@@ -7,23 +7,22 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
 
 public class InnerSetMSVCBValuesRequestPDUMsvcb extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSetMSVCBValuesRequestPDUMsvcb() { _v.put("_", new java.util.ArrayList<>()); }
     @JsonCreator
-    public static InnerSetMSVCBValuesRequestPDUMsvcb fromJson(Object v) { InnerSetMSVCBValuesRequestPDUMsvcb r = new InnerSetMSVCBValuesRequestPDUMsvcb(); r._v.put("_", MAPPER.convertValue(v, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousSetMSVCBValuesRequestPDUMsvcb>>() {})); return r; }
+    public static InnerSetMSVCBValuesRequestPDUMsvcb fromJson(Object v) { InnerSetMSVCBValuesRequestPDUMsvcb r = new InnerSetMSVCBValuesRequestPDUMsvcb(); r._v.put("_", InnerBase.MAPPER.convertValue(v, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousSetMSVCBValuesRequestPDUMsvcb>>() {})); return r; }
     public InnerSetMSVCBValuesRequestPDUMsvcb(java.util.List<InnerAnonymousSetMSVCBValuesRequestPDUMsvcb> v) { this(); _v.put("_", v); }
     @JsonValue
     public Object toJsonValue() { return _v.get("_"); }
     public byte[] encode() {
         try {
-            return InnerNative.encode("SetMSVCBValuesRequestPDUMsvcb", DEFAULT_ENCODING, MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
+            return InnerNative.encode("SetMSVCBValuesRequestPDUMsvcb", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     public byte[] encodeTest() {
         try {
-            return InnerNative.encode("SetMSVCBValuesRequestPDUMsvcb", DEFAULT_ENCODING, MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
+            return InnerNative.encode("SetMSVCBValuesRequestPDUMsvcb", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -32,9 +31,9 @@ public class InnerSetMSVCBValuesRequestPDUMsvcb extends InnerBase {
         try {
             String json = InnerNative.decode("SetMSVCBValuesRequestPDUMsvcb", DEFAULT_ENCODING, data);
             InnerSetMSVCBValuesRequestPDUMsvcb r = new InnerSetMSVCBValuesRequestPDUMsvcb();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
-            r._v.put("_", MAPPER.convertValue(_node, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousSetMSVCBValuesRequestPDUMsvcb>>() {}));
+            r._v.put("_", InnerBase.MAPPER.convertValue(_node, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousSetMSVCBValuesRequestPDUMsvcb>>() {}));
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

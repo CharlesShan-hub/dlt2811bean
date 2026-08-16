@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAnonymousSetGoCBValuesErrorPDUResult extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAnonymousSetGoCBValuesErrorPDUResult() {
     }
     @JsonAnySetter
@@ -22,30 +21,9 @@ public class InnerAnonymousSetGoCBValuesErrorPDUResult extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("AnonymousSetGoCBValuesErrorPDUResult", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode AnonymousSetGoCBValuesErrorPDUResult failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "AnonymousSetGoCBValuesErrorPDUResult"; }
     public static InnerAnonymousSetGoCBValuesErrorPDUResult decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("AnonymousSetGoCBValuesErrorPDUResult", DEFAULT_ENCODING, data), InnerAnonymousSetGoCBValuesErrorPDUResult.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerAnonymousSetGoCBValuesErrorPDUResult.class, "AnonymousSetGoCBValuesErrorPDUResult", data);
     }
 }

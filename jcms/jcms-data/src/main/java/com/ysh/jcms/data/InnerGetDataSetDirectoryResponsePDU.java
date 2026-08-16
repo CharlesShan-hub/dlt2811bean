@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerGetDataSetDirectoryResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetDataSetDirectoryResponsePDU() {
         _v.put("memberData", new InnerGetDataSetDirectoryResponsePDUMemberData()._v);
         _v.put("moreFollows", new InnerBoolean()._v);
@@ -30,30 +29,9 @@ public class InnerGetDataSetDirectoryResponsePDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("GetDataSetDirectoryResponsePDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode GetDataSetDirectoryResponsePDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "GetDataSetDirectoryResponsePDU"; }
     public static InnerGetDataSetDirectoryResponsePDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("GetDataSetDirectoryResponsePDU", DEFAULT_ENCODING, data), InnerGetDataSetDirectoryResponsePDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerGetDataSetDirectoryResponsePDU.class, "GetDataSetDirectoryResponsePDU", data);
     }
 }

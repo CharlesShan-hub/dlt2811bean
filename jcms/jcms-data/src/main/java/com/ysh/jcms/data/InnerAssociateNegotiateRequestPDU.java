@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAssociateNegotiateRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAssociateNegotiateRequestPDU() {
         _v.put("apduSize", new InnerInt16U()._v);
         _v.put("asduSize", new InnerInt32U()._v);
@@ -29,30 +28,9 @@ public class InnerAssociateNegotiateRequestPDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("AssociateNegotiateRequestPDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode AssociateNegotiateRequestPDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "AssociateNegotiateRequestPDU"; }
     public static InnerAssociateNegotiateRequestPDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("AssociateNegotiateRequestPDU", DEFAULT_ENCODING, data), InnerAssociateNegotiateRequestPDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerAssociateNegotiateRequestPDU.class, "AssociateNegotiateRequestPDU", data);
     }
 }

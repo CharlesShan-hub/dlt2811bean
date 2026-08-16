@@ -27,7 +27,6 @@ public class InnerReasonCode extends InnerBase {
     public static final int INTEGRITY = 4;
     public static final int GENERAL_INTERROGATION = 5;
     public static final int APPLICATION_TRIGGER = 6;
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerReasonCode() { _v.put("_", "00"); }
     public InnerReasonCode(int v) { this(); _v.put("_", InnerBase.bitStringHex(v, 7)); }
     @JsonValue
@@ -38,14 +37,14 @@ public class InnerReasonCode extends InnerBase {
     public InnerReasonCode(String hex) { this(); _v.put("_", hex); }
     public byte[] encode() {
         try {
-            return InnerNative.encode("ReasonCode", DEFAULT_ENCODING, MAPPER.writeValueAsString(_v.get("_")));
+            return InnerNative.encode("ReasonCode", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(_v.get("_")));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     public byte[] encodeTest() {
         try {
-            return InnerNative.encode("ReasonCode", DEFAULT_ENCODING, MAPPER.writeValueAsString(_v.get("_")));
+            return InnerNative.encode("ReasonCode", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(_v.get("_")));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -54,7 +53,7 @@ public class InnerReasonCode extends InnerBase {
         try {
             String json = InnerNative.decode("ReasonCode", DEFAULT_ENCODING, data);
             InnerReasonCode r = new InnerReasonCode();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asText());
             return r;

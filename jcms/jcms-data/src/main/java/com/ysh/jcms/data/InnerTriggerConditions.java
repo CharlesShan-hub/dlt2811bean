@@ -25,7 +25,6 @@ public class InnerTriggerConditions extends InnerBase {
     public static final int DATA_UPDATE = 3;
     public static final int INTEGRITY = 4;
     public static final int GENERAL_INTERROGATION = 5;
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerTriggerConditions() { _v.put("_", "00"); }
     public InnerTriggerConditions(int v) { this(); _v.put("_", InnerBase.bitStringHex(v, 6)); }
     @JsonValue
@@ -36,14 +35,14 @@ public class InnerTriggerConditions extends InnerBase {
     public InnerTriggerConditions(String hex) { this(); _v.put("_", hex); }
     public byte[] encode() {
         try {
-            return InnerNative.encode("TriggerConditions", DEFAULT_ENCODING, MAPPER.writeValueAsString(_v.get("_")));
+            return InnerNative.encode("TriggerConditions", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(_v.get("_")));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     public byte[] encodeTest() {
         try {
-            return InnerNative.encode("TriggerConditions", DEFAULT_ENCODING, MAPPER.writeValueAsString(_v.get("_")));
+            return InnerNative.encode("TriggerConditions", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(_v.get("_")));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -52,7 +51,7 @@ public class InnerTriggerConditions extends InnerBase {
         try {
             String json = InnerNative.decode("TriggerConditions", DEFAULT_ENCODING, data);
             InnerTriggerConditions r = new InnerTriggerConditions();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asText());
             return r;

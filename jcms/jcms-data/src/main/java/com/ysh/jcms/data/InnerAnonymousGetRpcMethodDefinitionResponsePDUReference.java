@@ -14,50 +14,25 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAnonymousGetRpcMethodDefinitionResponsePDUReference extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAnonymousGetRpcMethodDefinitionResponsePDUReference() {
         _v.put("_choice", "error");
         _v.put("_", new InnerServiceError()._v);
     }
+    @Override
+    protected boolean isChoice() { return true; }
     @JsonSetter("error")
     public void setError(Object v) {
         _v.put("_choice", "error");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("method")
     public void setMethod(Object v) {
         _v.put("_choice", "method");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
-    public byte[] encode() {
-        String _json = null;
-        String _vStr = null;
-        try {
-            _vStr = MAPPER.writeValueAsString(_v);
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("AnonymousGetRpcMethodDefinitionResponsePDUReference", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode AnonymousGetRpcMethodDefinitionResponsePDUReference failed, _v=" + _vStr + ", json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        String _vStr = null;
-        try {
-            _vStr = MAPPER.writeValueAsString(_v);
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("_v: " + _vStr);
-            System.err.println("JSON: " + _json);
-            return InnerNative.encode("AnonymousGetRpcMethodDefinitionResponsePDUReference", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encodeTest AnonymousGetRpcMethodDefinitionResponsePDUReference failed, _v=" + _vStr + ", json=" + _json, e);
-        }
-    }
+    @Override
+    protected String typeName() { return "AnonymousGetRpcMethodDefinitionResponsePDUReference"; }
     public static InnerAnonymousGetRpcMethodDefinitionResponsePDUReference decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("AnonymousGetRpcMethodDefinitionResponsePDUReference", DEFAULT_ENCODING, data), InnerAnonymousGetRpcMethodDefinitionResponsePDUReference.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerAnonymousGetRpcMethodDefinitionResponsePDUReference.class, "AnonymousGetRpcMethodDefinitionResponsePDUReference", data);
     }
 }

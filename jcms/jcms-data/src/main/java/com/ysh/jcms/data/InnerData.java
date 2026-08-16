@@ -39,160 +39,135 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerData extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerData() {
         _v.put("_choice", "error");
         _v.put("_", new InnerServiceError()._v);
     }
+    @Override
+    protected boolean isChoice() { return true; }
     @JsonSetter("error")
     public void setError(Object v) {
         _v.put("_choice", "error");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("array")
     public void setArray(Object v) {
         _v.put("_choice", "array");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("structure")
     public void setStructure(Object v) {
         _v.put("_choice", "structure");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("Boolean")
     public void setBoolean(Object v) {
         _v.put("_choice", "Boolean");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("int8")
     public void setInt8(Object v) {
         _v.put("_choice", "int8");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("int16")
     public void setInt16(Object v) {
         _v.put("_choice", "int16");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("int32")
     public void setInt32(Object v) {
         _v.put("_choice", "int32");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("int64")
     public void setInt64(Object v) {
         _v.put("_choice", "int64");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("int8u")
     public void setInt8u(Object v) {
         _v.put("_choice", "int8u");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("int16u")
     public void setInt16u(Object v) {
         _v.put("_choice", "int16u");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("int32u")
     public void setInt32u(Object v) {
         _v.put("_choice", "int32u");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("int64u")
     public void setInt64u(Object v) {
         _v.put("_choice", "int64u");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("float32")
     public void setFloat32(Object v) {
         _v.put("_choice", "float32");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("float64")
     public void setFloat64(Object v) {
         _v.put("_choice", "float64");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("bit-string")
     public void setBit_string(Object v) {
         _v.put("_choice", "bit-string");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("octet-string")
     public void setOctet_string(Object v) {
         _v.put("_choice", "octet-string");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("visible-string")
     public void setVisible_string(Object v) {
         _v.put("_choice", "visible-string");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("unicode-string")
     public void setUnicode_string(Object v) {
         _v.put("_choice", "unicode-string");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("utc-time")
     public void setUtc_time(Object v) {
         _v.put("_choice", "utc-time");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("binary-time")
     public void setBinary_time(Object v) {
         _v.put("_choice", "binary-time");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("quality")
     public void setQuality(Object v) {
         _v.put("_choice", "quality");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("dbpos")
     public void setDbpos(Object v) {
         _v.put("_choice", "dbpos");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("tcmd")
     public void setTcmd(Object v) {
         _v.put("_choice", "tcmd");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("check")
     public void setCheck(Object v) {
         _v.put("_choice", "check");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
-    public byte[] encode() {
-        String _json = null;
-        String _vStr = null;
-        try {
-            _vStr = MAPPER.writeValueAsString(_v);
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("Data", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode Data failed, _v=" + _vStr + ", json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        String _vStr = null;
-        try {
-            _vStr = MAPPER.writeValueAsString(_v);
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("_v: " + _vStr);
-            System.err.println("JSON: " + _json);
-            return InnerNative.encode("Data", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encodeTest Data failed, _v=" + _vStr + ", json=" + _json, e);
-        }
-    }
+    @Override
+    protected String typeName() { return "Data"; }
     public static InnerData decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("Data", DEFAULT_ENCODING, data), InnerData.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerData.class, "Data", data);
     }
 }

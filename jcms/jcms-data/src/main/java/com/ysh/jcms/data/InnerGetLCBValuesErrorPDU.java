@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerGetLCBValuesErrorPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetLCBValuesErrorPDU() { _v.put("_", 1); }
     @JsonCreator
     public static InnerGetLCBValuesErrorPDU fromJson(int v) { InnerGetLCBValuesErrorPDU r = new InnerGetLCBValuesErrorPDU(); r._v.put("_", v); return r; }
@@ -29,7 +28,7 @@ public class InnerGetLCBValuesErrorPDU extends InnerBase {
         try {
             String json = InnerNative.decode("GetLCBValuesErrorPDU", DEFAULT_ENCODING, data);
             InnerGetLCBValuesErrorPDU r = new InnerGetLCBValuesErrorPDU();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asInt());
             return r;

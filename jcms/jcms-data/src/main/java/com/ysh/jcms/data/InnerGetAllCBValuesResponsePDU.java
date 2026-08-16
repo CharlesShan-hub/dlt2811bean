@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerGetAllCBValuesResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetAllCBValuesResponsePDU() {
         _v.put("cbValue", new InnerGetAllCBValuesResponsePDUCbValue()._v);
         _v.put("moreFollows", new InnerBoolean()._v);
@@ -37,30 +36,9 @@ public class InnerGetAllCBValuesResponsePDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("GetAllCBValuesResponsePDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode GetAllCBValuesResponsePDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "GetAllCBValuesResponsePDU"; }
     public static InnerGetAllCBValuesResponsePDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("GetAllCBValuesResponsePDU", DEFAULT_ENCODING, data), InnerGetAllCBValuesResponsePDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerGetAllCBValuesResponsePDU.class, "GetAllCBValuesResponsePDU", data);
     }
 }

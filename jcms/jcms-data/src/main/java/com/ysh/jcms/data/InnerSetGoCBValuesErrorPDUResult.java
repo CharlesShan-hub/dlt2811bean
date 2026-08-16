@@ -7,23 +7,22 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
 
 public class InnerSetGoCBValuesErrorPDUResult extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSetGoCBValuesErrorPDUResult() { _v.put("_", new java.util.ArrayList<>()); }
     @JsonCreator
-    public static InnerSetGoCBValuesErrorPDUResult fromJson(Object v) { InnerSetGoCBValuesErrorPDUResult r = new InnerSetGoCBValuesErrorPDUResult(); r._v.put("_", MAPPER.convertValue(v, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousSetGoCBValuesErrorPDUResult>>() {})); return r; }
+    public static InnerSetGoCBValuesErrorPDUResult fromJson(Object v) { InnerSetGoCBValuesErrorPDUResult r = new InnerSetGoCBValuesErrorPDUResult(); r._v.put("_", InnerBase.MAPPER.convertValue(v, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousSetGoCBValuesErrorPDUResult>>() {})); return r; }
     public InnerSetGoCBValuesErrorPDUResult(java.util.List<InnerAnonymousSetGoCBValuesErrorPDUResult> v) { this(); _v.put("_", v); }
     @JsonValue
     public Object toJsonValue() { return _v.get("_"); }
     public byte[] encode() {
         try {
-            return InnerNative.encode("SetGoCBValuesErrorPDUResult", DEFAULT_ENCODING, MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
+            return InnerNative.encode("SetGoCBValuesErrorPDUResult", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     public byte[] encodeTest() {
         try {
-            return InnerNative.encode("SetGoCBValuesErrorPDUResult", DEFAULT_ENCODING, MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
+            return InnerNative.encode("SetGoCBValuesErrorPDUResult", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -32,9 +31,9 @@ public class InnerSetGoCBValuesErrorPDUResult extends InnerBase {
         try {
             String json = InnerNative.decode("SetGoCBValuesErrorPDUResult", DEFAULT_ENCODING, data);
             InnerSetGoCBValuesErrorPDUResult r = new InnerSetGoCBValuesErrorPDUResult();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
-            r._v.put("_", MAPPER.convertValue(_node, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousSetGoCBValuesErrorPDUResult>>() {}));
+            r._v.put("_", InnerBase.MAPPER.convertValue(_node, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousSetGoCBValuesErrorPDUResult>>() {}));
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

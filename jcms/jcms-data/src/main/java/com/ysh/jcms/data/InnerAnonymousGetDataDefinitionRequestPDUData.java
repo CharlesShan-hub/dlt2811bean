@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAnonymousGetDataDefinitionRequestPDUData extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAnonymousGetDataDefinitionRequestPDUData() {
         _v.put("reference", new InnerObjectReference()._v);
     }
@@ -23,30 +22,9 @@ public class InnerAnonymousGetDataDefinitionRequestPDUData extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("AnonymousGetDataDefinitionRequestPDUData", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode AnonymousGetDataDefinitionRequestPDUData failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "AnonymousGetDataDefinitionRequestPDUData"; }
     public static InnerAnonymousGetDataDefinitionRequestPDUData decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("AnonymousGetDataDefinitionRequestPDUData", DEFAULT_ENCODING, data), InnerAnonymousGetDataDefinitionRequestPDUData.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerAnonymousGetDataDefinitionRequestPDUData.class, "AnonymousGetDataDefinitionRequestPDUData", data);
     }
 }

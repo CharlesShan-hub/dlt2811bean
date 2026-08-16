@@ -1,6 +1,5 @@
 package com.ysh.jcms.app.handler.report.report;
 
-import com.ysh.jcms.core.data.bitarray.CmsRcbOptFlds;
 import com.ysh.jcms.core.data.bitarray.CmsReasonCode;
 import com.ysh.jcms.core.data.choice.CmsData;
 import com.ysh.jcms.core.data.sequence.common.CmsBinaryTime;
@@ -197,9 +196,6 @@ public class ReportEngine {
         // rptID
         String rptId = rc.rptID() != null ? rc.rptID() : rcb.getRef();
         report.rptID(rptId);
-
-        // optFlds (all false defaults)
-        report.optFlds = new CmsRcbOptFlds();
 
         // DatSet
         report.dataSet(rc.datSet());

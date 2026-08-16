@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerDeleteFileResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerDeleteFileResponsePDU() { _v.put("_", null); }
     @JsonCreator
     public static InnerDeleteFileResponsePDU fromJson(String v) { InnerDeleteFileResponsePDU r = new InnerDeleteFileResponsePDU(); r._v.put("_", v); return r; }
@@ -29,7 +28,7 @@ public class InnerDeleteFileResponsePDU extends InnerBase {
         try {
             String json = InnerNative.decode("DeleteFileResponsePDU", DEFAULT_ENCODING, data);
             InnerDeleteFileResponsePDU r = new InnerDeleteFileResponsePDU();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", null);
             return r;

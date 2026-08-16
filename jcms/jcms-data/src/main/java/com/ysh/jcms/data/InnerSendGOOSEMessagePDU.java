@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerSendGOOSEMessagePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSendGOOSEMessagePDU() {
         _v.put("goID", new DefaultInnerVisibleString("x"));
         _v.put("t", new InnerTimeStamp()._v);
@@ -41,30 +40,9 @@ public class InnerSendGOOSEMessagePDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("SendGOOSEMessagePDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode SendGOOSEMessagePDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "SendGOOSEMessagePDU"; }
     public static InnerSendGOOSEMessagePDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("SendGOOSEMessagePDU", DEFAULT_ENCODING, data), InnerSendGOOSEMessagePDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerSendGOOSEMessagePDU.class, "SendGOOSEMessagePDU", data);
     }
 }

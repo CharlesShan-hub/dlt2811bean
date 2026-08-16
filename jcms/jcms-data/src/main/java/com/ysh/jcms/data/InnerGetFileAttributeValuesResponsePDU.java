@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerGetFileAttributeValuesResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetFileAttributeValuesResponsePDU() { _v.put("_", new InnerFileEntry()); }
     @JsonCreator
     public static InnerGetFileAttributeValuesResponsePDU fromJson(String v) { InnerGetFileAttributeValuesResponsePDU r = new InnerGetFileAttributeValuesResponsePDU(); r._v.put("_", v); return r; }
@@ -21,14 +20,14 @@ public class InnerGetFileAttributeValuesResponsePDU extends InnerBase {
     public Object toJsonValue() { return _v.get("_"); }
     public byte[] encode() {
         try {
-            return InnerNative.encode("GetFileAttributeValuesResponsePDU", DEFAULT_ENCODING, MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
+            return InnerNative.encode("GetFileAttributeValuesResponsePDU", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     public byte[] encodeTest() {
         try {
-            return InnerNative.encode("GetFileAttributeValuesResponsePDU", DEFAULT_ENCODING, MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
+            return InnerNative.encode("GetFileAttributeValuesResponsePDU", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(InnerBase.toJson(_v.get("_"))));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -37,9 +36,9 @@ public class InnerGetFileAttributeValuesResponsePDU extends InnerBase {
         try {
             String json = InnerNative.decode("GetFileAttributeValuesResponsePDU", DEFAULT_ENCODING, data);
             InnerGetFileAttributeValuesResponsePDU r = new InnerGetFileAttributeValuesResponsePDU();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
-            r._v.put("_", MAPPER.readValue(_node.toString(), InnerFileEntry.class));
+            r._v.put("_", InnerBase.MAPPER.readValue(_node.toString(), InnerFileEntry.class));
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

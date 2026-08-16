@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerInt32U extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerInt32U() { _v.put("_", 0); }
     @JsonValue
     @Override
@@ -30,7 +29,7 @@ public class InnerInt32U extends InnerBase {
         try {
             String json = InnerNative.decode("Int32U", DEFAULT_ENCODING, data);
             InnerInt32U r = new InnerInt32U();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asInt());
             return r;

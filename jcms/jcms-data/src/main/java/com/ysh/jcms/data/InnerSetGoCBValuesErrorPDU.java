@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerSetGoCBValuesErrorPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSetGoCBValuesErrorPDU() {
         _v.put("result", new InnerSetGoCBValuesErrorPDUResult()._v);
     }
@@ -30,30 +29,9 @@ public class InnerSetGoCBValuesErrorPDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("SetGoCBValuesErrorPDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode SetGoCBValuesErrorPDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "SetGoCBValuesErrorPDU"; }
     public static InnerSetGoCBValuesErrorPDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("SetGoCBValuesErrorPDU", DEFAULT_ENCODING, data), InnerSetGoCBValuesErrorPDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerSetGoCBValuesErrorPDU.class, "SetGoCBValuesErrorPDU", data);
     }
 }

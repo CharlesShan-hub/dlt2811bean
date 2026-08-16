@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerSetDataSetValuesErrorPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSetDataSetValuesErrorPDU() {
         _v.put("result", new java.util.ArrayList<>());
     }
@@ -25,30 +24,9 @@ public class InnerSetDataSetValuesErrorPDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("SetDataSetValuesErrorPDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode SetDataSetValuesErrorPDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "SetDataSetValuesErrorPDU"; }
     public static InnerSetDataSetValuesErrorPDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("SetDataSetValuesErrorPDU", DEFAULT_ENCODING, data), InnerSetDataSetValuesErrorPDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerSetDataSetValuesErrorPDU.class, "SetDataSetValuesErrorPDU", data);
     }
 }

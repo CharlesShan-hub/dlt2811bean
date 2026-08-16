@@ -64,7 +64,7 @@ public class InnerNative {
      * @param typeName  ASN.1 type name
      * @param encoding  encoding rule
      * @param data      binary encoded data
-     * @return JSON representation (with 0x prefixes stripped from hex strings)
+     * @return JSON representation (hex strings are contiguous uppercase, no "0x" prefixes)
      */
     public static String decode(String typeName, String encoding, byte[] data) {
         try {
@@ -72,10 +72,7 @@ public class InnerNative {
             @SuppressWarnings("unchecked")
             Map<String, Object> m = MAPPER.readValue(resp, Map.class);
             if (Boolean.TRUE.equals(m.get("ok"))) {
-                String json = MAPPER.writeValueAsString(m.get("value"));
-                // Strip 0x prefixes from hex strings (rasn JER uses {:02X?} format)
-                json = json.replace("0x", "").replace("0X", "");
-                return json;
+                return MAPPER.writeValueAsString(m.get("value"));
             }
             throw new RuntimeException("decode failed: " + m.get("error"));
         } catch (Exception e) {

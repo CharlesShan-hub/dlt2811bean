@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerDataDefinitionArray extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerDataDefinitionArray() {
         _v.put("numberOfElement", new InnerInt32()._v);
         _v.put("elementType", new InnerDataDefinition()._v);
@@ -19,30 +18,9 @@ public class InnerDataDefinitionArray extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("DataDefinitionArray", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode DataDefinitionArray failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "DataDefinitionArray"; }
     public static InnerDataDefinitionArray decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("DataDefinitionArray", DEFAULT_ENCODING, data), InnerDataDefinitionArray.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerDataDefinitionArray.class, "DataDefinitionArray", data);
     }
 }

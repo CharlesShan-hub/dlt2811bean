@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerQueryLogAfterRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerQueryLogAfterRequestPDU() {
         _v.put("logReference", new InnerObjectReference()._v);
         _v.put("entry", new InnerEntryID()._v);
@@ -28,30 +27,9 @@ public class InnerQueryLogAfterRequestPDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("QueryLogAfterRequestPDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode QueryLogAfterRequestPDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "QueryLogAfterRequestPDU"; }
     public static InnerQueryLogAfterRequestPDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("QueryLogAfterRequestPDU", DEFAULT_ENCODING, data), InnerQueryLogAfterRequestPDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerQueryLogAfterRequestPDU.class, "QueryLogAfterRequestPDU", data);
     }
 }

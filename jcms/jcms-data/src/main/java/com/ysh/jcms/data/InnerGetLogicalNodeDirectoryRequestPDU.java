@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerGetLogicalNodeDirectoryRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetLogicalNodeDirectoryRequestPDU() {
         _v.put("reference", new InnerGetLogicalNodeDirectoryRequestPDUReference()._v);
         _v.put("acsiClass", new InnerACSIClass()._v);
@@ -31,30 +30,9 @@ public class InnerGetLogicalNodeDirectoryRequestPDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("GetLogicalNodeDirectoryRequestPDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode GetLogicalNodeDirectoryRequestPDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "GetLogicalNodeDirectoryRequestPDU"; }
     public static InnerGetLogicalNodeDirectoryRequestPDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("GetLogicalNodeDirectoryRequestPDU", DEFAULT_ENCODING, data), InnerGetLogicalNodeDirectoryRequestPDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerGetLogicalNodeDirectoryRequestPDU.class, "GetLogicalNodeDirectoryRequestPDU", data);
     }
 }

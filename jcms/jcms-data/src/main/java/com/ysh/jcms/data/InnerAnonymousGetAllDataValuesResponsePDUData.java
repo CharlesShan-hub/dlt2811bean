@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAnonymousGetAllDataValuesResponsePDUData extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAnonymousGetAllDataValuesResponsePDUData() {
         _v.put("reference", new InnerSubReference()._v);
         _v.put("value", new InnerData()._v);
@@ -24,30 +23,9 @@ public class InnerAnonymousGetAllDataValuesResponsePDUData extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("AnonymousGetAllDataValuesResponsePDUData", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode AnonymousGetAllDataValuesResponsePDUData failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "AnonymousGetAllDataValuesResponsePDUData"; }
     public static InnerAnonymousGetAllDataValuesResponsePDUData decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("AnonymousGetAllDataValuesResponsePDUData", DEFAULT_ENCODING, data), InnerAnonymousGetAllDataValuesResponsePDUData.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerAnonymousGetAllDataValuesResponsePDUData.class, "AnonymousGetAllDataValuesResponsePDUData", data);
     }
 }

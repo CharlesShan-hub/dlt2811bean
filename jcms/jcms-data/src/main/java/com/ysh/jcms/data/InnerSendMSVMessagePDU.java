@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerSendMSVMessagePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSendMSVMessagePDU() {
         _v.put("msvID", new DefaultInnerVisibleString("x"));
         _v.put("smpCnt", new InnerInt16U()._v);
@@ -39,30 +38,9 @@ public class InnerSendMSVMessagePDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("SendMSVMessagePDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode SendMSVMessagePDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "SendMSVMessagePDU"; }
     public static InnerSendMSVMessagePDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("SendMSVMessagePDU", DEFAULT_ENCODING, data), InnerSendMSVMessagePDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerSendMSVMessagePDU.class, "SendMSVMessagePDU", data);
     }
 }

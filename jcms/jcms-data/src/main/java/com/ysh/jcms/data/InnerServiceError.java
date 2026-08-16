@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerServiceError extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerServiceError() { _v.put("_", 1); }
     @JsonCreator
     public static InnerServiceError fromJson(int v) { InnerServiceError r = new InnerServiceError(); r._v.put("_", v); return r; }
@@ -43,7 +42,7 @@ public class InnerServiceError extends InnerBase {
         try {
             String json = InnerNative.decode("ServiceError", DEFAULT_ENCODING, data);
             InnerServiceError r = new InnerServiceError();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asInt());
             return r;

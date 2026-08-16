@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerDbpos extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerDbpos() { _v.put("_", "00"); }
     public InnerDbpos(int v) { this(); _v.put("_", InnerBase.bitStringHex(v, 2)); }
     @JsonValue
@@ -23,14 +22,14 @@ public class InnerDbpos extends InnerBase {
     public InnerDbpos(String hex) { this(); _v.put("_", hex); }
     public byte[] encode() {
         try {
-            return InnerNative.encode("Dbpos", DEFAULT_ENCODING, MAPPER.writeValueAsString(_v.get("_")));
+            return InnerNative.encode("Dbpos", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(_v.get("_")));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     public byte[] encodeTest() {
         try {
-            return InnerNative.encode("Dbpos", DEFAULT_ENCODING, MAPPER.writeValueAsString(_v.get("_")));
+            return InnerNative.encode("Dbpos", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(_v.get("_")));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -39,7 +38,7 @@ public class InnerDbpos extends InnerBase {
         try {
             String json = InnerNative.decode("Dbpos", DEFAULT_ENCODING, data);
             InnerDbpos r = new InnerDbpos();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asText());
             return r;

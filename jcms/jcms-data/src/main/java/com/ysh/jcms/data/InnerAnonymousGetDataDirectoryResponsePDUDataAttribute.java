@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAnonymousGetDataDirectoryResponsePDUDataAttribute extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAnonymousGetDataDirectoryResponsePDUDataAttribute() {
         _v.put("reference", new InnerSubReference()._v);
     }
@@ -23,30 +22,9 @@ public class InnerAnonymousGetDataDirectoryResponsePDUDataAttribute extends Inne
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("AnonymousGetDataDirectoryResponsePDUDataAttribute", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode AnonymousGetDataDirectoryResponsePDUDataAttribute failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "AnonymousGetDataDirectoryResponsePDUDataAttribute"; }
     public static InnerAnonymousGetDataDirectoryResponsePDUDataAttribute decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("AnonymousGetDataDirectoryResponsePDUDataAttribute", DEFAULT_ENCODING, data), InnerAnonymousGetDataDirectoryResponsePDUDataAttribute.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerAnonymousGetDataDirectoryResponsePDUDataAttribute.class, "AnonymousGetDataDirectoryResponsePDUDataAttribute", data);
     }
 }

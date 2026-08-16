@@ -24,7 +24,7 @@ public class CmsTcmd extends CmsEnum<CmsTcmd> {
     public static final int CANCEL = 3;
 
     public CmsTcmd() {
-        super(new InnerTcmd());
+        super(new InnerTcmd(), true);
     }
     public CmsTcmd(int v) {
         this();

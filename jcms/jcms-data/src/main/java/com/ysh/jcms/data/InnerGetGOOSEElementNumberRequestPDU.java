@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerGetGOOSEElementNumberRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetGOOSEElementNumberRequestPDU() {
         _v.put("gocbReference", new InnerObjectReference()._v);
         _v.put("memberData", new InnerGetGOOSEElementNumberRequestPDUMemberData()._v);
@@ -30,30 +29,9 @@ public class InnerGetGOOSEElementNumberRequestPDU extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("GetGOOSEElementNumberRequestPDU", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode GetGOOSEElementNumberRequestPDU failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "GetGOOSEElementNumberRequestPDU"; }
     public static InnerGetGOOSEElementNumberRequestPDU decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("GetGOOSEElementNumberRequestPDU", DEFAULT_ENCODING, data), InnerGetGOOSEElementNumberRequestPDU.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerGetGOOSEElementNumberRequestPDU.class, "GetGOOSEElementNumberRequestPDU", data);
     }
 }

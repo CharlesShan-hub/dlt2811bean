@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerMSVCB extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerMSVCB() {
         _v.put("svEna", new InnerBoolean()._v);
         _v.put("msvID", new DefaultInnerVisibleString("x"));
@@ -37,30 +36,9 @@ public class InnerMSVCB extends InnerBase {
         if (key.startsWith("_")) return;
         _v.put(key, value);
     }
-    public byte[] encode() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("MSVCB", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode MSVCB failed, json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        try {
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("JSON: " + _json);
-            return new byte[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
+    protected String typeName() { return "MSVCB"; }
     public static InnerMSVCB decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("MSVCB", DEFAULT_ENCODING, data), InnerMSVCB.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerMSVCB.class, "MSVCB", data);
     }
 }

@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerUtcTime extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerUtcTime() { _v.put("_", new byte[] { 1, 1, 1, 1, 1, 1, 1, 1 }); }
     @JsonCreator
     public static InnerUtcTime fromJson(String v) { InnerUtcTime r = new InnerUtcTime(); r._v.put("_", v); return r; }
@@ -20,14 +19,14 @@ public class InnerUtcTime extends InnerBase {
     public Object toJsonValue() { return _v.get("_"); }
     public byte[] encode() {
         try {
-            return InnerNative.encode("UtcTime", DEFAULT_ENCODING, MAPPER.writeValueAsString(InnerBase.hex((byte[]) _v.get("_"))));
+            return InnerNative.encode("UtcTime", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(InnerBase.hex((byte[]) _v.get("_"))));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     public byte[] encodeTest() {
         try {
-            return InnerNative.encode("UtcTime", DEFAULT_ENCODING, MAPPER.writeValueAsString(InnerBase.hex((byte[]) _v.get("_"))));
+            return InnerNative.encode("UtcTime", DEFAULT_ENCODING, InnerBase.MAPPER.writeValueAsString(InnerBase.hex((byte[]) _v.get("_"))));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -36,7 +35,7 @@ public class InnerUtcTime extends InnerBase {
         try {
             String json = InnerNative.decode("UtcTime", DEFAULT_ENCODING, data);
             InnerUtcTime r = new InnerUtcTime();
-            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            com.fasterxml.jackson.databind.JsonNode _node = InnerBase.MAPPER.readTree(json);
             if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", _node.asText().isEmpty() ? new byte[0] : InnerBase.unhex(_node.asText()));
             return r;

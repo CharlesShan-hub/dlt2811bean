@@ -9,50 +9,25 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerRpcCallRequestPDUReq extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerRpcCallRequestPDUReq() {
         _v.put("_choice", "reqData");
         _v.put("_", new InnerData()._v);
     }
+    @Override
+    protected boolean isChoice() { return true; }
     @JsonSetter("reqData")
     public void setReqData(Object v) {
         _v.put("_choice", "reqData");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
     @JsonSetter("callID")
     public void setCallID(Object v) {
         _v.put("_choice", "callID");
-        if (v instanceof java.util.Map) { _v.put("_", v); } else { java.util.LinkedHashMap<String, Object> _w = new java.util.LinkedHashMap<>(); _w.put("_", v); _v.put("_", _w); }
+        _setValue(v);
     }
-    public byte[] encode() {
-        String _json = null;
-        String _vStr = null;
-        try {
-            _vStr = MAPPER.writeValueAsString(_v);
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            return InnerNative.encode("RpcCallRequestPDUReq", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encode RpcCallRequestPDUReq failed, _v=" + _vStr + ", json=" + _json, e);
-        }
-    }
-    public byte[] encodeTest() {
-        String _json = null;
-        String _vStr = null;
-        try {
-            _vStr = MAPPER.writeValueAsString(_v);
-            _json = MAPPER.writeValueAsString(InnerBase.toJson(_v));
-            System.err.println("_v: " + _vStr);
-            System.err.println("JSON: " + _json);
-            return InnerNative.encode("RpcCallRequestPDUReq", DEFAULT_ENCODING, _json);
-        } catch (Exception e) {
-            throw new RuntimeException("encodeTest RpcCallRequestPDUReq failed, _v=" + _vStr + ", json=" + _json, e);
-        }
-    }
+    @Override
+    protected String typeName() { return "RpcCallRequestPDUReq"; }
     public static InnerRpcCallRequestPDUReq decode(byte[] data) {
-        try {
-            return MAPPER.readValue(InnerNative.decode("RpcCallRequestPDUReq", DEFAULT_ENCODING, data), InnerRpcCallRequestPDUReq.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return InnerBase.decode(InnerRpcCallRequestPDUReq.class, "RpcCallRequestPDUReq", data);
     }
 }
