@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.goose.getGooseElementNumber;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.scalar.CmsInt16U;
@@ -33,13 +34,13 @@ public class GetGooseElementNumberClient extends BaseClientHandler<GetGooseEleme
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetGooseElementNumberError err = decodeErr(frame, new CmsGetGooseElementNumberError());
+        CmsGetGooseElementNumberError err = CmsFrameDecoder.decodeErr(frame, new CmsGetGooseElementNumberError());
         throw new IOException("GetGOOSEElementNumber rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetGooseElementNumberDao dao) throws IOException {
-        CmsGetGooseElementNumberResponse resp = decodeResp(frame, new CmsGetGooseElementNumberResponse());
+        CmsGetGooseElementNumberResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetGooseElementNumberResponse());
 
         List<Integer> offsets = new ArrayList<>();
         for (CmsInt16U off : resp.memberOffset) {

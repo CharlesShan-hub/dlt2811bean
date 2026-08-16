@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.report.setUrcbValues;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.report.CmsSetUrcbResult;
@@ -19,7 +20,7 @@ public class SetUrcbValuesClient extends BaseClientHandler<SetUrcbValuesDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsSetUrcbValuesError err = decodeErr(frame, new CmsSetUrcbValuesError());
+        CmsSetUrcbValuesError err = CmsFrameDecoder.decodeErr(frame, new CmsSetUrcbValuesError());
         StringBuilder sb = new StringBuilder("SetURCBValues rejected:");
         int i = 0;
         for (CmsSetUrcbResult r : err.result) {
@@ -33,7 +34,7 @@ public class SetUrcbValuesClient extends BaseClientHandler<SetUrcbValuesDao> {
 
     @Override
     protected void onSuccess(Frame frame, SetUrcbValuesDao dao) throws IOException {
-        decodeResp(frame, new CmsSetUrcbValuesResponse());
+        CmsFrameDecoder.decodeResp(frame, new CmsSetUrcbValuesResponse());
         content().res(Collections.singletonList("URCB values set successfully"));
     }
 }

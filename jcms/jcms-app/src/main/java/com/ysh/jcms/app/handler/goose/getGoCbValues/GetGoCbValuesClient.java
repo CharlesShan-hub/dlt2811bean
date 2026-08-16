@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.goose.getGoCbValues;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.choice.CmsGocbValueChoice;
@@ -28,13 +29,13 @@ public class GetGoCbValuesClient extends BaseClientHandler<GetGoCbValuesDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetGoCbValuesError err = decodeErr(frame, new CmsGetGoCbValuesError());
+        CmsGetGoCbValuesError err = CmsFrameDecoder.decodeErr(frame, new CmsGetGoCbValuesError());
         throw new IOException("GetGoCBValues rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetGoCbValuesDao dao) throws IOException {
-        CmsGetGoCbValuesResponse resp = decodeResp(frame, new CmsGetGoCbValuesResponse());
+        CmsGetGoCbValuesResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetGoCbValuesResponse());
 
         List<GoCbEntry> entries = new ArrayList<>();
         for (CmsGocbValueChoice choice : resp.gocb) {

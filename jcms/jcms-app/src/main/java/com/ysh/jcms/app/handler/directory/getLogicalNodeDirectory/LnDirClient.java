@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.app.handler.support.CmsClientOperator;
@@ -25,13 +26,13 @@ public class LnDirClient extends BaseClientHandler<LnDirDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetLogicalNodeDirectoryError err = decodeErr(frame, new CmsGetLogicalNodeDirectoryError());
+        CmsGetLogicalNodeDirectoryError err = CmsFrameDecoder.decodeErr(frame, new CmsGetLogicalNodeDirectoryError());
         throw new IOException("GetLogicalNodeDirectory rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, LnDirDao dao) throws IOException {
-        CmsGetLogicalNodeDirectoryResponse resp = decodeResp(frame, new CmsGetLogicalNodeDirectoryResponse());
+        CmsGetLogicalNodeDirectoryResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetLogicalNodeDirectoryResponse());
         CmsClientOperator.accumulatePage(content(), resp, "reference");
     }
 

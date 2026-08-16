@@ -1,6 +1,5 @@
 package com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory;
 
-import com.ysh.jcms.app.util.CmsRequestHelper;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.pdu.directory.CmsGetLogicalNodeDirectoryRequest;
 import lombok.Getter;
@@ -37,7 +36,7 @@ public class LnDirDao extends BaseDao {
     @Override
     public CmsType toRequest() {
         CmsGetLogicalNodeDirectoryRequest req = new CmsGetLogicalNodeDirectoryRequest().acsiClass(acsiClass);
-        CmsRequestHelper.setIfNotEmpty(req::referenceAfter, referenceAfter);
+        setIfNotEmpty(req::referenceAfter, referenceAfter);
         if (ldName != null) {
             req.reference.altLdName(ldName);
         } else if (lnReference != null) {

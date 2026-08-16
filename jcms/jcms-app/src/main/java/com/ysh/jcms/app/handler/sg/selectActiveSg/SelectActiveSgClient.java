@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.sg.selectActiveSg;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.sg.CmsSelectActiveSgError;
@@ -17,12 +18,12 @@ public class SelectActiveSgClient extends BaseClientHandler<SelectActiveSgDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsSelectActiveSgError err = decodeErr(frame, new CmsSelectActiveSgError());
+        CmsSelectActiveSgError err = CmsFrameDecoder.decodeErr(frame, new CmsSelectActiveSgError());
         throw new IOException("SelectActiveSG rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, SelectActiveSgDao dao) throws IOException {
-        decodeResp(frame, new CmsSelectActiveSgResponse());
+        CmsFrameDecoder.decodeResp(frame, new CmsSelectActiveSgResponse());
     }
 }

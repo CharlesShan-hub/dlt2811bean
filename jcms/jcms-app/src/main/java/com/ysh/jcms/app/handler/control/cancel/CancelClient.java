@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.control.cancel;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.control.CmsCancelError;
@@ -16,12 +17,12 @@ public class CancelClient extends BaseClientHandler<CancelDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        decodeErr(frame, new CmsCancelError());
+        CmsFrameDecoder.decodeErr(frame, new CmsCancelError());
         throw new IOException("Cancel rejected");
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        decodeResp(frame, new CmsCancelResponse());
+        CmsFrameDecoder.decodeResp(frame, new CmsCancelResponse());
     }
 }

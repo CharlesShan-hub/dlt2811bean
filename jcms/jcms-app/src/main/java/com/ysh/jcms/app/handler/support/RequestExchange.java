@@ -4,6 +4,7 @@ import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.app.handler.base.BaseHandler;
 import com.ysh.jcms.app.node.CmsNode;
+import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -57,8 +58,9 @@ public final class RequestExchange {
      *             on timeout, negative response, or transport failure
      */
     public Frame exchange() throws IOException {
-        byte[] pdu = dao.toRequest().encode();
-        BaseHandler.trace(">>>\n" + dao.toRequest());
+        CmsType req = dao.request();
+        byte[] pdu = req.encode();
+        BaseHandler.trace(">>>\n" + req);
 
         if (node == null) {
             throw new IOException("RequestExchange: node is null");

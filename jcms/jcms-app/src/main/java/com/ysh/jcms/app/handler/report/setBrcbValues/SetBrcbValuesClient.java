@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.report.setBrcbValues;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.report.CmsSetBrcbResult;
@@ -19,7 +20,7 @@ public class SetBrcbValuesClient extends BaseClientHandler<SetBrcbValuesDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsSetBrcbValuesError err = decodeErr(frame, new CmsSetBrcbValuesError());
+        CmsSetBrcbValuesError err = CmsFrameDecoder.decodeErr(frame, new CmsSetBrcbValuesError());
         StringBuilder sb = new StringBuilder("SetBRCBValues rejected:");
         int i = 0;
         for (CmsSetBrcbResult r : err.result) {
@@ -33,7 +34,7 @@ public class SetBrcbValuesClient extends BaseClientHandler<SetBrcbValuesDao> {
 
     @Override
     protected void onSuccess(Frame frame, SetBrcbValuesDao dao) throws IOException {
-        decodeResp(frame, new CmsSetBrcbValuesResponse());
+        CmsFrameDecoder.decodeResp(frame, new CmsSetBrcbValuesResponse());
         content().res(Collections.singletonList("BRCB values set successfully"));
     }
 }

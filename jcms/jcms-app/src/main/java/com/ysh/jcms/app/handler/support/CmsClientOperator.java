@@ -11,26 +11,26 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * 全局分页工具类，提供分页相关的辅助方法。
+ * Global pagination helper providing utilities for paginated client handlers.
  * <p>
- * 封装了 {@link PaginationContext} 和 {@link CmsContent#res()} 的 map 操作， 使得 Client
- * 无需直接处理类型强转、ctx 状态管理等脏活。
+ * Wraps {@link PaginationContext} and {@link CmsContent#res()} map operations so
+ * the Client handlers don't deal with raw casts or ctx state management.
  * <p>
- * 用法（在 {@link BaseClientHandler#onSuccess} 中）：
+ * Usage (inside {@link BaseClientHandler#onSuccess}):
  *
  * <pre>
  * {
  *     &#64;code
  *     CmsContent<?> c = content();
  *
- *     // 初始化结果 map（在 beforeAll 中）
+ *     // Initialize the result map (in beforeAll)
  *     CmsClientOperator.initResult(c, "reference");
  *
- *     // 每页处理（在 onSuccess 中）
+ *     // Handle each page (in onSuccess)
  *     CmsClientOperator.page(c).add("reference", resp.reference).moreFollows(resp.moreFollows.value()).lastRef(resp.reference,
  *             CmsObjectReference::value);
  *
- *     // 获取结果（在 afterAll 中）
+ *     // Read the result (in afterAll)
  *     List<CmsObjectReference> refs = CmsClientOperator.getResultList(c, "reference");
  * }
  * </pre>
@@ -41,8 +41,9 @@ public final class CmsClientOperator {
     }
 
     /**
-     * 初始化 {@link CmsContent#res()} 的 map，包含一个指定字段的空列表。 等价于 {@code beforeAll} 中创建
-     * {@code {"field": []}} 的结构。
+     * Initialize {@link CmsContent#res()} as a map containing an empty list for
+     * the given field. Equivalent to creating {@code {"field": []}} in
+     * {@code beforeAll}.
      */
     public static void initResult(CmsContent<?> content, String dataField) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -51,7 +52,7 @@ public final class CmsClientOperator {
     }
 
     /**
-     * 从 {@link CmsContent#res()} 的 map 中获取指定字段的列表（带类型转换）。
+     * Get the typed list for a field from the {@link CmsContent#res()} map.
      */
     @SuppressWarnings("unchecked")
     public static <T> List<T> getResultList(CmsContent<?> content, String field) {
@@ -59,7 +60,8 @@ public final class CmsClientOperator {
     }
 
     /**
-     * 创建 {@link PaginationHelper} 实例，用于在 {@code onSuccess} 中 以 fluent 链式调用记录分页数据。
+     * Create a {@link PaginationHelper} to record pagination data fluently
+     * inside {@code onSuccess}.
      */
     public static PaginationHelper page(CmsContent<?> content) {
         return new PaginationHelper(content);
@@ -82,7 +84,7 @@ public final class CmsClientOperator {
      * <pre>
      * {
      *     &#64;code
-     *     CmsGetServerDirectoryResponse resp = decodeResp(frame, new CmsGetServerDirectoryResponse());
+     *     CmsGetServerDirectoryResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetServerDirectoryResponse());
      *     CmsClientOperator.accumulatePage(content(), resp, "reference");
      * }
      * </pre>

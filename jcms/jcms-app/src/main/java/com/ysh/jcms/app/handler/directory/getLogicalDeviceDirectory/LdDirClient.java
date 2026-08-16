@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.app.handler.support.CmsClientOperator;
@@ -25,13 +26,13 @@ public class LdDirClient extends BaseClientHandler<LdDirDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetLogicalDeviceDirectoryError err = decodeErr(frame, new CmsGetLogicalDeviceDirectoryError());
+        CmsGetLogicalDeviceDirectoryError err = CmsFrameDecoder.decodeErr(frame, new CmsGetLogicalDeviceDirectoryError());
         throw new IOException("GetLogicalDeviceDirectory rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, LdDirDao dao) throws IOException {
-        CmsGetLogicalDeviceDirectoryResponse resp = decodeResp(frame, new CmsGetLogicalDeviceDirectoryResponse());
+        CmsGetLogicalDeviceDirectoryResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetLogicalDeviceDirectoryResponse());
         CmsClientOperator.accumulatePage(content(), resp, "lnReference");
     }
 

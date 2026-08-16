@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.sg.getEditSgValue;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ysh.jcms.core.data.choice.CmsData;
@@ -24,13 +25,13 @@ public class GetEditSgValueClient extends BaseClientHandler<GetEditSgValueDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetEditSgValueError err = decodeErr(frame, new CmsGetEditSgValueError());
+        CmsGetEditSgValueError err = CmsFrameDecoder.decodeErr(frame, new CmsGetEditSgValueError());
         throw new IOException("GetEditSGValue rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetEditSgValueDao dao) throws IOException {
-        CmsGetEditSgValueResponse resp = decodeResp(frame, new CmsGetEditSgValueResponse());
+        CmsGetEditSgValueResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetEditSgValueResponse());
         if (content() != null) {
             List<Object> structuredValues = new ArrayList<>();
             for (CmsData data : resp.value) {

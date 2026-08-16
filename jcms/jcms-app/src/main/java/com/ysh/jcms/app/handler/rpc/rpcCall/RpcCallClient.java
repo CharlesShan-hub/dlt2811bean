@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.rpc.rpcCall;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.rpc.CmsRpcCallError;
@@ -17,13 +18,13 @@ public class RpcCallClient extends BaseClientHandler<RpcCallDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsRpcCallError err = decodeErr(frame, new CmsRpcCallError());
+        CmsRpcCallError err = CmsFrameDecoder.decodeErr(frame, new CmsRpcCallError());
         throw new IOException("RpcCall rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, RpcCallDao dao) throws IOException {
-        CmsRpcCallResponse resp = decodeResp(frame, new CmsRpcCallResponse());
+        CmsRpcCallResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsRpcCallResponse());
         content().res(resp);
     }
 }

@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.report.getUrcbValues;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.report.CmsGetUrcbValuesError;
@@ -17,13 +18,13 @@ public class GetUrcbValuesClient extends BaseClientHandler<GetUrcbValuesDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetUrcbValuesError err = decodeErr(frame, new CmsGetUrcbValuesError());
+        CmsGetUrcbValuesError err = CmsFrameDecoder.decodeErr(frame, new CmsGetUrcbValuesError());
         throw new IOException("GetURCBValues rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetUrcbValuesDao dao) throws IOException {
-        CmsGetUrcbValuesResponse resp = decodeResp(frame, new CmsGetUrcbValuesResponse());
+        CmsGetUrcbValuesResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetUrcbValuesResponse());
         content().res(resp.urcb);
     }
 }

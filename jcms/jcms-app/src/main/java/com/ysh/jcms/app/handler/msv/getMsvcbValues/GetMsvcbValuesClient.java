@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.msv.getMsvcbValues;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.choice.CmsMsvcbValueChoice;
@@ -28,13 +29,13 @@ public class GetMsvcbValuesClient extends BaseClientHandler<GetMsvcbValuesDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetMsvcbValuesError err = decodeErr(frame, new CmsGetMsvcbValuesError());
+        CmsGetMsvcbValuesError err = CmsFrameDecoder.decodeErr(frame, new CmsGetMsvcbValuesError());
         throw new IOException("GetMSVCBValues rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetMsvcbValuesDao dao) throws IOException {
-        CmsGetMsvcbValuesResponse resp = decodeResp(frame, new CmsGetMsvcbValuesResponse());
+        CmsGetMsvcbValuesResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetMsvcbValuesResponse());
 
         List<MsvcbEntry> entries = new ArrayList<>();
         for (int i = 0; i < resp.msvcb.size(); i++) {

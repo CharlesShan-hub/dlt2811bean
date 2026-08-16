@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.log.getLcbValues;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.choice.CmsLcbValueChoice;
@@ -28,13 +29,13 @@ public class GetLcbValuesClient extends BaseClientHandler<GetLcbValuesDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetLcbValuesError err = decodeErr(frame, new CmsGetLcbValuesError());
+        CmsGetLcbValuesError err = CmsFrameDecoder.decodeErr(frame, new CmsGetLcbValuesError());
         throw new IOException("GetLCBValues rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetLcbValuesDao dao) throws IOException {
-        CmsGetLcbValuesResponse resp = decodeResp(frame, new CmsGetLcbValuesResponse());
+        CmsGetLcbValuesResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetLcbValuesResponse());
 
         List<LcbEntry> entries = new ArrayList<>();
         for (CmsLcbValueChoice choice : resp.lcb) {

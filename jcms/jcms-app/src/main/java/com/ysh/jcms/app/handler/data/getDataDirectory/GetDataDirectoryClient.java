@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.data.getDataDirectory;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.app.handler.support.CmsClientOperator;
@@ -18,13 +19,13 @@ public class GetDataDirectoryClient extends BaseClientHandler<GetDataDirectoryDa
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetDataDirectoryError err = decodeErr(frame, new CmsGetDataDirectoryError());
+        CmsGetDataDirectoryError err = CmsFrameDecoder.decodeErr(frame, new CmsGetDataDirectoryError());
         throw new IOException("GetDataDirectory rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetDataDirectoryDao dao) throws IOException {
-        CmsGetDataDirectoryResponse resp = decodeResp(frame, new CmsGetDataDirectoryResponse());
+        CmsGetDataDirectoryResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetDataDirectoryResponse());
         CmsClientOperator.accumulatePage(content(), resp, "dataAttribute");
     }
 

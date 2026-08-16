@@ -4,18 +4,18 @@ import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.app.handler.base.BaseDao;
 
 /**
- * 请求/响应结果容器，用于在 Client 和 Console 之间传递数据。
+ * Request/response result container passed between the Client and the Console.
  * <p>
- * Console 创建 {@code CmsContent} 并传入 DAO，然后调用
- * {@link BaseClientHandler#executeResult(CmsContent)} 执行请求， 执行完成后通过
- * {@link #res()} 获取响应数据。
+ * The Console creates a {@code CmsContent} holding a DAO and calls
+ * {@link BaseClientHandler#executeResult(CmsContent)}; after execution the
+ * response data is read via {@link #res()}.
  * <p>
- * 除 {@code req}（DAO，请求参数）外，所有执行相关状态（autoPull、分页上下文、响应数据）均在此类中管理， DAO 仅负责
- * {@link BaseDao#toRequest()} 构建请求对象。
+ * Besides {@code req} (the DAO carrying request parameters), all execution state
+ * (autoPull, pagination context, response data) lives here; the DAO only builds
+ * the request object via {@link BaseDao#toRequest()}.
  *
  * <pre>
  * {
- *     &#64;code
  *     CmsContent<SvrDirDao> c = new CmsContent<>(new SvrDirDao().referenceAfter("..."), "true");
  *     console.getClient(SvrDirClient.class).executeResult(c);
  *     CmsPrinter.outputJson(c.res());
@@ -24,10 +24,14 @@ import com.ysh.jcms.app.handler.base.BaseDao;
  */
 public class CmsContent<D extends BaseDao> {
 
+    // ── Fields ──────────────────────────────────────────────
+
     private final D req;
     private Object res;
     private PaginationContext paginationContext;
     private boolean autoPull;
+
+    // ── Constructors ────────────────────────────────────────
 
     public CmsContent(D req) {
         this.req = req;
@@ -38,6 +42,8 @@ public class CmsContent<D extends BaseDao> {
         this.req = req;
         this.autoPull = "true".equalsIgnoreCase(autoPull);
     }
+
+    // ── Request / response ──────────────────────────────────
 
     /** The request DAO (carries request parameters). */
     public D req() {
@@ -53,6 +59,8 @@ public class CmsContent<D extends BaseDao> {
     public void res(Object res) {
         this.res = res;
     }
+
+    // ── Pagination ──────────────────────────────────────────
 
     /** Pagination context for auto-pull support. */
     public PaginationContext paginationContext() {

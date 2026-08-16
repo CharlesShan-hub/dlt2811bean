@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.rpc.getRpcMethodDirectory;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcMethodDirectoryError;
@@ -17,13 +18,13 @@ public class GetRpcMethodDirectoryClient extends BaseClientHandler<GetRpcMethodD
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetRpcMethodDirectoryError err = decodeErr(frame, new CmsGetRpcMethodDirectoryError());
+        CmsGetRpcMethodDirectoryError err = CmsFrameDecoder.decodeErr(frame, new CmsGetRpcMethodDirectoryError());
         throw new IOException("GetRpcMethodDirectory rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetRpcMethodDirectoryDao dao) throws IOException {
-        CmsGetRpcMethodDirectoryResponse resp = decodeResp(frame, new CmsGetRpcMethodDirectoryResponse());
+        CmsGetRpcMethodDirectoryResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetRpcMethodDirectoryResponse());
         content().res(resp);
     }
 }

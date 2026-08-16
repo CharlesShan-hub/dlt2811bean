@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.sg.selectEditSg;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.sg.CmsSelectEditSgError;
@@ -17,12 +18,12 @@ public class SelectEditSgClient extends BaseClientHandler<SelectEditSgDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsSelectEditSgError err = decodeErr(frame, new CmsSelectEditSgError());
+        CmsSelectEditSgError err = CmsFrameDecoder.decodeErr(frame, new CmsSelectEditSgError());
         throw new IOException("SelectEditSG rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, SelectEditSgDao dao) throws IOException {
-        decodeResp(frame, new CmsSelectEditSgResponse());
+        CmsFrameDecoder.decodeResp(frame, new CmsSelectEditSgResponse());
     }
 }

@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.report.getBrcbValues;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.report.CmsGetBrcbValuesError;
@@ -17,13 +18,13 @@ public class GetBrcbValuesClient extends BaseClientHandler<GetBrcbValuesDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetBrcbValuesError err = decodeErr(frame, new CmsGetBrcbValuesError());
+        CmsGetBrcbValuesError err = CmsFrameDecoder.decodeErr(frame, new CmsGetBrcbValuesError());
         throw new IOException("GetBRCBValues rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetBrcbValuesDao dao) throws IOException {
-        CmsGetBrcbValuesResponse resp = decodeResp(frame, new CmsGetBrcbValuesResponse());
+        CmsGetBrcbValuesResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetBrcbValuesResponse());
         content().res(resp.brcb);
     }
 }

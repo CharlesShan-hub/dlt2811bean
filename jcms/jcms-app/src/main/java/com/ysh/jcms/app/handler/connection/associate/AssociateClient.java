@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.connection.associate;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.app.handler.base.BaseHandler;
@@ -41,11 +42,11 @@ public class AssociateClient extends BaseClientHandler<AssociateDao> {
 
     @Override
     protected void onSuccess(Frame frame, AssociateDao dao) throws IOException {
-        CmsAssociateResponse resp = decodeResp(frame, new CmsAssociateResponse());
+        CmsAssociateResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsAssociateResponse());
 
         int serviceError = resp.serviceError.value();
         if (serviceError != CmsServiceError.NO_ERROR) {
-            node.client().session().state(SessionState.DISCONNECTED);
+            sessionState(SessionState.DISCONNECTED);
             throw new IOException("Association rejected: serviceError=" + serviceError);
         }
 
@@ -54,20 +55,19 @@ public class AssociateClient extends BaseClientHandler<AssociateDao> {
             try {
                 validateServerAuthParam(resp.authenticationParameter, dao.sapRef());
             } catch (Exception e) {
-                node.client().session().state(SessionState.DISCONNECTED);
+                sessionState(SessionState.DISCONNECTED);
                 throw new IOException("Server authentication failed: " + e.getMessage(), e);
             }
         }
 
-        node.client().session().associationId(resp.associationId.value()).associatedApRef(dao.sapRef()).associatedSecure(dao.secure())
-                .state(SessionState.ASSOCIATED);
+        associateSession(resp.associationId.value(), dao.sapRef(), dao.secure());
         BaseHandler.traceSession("Associated: " + dao.sapRef());
     }
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsAssociateError err = decodeErr(frame, new CmsAssociateError());
-        node.client().session().state(SessionState.DISCONNECTED);
+        CmsAssociateError err = CmsFrameDecoder.decodeErr(frame, new CmsAssociateError());
+        sessionState(SessionState.DISCONNECTED);
         throw new IOException("Association rejected: error=" + err.value());
     }
 

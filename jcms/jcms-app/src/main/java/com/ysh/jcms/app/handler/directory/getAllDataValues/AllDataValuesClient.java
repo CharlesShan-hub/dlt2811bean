@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.directory.getAllDataValues;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
@@ -26,13 +27,13 @@ public class AllDataValuesClient extends BaseClientHandler<AllDataValuesDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetAllDataValuesError err = decodeErr(frame, new CmsGetAllDataValuesError());
+        CmsGetAllDataValuesError err = CmsFrameDecoder.decodeErr(frame, new CmsGetAllDataValuesError());
         throw new IOException("GetAllDataValues rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, AllDataValuesDao dao) throws IOException {
-        CmsGetAllDataValuesResponse resp = decodeResp(frame, new CmsGetAllDataValuesResponse());
+        CmsGetAllDataValuesResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetAllDataValuesResponse());
         if (content() != null) {
             // Convert each entry's value to structured JSON
             List<Map<String, Object>> convertedData = new ArrayList<>();

@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.rpc.getRpcInterfaceDirectory;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDirectoryError;
@@ -17,13 +18,13 @@ public class GetRpcInterfaceDirectoryClient extends BaseClientHandler<GetRpcInte
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetRpcInterfaceDirectoryError err = decodeErr(frame, new CmsGetRpcInterfaceDirectoryError());
+        CmsGetRpcInterfaceDirectoryError err = CmsFrameDecoder.decodeErr(frame, new CmsGetRpcInterfaceDirectoryError());
         throw new IOException("GetRpcInterfaceDirectory rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetRpcInterfaceDirectoryDao dao) throws IOException {
-        CmsGetRpcInterfaceDirectoryResponse resp = decodeResp(frame, new CmsGetRpcInterfaceDirectoryResponse());
+        CmsGetRpcInterfaceDirectoryResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetRpcInterfaceDirectoryResponse());
         content().res(resp);
     }
 }

@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.goose.setGoCbValues;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.sequence.goose.CmsSetGoCbResult;
@@ -18,7 +19,7 @@ public class SetGoCbValuesClient extends BaseClientHandler<SetGoCbValuesDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsSetGoCbValuesError err = decodeErr(frame, new CmsSetGoCbValuesError());
+        CmsSetGoCbValuesError err = CmsFrameDecoder.decodeErr(frame, new CmsSetGoCbValuesError());
         StringBuilder sb = new StringBuilder("SetGoCBValues rejected:");
         int i = 0;
         for (CmsSetGoCbResult r : err.result) {
@@ -32,6 +33,6 @@ public class SetGoCbValuesClient extends BaseClientHandler<SetGoCbValuesDao> {
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsSetGoCbValuesResponse resp = decodeResp(frame, new CmsSetGoCbValuesResponse());
+        CmsSetGoCbValuesResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsSetGoCbValuesResponse());
     }
 }

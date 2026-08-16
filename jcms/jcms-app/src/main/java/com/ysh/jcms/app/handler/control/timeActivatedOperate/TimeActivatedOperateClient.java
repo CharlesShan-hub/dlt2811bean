@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.control.timeActivatedOperate;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.control.CmsTimeActivatedOperateError;
@@ -16,12 +17,12 @@ public class TimeActivatedOperateClient extends BaseClientHandler<TimeActivatedO
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        decodeErr(frame, new CmsTimeActivatedOperateError());
+        CmsFrameDecoder.decodeErr(frame, new CmsTimeActivatedOperateError());
         throw new IOException("TimeActivatedOperate rejected");
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        decodeResp(frame, new CmsTimeActivatedOperateResponse());
+        CmsFrameDecoder.decodeResp(frame, new CmsTimeActivatedOperateResponse());
     }
 }

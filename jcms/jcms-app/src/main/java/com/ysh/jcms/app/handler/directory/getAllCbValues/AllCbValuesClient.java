@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.directory.getAllCbValues;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.app.handler.support.CmsClientOperator;
@@ -18,13 +19,13 @@ public class AllCbValuesClient extends BaseClientHandler<AllCbValuesDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetAllCbValuesError err = decodeErr(frame, new CmsGetAllCbValuesError());
+        CmsGetAllCbValuesError err = CmsFrameDecoder.decodeErr(frame, new CmsGetAllCbValuesError());
         throw new IOException("GetAllCBValues rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, AllCbValuesDao dao) throws IOException {
-        CmsGetAllCbValuesResponse resp = decodeResp(frame, new CmsGetAllCbValuesResponse());
+        CmsGetAllCbValuesResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetAllCbValuesResponse());
         CmsClientOperator.accumulatePage(content(), resp, "cbValue");
     }
 

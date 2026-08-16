@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.file.getFileAttributeValues;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.file.CmsGetFileAttributeValuesError;
@@ -30,13 +31,13 @@ public class GetFileAttributeValuesClient extends BaseClientHandler<GetFileAttri
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetFileAttributeValuesError err = decodeErr(frame, new CmsGetFileAttributeValuesError());
+        CmsGetFileAttributeValuesError err = CmsFrameDecoder.decodeErr(frame, new CmsGetFileAttributeValuesError());
         throw new IOException("GetFileAttributeValues rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetFileAttributeValuesDao dao) throws IOException {
-        CmsGetFileAttributeValuesResponse resp = decodeResp(frame, new CmsGetFileAttributeValuesResponse());
+        CmsGetFileAttributeValuesResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetFileAttributeValuesResponse());
 
         long epochSeconds = resp.lastModified.secondsSinceEpoch.value();
         int fractionMicros = resp.lastModified.fractionOfSecond.value();

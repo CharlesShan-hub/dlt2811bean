@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.rpc.getRpcInterfaceDefinition;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcInterfaceDefinitionError;
@@ -17,13 +18,13 @@ public class GetRpcInterfaceDefinitionClient extends BaseClientHandler<GetRpcInt
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetRpcInterfaceDefinitionError err = decodeErr(frame, new CmsGetRpcInterfaceDefinitionError());
+        CmsGetRpcInterfaceDefinitionError err = CmsFrameDecoder.decodeErr(frame, new CmsGetRpcInterfaceDefinitionError());
         throw new IOException("GetRpcInterfaceDefinition rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetRpcInterfaceDefinitionDao dao) throws IOException {
-        CmsGetRpcInterfaceDefinitionResponse resp = decodeResp(frame, new CmsGetRpcInterfaceDefinitionResponse());
+        CmsGetRpcInterfaceDefinitionResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetRpcInterfaceDefinitionResponse());
         content().res(resp);
     }
 }

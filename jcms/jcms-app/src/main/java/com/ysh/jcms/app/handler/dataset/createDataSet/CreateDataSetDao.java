@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.dataset.createDataSet;
 
 import com.ysh.jcms.app.handler.base.BaseDao;
-import com.ysh.jcms.app.util.CmsRequestHelper;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.scalar.CmsFC;
 import com.ysh.jcms.core.data.sequence.dataset.CmsDataRefFcEntry;
@@ -24,7 +23,7 @@ public class CreateDataSetDao extends BaseDao {
     @Override
     public CmsType toRequest() {
         CmsCreateDataSetRequest req = new CmsCreateDataSetRequest().datasetReference(datasetReference);
-        CmsRequestHelper.setIfNotEmpty(req::referenceAfter, referenceAfter);
+        setIfNotEmpty(req::referenceAfter, referenceAfter);
         if (memberRefs != null && memberFcs != null) {
             int size = Math.min(memberRefs.size(), memberFcs.size());
             for (int i = 0; i < size; i++) {

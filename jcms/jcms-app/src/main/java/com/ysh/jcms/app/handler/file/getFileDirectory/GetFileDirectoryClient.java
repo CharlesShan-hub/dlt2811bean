@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.file.getFileDirectory;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.sequence.common.CmsFileEntry;
@@ -42,13 +43,13 @@ public class GetFileDirectoryClient extends BaseClientHandler<GetFileDirectoryDa
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetFileDirectoryError err = decodeErr(frame, new CmsGetFileDirectoryError());
+        CmsGetFileDirectoryError err = CmsFrameDecoder.decodeErr(frame, new CmsGetFileDirectoryError());
         throw new IOException("GetFileDirectory rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetFileDirectoryDao dao) throws IOException {
-        CmsGetFileDirectoryResponse resp = decodeResp(frame, new CmsGetFileDirectoryResponse());
+        CmsGetFileDirectoryResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetFileDirectoryResponse());
 
         List<FileEntryResult> entries = new ArrayList<>();
         for (CmsFileEntry fe : resp.fileEntry) {

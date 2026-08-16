@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.negotiate.negotiate;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.app.handler.base.BaseHandler;
@@ -21,7 +22,7 @@ public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
 
     @Override
     protected void onSuccess(Frame frame, NegotiateClientDao dao) throws IOException {
-        CmsNegotiateResponse resp = decodeResp(frame, new CmsNegotiateResponse());
+        CmsNegotiateResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsNegotiateResponse());
 
         ClientSession session = node.client().session();
         session.negotiatedApduSize(resp.apduSize.value());
@@ -42,7 +43,7 @@ public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsNegotiateError err = decodeErr(frame, new CmsNegotiateError());
+        CmsNegotiateError err = CmsFrameDecoder.decodeErr(frame, new CmsNegotiateError());
         throw new IOException("Negotiate rejected: " + err.value());
     }
 }

@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.log.setLcbValues;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.sequence.log.CmsSetLcbResult;
@@ -18,7 +19,7 @@ public class SetLcbValuesClient extends BaseClientHandler<SetLcbValuesDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsSetLcbValuesError err = decodeErr(frame, new CmsSetLcbValuesError());
+        CmsSetLcbValuesError err = CmsFrameDecoder.decodeErr(frame, new CmsSetLcbValuesError());
         StringBuilder sb = new StringBuilder("SetLCBValues rejected:");
         for (int i = 0; i < err.result.size(); i++) {
             CmsSetLcbResult r = err.result.get(i);
@@ -31,6 +32,6 @@ public class SetLcbValuesClient extends BaseClientHandler<SetLcbValuesDao> {
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsSetLcbValuesResponse resp = decodeResp(frame, new CmsSetLcbValuesResponse());
+        CmsSetLcbValuesResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsSetLcbValuesResponse());
     }
 }

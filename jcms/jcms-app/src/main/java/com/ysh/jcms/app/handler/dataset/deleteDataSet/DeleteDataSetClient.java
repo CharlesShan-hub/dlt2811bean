@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.dataset.deleteDataSet;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.dataset.CmsDeleteDataSetError;
@@ -17,7 +18,7 @@ public class DeleteDataSetClient extends BaseClientHandler<DeleteDataSetDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsDeleteDataSetError err = decodeErr(frame, new CmsDeleteDataSetError());
+        CmsDeleteDataSetError err = CmsFrameDecoder.decodeErr(frame, new CmsDeleteDataSetError());
         throw new IOException("DeleteDataSet rejected: " + err.value());
     }
 

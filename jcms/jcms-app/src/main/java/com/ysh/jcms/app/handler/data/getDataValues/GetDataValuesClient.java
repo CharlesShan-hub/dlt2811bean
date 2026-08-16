@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.data.getDataValues;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
@@ -25,13 +26,13 @@ public class GetDataValuesClient extends BaseClientHandler<GetDataValuesDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetDataValuesError err = decodeErr(frame, new CmsGetDataValuesError());
+        CmsGetDataValuesError err = CmsFrameDecoder.decodeErr(frame, new CmsGetDataValuesError());
         throw new IOException("GetDataValues rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetDataValuesDao dao) throws IOException {
-        CmsGetDataValuesResponse resp = decodeResp(frame, new CmsGetDataValuesResponse());
+        CmsGetDataValuesResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetDataValuesResponse());
         if (content() != null) {
             List<Object> structuredValues = new ArrayList<>();
             for (CmsData data : resp.value) {

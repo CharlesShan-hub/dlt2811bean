@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.directory.getAllDataDefinition;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.app.handler.support.CmsClientOperator;
@@ -18,13 +19,13 @@ public class AllDataDefClient extends BaseClientHandler<AllDataDefDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetAllDataDefinitionError err = decodeErr(frame, new CmsGetAllDataDefinitionError());
+        CmsGetAllDataDefinitionError err = CmsFrameDecoder.decodeErr(frame, new CmsGetAllDataDefinitionError());
         throw new IOException("GetAllDataDefinition rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, AllDataDefDao dao) throws IOException {
-        CmsGetAllDataDefinitionResponse resp = decodeResp(frame, new CmsGetAllDataDefinitionResponse());
+        CmsGetAllDataDefinitionResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetAllDataDefinitionResponse());
         CmsClientOperator.accumulatePage(content(), resp, "data");
     }
 

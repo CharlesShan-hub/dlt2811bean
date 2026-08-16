@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.file.setFile;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.file.CmsSetFileError;
-import com.ysh.jcms.core.pdu.file.CmsSetFileRequest;
 import com.ysh.jcms.core.pdu.file.CmsSetFileResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -52,10 +52,10 @@ public class SetFileClient extends BaseClientHandler<SetFileDao> {
                 chunk = new byte[0];
             }
 
-            CmsSetFileRequest req = new CmsSetFileRequest().filename(remoteFile).startPosition(position).fileData(chunk).endOfFile(isLast);
+            dao.position(position).fileData(chunk).endOfFile(isLast);
 
-            Frame frame = send(CmsServiceInfo.SET_FILE, req);
-            CmsSetFileResponse resp = decodeFrame(frame, new CmsSetFileResponse());
+            Frame frame = send(CmsServiceInfo.SET_FILE, dao);
+            CmsSetFileResponse resp = CmsFrameDecoder.decodeFrame(frame, new CmsSetFileResponse());
             chunks++;
 
             if (isLast)
@@ -66,7 +66,7 @@ public class SetFileClient extends BaseClientHandler<SetFileDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsSetFileError err = decodeFrame(frame, new CmsSetFileError());
+        CmsSetFileError err = CmsFrameDecoder.decodeFrame(frame, new CmsSetFileError());
         throw new IOException("SetFile rejected: " + err.value());
     }
 }

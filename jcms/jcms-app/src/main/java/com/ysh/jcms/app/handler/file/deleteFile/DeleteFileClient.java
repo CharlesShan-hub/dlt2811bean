@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.file.deleteFile;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.file.CmsDeleteFileError;
@@ -17,7 +18,7 @@ public class DeleteFileClient extends BaseClientHandler<DeleteFileDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsDeleteFileError err = decodeErr(frame, new CmsDeleteFileError());
+        CmsDeleteFileError err = CmsFrameDecoder.decodeErr(frame, new CmsDeleteFileError());
         throw new IOException("DeleteFile rejected: " + err.value());
     }
 

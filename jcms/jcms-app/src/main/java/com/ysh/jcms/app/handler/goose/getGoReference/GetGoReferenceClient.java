@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.goose.getGoReference;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.sequence.goose.CmsGoRefFcEntry;
@@ -42,13 +43,13 @@ public class GetGoReferenceClient extends BaseClientHandler<GetGoReferenceDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetGoReferenceError err = decodeErr(frame, new CmsGetGoReferenceError());
+        CmsGetGoReferenceError err = CmsFrameDecoder.decodeErr(frame, new CmsGetGoReferenceError());
         throw new IOException("GetGoReference rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetGoReferenceDao dao) throws IOException {
-        CmsGetGoReferenceResponse resp = decodeResp(frame, new CmsGetGoReferenceResponse());
+        CmsGetGoReferenceResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetGoReferenceResponse());
 
         List<MemberDataEntry> members = new ArrayList<>();
         for (CmsGoRefFcEntry entry : resp.memberData) {

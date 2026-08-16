@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.sg.getSgcbValues;
 
 import com.ysh.jcms.app.handler.base.BaseDao;
-import com.ysh.jcms.app.util.CmsRequestHelper;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.scalar.CmsObjectReference;
 import com.ysh.jcms.core.pdu.sg.CmsGetSgcbValuesRequest;
@@ -22,7 +21,7 @@ public class GetSgcbValuesDao extends BaseDao {
     @Override
     public CmsType toRequest() {
         CmsGetSgcbValuesRequest req = new CmsGetSgcbValuesRequest();
-        CmsRequestHelper.addAll(refs, req.sgcbReference, CmsObjectReference::new);
+        addAll(refs, req.sgcbReference, CmsObjectReference::new);
         return req;
     }
 }

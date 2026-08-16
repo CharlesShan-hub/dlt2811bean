@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.data.setDataValues;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.data.CmsSetDataValuesError;
@@ -17,7 +18,7 @@ public class SetDataValuesClient extends BaseClientHandler<SetDataValuesDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsSetDataValuesError err = decodeErr(frame, new CmsSetDataValuesError());
+        CmsSetDataValuesError err = CmsFrameDecoder.decodeErr(frame, new CmsSetDataValuesError());
         int errorCount = err.result.size();
         StringBuilder sb = new StringBuilder("SetDataValues rejected:");
         for (int i = 0; i < errorCount; i++) {
@@ -28,6 +29,6 @@ public class SetDataValuesClient extends BaseClientHandler<SetDataValuesDao> {
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsSetDataValuesResponse resp = decodeResp(frame, new CmsSetDataValuesResponse());
+        CmsSetDataValuesResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsSetDataValuesResponse());
     }
 }

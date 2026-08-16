@@ -13,9 +13,10 @@ import lombok.experimental.Accessors;
 public class GetFileDao extends BaseDao {
     private String fileName;
     private String outputFile; // local path to save, null to print info only
+    private long position = 1; // download start position, advanced per chunk
 
     @Override
     public CmsType toRequest() {
-        return new CmsGetFileRequest().filename(fileName).startPosition(1);
+        return new CmsGetFileRequest().filename(fileName).startPosition(position);
     }
 }

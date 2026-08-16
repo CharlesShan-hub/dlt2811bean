@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.control.operate;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.control.CmsOperateError;
@@ -16,12 +17,12 @@ public class OperateClient extends BaseClientHandler<OperateDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        decodeErr(frame, new CmsOperateError());
+        CmsFrameDecoder.decodeErr(frame, new CmsOperateError());
         throw new IOException("Operate rejected");
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        decodeResp(frame, new CmsOperateResponse());
+        CmsFrameDecoder.decodeResp(frame, new CmsOperateResponse());
     }
 }

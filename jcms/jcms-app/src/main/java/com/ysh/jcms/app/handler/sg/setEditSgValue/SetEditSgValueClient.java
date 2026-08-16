@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.sg.setEditSgValue;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.enumerate.CmsServiceError;
@@ -18,7 +19,7 @@ public class SetEditSgValueClient extends BaseClientHandler<SetEditSgValueDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsSetEditSgValueError err = decodeErr(frame, new CmsSetEditSgValueError());
+        CmsSetEditSgValueError err = CmsFrameDecoder.decodeErr(frame, new CmsSetEditSgValueError());
         StringBuilder sb = new StringBuilder();
         int i = 0;
         for (CmsServiceError e : err.result) {
@@ -32,6 +33,6 @@ public class SetEditSgValueClient extends BaseClientHandler<SetEditSgValueDao> {
 
     @Override
     protected void onSuccess(Frame frame, SetEditSgValueDao dao) throws IOException {
-        decodeResp(frame, new CmsSetEditSgValueResponse());
+        CmsFrameDecoder.decodeResp(frame, new CmsSetEditSgValueResponse());
     }
 }

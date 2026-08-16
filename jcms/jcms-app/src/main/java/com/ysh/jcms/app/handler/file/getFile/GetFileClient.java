@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.file.getFile;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.file.CmsGetFileError;
-import com.ysh.jcms.core.pdu.file.CmsGetFileRequest;
 import com.ysh.jcms.core.pdu.file.CmsGetFileResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -23,20 +23,19 @@ public class GetFileClient extends BaseClientHandler<GetFileDao> {
      */
     @Override
     public void execute(GetFileDao dao) throws Exception {
-        String remoteFile = dao.fileName();
         String outputFile = dao.outputFile();
         long position = 1;
         List<byte[]> chunks = new ArrayList<>();
         long totalBytes = 0;
 
         while (true) {
-            CmsGetFileRequest req = new CmsGetFileRequest().filename(remoteFile).startPosition(position);
+            dao.position(position);
 
-            Frame frame = send(CmsServiceInfo.GET_FILE, req);
+            Frame frame = send(CmsServiceInfo.GET_FILE, dao);
 
             // Decode response from the returned frame
-            CmsGetFileResponse resp = decodeFrame(frame, new CmsGetFileResponse());
-            traceResp(resp);
+            CmsGetFileResponse resp = CmsFrameDecoder.decodeFrame(frame, new CmsGetFileResponse());
+            CmsFrameDecoder.traceResp(resp);
 
             byte[] data = resp.fileData.value();
             if (data != null && data.length > 0) {
@@ -67,7 +66,7 @@ public class GetFileClient extends BaseClientHandler<GetFileDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetFileError err = decodeFrame(frame, new CmsGetFileError());
+        CmsGetFileError err = CmsFrameDecoder.decodeFrame(frame, new CmsGetFileError());
         throw new IOException("GetFile rejected: " + err.value());
     }
 }

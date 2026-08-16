@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.dataset.setDataSetValues;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.dataset.CmsSetDataSetValuesError;
@@ -17,7 +18,7 @@ public class SetDataSetValuesClient extends BaseClientHandler<SetDataSetValuesDa
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsSetDataSetValuesError err = decodeErr(frame, new CmsSetDataSetValuesError());
+        CmsSetDataSetValuesError err = CmsFrameDecoder.decodeErr(frame, new CmsSetDataSetValuesError());
         StringBuilder sb = new StringBuilder("SetDataSetValues partially failed: ");
         for (int i = 0; i < err.result.size(); i++) {
             if (i > 0)
@@ -29,6 +30,6 @@ public class SetDataSetValuesClient extends BaseClientHandler<SetDataSetValuesDa
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        decodeResp(frame, new CmsSetDataSetValuesResponse());
+        CmsFrameDecoder.decodeResp(frame, new CmsSetDataSetValuesResponse());
     }
 }

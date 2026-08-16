@@ -8,12 +8,40 @@ import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;
+import com.ysh.jcms.utils.transport.session.SessionState;
 
 import java.io.IOException;
 
 public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
 
+    // ── Fields ──────────────────────────────────────────────
+
     private CmsContent<D> currentContent;
+
+    protected CmsNode node;
+
+    /** Max auto-pull iterations to prevent infinite loops. */
+    private static final int MAX_AUTO_PULL_ITERATIONS = 10000;
+
+    // ── Constructors ────────────────────────────────────────
+
+    protected BaseClientHandler() {
+    }
+
+    protected BaseClientHandler(CmsNode node) {
+        this.node = node;
+    }
+
+    /** Set node after no-arg construction (fluent). */
+    public BaseClientHandler node(CmsNode node) {
+        this.node = node;
+        return this;
+    }
+
+    // ── Execution context ───────────────────────────────────
+
+    /** All client handlers must implement this as their entry point. */
+    public abstract void execute(D dao) throws Exception;
 
     /**
      * Execute the client handler and populate the given {@link CmsContent} with the
@@ -23,7 +51,6 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
      *
      * <pre>
      * {
-     *     &#64;code
      *     CmsContent<SvrDirDao> c = new CmsContent<>(new SvrDirDao());
      *     c.req().referenceAfter("...");
      *     console.getClient(SvrDirClient.class).executeResult(c);
@@ -54,30 +81,34 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
         return currentContent;
     }
 
-    /** All client handlers must implement this as their entry point. */
-    public abstract void execute(D dao) throws Exception;
+    // ── Session access ──────────────────────────────────────
 
-    protected CmsNode node;
-
-    protected BaseClientHandler() {
-    }
-
-    protected BaseClientHandler(CmsNode node) {
-        this.node = node;
-    }
-
-    /** Set node after no-arg construction (fluent). */
-    public BaseClientHandler node(CmsNode node) {
-        this.node = node;
-        return this;
-    }
-
+    /** Next request ID from the client session. */
     protected int nextReqId() {
         return node.client().session().nextReqId();
     }
 
-    /** Max auto-pull iterations to prevent infinite loops. */
-    private static final int MAX_AUTO_PULL_ITERATIONS = 10000;
+    /** Send a raw frame on the client connection. */
+    protected void sendFrame(Frame frame) throws IOException {
+        node.client().connection().send(frame);
+    }
+
+    /** Transition the client session to the given state. */
+    protected void sessionState(SessionState state) {
+        node.client().session().state(state);
+    }
+
+    /** Current association ID, or null if not associated. */
+    protected byte[] associationId() {
+        return node.client().session().associationId();
+    }
+
+    /** Mark the session as ASSOCIATED with the given association info. */
+    protected void associateSession(byte[] assocId, String apRef, boolean secure) {
+        node.client().session().associationId(assocId).associatedApRef(apRef).associatedSecure(secure).state(SessionState.ASSOCIATED);
+    }
+
+    // ── Send / one-way ──────────────────────────────────────
 
     /**
      * Send a request built from the DAO. If {@link CmsContent#paginationContext()}
@@ -101,6 +132,18 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
         afterAll(dao);
         return frame;
     }
+
+    /** Send a one-way (fire-and-forget) request built from the DAO. */
+    protected void sendOneWay(CmsServiceInfo sc, D dao) throws IOException {
+        if (node == null)
+            throw new IOException("BaseClientHandler node not set");
+        CmsType request = dao.request();
+        trace(">>>\n" + request);
+        sendFrame(new Frame(new FrameHeader().serviceCode(sc).resp(false).err(false), request.encode(), nextReqId()));
+        onSuccess(null);
+    }
+
+    // ── Pagination internals ────────────────────────────────
 
     /**
      * Build a {@link RequestExchange} for this handler's node/DAO pair. The error
@@ -163,56 +206,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
         // default no-op — override in subclasses that support pagination
     }
 
-    /**
-     * Send a request (encoded bytes). Subclasses should prefer
-     * {@link #send(CmsServiceInfo, CmsType)} for automatic PDU tracing.
-     */
-    protected Frame send(CmsServiceInfo sc, byte[] pduBytes) throws IOException {
-        if (node == null)
-            throw new IOException("BaseClientHandler node not set");
-        Frame frame = node.sendRequest(sc, pduBytes);
-        if (frame == null)
-            throw new IOException("Request timed out for " + sc);
-        if (frame.header().err())
-            onError(frame);
-        onSuccess(frame);
-        return frame;
-    }
-
-    /**
-     * Encode and send a request (object form), with PDU trace when enabled.
-     */
-    protected Frame send(CmsServiceInfo sc, CmsType requestObject) throws IOException {
-        trace(">>>\n" + requestObject);
-        return send(sc, requestObject.encode());
-    }
-
-    /**
-     * Send a one-way (fire-and-forget) frame. No response expected.
-     */
-    protected void sendOneWay(CmsServiceInfo sc, byte[] pduBytes) throws IOException {
-        if (node == null)
-            throw new IOException("BaseClientHandler node not set");
-        trace(">>> " + sc + " (one-way)");
-        node.client().connection().send(new Frame(new FrameHeader().serviceCode(sc).resp(false).err(false), pduBytes, nextReqId()));
-        onSuccess(null);
-    }
-
-    /** Send a one-way (fire-and-forget) request object. */
-    protected void sendOneWay(CmsServiceInfo sc, CmsType requestObject) throws IOException {
-        trace(">>>\n" + requestObject);
-        sendOneWay(sc, requestObject.encode());
-    }
-
-    /** Send a one-way (fire-and-forget) request built from the DAO. */
-    protected void sendOneWay(CmsServiceInfo sc, D dao) throws IOException {
-        sendOneWay(sc, dao.toRequest());
-    }
-
-    /** Trace a decoded response PDU. */
-    protected static void traceResp(CmsType resp) {
-        trace("<<<\n" + resp);
-    }
+    // ── Callbacks ───────────────────────────────────────────
 
     /**
      * Called once before the first request is sent (both paginated and
@@ -247,31 +241,5 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
 
     protected void onError(Frame frame) throws IOException {
         throw new IOException("Negative response for " + frame.header().serviceCode());
-    }
-
-    protected static <T extends CmsType> T decodeFrame(Frame frame, T pdu) throws IOException {
-        if (frame == null)
-            throw new IOException("Request timed out (no response)");
-        try {
-            pdu.decode(frame.asduBytes());
-        } catch (Exception e) {
-            throw new IOException("Failed to decode " + pdu.getClass().getSimpleName(), e);
-        }
-        return pdu;
-    }
-
-    /** Decode response PDU from frame and trace it. */
-    protected static <T extends CmsType> T decodeResp(Frame frame, T resp) throws IOException {
-        if (frame == null)
-            throw new IOException("Request timed out (no response)");
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
-        return resp;
-    }
-
-    /** Decode error PDU from frame. */
-    protected static <T extends CmsType> T decodeErr(Frame frame, T err) throws IOException {
-        err.decode(frame.asduBytes());
-        return err;
     }
 }

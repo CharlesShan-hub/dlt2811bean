@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.control.select;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.control.CmsSelectError;
@@ -16,12 +17,12 @@ public class SelectClient extends BaseClientHandler<SelectDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        decodeErr(frame, new CmsSelectError());
+        CmsFrameDecoder.decodeErr(frame, new CmsSelectError());
         throw new IOException("Select rejected");
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        decodeResp(frame, new CmsSelectResponse());
+        CmsFrameDecoder.decodeResp(frame, new CmsSelectResponse());
     }
 }

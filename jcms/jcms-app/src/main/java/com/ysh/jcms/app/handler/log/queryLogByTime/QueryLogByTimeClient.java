@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.log.queryLogByTime;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.sequence.log.CmsLogDataEntry;
@@ -32,7 +33,7 @@ public class QueryLogByTimeClient extends BaseClientHandler<QueryLogByTimeDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsQueryLogByTimeError err = decodeErr(frame, new CmsQueryLogByTimeError());
+        CmsQueryLogByTimeError err = CmsFrameDecoder.decodeErr(frame, new CmsQueryLogByTimeError());
         throw new IOException("QueryLogByTime rejected: " + err.value());
     }
 
@@ -47,7 +48,7 @@ public class QueryLogByTimeClient extends BaseClientHandler<QueryLogByTimeDao> {
 
     @Override
     protected void onSuccess(Frame frame, QueryLogByTimeDao dao) throws IOException {
-        CmsQueryLogByTimeResponse resp = decodeResp(frame, new CmsQueryLogByTimeResponse());
+        CmsQueryLogByTimeResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsQueryLogByTimeResponse());
 
         List<LogEntryItem> entries = new ArrayList<>();
         for (int i = 0; i < resp.logEntry.size(); i++) {

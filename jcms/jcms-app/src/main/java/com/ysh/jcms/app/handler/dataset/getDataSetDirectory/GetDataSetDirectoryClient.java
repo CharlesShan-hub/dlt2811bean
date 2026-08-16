@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.dataset.getDataSetDirectory;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.app.handler.support.CmsClientOperator;
@@ -18,13 +19,13 @@ public class GetDataSetDirectoryClient extends BaseClientHandler<GetDataSetDirec
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetDataSetDirectoryError err = decodeErr(frame, new CmsGetDataSetDirectoryError());
+        CmsGetDataSetDirectoryError err = CmsFrameDecoder.decodeErr(frame, new CmsGetDataSetDirectoryError());
         throw new IOException("GetDataSetDirectory rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetDataSetDirectoryDao dao) throws IOException {
-        CmsGetDataSetDirectoryResponse resp = decodeResp(frame, new CmsGetDataSetDirectoryResponse());
+        CmsGetDataSetDirectoryResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetDataSetDirectoryResponse());
         CmsClientOperator.accumulatePage(content(), resp, "memberData");
     }
 

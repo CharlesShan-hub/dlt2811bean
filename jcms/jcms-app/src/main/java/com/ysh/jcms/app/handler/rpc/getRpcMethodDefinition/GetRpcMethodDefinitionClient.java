@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.rpc.getRpcMethodDefinition;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcMethodDefinitionError;
@@ -17,13 +18,13 @@ public class GetRpcMethodDefinitionClient extends BaseClientHandler<GetRpcMethod
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetRpcMethodDefinitionError err = decodeErr(frame, new CmsGetRpcMethodDefinitionError());
+        CmsGetRpcMethodDefinitionError err = CmsFrameDecoder.decodeErr(frame, new CmsGetRpcMethodDefinitionError());
         throw new IOException("GetRpcMethodDefinition rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetRpcMethodDefinitionDao dao) throws IOException {
-        CmsGetRpcMethodDefinitionResponse resp = decodeResp(frame, new CmsGetRpcMethodDefinitionResponse());
+        CmsGetRpcMethodDefinitionResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetRpcMethodDefinitionResponse());
         content().res(resp);
     }
 }

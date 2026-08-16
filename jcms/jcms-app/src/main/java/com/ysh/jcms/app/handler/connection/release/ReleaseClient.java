@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.connection.release;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.app.handler.base.BaseHandler;
@@ -20,7 +21,7 @@ public class ReleaseClient extends BaseClientHandler<ReleaseDao> {
 
     @Override
     protected void beforeAll(ReleaseDao dao) throws IOException {
-        byte[] assocId = node.client().session().associationId();
+        byte[] assocId = associationId();
         if (assocId != null && assocId.length > 0) {
             dao.associationId(assocId);
         }
@@ -28,13 +29,13 @@ public class ReleaseClient extends BaseClientHandler<ReleaseDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsReleaseError err = decodeErr(frame, new CmsReleaseError());
+        CmsReleaseError err = CmsFrameDecoder.decodeErr(frame, new CmsReleaseError());
         throw new IOException("Release rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, ReleaseDao dao) throws IOException {
-        CmsReleaseResponse resp = decodeResp(frame, new CmsReleaseResponse());
+        CmsReleaseResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsReleaseResponse());
 
         int serviceError = resp.serviceError.value();
         if (serviceError != CmsServiceError.NO_ERROR) {
@@ -42,7 +43,7 @@ public class ReleaseClient extends BaseClientHandler<ReleaseDao> {
         }
 
         // State hook: leaving ASSOCIATED clears association-level state
-        node.client().session().state(SessionState.CONNECTED);
+        sessionState(SessionState.CONNECTED);
         BaseHandler.traceSession("Released");
     }
 }

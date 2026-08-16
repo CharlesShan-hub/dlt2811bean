@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.directory.getServerDirectory;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.app.handler.support.CmsClientOperator;
@@ -25,13 +26,13 @@ public class SvrDirClient extends BaseClientHandler<SvrDirDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetServerDirectoryError err = decodeErr(frame, new CmsGetServerDirectoryError());
+        CmsGetServerDirectoryError err = CmsFrameDecoder.decodeErr(frame, new CmsGetServerDirectoryError());
         throw new IOException("GetServerDirectory rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, SvrDirDao dao) throws IOException {
-        CmsGetServerDirectoryResponse resp = decodeResp(frame, new CmsGetServerDirectoryResponse());
+        CmsGetServerDirectoryResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetServerDirectoryResponse());
         CmsClientOperator.accumulatePage(content(), resp, "reference");
     }
 

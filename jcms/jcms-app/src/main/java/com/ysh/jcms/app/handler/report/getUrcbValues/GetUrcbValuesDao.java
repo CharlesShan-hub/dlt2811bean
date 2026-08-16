@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.report.getUrcbValues;
 
 import com.ysh.jcms.app.handler.base.BaseDao;
-import com.ysh.jcms.app.util.CmsRequestHelper;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.scalar.CmsObjectReference;
 import com.ysh.jcms.core.pdu.report.CmsGetUrcbValuesRequest;
@@ -20,7 +19,7 @@ public class GetUrcbValuesDao extends BaseDao {
     @Override
     public CmsType toRequest() {
         CmsGetUrcbValuesRequest req = new CmsGetUrcbValuesRequest();
-        CmsRequestHelper.addAll(refs, req.reference, CmsObjectReference::new);
+        addAll(refs, req.reference, CmsObjectReference::new);
         return req;
     }
 }

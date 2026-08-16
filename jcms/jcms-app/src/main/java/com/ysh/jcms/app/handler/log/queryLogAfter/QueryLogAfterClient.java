@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.log.queryLogAfter;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.sequence.log.CmsLogDataEntry;
@@ -32,7 +33,7 @@ public class QueryLogAfterClient extends BaseClientHandler<QueryLogAfterDao> {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsQueryLogAfterError err = decodeErr(frame, new CmsQueryLogAfterError());
+        CmsQueryLogAfterError err = CmsFrameDecoder.decodeErr(frame, new CmsQueryLogAfterError());
         throw new IOException("QueryLogAfter rejected: " + err.value());
     }
 
@@ -47,7 +48,7 @@ public class QueryLogAfterClient extends BaseClientHandler<QueryLogAfterDao> {
 
     @Override
     protected void onSuccess(Frame frame, QueryLogAfterDao dao) throws IOException {
-        CmsQueryLogAfterResponse resp = decodeResp(frame, new CmsQueryLogAfterResponse());
+        CmsQueryLogAfterResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsQueryLogAfterResponse());
 
         List<LogEntryItem> entries = new ArrayList<>();
         for (int i = 0; i < resp.logEntry.size(); i++) {

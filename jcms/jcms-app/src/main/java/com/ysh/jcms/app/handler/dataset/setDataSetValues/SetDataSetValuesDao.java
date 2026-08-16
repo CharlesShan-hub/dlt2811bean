@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.dataset.setDataSetValues;
 
 import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.app.util.CmsDataFiller;
-import com.ysh.jcms.app.util.CmsRequestHelper;
 import com.ysh.jcms.core.data.choice.CmsData;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.pdu.dataset.CmsSetDataSetValuesRequest;
@@ -23,7 +22,7 @@ public class SetDataSetValuesDao extends BaseDao {
     @Override
     public CmsType toRequest() {
         CmsSetDataSetValuesRequest req = new CmsSetDataSetValuesRequest().datasetReference(datasetReference);
-        CmsRequestHelper.setIfNotEmpty(req::referenceAfter, referenceAfter);
+        setIfNotEmpty(req::referenceAfter, referenceAfter);
         if (values != null) {
             for (String val : values) {
                 CmsData data = new CmsData();

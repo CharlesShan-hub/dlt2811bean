@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.log.getLogStatusValues;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.choice.CmsLogStatusValueChoice;
@@ -29,13 +30,13 @@ public class GetLogStatusValuesClient extends BaseClientHandler<GetLogStatusValu
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetLogStatusValuesError err = decodeErr(frame, new CmsGetLogStatusValuesError());
+        CmsGetLogStatusValuesError err = CmsFrameDecoder.decodeErr(frame, new CmsGetLogStatusValuesError());
         throw new IOException("GetLogStatusValues rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, GetLogStatusValuesDao dao) throws IOException {
-        CmsGetLogStatusValuesResponse resp = decodeResp(frame, new CmsGetLogStatusValuesResponse());
+        CmsGetLogStatusValuesResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetLogStatusValuesResponse());
 
         List<LogStatusEntry> entries = new ArrayList<>();
         for (CmsLogStatusValueChoice ch : resp.log) {

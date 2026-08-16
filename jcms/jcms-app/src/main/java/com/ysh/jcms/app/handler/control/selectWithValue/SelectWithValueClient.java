@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.control.selectWithValue;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.control.CmsSelectWithValueError;
@@ -16,12 +17,12 @@ public class SelectWithValueClient extends BaseClientHandler<SelectWithValueDao>
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        decodeErr(frame, new CmsSelectWithValueError());
+        CmsFrameDecoder.decodeErr(frame, new CmsSelectWithValueError());
         throw new IOException("SelectWithValue rejected");
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        decodeResp(frame, new CmsSelectWithValueResponse());
+        CmsFrameDecoder.decodeResp(frame, new CmsSelectWithValueResponse());
     }
 }

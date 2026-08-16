@@ -1,4 +1,5 @@
 package com.ysh.jcms.app.handler.sg.confirmEditSgValues;
+import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.pdu.sg.CmsConfirmEditSgValuesError;
@@ -17,12 +18,12 @@ public class ConfirmEditSgValuesClient extends BaseClientHandler<ConfirmEditSgVa
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsConfirmEditSgValuesError err = decodeErr(frame, new CmsConfirmEditSgValuesError());
+        CmsConfirmEditSgValuesError err = CmsFrameDecoder.decodeErr(frame, new CmsConfirmEditSgValuesError());
         throw new IOException("ConfirmEditSGValues rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame, ConfirmEditSgValuesDao dao) throws IOException {
-        decodeResp(frame, new CmsConfirmEditSgValuesResponse());
+        CmsFrameDecoder.decodeResp(frame, new CmsConfirmEditSgValuesResponse());
     }
 }
