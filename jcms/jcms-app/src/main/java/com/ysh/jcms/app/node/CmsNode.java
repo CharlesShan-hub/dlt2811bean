@@ -14,6 +14,7 @@ import com.ysh.jcms.utils.scl.state.CbStateManager;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
+import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.core.data.sequence.block.CmsSgcb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CmsNode {
@@ -33,6 +35,7 @@ public class CmsNode {
     private final InnerServer server;
     private final InnerClient client = new InnerClient();
     private final Map<Class<?>, Object> clientHandlers = new HashMap<>();
+    private final Map<String, CommandHandler> consoleHandlers = new LinkedHashMap<>();
     private final SclManager sclManager = new SclManager();
     private final ContentManager contentManager = new ContentManager();
     private final GmCredentialManager credentialManager;
@@ -184,6 +187,12 @@ public class CmsNode {
 
     /* ====== accessors ====== */
 
+    public void registerConsoleHandler(CommandHandler handler) {
+        consoleHandlers.put(handler.name(), handler);
+    }
+    public Map<String, CommandHandler> consoleHandlers() {
+        return consoleHandlers;
+    }
     public SclManager sclManager() {
         return sclManager;
     }

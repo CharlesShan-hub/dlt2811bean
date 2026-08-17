@@ -1,138 +1,115 @@
 package com.ysh.jcms.app.console;
 
+import com.ysh.jcms.app.console.api.CliApiServer;
+import com.ysh.jcms.app.node.CmsNode;
+import com.ysh.jcms.app.node.SclManager;
 import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.app.console.CommandInfo.Requirement;
-import com.ysh.jcms.app.node.CmsNode;
-import com.ysh.jcms.core.util.CmsFormatUtil;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.transport.session.SessionState;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
 
+import javax.net.ssl.SSLContext;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * Base class for CMS consoles.
+ * Contract for CMS interactive consoles.
  *
- * <p>
- * Extends {@link CmsNode} and provides JLine-based interactive command
- * processing. Subclasses register their own handlers (client commands or server
- * handlers) via {@link #register(CommandHandler)} /
- * {@link #registerHandlers()}.
+ * <p>All methods have default implementations that delegate to the underlying
+ * {@link CmsNode} via {@code ((CmsNode) this)}.  Concrete classes only need to
+ * override {@link #registerHandlers()}.
  */
-public abstract class CmsConsole extends CmsNode {
+public interface CmsConsole {
 
-    private final Map<String, CommandHandler> handlers = new LinkedHashMap<>();
-    private final LineReader reader;
-    private boolean running = true;
+    /* ====== handler registration ====== */
 
-    protected CmsConsole(boolean createServer) {
-        super(createServer);
-        this.reader = LineReaderBuilder.builder()
-                .variable(LineReader.HISTORY_FILE, Paths.get(System.getProperty("user.home"), ".cms_console_history")).build();
+    /** Register a command handler. */
+    default void register(CommandHandler handler) {
+        ((CmsNode) this).registerConsoleHandler(handler);
+    }
+
+    /** Return the registered handlers by command name. */
+    default Map<String, CommandHandler> handlers() {
+        return ((CmsNode) this).consoleHandlers();
     }
 
     /** Subclasses register their command handlers here. */
-    protected abstract void registerHandlers();
-
-    // ── handler management ──
-
-    public void register(CommandHandler handler) {
-        handlers.put(handler.name(), handler);
+    default void registerHandlers() {
     }
 
-    public Map<String, CommandHandler> handlers() {
-        return handlers;
+    /* ====== state queries ====== */
+
+    /** {@code true} when TCP connected AND session is ASSOCIATED. */
+    default boolean connected() {
+        CmsNode node = (CmsNode) this;
+        return node.clientConnected()
+            && node.client() != null
+            && node.client().session() != null
+            && node.client().session().state() == com.ysh.jcms.utils.transport.session.SessionState.ASSOCIATED;
     }
 
-    // ── console helpers (used by handlers) ──
-
-    public boolean connected() {
-        return clientConnected() && client().session() != null && client().session().state() == SessionState.ASSOCIATED;
+    /** {@code true} when TCP-level connection is established (association not required). */
+    default boolean clientConnected() {
+        return ((CmsNode) this).clientConnected();
     }
 
-    /** 当前关联的访问点引用（IED/AP），未关联时返回 null。 */
-    public String associatedAp() {
-        return connected() && client().session() != null ? client().session().associatedApRef() : null;
+    /** Current associated access-point reference (IED/AP), or {@code null}. */
+    default String associatedAp() {
+        CmsNode node = (CmsNode) this;
+        if (!connected() || node.client() == null || node.client().session() == null)
+            return null;
+        return node.client().session().associatedApRef();
     }
 
-    /** 当前 TCP 连接是否 TLS 加密。 */
-    public boolean tlsConnected() {
-        return client() != null && client().tls();
+    /** {@code true} when the TCP connection uses TLS. */
+    default boolean tlsConnected() {
+        CmsNode node = (CmsNode) this;
+        return node.client() != null && node.client().tls();
     }
 
-    /** 当前关联是否使用应用层安全认证。 */
-    public boolean associatedSecure() {
-        return connected() && client().session() != null && client().session().associatedSecure();
+    /** {@code true} when the association uses application-layer security. */
+    default boolean associatedSecure() {
+        CmsNode node = (CmsNode) this;
+        return connected() && node.client() != null && node.client().session() != null
+            && node.client().session().associatedSecure();
     }
 
-    // ── helpers for console command handlers ──
+    /* ====== client access ====== */
 
-    /** Check associated, output error and return false if not. */
-    public boolean requireAssociated(Map<String, String> args) {
-        if (connected())
-            return true;
-        CmsPrinter.error("Not associated. Use 'associate' first.");
-        return false;
+    @SuppressWarnings("unchecked")
+    default <T> T getClient(Class<T> type) {
+        return ((CmsNode) this).getClient(type);
     }
 
-    /**
-     * Check TCP-level connected (association not required), output error and return
-     * false if not.
-     */
-    public boolean requireTcpConnected(Map<String, String> args) {
-        if (clientConnected())
-            return true;
-        CmsPrinter.error("Not connected. Use 'connect' first.");
-        return false;
+    /* ====== node operations (delegated to underlying CmsNode) ====== */
+
+    default void connect(String host, int port) throws IOException {
+        ((CmsNode) this).connect(host, port);
     }
 
-    /** Check required param exists, output error and return false if missing. */
-    public static boolean requireParam(Map<String, String> args, String key, String usage) {
-        String v = args.get(key);
-        if (v != null && !v.isEmpty())
-            return true;
-        CmsPrinter.error("Missing --" + key + ".");
-        return false;
+    default void connectTls(String host, int port, SSLContext sslContext) throws IOException {
+        ((CmsNode) this).connectTls(host, port, sslContext);
     }
 
-    /**
-     * @deprecated Use {@link CmsPrinter#outputJson(java.util.Map)} directly.
-     */
-    @Deprecated
-    public static <T> void outputList(String title, java.util.List<T> items, java.util.function.Function<T, String> formatter,
-            Map<String, String> args, boolean numbered) {
-        if (items == null || items.isEmpty()) {
-            CmsPrinter.raw("{\"success\":true,\"data\":[]}");
-            return;
-        }
-        StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
-        for (int i = 0; i < items.size(); i++) {
-            if (i > 0)
-                sb.append(",");
-            sb.append("\"").append(CmsFormatUtil.escapeJson(formatter.apply(items.get(i)))).append("\"");
-        }
-        sb.append("]}");
-        CmsPrinter.raw(sb.toString());
+    default void close() {
+        ((CmsNode) this).close();
     }
 
-    /**
-     * @deprecated Use {@link CmsPrinter#outputJson(java.util.Map)} directly.
-     */
-    @Deprecated
-    public static <T> void outputList(String title, java.util.List<T> items, java.util.function.Function<T, String> formatter,
-            Map<String, String> args) {
-        outputList(title, items, formatter, args, false);
+    default SclManager sclManager() {
+        return ((CmsNode) this).sclManager();
     }
 
-    // ── main loop ──
+    /* ====== lifecycle ====== */
 
-    public void run() {
+    /** Start the interactive console loop. */
+    default void run() {
         registerHandlers();
         onStart();
+
         // Auto-exec: config autoExec first, then CMS_AUTO_EXEC env var
         String autoExec = CmsConfigLoader.load().client().console().autoExec();
         String envAutoExec = System.getenv("CMS_AUTO_EXEC");
@@ -151,6 +128,12 @@ public abstract class CmsConsole extends CmsNode {
                     executeLine(trimmed);
             }
         }
+
+        boolean running = true;
+        LineReader reader = LineReaderBuilder.builder()
+            .variable(LineReader.HISTORY_FILE, Paths.get(System.getProperty("user.home"), ".cms_console_history"))
+            .build();
+
         while (running) {
             String raw;
             try {
@@ -187,51 +170,108 @@ public abstract class CmsConsole extends CmsNode {
                 }
             }
         }
+
         if (connected())
             close();
         onStop();
-        closeReader();
-        System.exit(0);
-    }
 
-    /**
-     * Close JLine reader/terminal to restore console mode (important on Windows).
-     */
-    private void closeReader() {
+        // Close JLine reader/terminal to restore console mode (important on Windows)
         try {
             reader.getTerminal().close();
         } catch (Exception ignored) {
             // best-effort
         }
+        System.exit(0);
     }
 
     /** Override to customise the prompt (default "cms> "). */
-    protected String prompt() {
+    default String prompt() {
         return "cms> ";
     }
 
     /** Hook called before the loop starts. */
-    protected void onStart() {
+    default void onStart() {
+        CmsNode node = (CmsNode) this;
+        if (node.server() != null) {
+            // Server-side: start CMS server
+            try {
+                node.start(false);
+                System.out.println("CMS Server running on port " + node.server().port());
+                if (node.server().tls())
+                    System.out.println("TLS port: " + node.server().sslPort());
+                System.out.println("SCL loaded: " + node.sclManager().loaded());
+                if (node.sclManager().loaded())
+                    System.out.println("SCL file: " + node.sclManager().source());
+                System.out.println("Type 'exit' to stop...");
+            } catch (Exception e) {
+                System.err.println("Failed to start server: " + e.getMessage());
+            }
+        } else {
+            // Client-side: start embedded API server (for remote execution via cms.ps1)
+            String apiEnabled = System.getProperty("cms.api.enabled", "true");
+            if (!"false".equalsIgnoreCase(apiEnabled)) {
+                int apiPort = Integer.parseInt(
+                    System.getProperty("cms.api.port",
+                        String.valueOf(CmsConfigLoader.load().client().console().apiPort())));
+                try {
+                    CliApiServer apiServer = new CliApiServer(apiPort, this);
+                    apiServer.start();
+                } catch (Exception e) {
+                    CmsPrinter.gray("ApiServer not started (port " + apiPort + "): " + e.getMessage());
+                }
+            }
+        }
     }
 
     /** Hook called after the loop ends. */
-    protected void onStop() {
+    default void onStop() {
         System.out.println("Bye.");
     }
 
-    // ── command parsing ──
+    /* ====== precondition helpers ====== */
 
-    public boolean executeLine(String raw) {
-        // CmsPrinter.gray("LOG1 executeLine: cmd=\"" + raw + "\"");
+    /** Check associated, output error and return {@code false} if not. */
+    default boolean requireAssociated(Map<String, String> args) {
+        if (connected())
+            return true;
+        CmsPrinter.error("Not associated. Use 'associate' first.");
+        return false;
+    }
+
+    /** Check TCP-level connected, output error and return {@code false} if not. */
+    default boolean requireTcpConnected(Map<String, String> args) {
+        if (((CmsNode) this).clientConnected())
+            return true;
+        CmsPrinter.error("Not connected. Use 'connect' first.");
+        return false;
+    }
+
+    /** Check required param exists, output error and return {@code false} if missing. */
+    static boolean requireParam(Map<String, String> args, String key, String usage) {
+        String v = args.get(key);
+        if (v != null && !v.isEmpty())
+            return true;
+        CmsPrinter.error("Missing --" + key + ".");
+        return false;
+    }
+
+    /* ====== command parsing ====== */
+
+    /**
+     * Execute a single command line.
+     * <p>
+     * Tokenizes the input, resolves the command handler, parses {@code --key value}
+     * arguments, checks preconditions, and delegates to the handler.
+     */
+    default boolean executeLine(String raw) {
         List<String> tokens = tokenize(raw);
-        // CmsPrinter.gray("LOG2 executeLine: tokens=" + tokens);
         if (tokens.isEmpty())
             return true;
 
         String cmdName = tokens.get(0).toLowerCase();
         List<String> argTokens = tokens.subList(1, tokens.size());
 
-        CommandHandler handler = handlers.get(cmdName);
+        CommandHandler handler = handlers().get(cmdName);
         if (handler == null) {
             CmsPrinter.error("Unknown command: " + cmdName + "  (type 'help')");
             return false;
@@ -256,14 +296,13 @@ public abstract class CmsConsole extends CmsNode {
                     }
                 }
             }
-            // CmsPrinter.gray("LOG3 executeLine: args=" + args);
 
             Requirement req = handler.requirement();
             if (req == Requirement.ASSOCIATED && !connected()) {
                 CmsPrinter.error("Not associated. Use 'associate' first.");
                 return false;
             }
-            if (req == Requirement.CONNECTED && !clientConnected()) {
+            if (req == Requirement.CONNECTED && !((CmsNode) this).clientConnected()) {
                 CmsPrinter.error("Not connected. Use 'connect' first.");
                 return false;
             }
@@ -279,14 +318,14 @@ public abstract class CmsConsole extends CmsNode {
         return true;
     }
 
-    private static List<String> tokenize(String s) {
+    /** Tokenize a command line, respecting double-quote boundaries. */
+    static List<String> tokenize(String s) {
         List<String> tokens = new ArrayList<>();
         StringBuilder buf = new StringBuilder();
         boolean inQuote = false;
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (c == '\\' && i + 1 < s.length() && s.charAt(i + 1) == '"') {
-                // escaped quote \" → append literal " and skip the \
                 buf.append('"');
                 i++;
             } else if (c == '"') {
@@ -309,12 +348,12 @@ public abstract class CmsConsole extends CmsNode {
      * Find the start of an inline comment ({@code #} or {@code //}), respecting
      * double-quote boundaries.
      */
-    private static int findCommentStart(String s) {
+    static int findCommentStart(String s) {
         boolean inQuote = false;
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (c == '\\' && i + 1 < s.length() && s.charAt(i + 1) == '"') {
-                i++; // skip escaped quote
+                i++;
                 continue;
             }
             if (c == '"') {

@@ -1,0 +1,138 @@
+package com.ysh.jcms.app.node;
+
+import com.ysh.jcms.app.handler.connection.abort.AbortServer;
+import com.ysh.jcms.app.handler.connection.associate.AssociateServer;
+import com.ysh.jcms.app.handler.connection.release.ReleaseServer;
+import com.ysh.jcms.app.handler.control.cancel.CancelServer;
+import com.ysh.jcms.app.handler.control.commandTermination.CommandTerminationServer;
+import com.ysh.jcms.app.handler.control.operate.OperateServer;
+import com.ysh.jcms.app.handler.control.select.SelectServer;
+import com.ysh.jcms.app.handler.control.selectWithValue.SelectWithValueServer;
+import com.ysh.jcms.app.handler.control.timeActivatedOperate.TimeActivatedOperateServer;
+import com.ysh.jcms.app.handler.control.timeActivatedOperateTermination.TimeActivatedOperateTerminationServer;
+import com.ysh.jcms.app.handler.data.getDataDefinition.GetDataDefinitionServer;
+import com.ysh.jcms.app.handler.data.getDataDirectory.GetDataDirectoryServer;
+import com.ysh.jcms.app.handler.data.getDataValues.GetDataValuesServer;
+import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesServer;
+import com.ysh.jcms.app.handler.dataset.createDataSet.CreateDataSetServer;
+import com.ysh.jcms.app.handler.dataset.deleteDataSet.DeleteDataSetServer;
+import com.ysh.jcms.app.handler.dataset.getDataSetDirectory.GetDataSetDirectoryServer;
+import com.ysh.jcms.app.handler.dataset.getDataSetValues.GetDataSetValuesServer;
+import com.ysh.jcms.app.handler.dataset.setDataSetValues.SetDataSetValuesServer;
+import com.ysh.jcms.app.handler.directory.getAllCbValues.AllCbValuesServer;
+import com.ysh.jcms.app.handler.directory.getAllDataDefinition.AllDataDefServer;
+import com.ysh.jcms.app.handler.directory.getAllDataValues.AllDataValuesServer;
+import com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory.LdDirServer;
+import com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory.LnDirServer;
+import com.ysh.jcms.app.handler.directory.getServerDirectory.SvrDirServer;
+import com.ysh.jcms.app.handler.file.deleteFile.DeleteFileServer;
+import com.ysh.jcms.app.handler.file.getFile.GetFileServer;
+import com.ysh.jcms.app.handler.file.getFileAttributeValues.GetFileAttributeValuesServer;
+import com.ysh.jcms.app.handler.file.getFileDirectory.GetFileDirectoryServer;
+import com.ysh.jcms.app.handler.file.setFile.SetFileServer;
+import com.ysh.jcms.app.handler.goose.getGoCbValues.GetGoCbValuesServer;
+import com.ysh.jcms.app.handler.goose.getGoReference.GetGoReferenceServer;
+import com.ysh.jcms.app.handler.goose.getGooseElementNumber.GetGooseElementNumberServer;
+import com.ysh.jcms.app.handler.goose.setGoCbValues.SetGoCbValuesServer;
+import com.ysh.jcms.app.handler.log.getLcbValues.GetLcbValuesServer;
+import com.ysh.jcms.app.handler.log.getLogStatusValues.GetLogStatusValuesServer;
+import com.ysh.jcms.app.handler.log.queryLogAfter.QueryLogAfterServer;
+import com.ysh.jcms.app.handler.log.queryLogByTime.QueryLogByTimeServer;
+import com.ysh.jcms.app.handler.log.setLcbValues.SetLcbValuesServer;
+import com.ysh.jcms.app.handler.msv.getMsvcbValues.GetMsvcbValuesServer;
+import com.ysh.jcms.app.handler.msv.setMsvcbValues.SetMsvcbValuesServer;
+import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateServer;
+import com.ysh.jcms.app.handler.report.getBrcbValues.GetBrcbValuesServer;
+import com.ysh.jcms.app.handler.report.getUrcbValues.GetUrcbValuesServer;
+import com.ysh.jcms.app.handler.report.report.ReportServer;
+import com.ysh.jcms.app.handler.report.setBrcbValues.SetBrcbValuesServer;
+import com.ysh.jcms.app.handler.report.setUrcbValues.SetUrcbValuesServer;
+import com.ysh.jcms.app.handler.rpc.getRpcInterfaceDefinition.GetRpcInterfaceDefinitionServer;
+import com.ysh.jcms.app.handler.rpc.getRpcInterfaceDirectory.GetRpcInterfaceDirectoryServer;
+import com.ysh.jcms.app.handler.rpc.getRpcMethodDefinition.GetRpcMethodDefinitionServer;
+import com.ysh.jcms.app.handler.rpc.getRpcMethodDirectory.GetRpcMethodDirectoryServer;
+import com.ysh.jcms.app.handler.rpc.rpcCall.RpcCallServer;
+import com.ysh.jcms.app.handler.sg.confirmEditSgValues.ConfirmEditSgValuesServer;
+import com.ysh.jcms.app.handler.sg.getEditSgValue.GetEditSgValueServer;
+import com.ysh.jcms.app.handler.sg.getSgcbValues.GetSgcbValuesServer;
+import com.ysh.jcms.app.handler.sg.selectActiveSg.SelectActiveSgServer;
+import com.ysh.jcms.app.handler.sg.selectEditSg.SelectEditSgServer;
+import com.ysh.jcms.app.handler.sg.setEditSgValue.SetEditSgValueServer;
+import com.ysh.jcms.app.handler.test.test.TestServer;
+
+/**
+ * A CMS server node with all server handlers pre-registered.
+ *
+ * <p>
+ * Starts the CMS server with all protocol service handlers registered. Used as
+ * the base for {@code CmsServerConsole}.
+ */
+public class CmsServer extends CmsNode {
+
+    public CmsServer() {
+        super(true);
+        registerServers();
+    }
+
+    private void registerServers() {
+        registerServer(new AssociateServer());
+        registerServer(new ReleaseServer());
+        registerServer(new AbortServer());
+        registerServer(new NegotiateServer());
+        registerServer(new TestServer());
+        registerServer(new SvrDirServer());
+        registerServer(new LdDirServer());
+        registerServer(new LnDirServer());
+        registerServer(new AllDataValuesServer());
+        registerServer(new AllDataDefServer());
+        registerServer(new AllCbValuesServer());
+        registerServer(new GetDataValuesServer());
+        registerServer(new SetDataValuesServer());
+        registerServer(new GetDataDirectoryServer());
+        registerServer(new GetDataDefinitionServer());
+        registerServer(new GetDataSetValuesServer());
+        registerServer(new GetDataSetDirectoryServer());
+        registerServer(new SetDataSetValuesServer());
+        registerServer(new CreateDataSetServer());
+        registerServer(new DeleteDataSetServer());
+        registerServer(new GetSgcbValuesServer());
+        registerServer(new SelectActiveSgServer());
+        registerServer(new SelectEditSgServer());
+        registerServer(new GetEditSgValueServer());
+        registerServer(new SetEditSgValueServer());
+        registerServer(new ConfirmEditSgValuesServer());
+        registerServer(new GetBrcbValuesServer());
+        registerServer(new SetBrcbValuesServer());
+        registerServer(new GetUrcbValuesServer());
+        registerServer(new SetUrcbValuesServer());
+        registerServer(new ReportServer());
+        registerServer(new GetLcbValuesServer());
+        registerServer(new SetLcbValuesServer());
+        registerServer(new QueryLogByTimeServer());
+        registerServer(new QueryLogAfterServer());
+        registerServer(new GetLogStatusValuesServer());
+        registerServer(new GetGoCbValuesServer());
+        registerServer(new SetGoCbValuesServer());
+        registerServer(new GetGoReferenceServer());
+        registerServer(new GetGooseElementNumberServer());
+        registerServer(new SelectServer());
+        registerServer(new SelectWithValueServer());
+        registerServer(new OperateServer());
+        registerServer(new CancelServer());
+        registerServer(new CommandTerminationServer());
+        registerServer(new TimeActivatedOperateServer());
+        registerServer(new TimeActivatedOperateTerminationServer());
+        registerServer(new GetMsvcbValuesServer());
+        registerServer(new SetMsvcbValuesServer());
+        registerServer(new GetFileDirectoryServer());
+        registerServer(new GetFileAttributeValuesServer());
+        registerServer(new GetFileServer());
+        registerServer(new SetFileServer());
+        registerServer(new DeleteFileServer());
+        registerServer(new GetRpcInterfaceDirectoryServer());
+        registerServer(new GetRpcMethodDirectoryServer());
+        registerServer(new GetRpcInterfaceDefinitionServer());
+        registerServer(new GetRpcMethodDefinitionServer());
+        registerServer(new RpcCallServer());
+    }
+}

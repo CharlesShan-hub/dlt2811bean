@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.console.api;
 
-import com.ysh.jcms.app.console.CmsClientConsole;
+import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.core.util.CmsPrinter;
 import com.ysh.jcms.core.util.CmsFormatUtil;
 import com.sun.net.httpserver.HttpServer;
@@ -30,10 +30,10 @@ import java.util.concurrent.Executors;
 public class CliApiServer {
 
     private final int port;
-    private final CmsClientConsole console;
+    private final CmsConsole console;
     private HttpServer server;
 
-    public CliApiServer(int port, CmsClientConsole console) {
+    public CliApiServer(int port, CmsConsole console) {
         this.port = port;
         this.console = console;
     }
