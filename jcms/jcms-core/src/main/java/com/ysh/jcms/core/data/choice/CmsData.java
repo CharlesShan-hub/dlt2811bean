@@ -20,7 +20,6 @@ import com.ysh.jcms.core.data.sequence.common.CmsUtcTime;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -432,61 +431,68 @@ public class CmsData extends CmsChoice {
     /**
      * Convert the value of this CmsData to a human-readable string, based on the
      * current choice() index.
+     * <p>
+     * Delegates to {@link #toJson()} for consistent formatting.
+     *
+     * @deprecated Use {@link #toJson()} instead for proper JSON output.
      */
+    @Deprecated
     public String toValueString() {
-        int ct = choice();
-        switch (ct) {
-            case CHOICE_BOOLEAN :
-                return Boolean.toString(alt_boolean.value());
-            case CHOICE_INT8 :
-                return Integer.toString(alt_int8.value());
-            case CHOICE_INT16 :
-                return Integer.toString(alt_int16.value());
-            case CHOICE_INT32 :
-                return Integer.toString(alt_int32.value());
-            case CHOICE_INT64 :
-                return Long.toString(alt_int64.value());
-            case CHOICE_INT8U :
-                return Integer.toString(alt_int8u.value());
-            case CHOICE_INT16U :
-                return Integer.toString(alt_int16u.value());
-            case CHOICE_INT32U :
-                return Long.toString(alt_int32u.value());
-            case CHOICE_INT64U :
-                return alt_int64u.value().toString();
-            case CHOICE_FLOAT32 :
-                return Float.toString(alt_float32.value());
-            case CHOICE_FLOAT64 :
-                return Double.toString(alt_float64.value());
-            case CHOICE_VISIBLE_STRING :
-                return (String) alt_visible_string.toJsonValue();
-            case CHOICE_UNICODE_STRING :
-                return (String) alt_unicode_string.toJsonValue();
-            case CHOICE_OCTET_STRING :
-                return (String) alt_octet_string.toJsonValue();
-            case CHOICE_BIT_STRING :
-                return new String(alt_bit_string, StandardCharsets.UTF_8);
-            case CHOICE_QUALITY : {
-                CmsQuality q = alt_quality;
-                return "{\"validity\":" + q.validity + ",\"overflow\":" + q.overflow + ",\"outOfRange\":" + q.outOfRange
-                        + ",\"badReference\":" + q.badReference + ",\"oscillatory\":" + q.oscillatory + ",\"failure\":" + q.failure
-                        + ",\"oldData\":" + q.oldData + ",\"inconsistent\":" + q.inconsistent + ",\"inaccurate\":" + q.inaccurate
-                        + ",\"substituted\":" + q.substituted + ",\"test\":" + q.test + ",\"operatorBlocked\":" + q.operatorBlocked + "}";
+        return toJson();
+    }
+
+    // ── Domain JSON ──────────────────────────────────────────────────
+
+    @Override
+    public Object toJsonValue() {
+        int ch = choice();
+        if (ch == CHOICE_ARRAY || ch == CHOICE_STRUCTURE) {
+            String name = ch == CHOICE_ARRAY ? "array" : "structure";
+            List<Object> values = new ArrayList<>();
+            for (CmsData elem : alt_sequence) {
+                values.add(elem.toJsonValue());
             }
-            case CHOICE_UTC_TIME : {
-                CmsUtcTime t = alt_utc_time;
-                CmsTimeQuality tq = t.timeQuality;
-                return "{\"secondsSinceEpoch\":" + t.secondsSinceEpoch.value() + ",\"fractionOfSecond\":" + t.fractionOfSecond.value()
-                        + ",\"timeQuality\":{\"leap_seconds_known\":" + tq.leap_seconds_known + ",\"clock_failure\":" + tq.clock_failure
-                        + ",\"clock_not_synchronized\":" + tq.clock_not_synchronized + ",\"precision\":" + tq.precision + "}}";
-            }
-            case CHOICE_BINARY_TIME : {
-                CmsBinaryTime bt = alt_binary_time;
-                return "{\"msOfDay\":" + bt.msOfDay.value() + ",\"daysSince1984\":" + bt.daysSince1984.value() + "}";
-            }
-            default :
-                return "(choice=" + ct + ")";
+            java.util.Map<String, Object> result = new java.util.LinkedHashMap<>();
+            result.put(name, values);
+            return result;
         }
+        return super.toJsonValue();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void fromJsonValue(Object value) {
+        if (!(value instanceof java.util.Map))
+            return;
+        java.util.Map<String, Object> map = (java.util.Map<String, Object>) value;
+        // Handle ARRAY / STRUCTURE
+        if (map.containsKey("array")) {
+            choice(CHOICE_ARRAY);
+            List<?> items = (List<?>) map.get("array");
+            alt_sequence.clear();
+            if (items != null) {
+                for (Object item : items) {
+                    CmsData elem = new CmsData();
+                    elem.fromJsonValue(item);
+                    alt_sequence.add(elem);
+                }
+            }
+            return;
+        }
+        if (map.containsKey("structure")) {
+            choice(CHOICE_STRUCTURE);
+            List<?> items = (List<?>) map.get("structure");
+            alt_sequence.clear();
+            if (items != null) {
+                for (Object item : items) {
+                    CmsData elem = new CmsData();
+                    elem.fromJsonValue(item);
+                    alt_sequence.add(elem);
+                }
+            }
+            return;
+        }
+        super.fromJsonValue(value);
     }
 
     @Override

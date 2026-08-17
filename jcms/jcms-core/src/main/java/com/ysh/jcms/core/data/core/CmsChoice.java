@@ -568,4 +568,140 @@ public abstract class CmsChoice extends CmsType {
     private static String stripAlt(String fieldName) {
         return fieldName.startsWith("alt_") ? fieldName.substring(4) : fieldName;
     }
+
+    // ── Domain JSON ──────────────────────────────────────────────────
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object toJsonValue() {
+        int ch = choice();
+        if (ch < 0)
+            return null;
+        VariantInfo vi = variantByIndex.get(ch);
+        if (vi == null)
+            return null;
+
+        // NULL variants: {"variantName": null}
+        if (vi.sync == null)
+            return java.util.Collections.singletonMap(vi.name, null);
+
+        Object innerValue = null;
+        try {
+            switch (vi.sync) {
+                case SCALAR: {
+                    CmsScalar wrapper = (CmsScalar) vi.field.get(this);
+                    innerValue = wrapper != null ? wrapper.toJsonValue() : null;
+                    break;
+                }
+                case WRAPPER: {
+                    CmsType wrapper = (CmsType) vi.field.get(this);
+                    innerValue = wrapper != null ? wrapper.toJsonValue() : null;
+                    break;
+                }
+                case INNER: {
+                    InnerBase val = (InnerBase) vi.field.get(this);
+                    innerValue = val != null ? V.getVal(val._v) : null;
+                    break;
+                }
+                case RAW: {
+                    innerValue = vi.field != null ? vi.field.get(this) : null;
+                    break;
+                }
+                case LIST:
+                case ARRAY: {
+                    List<CmsType> list = (List<CmsType>) vi.field.get(this);
+                    if (list == null) {
+                        innerValue = null;
+                    } else {
+                        List<Object> values = new ArrayList<>();
+                        for (CmsType elem : list) {
+                            values.add(elem.toJsonValue());
+                        }
+                        innerValue = values;
+                    }
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("toJsonValue failed for variant " + vi.name, e);
+        }
+
+        java.util.Map<String, Object> result = new java.util.LinkedHashMap<>();
+        result.put(vi.name, innerValue);
+        return result;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void fromJsonValue(Object value) {
+        if (!(value instanceof java.util.Map))
+            return;
+        java.util.Map<String, Object> map = (java.util.Map<String, Object>) value;
+        // Find the single key that is the variant name
+        for (java.util.Map.Entry<String, Object> entry : map.entrySet()) {
+            String variantName = entry.getKey();
+            VariantInfo vi = variantByName.get(variantName);
+            if (vi == null)
+                continue;
+
+            // Select the variant
+            choice(vi.index);
+
+            // NULL variants: no payload
+            if (vi.sync == null)
+                return;
+
+            Object val = entry.getValue();
+            if (val == null)
+                return;
+
+            try {
+                switch (vi.sync) {
+                    case SCALAR: {
+                        CmsScalar wrapper = (CmsScalar) vi.field.get(this);
+                        if (wrapper != null)
+                            wrapper.fromJsonValue(val);
+                        break;
+                    }
+                    case WRAPPER: {
+                        CmsType wrapper = (CmsType) vi.field.get(this);
+                        if (wrapper != null)
+                            wrapper.fromJsonValue(val);
+                        break;
+                    }
+                    case INNER: {
+                        InnerBase innerVal = (InnerBase) vi.field.get(this);
+                        if (innerVal != null)
+                            V.setVal(innerVal._v, val);
+                        break;
+                    }
+                    case RAW: {
+                        if (vi.field.getType() == byte[].class && val instanceof String) {
+                            vi.field.set(this, InnerBase.unhex((String) val));
+                        } else {
+                            vi.field.set(this, val);
+                        }
+                        break;
+                    }
+                    case LIST:
+                    case ARRAY: {
+                        List<?> items = (List<?>) val;
+                        List<CmsType> list = (List<CmsType>) vi.field.get(this);
+                        list.clear();
+                        if (vi.listElementType != null && items != null) {
+                            for (Object item : items) {
+                                CmsType elem = vi.listElementType.getDeclaredConstructor().newInstance();
+                                elem.fromJsonValue(item);
+                                list.add(elem);
+                            }
+                        }
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("fromJsonValue failed for variant " + variantName, e);
+            }
+            break; // only one variant in the map
+        }
+    }
 }

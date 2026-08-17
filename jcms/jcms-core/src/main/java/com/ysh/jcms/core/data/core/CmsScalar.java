@@ -33,4 +33,16 @@ public abstract class CmsScalar extends CmsType {
     protected void innerSet(Object v) {
         V.setVal(inner._v, v);
     }
+
+    // ── Domain JSON ──────────────────────────────────────────────────
+
+    @Override
+    public Object toJsonValue() {
+        return innerGet();
+    }
+
+    @Override
+    public void fromJsonValue(Object value) {
+        innerSet(value);
+    }
 }

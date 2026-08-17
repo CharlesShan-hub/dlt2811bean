@@ -340,6 +340,79 @@ public abstract class CmsSequence extends CmsType {
         syncFromInner();
     }
 
+    // ── Domain JSON ──────────────────────────────────────────────────
+
+    @Override
+    public Object toJsonValue() {
+        SequenceMeta meta = SEQ_META.get(getClass());
+        Map<String, Object> map = new LinkedHashMap<>();
+        for (CmsFieldInfo info : meta.fields) {
+            String name = info.field.getName();
+            // Skip absent OPTIONAL fields
+            if (meta.optional.contains(name) && !isPresent(name))
+                continue;
+
+            if (info.sequenceOf) {
+                try {
+                    List<CmsType> list = (List<CmsType>) info.field.get(this);
+                    List<Object> values = new ArrayList<>();
+                    for (CmsType elem : list) {
+                        values.add(elem.toJsonValue());
+                    }
+                    map.put(name, values);
+                } catch (Exception e) {
+                    throw new RuntimeException("toJsonValue failed for field " + name, e);
+                }
+            } else {
+                CmsType wrapper = injectedWrappers.get(name);
+                if (wrapper != null) {
+                    map.put(name, wrapper.toJsonValue());
+                }
+            }
+        }
+        return map;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void fromJsonValue(Object value) {
+        Map<String, Object> map = (Map<String, Object>) value;
+        SequenceMeta meta = SEQ_META.get(getClass());
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            String fieldName = entry.getKey();
+            CmsFieldInfo info = meta.byName.get(fieldName);
+            if (info == null)
+                continue;
+
+            // Mark OPTIONAL as present
+            if (meta.optional.contains(fieldName)) {
+                setPresent(fieldName, true);
+            }
+
+            if (info.sequenceOf) {
+                try {
+                    List<?> items = (List<?>) entry.getValue();
+                    List<CmsType> list = (List<CmsType>) info.field.get(this);
+                    list.clear();
+                    if (items != null) {
+                        for (Object item : items) {
+                            CmsType elem = info.elementType.getDeclaredConstructor().newInstance();
+                            elem.fromJsonValue(item);
+                            list.add(elem);
+                        }
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException("fromJsonValue failed for sequence field " + fieldName, e);
+                }
+            } else {
+                CmsType wrapper = injectedWrappers.get(fieldName);
+                if (wrapper != null) {
+                    wrapper.fromJsonValue(entry.getValue());
+                }
+            }
+        }
+    }
+
     @Override
     public String toString() {
         return "(" + getClass().getSimpleName() + ")\n" + inner.toString();

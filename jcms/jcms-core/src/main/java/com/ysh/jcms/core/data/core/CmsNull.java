@@ -12,4 +12,16 @@ public class CmsNull extends CmsType {
     public CmsNull() {
         super();
     }
+
+    // ── Domain JSON ──────────────────────────────────────────────────
+
+    @Override
+    public Object toJsonValue() {
+        return null;
+    }
+
+    @Override
+    public void fromJsonValue(Object value) {
+        // no-op
+    }
 }

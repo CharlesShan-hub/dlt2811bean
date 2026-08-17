@@ -1,5 +1,6 @@
 package com.ysh.jcms.core.data.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerEmpty;
 
@@ -75,12 +76,12 @@ public abstract class CmsType {
         }
     }
 
+    // ── JSON — Internal (JER) ────────────────────────────────────────
+
     /**
-     * Build a CmsType instance from its JER JSON representation.
-     * <p>
-     * The backing Inner* is populated via Jackson deserialization — the
-     * generated Inner classes carry the necessary {@code @JsonCreator} /
-     * {@code @JsonSetter} hooks, so scalars, sequences and choices all work.
+     * Build a CmsType instance from its JER JSON representation (internal, for
+     * Rust FFI interchange). Most callers should use {@link #fromJson(Class, String)}
+     * instead, which works with the human-friendly domain JSON format.
      *
      * @param type
      *            the concrete CmsType subclass (must have a no-arg constructor)
@@ -93,7 +94,7 @@ public abstract class CmsType {
      *             if construction or deserialization fails
      */
     @SuppressWarnings("unchecked")
-    public static <T extends CmsType> T fromJson(Class<?> type, String json) {
+    public static <T extends CmsType> T fromInnerJson(Class<?> type, String json) {
         try {
             T cms = (T) type.getDeclaredConstructor().newInstance();
             InnerBase inner = InnerBase.MAPPER.readValue(json, cms.inner.getClass());
@@ -102,8 +103,72 @@ public abstract class CmsType {
             cms.syncFromInner();
             return cms;
         } catch (Exception e) {
+            throw new RuntimeException("fromInnerJson failed for " + type.getSimpleName() + ": " + json, e);
+        }
+    }
+
+    // ── JSON — Domain (human-friendly) ───────────────────────────────
+
+    private static final ObjectMapper DOMAIN_MAPPER = new ObjectMapper();
+
+    /**
+     * Serialize this CmsType to a human-friendly domain JSON string.
+     * <p>
+     * Unlike {@link #fromInnerJson(Class, String)} which uses JER format
+     * (ASN.1 types), domain JSON presents Java-field-level values:
+     * <pre>
+     * CmsUtcTime → {"secondsSinceEpoch": 1234567890, "fractionOfSecond": 500000, "timeQuality": {...}}
+     * CmsFileEntry → {"fileName": "a.txt", "fileSize": 1024, ...}
+     * CmsData → {"int32": 42}
+     * </pre>
+     */
+    public String toJson() {
+        try {
+            return DOMAIN_MAPPER.writeValueAsString(toJsonValue());
+        } catch (Exception e) {
+            throw new RuntimeException("toJson failed for " + getClass().getSimpleName(), e);
+        }
+    }
+
+    /**
+     * Build a CmsType instance from a human-friendly domain JSON string.
+     *
+     * @param type
+     *            the concrete CmsType subclass (must have a no-arg constructor)
+     * @param json
+     *            domain JSON (e.g. {@code {"int32": 42}} for a CmsData,
+     *            {@code 42} for a scalar, {@code {"fileName": "a.txt"}} for a
+     *            CmsFileEntry)
+     * @return the populated instance
+     * @throws RuntimeException
+     *             if construction or deserialization fails
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends CmsType> T fromJson(Class<?> type, String json) {
+        try {
+            T cms = (T) type.getDeclaredConstructor().newInstance();
+            Object value = DOMAIN_MAPPER.readValue(json, Object.class);
+            cms.fromJsonValue(value);
+            return cms;
+        } catch (Exception e) {
             throw new RuntimeException("fromJson failed for " + type.getSimpleName() + ": " + json, e);
         }
+    }
+
+    /**
+     * Return the value to serialize in domain JSON. Subclasses override this
+     * to produce their field-level representation.
+     */
+    public Object toJsonValue() {
+        return toString();
+    }
+
+    /**
+     * Restore field values from a parsed domain JSON value. Subclasses override
+     * this to unpack their field-level representation.
+     */
+    public void fromJsonValue(Object value) {
+        // no-op by default
     }
 
     /**

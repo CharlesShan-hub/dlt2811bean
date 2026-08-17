@@ -115,4 +115,29 @@ public class CmsUtcTime extends CmsType {
     public CmsUtcTime value(CmsUtcTime v) {
         return secondsSinceEpoch(v.secondsSinceEpoch.value()).fractionOfSecond(v.fractionOfSecond.value()).timeQuality(v.timeQuality);
     }
+
+    // ── Domain JSON ──────────────────────────────────────────────────
+
+    @Override
+    public Object toJsonValue() {
+        java.util.Map<String, Object> map = new java.util.LinkedHashMap<>();
+        map.put("secondsSinceEpoch", secondsSinceEpoch.value());
+        map.put("fractionOfSecond", fractionOfSecond.value());
+        map.put("timeQuality", timeQuality.toJsonValue());
+        return map;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void fromJsonValue(Object value) {
+        if (!(value instanceof java.util.Map))
+            return;
+        java.util.Map<String, Object> map = (java.util.Map<String, Object>) value;
+        if (map.containsKey("secondsSinceEpoch"))
+            secondsSinceEpoch.value(((Number) map.get("secondsSinceEpoch")).longValue());
+        if (map.containsKey("fractionOfSecond"))
+            fractionOfSecond.value(((Number) map.get("fractionOfSecond")).intValue());
+        if (map.containsKey("timeQuality"))
+            timeQuality.fromJsonValue(map.get("timeQuality"));
+    }
 }

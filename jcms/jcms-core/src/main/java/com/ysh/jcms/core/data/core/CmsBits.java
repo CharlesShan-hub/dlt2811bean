@@ -9,6 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -168,6 +169,49 @@ public abstract class CmsBits extends CmsType {
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Failed to sync from inner", e);
+            }
+        }
+    }
+
+    // ── Domain JSON ──────────────────────────────────────────────────
+
+    @Override
+    public Object toJsonValue() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        for (Field f : BITS_META.get(getClass()).bitFields) {
+            try {
+                Class<?> type = f.getType();
+                if (type == boolean.class || type == Boolean.class) {
+                    map.put(f.getName(), f.getBoolean(this));
+                } else if (type == int.class || type == Integer.class) {
+                    map.put(f.getName(), f.getInt(this));
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("toJsonValue failed for bit field " + f.getName(), e);
+            }
+        }
+        return map;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void fromJsonValue(Object value) {
+        if (!(value instanceof Map))
+            return;
+        Map<String, Object> map = (Map<String, Object>) value;
+        for (Field f : BITS_META.get(getClass()).bitFields) {
+            Object val = map.get(f.getName());
+            if (val == null && !map.containsKey(f.getName()))
+                continue;
+            try {
+                Class<?> type = f.getType();
+                if (type == boolean.class || type == Boolean.class) {
+                    f.setBoolean(this, val != null && (Boolean) val);
+                } else if (type == int.class || type == Integer.class) {
+                    f.setInt(this, ((Number) val).intValue());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("fromJsonValue failed for bit field " + f.getName(), e);
             }
         }
     }

@@ -108,4 +108,18 @@ public abstract class CmsEnum<T extends CmsEnum<T>> extends CmsScalar {
         }
         return (T) this;
     }
+
+    // ── Domain JSON ──────────────────────────────────────────────────
+
+    @Override
+    public Object toJsonValue() {
+        return value();
+    }
+
+    @Override
+    public void fromJsonValue(Object value) {
+        if (value instanceof Number) {
+            this.value(((Number) value).intValue());
+        }
+    }
 }

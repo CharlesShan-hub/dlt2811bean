@@ -38,6 +38,28 @@ public class CmsBinaryTime extends CmsType {
         return this;
     }
 
+    // ── Domain JSON ──────────────────────────────────────────────────
+
+    @Override
+    public Object toJsonValue() {
+        java.util.Map<String, Object> map = new java.util.LinkedHashMap<>();
+        map.put("msOfDay", msOfDay.value());
+        map.put("daysSince1984", daysSince1984.value());
+        return map;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void fromJsonValue(Object value) {
+        if (!(value instanceof java.util.Map))
+            return;
+        java.util.Map<String, Object> map = (java.util.Map<String, Object>) value;
+        if (map.containsKey("msOfDay"))
+            msOfDay.value(((Number) map.get("msOfDay")).longValue());
+        if (map.containsKey("daysSince1984"))
+            daysSince1984.value(((Number) map.get("daysSince1984")).intValue());
+    }
+
     @Override
     public void syncToInner() {
         V.setVal(inner._v, ByteBuffer.allocate(6).putInt((int) msOfDay.value()).putShort((short) daysSince1984.value()).array());
