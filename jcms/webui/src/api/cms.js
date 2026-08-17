@@ -23,7 +23,12 @@ export async function executeJson(cmd) {
   const arrStart = clean.indexOf('[')
   if (objStart >= 0 && (arrStart < 0 || objStart < arrStart)) {
     try {
-      return JSON.parse(clean.slice(objStart))
+      const parsed = JSON.parse(clean.slice(objStart))
+      // Unwrap success/info/data wrapper if present
+      if (parsed && typeof parsed === 'object' && 'success' in parsed && 'data' in parsed) {
+        return parsed.success ? parsed.data : null
+      }
+      return parsed
     } catch {
       // fall through
     }
@@ -35,5 +40,5 @@ export async function executeJson(cmd) {
       // fall through
     }
   }
-  return { success: false, data: [], error: clean }
+  return null
 }

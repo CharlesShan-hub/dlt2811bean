@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.dataset.getDataSetValues;
 import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.app.handler.support.PaginationContext;
 import com.ysh.jcms.core.data.choice.CmsData;
@@ -17,8 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 public class GetDataSetValuesClient extends BaseClientHandler<GetDataSetValuesDao> {
-
-    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Override
     public void execute(GetDataSetValuesDao dao) throws Exception {
@@ -38,16 +35,7 @@ public class GetDataSetValuesClient extends BaseClientHandler<GetDataSetValuesDa
             // Convert each value to structured JSON
             List<Object> structuredValues = new ArrayList<>();
             for (CmsData data : resp.value) {
-                String jsonStr = data.toValueString();
-                if (jsonStr.startsWith("{")) {
-                    try {
-                        structuredValues.add(MAPPER.readValue(jsonStr, Object.class));
-                    } catch (Exception e) {
-                        structuredValues.add(jsonStr);
-                    }
-                } else {
-                    structuredValues.add(jsonStr);
-                }
+                structuredValues.add(data.toJsonValue());
             }
 
             boolean moreFollows = resp.moreFollows.value();

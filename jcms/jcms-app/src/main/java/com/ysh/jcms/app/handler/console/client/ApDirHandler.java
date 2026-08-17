@@ -81,6 +81,6 @@ public class ApDirHandler extends CommandHandler<BaseDao, BaseClientHandler<Base
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("scd", scd);
         data.put("accessPoints", refs);
-        CmsPrinter.outputJson(data);
+        CmsPrinter.result(data);
     }
 }

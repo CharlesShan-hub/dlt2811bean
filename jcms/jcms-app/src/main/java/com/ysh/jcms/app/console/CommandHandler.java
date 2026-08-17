@@ -165,7 +165,7 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
         bindParams(dao, args);
         CmsContent<D> c = new CmsContent<>(dao, args.get("auto-pull"));
         console.getClient(clientClass).executeResult(c);
-        CmsPrinter.outputJson(c.res());
+        CmsPrinter.result(c.res());
     }
 
     private void requireDaoClient() {

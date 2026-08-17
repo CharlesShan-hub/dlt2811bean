@@ -145,6 +145,27 @@ public final class CmsPrinter {
     }
 
     /**
+     * 统一响应包装：{"success":true,"info":"OK","data":<原始字段>}。
+     * <p>
+     * 将原始数据对象包装为统一的 success/info/data 响应格式输出。
+     */
+    public static void result(Object data) {
+        try {
+            java.util.LinkedHashMap<String, Object> wrapper = new java.util.LinkedHashMap<>();
+            wrapper.put("success", true);
+            wrapper.put("info", "OK");
+            wrapper.put("data", data);
+            String json = InnerBase.MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(wrapper);
+            if (captureStream.get() == null) {
+                json = highlightJson(json);
+            }
+            raw(json);
+        } catch (Exception e) {
+            error("serialization failed: " + e.getMessage());
+        }
+    }
+
+    /**
      * JSON 语法高亮：键=青色，字符串值=绿色，布尔/数字=黄色，null=灰色。 仅用于终端输出（CLI 模式），API server 模式输出原始
      * JSON。
      */

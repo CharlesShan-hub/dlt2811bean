@@ -51,6 +51,6 @@ public class NegCfgHandler extends CommandHandler<BaseDao, BaseClientHandler<Bas
         data.put("asduSize", neg.asduSize());
         data.put("protocolVersion", neg.protocolVersion());
         data.put("modelVersion", neg.modelVersion());
-        CmsPrinter.outputJson(data);
+        CmsPrinter.result(data);
     }
 }

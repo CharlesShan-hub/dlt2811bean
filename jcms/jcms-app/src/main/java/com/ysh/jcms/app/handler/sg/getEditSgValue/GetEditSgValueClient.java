@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.sg.getEditSgValue;
 import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ysh.jcms.core.data.choice.CmsData;
 import com.ysh.jcms.core.pdu.sg.CmsGetEditSgValueError;
 import com.ysh.jcms.core.pdu.sg.CmsGetEditSgValueResponse;
@@ -15,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 public class GetEditSgValueClient extends BaseClientHandler<GetEditSgValueDao> {
-
-    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Override
     public void execute(GetEditSgValueDao dao) throws Exception {
@@ -35,16 +32,7 @@ public class GetEditSgValueClient extends BaseClientHandler<GetEditSgValueDao> {
         if (content() != null) {
             List<Object> structuredValues = new ArrayList<>();
             for (CmsData data : resp.value) {
-                String jsonStr = data.toValueString();
-                if (jsonStr.startsWith("{")) {
-                    try {
-                        structuredValues.add(MAPPER.readValue(jsonStr, Object.class));
-                    } catch (Exception e) {
-                        structuredValues.add(jsonStr);
-                    }
-                } else {
-                    structuredValues.add(jsonStr);
-                }
+                structuredValues.add(data.toJsonValue());
             }
             Map<String, Object> result = new LinkedHashMap<>();
             result.put("value", structuredValues);

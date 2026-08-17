@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.data.getDataValues;
 import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.core.data.choice.CmsData;
 import com.ysh.jcms.core.pdu.data.CmsGetDataValuesError;
@@ -16,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 public class GetDataValuesClient extends BaseClientHandler<GetDataValuesDao> {
-
-    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Override
     public void execute(GetDataValuesDao dao) throws Exception {
@@ -36,17 +33,7 @@ public class GetDataValuesClient extends BaseClientHandler<GetDataValuesDao> {
         if (content() != null) {
             List<Object> structuredValues = new ArrayList<>();
             for (CmsData data : resp.value) {
-                String jsonStr = data.toValueString();
-                // Complex types (quality, utc-time, binary-time) return JSON strings
-                if (jsonStr.startsWith("{")) {
-                    try {
-                        structuredValues.add(MAPPER.readValue(jsonStr, Object.class));
-                    } catch (Exception e) {
-                        structuredValues.add(jsonStr);
-                    }
-                } else {
-                    structuredValues.add(jsonStr);
-                }
+                structuredValues.add(data.toJsonValue());
             }
             Map<String, Object> result = new LinkedHashMap<>();
             result.put("value", structuredValues);

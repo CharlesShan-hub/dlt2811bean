@@ -102,6 +102,6 @@ public class ConformanceHandler extends CommandHandler<BaseDao, BaseClientHandle
         }
         data.put("issues", items);
 
-        CmsPrinter.outputJson(data);
+        CmsPrinter.result(data);
     }
 }

@@ -51,6 +51,6 @@ public class ApCfgHandler extends CommandHandler<BaseDao, BaseClientHandler<Base
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("fromScd", apCfg.fromScd());
         data.put("defaultAps", apCfg.defaultAps());
-        CmsPrinter.outputJson(data);
+        CmsPrinter.result(data);
     }
 }

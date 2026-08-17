@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.directory.getAllDataValues;
 import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
 import com.ysh.jcms.app.handler.support.PaginationContext;
 import com.ysh.jcms.core.data.sequence.directory.CmsDataValueEntry;
@@ -17,8 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 public class AllDataValuesClient extends BaseClientHandler<AllDataValuesDao> {
-
-    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Override
     public void execute(AllDataValuesDao dao) throws Exception {
@@ -40,16 +37,7 @@ public class AllDataValuesClient extends BaseClientHandler<AllDataValuesDao> {
             for (CmsDataValueEntry entry : resp.data) {
                 Map<String, Object> entryMap = new LinkedHashMap<>();
                 entryMap.put("reference", entry.reference.value());
-                String jsonStr = entry.value.toValueString();
-                if (jsonStr.startsWith("{")) {
-                    try {
-                        entryMap.put("value", MAPPER.readValue(jsonStr, Object.class));
-                    } catch (Exception e) {
-                        entryMap.put("value", jsonStr);
-                    }
-                } else {
-                    entryMap.put("value", jsonStr);
-                }
+                entryMap.put("value", entry.value.toJsonValue());
                 convertedData.add(entryMap);
             }
 
