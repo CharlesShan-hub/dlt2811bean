@@ -83,6 +83,11 @@ public abstract class CmsBits extends CmsType {
                 return InnerBase.parseBitStringHex((String) hex, bitCount());
             }
         }
+        if (v instanceof Number) {
+            // Raw int — e.g. CmsUtcTime.syncToInner/syncFromInner passes the
+            // packed byte directly.
+            return ((Number) v).intValue() & ((1 << bitCount()) - 1);
+        }
         return 0;
     }
 

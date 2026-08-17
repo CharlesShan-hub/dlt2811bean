@@ -97,7 +97,7 @@ public class Param {
      * <li>{@code Short.class / short.class} — {@link Short#parseShort}</li>
      * <li>{@code Float.class / float.class} — {@link Float#parseFloat}</li>
      * <li>{@code Double.class / double.class} — {@link Double#parseDouble}</li>
-     * <li>{@code CmsData.class} — parsed via {@link CmsDataFiller}</li>
+     * <li>{@code CmsData.class} — parsed via {@link CmsData#fromJson(String)}</li>
      * <li>{@code List.class} — split by {@link #delimiter}; each item is
      * converted to {@link #itemType} (default {@code String})</li>
      * </ul>
@@ -128,9 +128,7 @@ public class Param {
         if (type == Double.class || type == double.class)
             return Double.parseDouble(value);
         if (type == CmsData.class) {
-            CmsData data = new CmsData();
-            CmsDataFiller.fillCmsData(data, value);
-            return data;
+            return CmsData.fromJson(value);
         }
         if (CmsType.class.isAssignableFrom(type)) {
             return CmsType.fromJson(type, value);
@@ -144,9 +142,7 @@ public class Param {
             if (itemType == CmsData.class) {
                 List<CmsData> data = new ArrayList<>();
                 for (String item : items) {
-                    CmsData d = new CmsData();
-                    CmsDataFiller.fillCmsData(d, item);
-                    data.add(d);
+                    data.add(CmsData.fromJson(item));
                 }
                 return data;
             }

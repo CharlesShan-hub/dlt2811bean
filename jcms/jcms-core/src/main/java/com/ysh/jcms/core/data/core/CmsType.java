@@ -98,6 +98,8 @@ public abstract class CmsType {
             T cms = (T) type.getDeclaredConstructor().newInstance();
             InnerBase inner = InnerBase.MAPPER.readValue(json, cms.inner.getClass());
             cms.inner = inner;
+            cms.rebind();
+            cms.syncFromInner();
             return cms;
         } catch (Exception e) {
             throw new RuntimeException("fromJson failed for " + type.getSimpleName() + ": " + json, e);
@@ -105,9 +107,13 @@ public abstract class CmsType {
     }
 
     /**
-     * Push wrapper state into the Inner* tree before encode. Subclasses with Java
-     * fields that need packing (e.g. CmsBits) override this.
+     * Rebind wrapper _v after inner is replaced (e.g. after decode or fromJson).
+     * CmsSequence and CmsChoice override this to re-establish _v sharing.
      */
+    public void rebind() {
+        // no-op for scalar / leaf types
+    }
+
     public void syncToInner() {
     }
 

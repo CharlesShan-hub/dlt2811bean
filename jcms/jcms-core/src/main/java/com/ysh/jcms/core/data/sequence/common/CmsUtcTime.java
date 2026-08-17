@@ -49,10 +49,19 @@ public class CmsUtcTime extends CmsType {
     }
 
     @Override
+    public void rebind() {
+        // JER decodes OCTET STRING as {"value": "hex", "length": N} — normalize to {"_": hex}
+        if (inner._v.containsKey("value") && !inner._v.containsKey("_")) {
+            inner._v.put("_", inner._v.get("value"));
+            inner._v.remove("value");
+            inner._v.remove("length");
+        }
+    }
+
+    @Override
     public void syncToInner() {
         timeQuality.syncToInner();
-        Object tqObj = V.getVal(timeQuality.inner._v);
-        int tqValue = tqObj instanceof Number ? ((Number) tqObj).intValue() : 0;
+        int tqValue = timeQuality.value();
 
         ByteBuffer buf = ByteBuffer.allocate(8);
         CmsBytesUtil.putInt32u(buf, secondsSinceEpoch.value());
@@ -64,6 +73,10 @@ public class CmsUtcTime extends CmsType {
     @Override
     public void syncFromInner() {
         Object raw = V.getVal(inner._v);
+        // JER decodes OCTET STRING as {"value": "hex", "length": N} — use "value" as fallback
+        if (raw == null && inner._v.containsKey("value")) {
+            raw = inner._v.get("value");
+        }
         byte[] bytes;
         if (raw instanceof byte[]) {
             bytes = (byte[]) raw;

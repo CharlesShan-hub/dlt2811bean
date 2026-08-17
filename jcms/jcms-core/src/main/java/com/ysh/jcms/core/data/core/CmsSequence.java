@@ -143,11 +143,11 @@ public abstract class CmsSequence extends CmsType {
                 if (sub instanceof LinkedHashMap) {
                     wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
                 }
-                // NOTE: no rebindChoices() here for CmsChoice wrappers — at
+                // NOTE: no rebind() here for CmsChoice wrappers — at
                 // construction time the parent inner._v still holds the
                 // constructor-seeded default variant map, and rebinding would
                 // alias every variant wrapper onto it. Correct rebinding happens
-                // after decode via rebindWrappers()/rebindChoices().
+                // after decode via rebind().
                 f.set(this, wrapper);
                 injectedWrappers.put(fieldName, wrapper);
             } catch (Exception e) {
@@ -157,7 +157,7 @@ public abstract class CmsSequence extends CmsType {
     }
 
     /** Rebind wrapper _v after decode creates a new Inner*. */
-    public void rebindWrappers() {
+    public void rebind() {
         SequenceMeta meta = SEQ_META.get(getClass());
         // Rebuild OPTIONAL presence markers: a decoded frame only contains the
         // fields that were actually present, so presence == field in inner._v.
@@ -183,12 +183,7 @@ public abstract class CmsSequence extends CmsType {
                 // so a later re-encode doesn't serialize them.
                 wrapper.inner._v.clear();
             }
-            if (wrapper instanceof CmsChoice) {
-                ((CmsChoice) wrapper).rebindChoices();
-            }
-            if (wrapper instanceof CmsSequence) {
-                ((CmsSequence) wrapper).rebindWrappers();
-            }
+            wrapper.rebind();
         }
         // Rebuild SEQUENCE OF wrappers from inner._v
         for (Map.Entry<String, CmsFieldInfo> e : meta.sequenceOf.entrySet()) {
@@ -212,10 +207,7 @@ public abstract class CmsSequence extends CmsType {
                         } else {
                             continue;
                         }
-                        if (wrapper instanceof CmsChoice)
-                            ((CmsChoice) wrapper).rebindChoices();
-                        if (wrapper instanceof CmsSequence)
-                            ((CmsSequence) wrapper).rebindWrappers();
+                        wrapper.rebind();
                         wrapper.syncFromInner();
                         list.add(wrapper);
                     }
@@ -290,7 +282,7 @@ public abstract class CmsSequence extends CmsType {
                 inner._v.put(innerKey, ((CmsScalar) w).inner.toJsonValue());
             } else if (w instanceof CmsBits) {
                 // BIT STRING: JER form is a bare hex string. Unlike CmsScalar, the
-                // wrapper _v is NOT shared with parent after decode (rebindWrappers
+                // wrapper _v is NOT shared with parent after decode (rebind
                 // stores the decoded hex string directly), so write it back explicitly
                 // — otherwise a decode→modify→encode cycle silently loses updates.
                 inner._v.put(innerKey, V.getVal(w.inner._v));
@@ -344,7 +336,7 @@ public abstract class CmsSequence extends CmsType {
     @Override
     public void decode(byte[] data) {
         super.decode(data);
-        rebindWrappers();
+        rebind();
         syncFromInner();
     }
 

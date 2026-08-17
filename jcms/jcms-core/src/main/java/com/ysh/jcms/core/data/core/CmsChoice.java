@@ -180,7 +180,7 @@ public abstract class CmsChoice extends CmsType {
      * Rebind wrapper _v references after {@code inner} is replaced. Shares the
      * variant's {@code _v} sub-map with each wrapper.
      */
-    public void rebindChoices() {
+    public void rebind() {
         for (VariantInfo vi : variantByIndex.values()) {
             if (vi.field == null || !CmsType.class.isAssignableFrom(vi.field.getType()))
                 continue;
@@ -193,11 +193,11 @@ public abstract class CmsChoice extends CmsType {
                     w.inner._v = (LinkedHashMap<String, Object>) sub;
                 }
                 if (w instanceof CmsChoice)
-                    ((CmsChoice) w).rebindChoices();
+                    ((CmsChoice) w).rebind();
                 if (w instanceof CmsSequence)
-                    ((CmsSequence) w).rebindWrappers();
+                    ((CmsSequence) w).rebind();
             } catch (Exception e) {
-                LOG.log(Level.WARNING, "rebindChoices failed for variant " + vi.name + " in " + getClass().getSimpleName(), e);
+                LOG.log(Level.WARNING, "rebind failed for variant " + vi.name + " in " + getClass().getSimpleName(), e);
             }
         }
     }
@@ -218,7 +218,7 @@ public abstract class CmsChoice extends CmsType {
                     // Keep the wrapper's own _v at construction time: the parent's
                     // "_" slot holds the constructor-seeded default variant map and
                     // must NOT be aliased onto every variant wrapper here. Sharing
-                    // happens later via choice(int) / rebindChoices() / syncFromInner().
+                    // happens later via choice(int) / rebind() / syncFromInner().
                     InnerBase val = (InnerBase) f.getType().getDeclaredConstructor().newInstance();
                     f.set(this, val);
                 } catch (Exception e) {
@@ -302,7 +302,7 @@ public abstract class CmsChoice extends CmsType {
     @Override
     public void decode(byte[] data) {
         super.decode(data);
-        rebindChoices();
+        rebind();
         syncFromInner();
     }
 
@@ -458,9 +458,9 @@ public abstract class CmsChoice extends CmsType {
             V.setVal(wrapper.inner._v, sub);
         }
         if (wrapper instanceof CmsChoice)
-            ((CmsChoice) wrapper).rebindChoices();
+            ((CmsChoice) wrapper).rebind();
         if (wrapper instanceof CmsSequence)
-            ((CmsSequence) wrapper).rebindWrappers();
+            ((CmsSequence) wrapper).rebind();
         wrapper.syncFromInner();
     }
 

@@ -302,7 +302,7 @@ public class CmsDataDefinition extends CmsChoice {
                         @SuppressWarnings("unchecked")
                         java.util.LinkedHashMap<String, Object> m = (java.util.LinkedHashMap<String, Object>) elem;
                         c.inner._v = m;
-                        c.rebindWrappers();
+                        c.rebind();
                     } else {
                         continue;
                     }
