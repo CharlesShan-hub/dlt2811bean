@@ -4,6 +4,7 @@ import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.sequence.connection.CmsAuthenticationParameter;
 import com.ysh.jcms.core.pdu.connection.CmsAssociateRequest;
+import java.util.Objects;
 import lombok.Setter;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -31,6 +32,8 @@ public class AssociateDao extends BaseDao {
 
     @Override
     public CmsType toRequest() {
+        Objects.requireNonNull(sapRef, "sapRef must not be null");
+        Objects.requireNonNull(authParam, "authParam must not be null");
         return new CmsAssociateRequest()
             .authenticationParameter(authParam)
             .serverAccessPointReference(sapRef);

@@ -1,6 +1,7 @@
 package com.ysh.jcms.core.pdu.directory;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import com.ysh.jcms.core.data.core.CmsField;
 import com.ysh.jcms.core.data.core.CmsSequence;
@@ -40,6 +41,16 @@ public class CmsGetLogicalNodeDirectoryRequest extends CmsSequence {
 
     public CmsGetLogicalNodeDirectoryRequest reference(CmsReferenceChoice v) {
         this.reference.value(v);
+        return this;
+    }
+    /** Convenience: auto-detect ldName (no "/") vs lnReference (contains "/"). */
+    public CmsGetLogicalNodeDirectoryRequest reference(String v) {
+        Objects.requireNonNull(v, "reference must not be null");
+        if (v.contains("/")) {
+            this.reference.altLnReference(v);
+        } else {
+            this.reference.altLdName(v);
+        }
         return this;
     }
     public CmsGetLogicalNodeDirectoryRequest acsiClass(int v) {

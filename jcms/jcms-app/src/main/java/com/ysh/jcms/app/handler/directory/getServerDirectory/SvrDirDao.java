@@ -11,23 +11,12 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class SvrDirDao extends BaseDao {
 
-    private int objectClass = CmsObjectClass.LOGICAL_DEVICE;
-
-    private String referenceAfter = null;
-
-    /**
-     * Set the reference after cursor. Ignores null/empty values so callers can pass
-     * raw CLI args without checking.
-     */
-    public SvrDirDao referenceAfter(String referenceAfter) {
-        if (referenceAfter != null && !referenceAfter.isEmpty()) {
-            this.referenceAfter = referenceAfter;
-        }
-        return this;
-    }
+    private String referenceAfter;
 
     @Override
     public CmsType toRequest() {
-        return new CmsGetServerDirectoryRequest().objectClass(objectClass).referenceAfter(referenceAfter);
+        return new CmsGetServerDirectoryRequest()
+            .objectClass(CmsObjectClass.LOGICAL_DEVICE)
+            .referenceAfter(referenceAfter);
     }
 }

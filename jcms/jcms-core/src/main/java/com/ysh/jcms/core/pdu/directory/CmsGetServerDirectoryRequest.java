@@ -13,7 +13,7 @@ import com.ysh.jcms.core.data.scalar.CmsObjectReference;
  * GetServerDirectory-RequestPDU ::= SEQUENCE {
  *     objectClass      [0] IMPLICIT INTEGER {
  *         reserved        (0),
- *         logical-device  (1),
+ *         logical-device  (1), -- should only be this
  *         file-system     (2)
  *     } (0..2),
  *     referenceAfter   [1] IMPLICIT ObjectReference OPTIONAL

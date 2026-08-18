@@ -52,6 +52,10 @@ public class CmsFC extends CmsScalar {
         this.val = v;
         return this;
     }
+    /** Convenience: parse 2-char FC code and set value. */
+    public CmsFC value(String v) {
+        return value(fromCode(v));
+    }
 
     /**
      * Look up by 2-char FC code ("ST", "MX", ...). Returns XX if unknown.
