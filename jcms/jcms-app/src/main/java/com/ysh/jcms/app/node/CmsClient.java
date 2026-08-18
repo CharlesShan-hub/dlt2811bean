@@ -87,6 +87,20 @@ public class CmsClient extends CmsNode {
         registerClients();
     }
 
+    /**
+     * SCL-aware client node: loads the given SCD/ICD file at construction so the
+     * SCL model is available via {@link #sclManager()}.
+     *
+     * @param sclFile
+     *            path to the SCD/ICD file
+     */
+    public CmsClient(String sclFile) {
+        this();
+        if (sclFile != null) {
+            sclManager().load(sclFile);
+        }
+    }
+
     /* ====== handler registration ====== */
 
     @Override

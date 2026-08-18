@@ -10,7 +10,7 @@ import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
 import com.ysh.jcms.app.handler.connection.associate.AssociateDao;
 import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateClient;
-import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateClientDao;
+import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateDao;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 
 import javax.net.ssl.SSLContext;
@@ -69,7 +69,7 @@ public class ConnectTlsHandler extends CommandHandler<BaseDao, BaseClientHandler
 
         CmsPrinter.info("TLS connected, negotiating parameters ...");
 
-        NegotiateClientDao negotiateDao = new NegotiateClientDao();
+        NegotiateDao negotiateDao = new NegotiateDao();
         String apduStr = args.get("apduSize");
         String asduStr = args.get("asduSize");
         String protoStr = args.get("protocolVersion");

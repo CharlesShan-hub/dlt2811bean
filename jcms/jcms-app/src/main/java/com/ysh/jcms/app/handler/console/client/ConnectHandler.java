@@ -11,7 +11,7 @@ import com.ysh.jcms.app.handler.base.BaseHandler;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
 import com.ysh.jcms.app.handler.connection.associate.AssociateDao;
 import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateClient;
-import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateClientDao;
+import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateDao;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 
 import javax.net.ssl.SSLContext;
@@ -95,7 +95,7 @@ public class ConnectHandler extends CommandHandler<BaseDao, BaseClientHandler<Ba
 
         CmsPrinter.info("Connected, negotiating parameters ...");
 
-        NegotiateClientDao negotiateDao = new NegotiateClientDao();
+        NegotiateDao negotiateDao = new NegotiateDao();
         String apduStr = args.get("apdu");
         String asduStr = args.get("asdu");
         String protoStr = args.get("version");

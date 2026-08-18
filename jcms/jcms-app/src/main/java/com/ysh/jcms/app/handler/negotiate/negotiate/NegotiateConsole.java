@@ -6,7 +6,7 @@ import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.config.CmsConfig.Protocol.Negotiate;
 
-public class NegotiateConsole extends CommandHandler<NegotiateClientDao, NegotiateClient> {
+public class NegotiateConsole extends CommandHandler<NegotiateDao, NegotiateClient> {
 
     public NegotiateConsole() {
         super(CommandInfo.NEGOTIATE);

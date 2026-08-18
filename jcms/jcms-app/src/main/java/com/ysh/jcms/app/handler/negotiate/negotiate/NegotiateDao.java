@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Getter
 @Accessors(fluent = true)
-public class NegotiateClientDao extends BaseDao {
+public class NegotiateDao extends BaseDao {
     private int apduSize = CmsConfigLoader.load().protocol().negotiate().apduSize();
     private long asduSize = CmsConfigLoader.load().protocol().negotiate().asduSize();
     private long protocolVersion = CmsConfigLoader.load().protocol().negotiate().protocolVersion();

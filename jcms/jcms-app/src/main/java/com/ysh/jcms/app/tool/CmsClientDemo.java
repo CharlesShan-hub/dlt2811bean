@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.tool;
 
 import com.ysh.jcms.app.handler.connection.associate.AssociateDao;
+import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateDao;
 import com.ysh.jcms.app.handler.connection.release.ReleaseDao;
 import com.ysh.jcms.app.handler.data.getDataValues.GetDataValuesClient;
 import com.ysh.jcms.app.handler.data.getDataValues.GetDataValuesDao;
@@ -24,12 +25,19 @@ import java.util.Arrays;
 public class CmsClientDemo {
 
     public static void main(String[] args) throws Exception {
-        // 1. Create a client node (all protocol handlers pre-registered)
+        // 1. Create client
+        // CmsClient client = new CmsClient("config/sample-scd-full.scd");
+        // 1. Create client with scd file path in config
         CmsClient client = new CmsClient();
 
         // 2. TCP connect to the CMS server
         System.out.println("Connecting to 127.0.0.1:8102 ...");
         client.connect("127.0.0.1", 8102);
+
+        // 3. Negotiate with the server: apduSize\asduSize\protocolVersion from config
+        System.out.println("Negotiating with the server ...");
+        //client.execute(new NegotiateDao());
+        client.execute(new NegotiateDao().apduSize(1024).asduSize(1024).protocolVersion(1));
 
         // 3. Associate with an access point (auto-negotiates)
         System.out.println("Associating with C_B5041X/S1 ...");

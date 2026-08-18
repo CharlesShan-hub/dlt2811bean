@@ -15,10 +15,7 @@ public class ReleaseDao extends BaseDao {
 
     @Override
     public CmsType toRequest() {
-        CmsReleaseRequest req = new CmsReleaseRequest();
-        if (associationId != null && associationId.length > 0) {
-            req.associationId(associationId);
-        }
-        return req;
+        return new CmsReleaseRequest()
+            .associationId(associationId);
     }
 }

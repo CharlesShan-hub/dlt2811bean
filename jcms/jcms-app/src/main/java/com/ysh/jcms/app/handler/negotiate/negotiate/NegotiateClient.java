@@ -13,15 +13,15 @@ import com.ysh.jcms.utils.transport.session.ClientSession;
 
 import java.io.IOException;
 
-public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
+public class NegotiateClient extends BaseClientHandler<NegotiateDao> {
 
     @Override
-    public void execute(NegotiateClientDao dao) throws Exception {
+    public void execute(NegotiateDao dao) throws Exception {
         send(CmsServiceInfo.ASSOCIATE_NEGOTIATE, dao);
     }
 
     @Override
-    protected void onSuccess(Frame frame, NegotiateClientDao dao) throws IOException {
+    protected void onSuccess(Frame frame, NegotiateDao dao) throws IOException {
         CmsNegotiateResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsNegotiateResponse());
 
         ClientSession session = node.client().session();
