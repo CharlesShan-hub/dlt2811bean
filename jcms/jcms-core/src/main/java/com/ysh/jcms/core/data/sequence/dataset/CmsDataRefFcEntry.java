@@ -45,6 +45,10 @@ public class CmsDataRefFcEntry extends CmsSequence {
         this.fc.value(v);
         return this;
     }
+    public CmsDataRefFcEntry fc(String v) {
+        this.fc.value(v);
+        return this;
+    }
 
     public CmsDataRefFcEntry value(CmsDataRefFcEntry v) {
         this.reference.value(v.reference.value());

@@ -21,7 +21,7 @@ public class AllCbValuesConsole extends CommandHandler<AllCbValuesDao, AllCbValu
 
     public AllCbValuesConsole() {
         super(CommandInfo.ALL_CB);
-        Param p = Param.of("ln", null, "ln", String.class, true);
+        Param p = Param.of("ln", null, "reference", String.class, true);
         param(p, "ldName 或 lnReference（如 LD0 或 LD0/LLN0）");
         Param p2 = Param.of("acsi", null, "acsiClass", int.class, true).valueMap(ACSI_MAP);
         param(p2, "ACSI 类型: brcb(3)/urcb(4)/lcb(5)/sgcb(7)/gocb(8)/msvcb(10)");

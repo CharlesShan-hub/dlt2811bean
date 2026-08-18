@@ -50,6 +50,15 @@ public class CmsDataRefValueEntry extends CmsSequence {
         this.fc.value(v);
         return this;
     }
+    public CmsDataRefValueEntry fc(String v) {
+        if (v != null && !v.isEmpty() && !"XX".equalsIgnoreCase(v)) {
+            this.fc.value(v);
+            setPresent("fc", true);
+        } else {
+            setPresent("fc", false);
+        }
+        return this;
+    }
     public CmsDataRefValueEntry value(CmsData v) {
         this.value.value(v);
         return this;

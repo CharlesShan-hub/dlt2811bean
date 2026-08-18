@@ -8,7 +8,12 @@ import com.ysh.jcms.core.pdu.data.CmsSetDataValuesRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Setter
 @Getter
@@ -26,27 +31,21 @@ public class SetDataValuesDao extends BaseDao {
 
     @Override
     public CmsType toRequest() {
-        CmsSetDataValuesRequest req = new CmsSetDataValuesRequest();
-        if (references != null && values != null) {
-            int size = Math.min(references.size(), values.size());
-            for (int i = 0; i < size; i++) {
-                String ref = references.get(i);
-                CmsData value = values.get(i);
-                if (ref == null || ref.isEmpty() || value == null)
-                    continue;
-                CmsDataRefValueEntry entry = new CmsDataRefValueEntry().reference(ref).value(value);
-                if (fcs != null && i < fcs.size()) {
-                    String fcStr = fcs.get(i);
-                    if (fcStr != null && !fcStr.isEmpty()) {
-                        int fc = Integer.parseInt(fcStr);
-                        if (fc != 0)
-                            entry.fc(fc);
-                    }
-                }
-                req.data.add(entry);
-            }
-        }
-        return req;
-    }
+        Objects.requireNonNull(references, "references must not be null");
+        Objects.requireNonNull(values, "values must not be null");
+        if (fcs == null || fcs.isEmpty())
+            fcs = new ArrayList<>(Collections.nCopies(references.size(), null));
+        if (references.size() != values.size() || references.size() != fcs.size())
+            throw new IllegalArgumentException("references values and fcs must have the same size");
 
+        return new CmsSetDataValuesRequest()
+            .data(
+                IntStream.range(0, references.size())
+                    .mapToObj(i -> new CmsDataRefValueEntry()
+                        .reference(references.get(i))
+                        .value(values.get(i))
+                        .fc(fcs.get(i)))
+                    .collect(Collectors.toList())
+            );
+    }
 }

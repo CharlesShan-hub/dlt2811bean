@@ -1,6 +1,7 @@
 package com.ysh.jcms.core.pdu.directory;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import com.ysh.jcms.core.data.core.CmsField;
 import com.ysh.jcms.core.data.core.CmsSequence;
@@ -42,9 +43,28 @@ public class CmsGetAllDataDefinitionRequest extends CmsSequence {
         this.reference.value(v);
         return this;
     }
+    /** Convenience: auto-detect ldName (no "/") vs lnReference (contains "/"). */
+    public CmsGetAllDataDefinitionRequest reference(String v) {
+        Objects.requireNonNull(v, "reference must not be null");
+        if (v.contains("/")) {
+            this.reference.altLnReference(v);
+        } else {
+            this.reference.altLdName(v);
+        }
+        return this;
+    }
     public CmsGetAllDataDefinitionRequest fc(int v) {
         setPresent("fc", true);
         this.fc.value(v);
+        return this;
+    }
+    public CmsGetAllDataDefinitionRequest fc(String v) {
+        if (v != null) {
+            this.fc.value(v);
+            setPresent("fc", true);
+        } else {
+            setPresent("fc", false);
+        }
         return this;
     }
     public CmsGetAllDataDefinitionRequest referenceAfter(byte[] v) {

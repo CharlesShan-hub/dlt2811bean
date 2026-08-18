@@ -2,8 +2,9 @@ package com.ysh.jcms.app.handler.directory.getAllDataDefinition;
 
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.pdu.directory.CmsGetAllDataDefinitionRequest;
-import lombok.Getter;
 import com.ysh.jcms.app.handler.base.BaseDao;
+import java.util.Objects;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
@@ -12,46 +13,21 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class AllDataDefDao extends BaseDao {
 
-    /** ldName (e.g. "LD0") — alternative to lnReference */
-    private String ldName;
-    /** lnReference (e.g. "LD0/LLN0") — alternative to ldName */
-    private String lnReference;
-    /** Optional FunctionalConstraint filter */
-    private Integer fc;
+    /** LD name (e.g. "LD0") or LN reference (e.g. "LD0/LLN0") — auto-detected by PDU */
+    private String reference;
+
+    /** Optional FunctionalConstraint filter (2-char code, e.g. "ST", "MX") */
+    private String fc;
+
     /** Optional pagination: return items after this reference */
     private String referenceAfter;
 
-    /**
-     * Convenience setter that detects {@code lnReference} (contains "/") vs
-     * {@code ldName} (no "/").
-     */
-    public void ln(String value) {
-        if (value.contains("/")) {
-            this.lnReference = value;
-        } else {
-            this.ldName = value;
-        }
-    }
-
-    /**
-     * Convenience setter for FC from a 2-char code string (e.g. "ST", "MX").
-     */
-    public void fc(String value) {
-        this.fc = com.ysh.jcms.core.data.scalar.CmsFC.fromString(value);
-    }
-
     @Override
     public CmsType toRequest() {
-        CmsGetAllDataDefinitionRequest req = new CmsGetAllDataDefinitionRequest();
-        setIfNotEmpty(req::referenceAfter, referenceAfter);
-        if (ldName != null) {
-            req.reference.altLdName(ldName);
-        } else if (lnReference != null) {
-            req.reference.altLnReference(lnReference);
-        }
-        if (fc != null) {
-            req.fc(fc);
-        }
-        return req;
+        Objects.requireNonNull(reference, "reference must not be null");
+        return new CmsGetAllDataDefinitionRequest()
+            .reference(reference)
+            .fc(fc)
+            .referenceAfter(referenceAfter);
     }
 }

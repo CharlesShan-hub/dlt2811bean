@@ -8,7 +8,7 @@ public class AllDataValuesConsole extends CommandHandler<AllDataValuesDao, AllDa
 
     public AllDataValuesConsole() {
         super(CommandInfo.ALL_DATA);
-        Param p = Param.of("ln", null, "ln", String.class, true);
+        Param p = Param.of("ln", null, "reference", String.class, true);
         param(p, "ldName 或 lnReference（如 LD0 或 LD0/LLN0）");
         Param p2 = Param.of("fc", "XX", "fc", String.class, false);
         param(p2, "功能约束过滤（如 ST, MX, CF, DC），默认 XX 即不过滤");

@@ -43,6 +43,10 @@ public class CmsSgRefFcEntry extends CmsSequence {
         this.fc.value(v);
         return this;
     }
+    public CmsSgRefFcEntry fc(String v) {
+        this.fc.value(v);
+        return this;
+    }
 
     /** Copy all field values from another CmsSgRefFcEntry (fluent). */
     public CmsSgRefFcEntry value(CmsSgRefFcEntry v) {
