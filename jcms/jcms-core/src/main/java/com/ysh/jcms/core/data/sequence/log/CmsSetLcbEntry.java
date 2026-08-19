@@ -63,6 +63,15 @@ public class CmsSetLcbEntry extends CmsSequence {
         setPresent("logEna", true);
         return this;
     }
+    public CmsSetLcbEntry logEna(Boolean v) {
+        if (v != null) {
+            this.logEna.value(v);
+            setPresent("logEna", true);
+        } else {
+            setPresent("logEna", false);
+        }
+        return this;
+    }
     public CmsSetLcbEntry datSet(String v) {
         if (v != null) {
             this.datSet.value(v);
@@ -84,9 +93,29 @@ public class CmsSetLcbEntry extends CmsSequence {
         }
         return this;
     }
+    public CmsSetLcbEntry trgOps(Integer v) {
+        if (v != null) {
+            CmsTriggerConditions t = new CmsTriggerConditions();
+            t.value(v);
+            this.trgOps.value(t);
+            setPresent("trgOps", true);
+        } else {
+            setPresent("trgOps", false);
+        }
+        return this;
+    }
     public CmsSetLcbEntry intgPd(long v) {
         this.intgPd.value(v);
         setPresent("intgPd", true);
+        return this;
+    }
+    public CmsSetLcbEntry intgPd(Integer v) {
+        if (v != null) {
+            this.intgPd.value(v);
+            setPresent("intgPd", true);
+        } else {
+            setPresent("intgPd", false);
+        }
         return this;
     }
     public CmsSetLcbEntry logRef(String v) {
@@ -110,9 +139,29 @@ public class CmsSetLcbEntry extends CmsSequence {
         }
         return this;
     }
+    public CmsSetLcbEntry optFlds(Integer v) {
+        if (v != null) {
+            CmsLcbOptFlds f = new CmsLcbOptFlds();
+            f.value(v);
+            this.optFlds.value(f);
+            setPresent("optFlds", true);
+        } else {
+            setPresent("optFlds", false);
+        }
+        return this;
+    }
     public CmsSetLcbEntry bufTm(long v) {
         this.bufTm.value(v);
         setPresent("bufTm", true);
+        return this;
+    }
+    public CmsSetLcbEntry bufTm(Integer v) {
+        if (v != null) {
+            this.bufTm.value(v);
+            setPresent("bufTm", true);
+        } else {
+            setPresent("bufTm", false);
+        }
         return this;
     }
 

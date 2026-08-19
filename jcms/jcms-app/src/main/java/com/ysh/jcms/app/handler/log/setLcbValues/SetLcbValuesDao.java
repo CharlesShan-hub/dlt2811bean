@@ -1,11 +1,11 @@
 package com.ysh.jcms.app.handler.log.setLcbValues;
 
-import com.ysh.jcms.core.data.bitarray.CmsLcbOptFlds;
 import com.ysh.jcms.app.handler.base.BaseDao;
-import com.ysh.jcms.core.data.bitarray.CmsTriggerConditions;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.sequence.log.CmsSetLcbEntry;
 import com.ysh.jcms.core.pdu.log.CmsSetLcbValuesRequest;
+import java.util.Collections;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -14,42 +14,43 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 public class SetLcbValuesDao extends BaseDao {
+
+    /** LCB reference (required) */
     private String ref;
+
+    /** Log enable [0..1] */
     private Boolean logEna;
+
+    /** Data set reference [0..1] */
     private String datSet;
+
+    /** Trigger conditions bitmap [0..1] */
     private Integer trgOps;
+
+    /** Integrity period [0..1] */
     private Integer intgPd;
+
+    /** Log reference [0..1] */
     private String logRef;
+
+    /** Log option flags bitmap [0..1] */
     private Integer optFlds;
+
+    /** Buffered time [0..1] */
     private Integer bufTm;
 
     @Override
     public CmsType toRequest() {
-        CmsSetLcbValuesRequest req = new CmsSetLcbValuesRequest();
-        CmsSetLcbEntry entry = new CmsSetLcbEntry().reference(ref != null ? ref : "");
-
-        if (logEna != null) {
-            entry.logEna(logEna);
-        }
-        if (datSet != null)
-            entry.datSet(datSet);
-        if (trgOps != null) {
-            entry.trgOps(new CmsTriggerConditions().integrity((trgOps & 1) != 0).data_change((trgOps & 2) != 0)
-                    .quality_change((trgOps & 4) != 0).data_update((trgOps & 8) != 0).general_interrogation((trgOps & 16) != 0));
-        }
-        if (intgPd != null) {
-            entry.intgPd(intgPd);
-        }
-        if (logRef != null)
-            entry.logRef(logRef);
-        if (optFlds != null) {
-            entry.optFlds(new CmsLcbOptFlds().bit0((optFlds & 1) != 0));
-        }
-        if (bufTm != null) {
-            entry.bufTm(bufTm);
-        }
-
-        req.lcb.add(entry);
-        return req;
+        Objects.requireNonNull(ref, "ref must not be null");
+        return new CmsSetLcbValuesRequest().lcb(Collections.singletonList(
+            new CmsSetLcbEntry().reference(ref)
+                .logEna(logEna)
+                .datSet(datSet)
+                .trgOps(trgOps)
+                .intgPd(intgPd)
+                .logRef(logRef)
+                .optFlds(optFlds)
+                .bufTm(bufTm)
+        ));
     }
 }

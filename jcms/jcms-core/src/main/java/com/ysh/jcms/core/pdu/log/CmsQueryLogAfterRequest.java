@@ -50,8 +50,33 @@ public class CmsQueryLogAfterRequest extends CmsSequence {
         }
         return this;
     }
+    public CmsQueryLogAfterRequest startTime(Long v) {
+        if (v != null) {
+            this.startTime.value(new CmsBinaryTime()
+                .msOfDay(v % 86400000L)
+                .daysSince1984((int) (v / 86400000L)));
+            setPresent("startTime", true);
+        } else {
+            setPresent("startTime", false);
+        }
+        return this;
+    }
     public CmsQueryLogAfterRequest entry(byte[] v) {
         this.entry.value(v);
         return this;
+    }
+    public CmsQueryLogAfterRequest entry(String v) {
+        this.entry.value(entryIdBytes(v));
+        return this;
+    }
+    private static byte[] entryIdBytes(String id) {
+        if (id == null)
+            id = "";
+        String padded = id;
+        while (padded.length() < CmsEntryId.LEN)
+            padded = "0" + padded;
+        if (padded.length() > CmsEntryId.LEN)
+            padded = padded.substring(padded.length() - CmsEntryId.LEN);
+        return padded.getBytes(StandardCharsets.UTF_8);
     }
 }

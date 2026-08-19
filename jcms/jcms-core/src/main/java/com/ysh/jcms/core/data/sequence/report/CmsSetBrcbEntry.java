@@ -90,6 +90,15 @@ public class CmsSetBrcbEntry extends CmsSequence {
         setPresent("rptEna", true);
         return this;
     }
+    public CmsSetBrcbEntry rptEna(Boolean v) {
+        if (v != null) {
+            this.rptEna.value(v);
+            setPresent("rptEna", true);
+        } else {
+            setPresent("rptEna", false);
+        }
+        return this;
+    }
     public CmsSetBrcbEntry datSet(String v) {
         if (v != null) {
             this.datSet.value(v);
@@ -111,9 +120,29 @@ public class CmsSetBrcbEntry extends CmsSequence {
         }
         return this;
     }
+    public CmsSetBrcbEntry optFlds(Integer v) {
+        if (v != null) {
+            CmsRcbOptFlds f = new CmsRcbOptFlds();
+            f.value(v);
+            this.optFlds.value(f);
+            setPresent("optFlds", true);
+        } else {
+            setPresent("optFlds", false);
+        }
+        return this;
+    }
     public CmsSetBrcbEntry bufTm(long v) {
         this.bufTm.value(v);
         setPresent("bufTm", true);
+        return this;
+    }
+    public CmsSetBrcbEntry bufTm(Integer v) {
+        if (v != null) {
+            this.bufTm.value(v);
+            setPresent("bufTm", true);
+        } else {
+            setPresent("bufTm", false);
+        }
         return this;
     }
     public CmsSetBrcbEntry trgOps(CmsTriggerConditions v) {
@@ -125,9 +154,29 @@ public class CmsSetBrcbEntry extends CmsSequence {
         }
         return this;
     }
+    public CmsSetBrcbEntry trgOps(Integer v) {
+        if (v != null) {
+            CmsTriggerConditions t = new CmsTriggerConditions();
+            t.value(v);
+            this.trgOps.value(t);
+            setPresent("trgOps", true);
+        } else {
+            setPresent("trgOps", false);
+        }
+        return this;
+    }
     public CmsSetBrcbEntry intgPd(long v) {
         this.intgPd.value(v);
         setPresent("intgPd", true);
+        return this;
+    }
+    public CmsSetBrcbEntry intgPd(Integer v) {
+        if (v != null) {
+            this.intgPd.value(v);
+            setPresent("intgPd", true);
+        } else {
+            setPresent("intgPd", false);
+        }
         return this;
     }
     public CmsSetBrcbEntry gi(boolean v) {
@@ -135,9 +184,27 @@ public class CmsSetBrcbEntry extends CmsSequence {
         setPresent("gi", true);
         return this;
     }
+    public CmsSetBrcbEntry gi(Boolean v) {
+        if (v != null) {
+            this.gi.value(v);
+            setPresent("gi", true);
+        } else {
+            setPresent("gi", false);
+        }
+        return this;
+    }
     public CmsSetBrcbEntry purgeBuf(boolean v) {
         this.purgeBuf.value(v);
         setPresent("purgeBuf", true);
+        return this;
+    }
+    public CmsSetBrcbEntry purgeBuf(Boolean v) {
+        if (v != null) {
+            this.purgeBuf.value(v);
+            setPresent("purgeBuf", true);
+        } else {
+            setPresent("purgeBuf", false);
+        }
         return this;
     }
     public CmsSetBrcbEntry entryID(byte[] v) {
@@ -149,9 +216,21 @@ public class CmsSetBrcbEntry extends CmsSequence {
         }
         return this;
     }
+    public CmsSetBrcbEntry entryID(String v) {
+        return entryID(v != null ? v.getBytes(StandardCharsets.UTF_8) : null);
+    }
     public CmsSetBrcbEntry resvTms(int v) {
         this.resvTms.value(v);
         setPresent("resvTms", true);
+        return this;
+    }
+    public CmsSetBrcbEntry resvTms(Integer v) {
+        if (v != null) {
+            this.resvTms.value(v);
+            setPresent("resvTms", true);
+        } else {
+            setPresent("resvTms", false);
+        }
         return this;
     }
 

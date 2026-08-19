@@ -2,50 +2,36 @@ package com.ysh.jcms.app.handler.log.queryLogByTime;
 
 import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.core.data.core.CmsType;
-import com.ysh.jcms.core.data.scalar.CmsEntryId;
-import com.ysh.jcms.core.data.sequence.common.CmsBinaryTime;
 import com.ysh.jcms.core.pdu.log.CmsQueryLogByTimeRequest;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import java.nio.charset.StandardCharsets;
 
 @Setter
 @Getter
 @Accessors(fluent = true)
 public class QueryLogByTimeDao extends BaseDao {
+
+    /** Log reference */
     private String logRef;
+
+    /** Start time as ms since 1970-01-01 */
     private Long startTime;
+
+    /** Stop time as ms since 1970-01-01 */
     private Long stopTime;
+
+    /** Return entries after this 8-byte EntryID */
     private String entryAfter;
 
     @Override
     public CmsType toRequest() {
-        CmsQueryLogByTimeRequest req = new CmsQueryLogByTimeRequest().logReference(logRef);
-        if (startTime != null) {
-            req.startTime(new CmsBinaryTime().msOfDay(startTime % 86400000L).daysSince1984((int) (startTime / 86400000L)));
-        }
-        if (stopTime != null) {
-            req.stopTime(new CmsBinaryTime().msOfDay(stopTime % 86400000L).daysSince1984((int) (stopTime / 86400000L)));
-        }
-        if (entryAfter != null) {
-            req.entryAfter(entryIdBytes(entryAfter));
-        }
-        return req;
-    }
-
-    /**
-     * EntryID 为固定 8 字节 OCTET STRING — 字符串左补 '0' 到 8 字节。
-     */
-    private static byte[] entryIdBytes(String id) {
-        if (id == null)
-            id = "";
-        String padded = id;
-        while (padded.length() < CmsEntryId.LEN)
-            padded = "0" + padded;
-        if (padded.length() > CmsEntryId.LEN)
-            padded = padded.substring(padded.length() - CmsEntryId.LEN);
-        return padded.getBytes(StandardCharsets.UTF_8);
+        Objects.requireNonNull(logRef, "logRef must not be null");
+        return new CmsQueryLogByTimeRequest()
+            .logReference(logRef)
+            .startTime(startTime)
+            .stopTime(stopTime)
+            .entryAfter(entryAfter);
     }
 }

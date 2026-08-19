@@ -82,6 +82,15 @@ public class CmsSetUrcbEntry extends CmsSequence {
         setPresent("rptEna", true);
         return this;
     }
+    public CmsSetUrcbEntry rptEna(Boolean v) {
+        if (v != null) {
+            this.rptEna.value(v);
+            setPresent("rptEna", true);
+        } else {
+            setPresent("rptEna", false);
+        }
+        return this;
+    }
     public CmsSetUrcbEntry datSet(String v) {
         if (v != null) {
             this.datSet.value(v);
@@ -103,9 +112,29 @@ public class CmsSetUrcbEntry extends CmsSequence {
         }
         return this;
     }
+    public CmsSetUrcbEntry optFlds(Integer v) {
+        if (v != null) {
+            CmsRcbOptFlds f = new CmsRcbOptFlds();
+            f.value(v);
+            this.optFlds.value(f);
+            setPresent("optFlds", true);
+        } else {
+            setPresent("optFlds", false);
+        }
+        return this;
+    }
     public CmsSetUrcbEntry bufTm(long v) {
         this.bufTm.value(v);
         setPresent("bufTm", true);
+        return this;
+    }
+    public CmsSetUrcbEntry bufTm(Integer v) {
+        if (v != null) {
+            this.bufTm.value(v);
+            setPresent("bufTm", true);
+        } else {
+            setPresent("bufTm", false);
+        }
         return this;
     }
     public CmsSetUrcbEntry trgOps(CmsTriggerConditions v) {
@@ -117,9 +146,29 @@ public class CmsSetUrcbEntry extends CmsSequence {
         }
         return this;
     }
+    public CmsSetUrcbEntry trgOps(Integer v) {
+        if (v != null) {
+            CmsTriggerConditions t = new CmsTriggerConditions();
+            t.value(v);
+            this.trgOps.value(t);
+            setPresent("trgOps", true);
+        } else {
+            setPresent("trgOps", false);
+        }
+        return this;
+    }
     public CmsSetUrcbEntry intgPd(long v) {
         this.intgPd.value(v);
         setPresent("intgPd", true);
+        return this;
+    }
+    public CmsSetUrcbEntry intgPd(Integer v) {
+        if (v != null) {
+            this.intgPd.value(v);
+            setPresent("intgPd", true);
+        } else {
+            setPresent("intgPd", false);
+        }
         return this;
     }
     public CmsSetUrcbEntry gi(boolean v) {
@@ -127,9 +176,27 @@ public class CmsSetUrcbEntry extends CmsSequence {
         setPresent("gi", true);
         return this;
     }
+    public CmsSetUrcbEntry gi(Boolean v) {
+        if (v != null) {
+            this.gi.value(v);
+            setPresent("gi", true);
+        } else {
+            setPresent("gi", false);
+        }
+        return this;
+    }
     public CmsSetUrcbEntry resv(boolean v) {
         this.resv.value(v);
         setPresent("resv", true);
+        return this;
+    }
+    public CmsSetUrcbEntry resv(Boolean v) {
+        if (v != null) {
+            this.resv.value(v);
+            setPresent("resv", true);
+        } else {
+            setPresent("resv", false);
+        }
         return this;
     }
 

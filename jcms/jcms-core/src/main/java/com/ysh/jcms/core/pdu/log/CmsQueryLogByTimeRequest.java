@@ -53,6 +53,9 @@ public class CmsQueryLogByTimeRequest extends CmsSequence {
         }
         return this;
     }
+    public CmsQueryLogByTimeRequest startTime(Long v) {
+        return startTime(toBinaryTime(v));
+    }
     public CmsQueryLogByTimeRequest stopTime(CmsBinaryTime v) {
         if (v != null) {
             this.stopTime.value(v);
@@ -62,6 +65,9 @@ public class CmsQueryLogByTimeRequest extends CmsSequence {
         }
         return this;
     }
+    public CmsQueryLogByTimeRequest stopTime(Long v) {
+        return stopTime(toBinaryTime(v));
+    }
     public CmsQueryLogByTimeRequest entryAfter(byte[] v) {
         if (v != null) {
             this.entryAfter.value(v);
@@ -70,5 +76,25 @@ public class CmsQueryLogByTimeRequest extends CmsSequence {
             setPresent("entryAfter", false);
         }
         return this;
+    }
+    public CmsQueryLogByTimeRequest entryAfter(String v) {
+        return entryAfter(v != null ? entryIdBytes(v) : null);
+    }
+    private static CmsBinaryTime toBinaryTime(Long v) {
+        if (v == null)
+            return null;
+        return new CmsBinaryTime()
+            .msOfDay(v % 86400000L)
+            .daysSince1984((int) (v / 86400000L));
+    }
+    private static byte[] entryIdBytes(String id) {
+        if (id == null)
+            id = "";
+        String padded = id;
+        while (padded.length() < CmsEntryId.LEN)
+            padded = "0" + padded;
+        if (padded.length() > CmsEntryId.LEN)
+            padded = padded.substring(padded.length() - CmsEntryId.LEN);
+        return padded.getBytes(StandardCharsets.UTF_8);
     }
 }

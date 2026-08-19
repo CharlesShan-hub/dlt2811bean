@@ -108,6 +108,7 @@
                                 <exclude>**/info/**</exclude>
                                 <exclude>jcms-data/**</exclude>
                                 <exclude>src/test/**</exclude>
+                                <exclude>jcms-app/src/main/java/com/ysh/jcms/app/handler/**</exclude>
                             </excludes>
                         </java>
                     </configuration>
