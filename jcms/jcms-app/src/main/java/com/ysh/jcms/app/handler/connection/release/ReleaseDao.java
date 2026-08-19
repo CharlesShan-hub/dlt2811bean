@@ -12,6 +12,8 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 public class ReleaseDao extends BaseDao {
+
+    /** id generated when association is created */
     private byte[] associationId;
 
     @Override

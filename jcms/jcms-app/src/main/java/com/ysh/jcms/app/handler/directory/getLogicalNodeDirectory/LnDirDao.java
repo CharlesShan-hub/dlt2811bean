@@ -17,7 +17,7 @@ public class LnDirDao extends BaseDao {
     private String reference;
 
     /** ACSI class to query (1=DATA-OBJECT, 2=DATA-SET, 3=BRCB, 4=URCB, 5=LCB, 6=LOG, 7=SGCB, 8=GoCB, 10=MSVCB) */
-    private Integer acsiClass = 1;
+    private Integer acsiClass;
 
     /** Optional pagination: return items after this reference */
     private String referenceAfter;
@@ -25,6 +25,7 @@ public class LnDirDao extends BaseDao {
     @Override
     public CmsType toRequest() {
         Objects.requireNonNull(reference, "reference must not be null");
+        Objects.requireNonNull(acsiClass, "acsiClass must not be null");
         return new CmsGetLogicalNodeDirectoryRequest()
             .reference(reference)
             .acsiClass(acsiClass)

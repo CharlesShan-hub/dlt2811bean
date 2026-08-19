@@ -12,6 +12,8 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 public class AbortDao extends BaseDao {
+
+    /** abort reason 0-5 */
     private Integer reason;
 
     @Override
