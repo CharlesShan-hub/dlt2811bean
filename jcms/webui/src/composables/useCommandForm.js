@@ -433,7 +433,7 @@ export function useCommandForm(form, opts = {}) {
       const lnRef = getLnRef()
       if (!lnRef) return
       if (cmd === 'ln-dir') {
-        const acsi = String(form.acsi || '').split(':')[0] || '1'
+        const acsi = String(form.acsi || '').split(':')[0] || 'data-object'
         await ensureLnDirRefs(lnRef, acsi)
       } else if (cmd === 'all-cb') {
         const acsi = String(form.acsi || '').split(':')[0] || 'brcb'

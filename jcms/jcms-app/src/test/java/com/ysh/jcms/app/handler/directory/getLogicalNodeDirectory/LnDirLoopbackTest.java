@@ -27,24 +27,24 @@ public class LnDirLoopbackTest extends BaseLoopbackTest {
     @Test
     public void data_set() throws Exception {
         associate();
-        clientNode().getClient(LnDirClient.class).execute(new LnDirDao().ldName("C1").acsiClass(CmsAcsiClass.DATA_SET));
+        clientNode().getClient(LnDirClient.class).execute(new LnDirDao().reference("C1").acsiClass(CmsAcsiClass.DATA_SET));
     }
 
     @Test
     public void lcb() throws Exception {
         associate();
-        clientNode().getClient(LnDirClient.class).execute(new LnDirDao().ldName("C1").acsiClass(CmsAcsiClass.LCB));
+        clientNode().getClient(LnDirClient.class).execute(new LnDirDao().reference("C1").acsiClass(CmsAcsiClass.LCB));
     }
 
     @Test
     public void gocb() throws Exception {
         associate();
-        clientNode().getClient(LnDirClient.class).execute(new LnDirDao().ldName("C1").acsiClass(CmsAcsiClass.GOCB));
+        clientNode().getClient(LnDirClient.class).execute(new LnDirDao().reference("C1").acsiClass(CmsAcsiClass.GOCB));
     }
 
     @Test
     public void msvcb() throws Exception {
         associate();
-        clientNode().getClient(LnDirClient.class).execute(new LnDirDao().ldName("C1").acsiClass(CmsAcsiClass.MSVCB));
+        clientNode().getClient(LnDirClient.class).execute(new LnDirDao().reference("C1").acsiClass(CmsAcsiClass.MSVCB));
     }
 }

@@ -214,13 +214,6 @@ export function buildCmd(cmd, params, form, opts = {}) {
             parts.push('--values', `"${escapedVals}"`)
           }
         }
-        // set-edit-sg 额外输出 --type（取第一个非空类型，或默认 visible-string）
-        if (cmd === 'set-edit-sg') {
-          const firstType = types.find(t => t) || 'visible-string'
-          if (firstType !== 'visible-string') {
-            parts.push('--type', firstType)
-          }
-        }
         // data-dir: SDO/DA 作为 --after 分页游标
         if (cmd === 'data-dir' && afterParts.length) {
           parts.push('--after', `"${afterParts.join(delim)}"`)

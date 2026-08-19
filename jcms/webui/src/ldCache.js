@@ -1,11 +1,6 @@
 import { reactive } from 'vue'
 import { executeJson } from './api/cms.js'
 
-/** ln-dir --acsi 的数字编码（与后端 LnDirConsole 一致）。 */
-export const ACSI_NUM = {
-  'data-object': 1, 'data-set': 2, brcb: 3, urcb: 4, lcb: 5, log: 6, sgcb: 7, gocb: 8, msvcb: 10,
-}
-
 /**
  * 逻辑设备（LD）共享缓存：连接建立后由 server-dir 填充。
  * 目录树 / 服务器目录页面的引用选择都从这取，避免重复请求。
@@ -129,7 +124,7 @@ export async function ensureCbRefs(lnRef, acsiKey) {
   const key = `${lnRef}|${acsiKey}`
   if (cbRefs[key]) return cbRefs[key]
   try {
-    const res = await executeJson(`ln-dir --ln ${lnRef} --acsi ${ACSI_NUM[acsiKey]} --auto-pull true --json`)
+    const res = await executeJson(`ln-dir --ln ${lnRef} --acsi ${acsiKey} --auto-pull true --json`)
     cbRefs[key] = res && Array.isArray(res.reference) ? res.reference : []
   } catch {
     cbRefs[key] = []
@@ -145,11 +140,11 @@ export function clearCbRefs() {
 /**
  * 拉取某 LN 下的数据集名称列表（经 ln-dir --acsi data-set 查询，幂等）。
  * @param {string} lnRef 如 "LD0/LLN0"
- * @returns {Promise<string[]>} 数据集名称列表，如 ["dsRelayEna", "dsGridEna"]
+ * @returns {Promise<string[]>} 数据集名称列表，如 ["dsAlarm"]
  */
 export async function ensureDatasetRefs(lnRef) {
   if (!lnRef) return []
-  if (datasetRefs[lnRef]) return datasetRefs[lnRef]
+  if (datasetRefs[lnRef] !== undefined) return datasetRefs[lnRef]
   try {
     const res = await executeJson(`ln-dir --ln ${lnRef} --acsi data-set --auto-pull true --json`)
     datasetRefs[lnRef] = res && Array.isArray(res.reference) ? res.reference : []
@@ -327,7 +322,7 @@ export async function ensureAllCbRefs(lnRef, acsi) {
 /**
  * 拉取某 LN（或 LD）在指定 ACSI 类下的子引用列表（幂等，供 ln-dir 的 after 下拉）。
  * @param {string} lnRef ln-select 值，如 "LD0" 或 "LD0/LLN0"
- * @param {number|string} acsi ACSI 数字（如 1）
+ * @param {string} acsi ACSI key，如 "data-object"、"brcb"
  */
 export async function ensureLnDirRefs(lnRef, acsi) {
   if (!lnRef) {

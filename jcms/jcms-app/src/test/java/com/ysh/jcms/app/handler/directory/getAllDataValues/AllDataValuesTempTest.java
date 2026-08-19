@@ -28,7 +28,7 @@ public class AllDataValuesTempTest extends BaseLoopbackTest {
         long t0 = System.currentTimeMillis();
         for (int i = 0; i < 50; i++) {
             try {
-                clientNode().getClient(AllDataValuesClient.class).execute(new AllDataValuesDao().ldName("C1"));
+                clientNode().getClient(AllDataValuesClient.class).execute(new AllDataValuesDao().reference("C1"));
                 ok++;
             } catch (Exception e) {
                 err++;

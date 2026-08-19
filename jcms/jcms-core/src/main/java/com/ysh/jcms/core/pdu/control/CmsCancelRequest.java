@@ -60,6 +60,12 @@ public class CmsCancelRequest extends CmsSequence {
         this.ctlVal.value(v);
         return this;
     }
+    public CmsCancelRequest ctlVal(Boolean v) {
+        if (v != null) {
+            this.ctlVal.value(new CmsData().alt_boolean(v));
+        }
+        return this;
+    }
     public CmsCancelRequest operTm(CmsUtcTime v) {
         if (v != null) {
             this.operTm.value(v);
@@ -73,8 +79,20 @@ public class CmsCancelRequest extends CmsSequence {
         this.origin.value(v);
         return this;
     }
+    public CmsCancelRequest origin(Integer v) {
+        if (v != null) {
+            this.origin.value(new CmsOriginator().orCat(v));
+        }
+        return this;
+    }
     public CmsCancelRequest ctlNum(int v) {
         this.ctlNum.value(v);
+        return this;
+    }
+    public CmsCancelRequest ctlNum(Integer v) {
+        if (v != null) {
+            this.ctlNum.value(v);
+        }
         return this;
     }
     public CmsCancelRequest t(CmsUtcTime v) {
@@ -83,6 +101,12 @@ public class CmsCancelRequest extends CmsSequence {
     }
     public CmsCancelRequest test(boolean v) {
         this.test.value(v);
+        return this;
+    }
+    public CmsCancelRequest test(Boolean v) {
+        if (v != null) {
+            this.test.value(v);
+        }
         return this;
     }
 }

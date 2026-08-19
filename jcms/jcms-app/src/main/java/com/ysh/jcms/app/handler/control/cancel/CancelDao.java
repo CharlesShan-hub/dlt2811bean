@@ -1,10 +1,9 @@
 package com.ysh.jcms.app.handler.control.cancel;
 
 import com.ysh.jcms.app.handler.base.BaseDao;
-import com.ysh.jcms.core.data.choice.CmsData;
 import com.ysh.jcms.core.data.core.CmsType;
-import com.ysh.jcms.core.data.sequence.common.CmsOriginator;
 import com.ysh.jcms.core.pdu.control.CmsCancelRequest;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -13,33 +12,30 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 public class CancelDao extends BaseDao {
+
+    /** Control object reference, format LD/LN.DO */
     private String ref;
-    private String value;
-    private String origin;
-    private String ctlNum;
-    private String test;
+
+    /** Control value (SPC), true/false */
+    private Boolean ctlVal;
+
+    /** Originator category (orCat), 0=local 1=remote */
+    private Integer origin;
+
+    /** Command number */
+    private Integer ctlNum;
+
+    /** Test flag */
+    private Boolean test;
 
     @Override
     public CmsType toRequest() {
-        CmsCancelRequest req = new CmsCancelRequest().reference(ref);
-
-        if (value != null && !value.isEmpty()) {
-            CmsData ctlVal = new CmsData();
-            ctlVal.alt_boolean(Boolean.parseBoolean(value));
-            req.ctlVal(ctlVal);
-        }
-
-        if (origin != null && !origin.isEmpty()) {
-            req.origin(new CmsOriginator().orCat(Integer.parseInt(origin)));
-        }
-
-        if (ctlNum != null && !ctlNum.isEmpty()) {
-            req.ctlNum(Integer.parseInt(ctlNum));
-        }
-
-        if (test != null && !test.isEmpty())
-            req.test(Boolean.parseBoolean(test));
-
-        return req;
+        Objects.requireNonNull(ref, "ref must not be null");
+        return new CmsCancelRequest()
+            .reference(ref)
+            .ctlVal(ctlVal)
+            .origin(origin)
+            .ctlNum(ctlNum)
+            .test(test);
     }
 }

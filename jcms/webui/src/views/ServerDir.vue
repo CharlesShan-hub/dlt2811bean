@@ -240,17 +240,21 @@ async function onToggle(node) {
   }
 }
 
-/** 并发预检 LN 的所有 9 个 ACSI 分类，标记有/无内容的圆点。不阻塞 UI。 */
+/** 按 ACSI 分类查询某 LN 的成员引用（ln-dir --acsi）。 */
+async function queryLnAcsi(node, acsi) {
+  const res = await executeJson(`ln-dir --ln ${node.name} --acsi ${acsi} --auto-pull true --json`)
+  return res && Array.isArray(res.reference) ? res.reference : []
+}
+
+/** 并发预检 LN 的所有 ACSI 分类，标记有/无内容的圆点。不阻塞 UI。 */
 function preCheckLnAcsis(node) {
   Promise.allSettled(
-    ACSI_DEFS.map(d =>
-      executeJson(`ln-dir --ln ${node.name} --acsi ${d.key} --auto-pull true --json`)
-    )
+    ACSI_DEFS.map(d => queryLnAcsi(node, d.key))
   ).then(results => {
     for (let i = 0; i < ACSI_DEFS.length; i++) {
       const d = ACSI_DEFS[i]
-      const res = results[i]
-      if (res.status === 'fulfilled' && res.value && Array.isArray(res.value.reference) && res.value.reference.length > 0) {
+      const refs = results[i]
+      if (refs.status === 'fulfilled' && Array.isArray(refs.value) && refs.value.length > 0) {
         if (!node.contentAcsis.includes(d.key)) node.contentAcsis.push(d.key)
       } else {
         if (!node.emptyAcsis.includes(d.key)) node.emptyAcsis.push(d.key)
@@ -269,8 +273,8 @@ async function onToggleAcsi({ node, acsi }) {
   node.activeAcsi = acsi
   node.loading = true
   try {
-    const res = await executeJson(`ln-dir --ln ${node.name} --acsi ${acsi} --auto-pull true --json`)
-    if (res && Array.isArray(res.reference) && res.reference.length > 0) {
+    const refs = await queryLnAcsi(node, acsi)
+    if (Array.isArray(refs) && refs.length > 0) {
       if (!node.contentAcsis.includes(acsi)) {
         node.contentAcsis.push(acsi)
       }
@@ -280,8 +284,8 @@ async function onToggleAcsi({ node, acsi }) {
       const acsiColor = acsiDef ? acsiDef.color : '#888'
       const childType = acsi === 'data-object' ? 'do' : acsi
       node.children = acsi === 'data-object'
-        ? addDotColor(buildDoTree(node.name, res.reference), acsiColor)
-        : res.reference.map(name => ({
+        ? addDotColor(buildDoTree(node.name, refs), acsiColor)
+        : refs.map(name => ({
             name: `${node.name}/${name}`,
             type: childType,
             label: name,

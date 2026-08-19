@@ -4,24 +4,29 @@ import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.scalar.CmsString;
 import com.ysh.jcms.core.pdu.rpc.CmsGetRpcMethodDefinitionRequest;
+import java.util.Objects;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import java.util.List;
 
 @Setter
 @Getter
 @Accessors(fluent = true)
 public class GetRpcMethodDefinitionDao extends BaseDao {
+
+    /** Method references, format "iface.method" */
     private List<String> refs;
 
     @Override
     public CmsType toRequest() {
-        CmsGetRpcMethodDefinitionRequest req = new CmsGetRpcMethodDefinitionRequest();
-        for (String ref : refs) {
-            req.reference.add(new CmsString(ref));
-        }
-        return req;
+        Objects.requireNonNull(refs, "refs must not be null");
+        return new CmsGetRpcMethodDefinitionRequest()
+            .reference(
+                refs.stream()
+                    .map(CmsString::new)
+                    .collect(Collectors.toList())
+            );
     }
 }

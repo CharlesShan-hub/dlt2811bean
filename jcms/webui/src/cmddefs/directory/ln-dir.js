@@ -1,9 +1,9 @@
-// 8.3.3 读逻辑节点目录：ACSI 类限定（标准表 26），选项与目录树圆点颜色一致
+// 8.3.3 读逻辑节点目录：按 acsiClass 分类获取数据对象 / 数据集 / 控制块等目录
 import { ACSI_DEFS } from '../../acsiDefs.js'
 
 export default {
   title: '逻辑节点目录 ln-dir (8.3.3)',
-  desc: '获取指定逻辑节点下的数据对象或控制块目录（GetLogicalNodeDirectory）',
+  desc: '获取指定逻辑节点下的数据对象/数据集/控制块目录（GetLogicalNodeDirectory，acsiClass 指定分类，默认 data-object）',
   asn1: `ACSIClass ::= INTEGER {
     reserved       (0),
     data-object    (1),
@@ -71,15 +71,16 @@ GetLogicalNodeDirectory-ErrorPDU ::= ServiceError`,
 
 ### 服务要求
 
-1. \`acsiClass\` 为 \`DataObject\` 时，请求逻辑节点下所有数据对象及其子数据对象的引用名，引用名应按模型定义的顺序排序。如 \`LD/LN.DO1\`, \`LD/LN.DO1.SDO1\`, \`LD/LN.DO1.SDO2\`。`,
+1. \`acsiClass\` 为 \`DataObject\` 时，请求逻辑节点下所有数据对象及其子数据对象的引用名，引用名应按模型定义的顺序排序。如 \`LD/LN.DO1\`, \`LD/LN.DO1.SDO1\`, \`LD/LN.DO1.SDO2\`。
+2. \`acsiClass\` 为 \`DATA-SET\` / 控制块类型（\`BRCB\`、\`URCB\`、\`LCB\`、\`SGCB\`、\`GoCB\`、\`MSVCB\`）时，返回对应类型的名称列表。`,
   params: [
     { key: 'ln', label: '逻辑设备/节点 ln', type: 'ln-cascade', placeholder: '先选 LD，再选 LN（可选，仅 LD 则查询全部 LN）', required: true },
     {
       key: 'acsi',
-      label: '对象类型 acsiClass',
+      label: 'ACSI 分类 acsiClass',
       type: 'select',
-      required: true,
-      options: ACSI_DEFS.map((a) => ({ value: a.key, label: `${a.label}（${a.key}）`, color: a.color })),
+      placeholder: 'data-object（默认）',
+      options: ACSI_DEFS.map(a => ({ value: a.key, label: `${a.label}（${a.key}）`, color: a.color })),
     },
     { key: 'after', label: '起始引用 after', type: 'ln-ref-select', placeholder: '可选：该 LN 下的引用' },
     { key: 'auto-pull', label: '自动续拉 auto-pull', type: 'auto-pull-switch' },

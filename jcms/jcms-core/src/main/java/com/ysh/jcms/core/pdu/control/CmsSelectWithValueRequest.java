@@ -64,6 +64,12 @@ public class CmsSelectWithValueRequest extends CmsSequence {
         this.ctlVal.value(v);
         return this;
     }
+    public CmsSelectWithValueRequest ctlVal(Boolean v) {
+        if (v != null) {
+            this.ctlVal.value(new CmsData().alt_boolean(v));
+        }
+        return this;
+    }
     public CmsSelectWithValueRequest operTm(CmsUtcTime v) {
         if (v != null) {
             this.operTm.value(v);
@@ -73,24 +79,63 @@ public class CmsSelectWithValueRequest extends CmsSequence {
         }
         return this;
     }
+    public CmsSelectWithValueRequest operTm(Long v) {
+        if (v != null) {
+            return operTm(new CmsUtcTime().secondsSinceEpoch(v));
+        }
+        return operTm((CmsUtcTime) null);
+    }
     public CmsSelectWithValueRequest origin(CmsOriginator v) {
         this.origin.value(v);
+        return this;
+    }
+    public CmsSelectWithValueRequest origin(Integer v) {
+        if (v != null) {
+            this.origin.value(new CmsOriginator().orCat(v));
+        }
         return this;
     }
     public CmsSelectWithValueRequest ctlNum(int v) {
         this.ctlNum.value(v);
         return this;
     }
+    public CmsSelectWithValueRequest ctlNum(Integer v) {
+        if (v != null) {
+            this.ctlNum.value(v);
+        }
+        return this;
+    }
     public CmsSelectWithValueRequest t(CmsUtcTime v) {
         this.t.value(v);
+        return this;
+    }
+    public CmsSelectWithValueRequest t(Long v) {
+        if (v != null) {
+            this.t.value(new CmsUtcTime().secondsSinceEpoch(v));
+        }
         return this;
     }
     public CmsSelectWithValueRequest test(boolean v) {
         this.test.value(v);
         return this;
     }
+    public CmsSelectWithValueRequest test(Boolean v) {
+        if (v != null) {
+            this.test.value(v);
+        }
+        return this;
+    }
     public CmsSelectWithValueRequest check(CmsCheck v) {
         this.check.value(v);
+        return this;
+    }
+    public CmsSelectWithValueRequest check(Integer v) {
+        if (v != null) {
+            CmsCheck ck = new CmsCheck();
+            ck.syncheck((v & 1) != 0);
+            ck.interlock_check((v & 2) != 0);
+            this.check.value(ck);
+        }
         return this;
     }
 }

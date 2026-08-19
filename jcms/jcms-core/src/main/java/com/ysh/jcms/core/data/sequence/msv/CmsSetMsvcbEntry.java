@@ -60,6 +60,15 @@ public class CmsSetMsvcbEntry extends CmsSequence {
         setPresent("svEna", true);
         return this;
     }
+    public CmsSetMsvcbEntry svEna(Boolean v) {
+        if (v != null) {
+            this.svEna.value(v);
+            setPresent("svEna", true);
+        } else {
+            setPresent("svEna", false);
+        }
+        return this;
+    }
     public CmsSetMsvcbEntry msvID(String v) {
         if (v != null) {
             this.msvID.value(v);
@@ -83,14 +92,43 @@ public class CmsSetMsvcbEntry extends CmsSequence {
         setPresent("smpMod", true);
         return this;
     }
+    public CmsSetMsvcbEntry smpMod(Integer v) {
+        if (v != null) {
+            this.smpMod.value(v);
+            setPresent("smpMod", true);
+        } else {
+            setPresent("smpMod", false);
+        }
+        return this;
+    }
     public CmsSetMsvcbEntry smpRate(int v) {
         this.smpRate.value(v);
         setPresent("smpRate", true);
         return this;
     }
+    public CmsSetMsvcbEntry smpRate(Integer v) {
+        if (v != null) {
+            this.smpRate.value(v);
+            setPresent("smpRate", true);
+        } else {
+            setPresent("smpRate", false);
+        }
+        return this;
+    }
     public CmsSetMsvcbEntry optFlds(CmsMsvcbOptFlds v) {
         if (v != null) {
             this.optFlds.value(v);
+            setPresent("optFlds", true);
+        } else {
+            setPresent("optFlds", false);
+        }
+        return this;
+    }
+    public CmsSetMsvcbEntry optFlds(Integer v) {
+        if (v != null) {
+            CmsMsvcbOptFlds f = new CmsMsvcbOptFlds();
+            f.value(v);
+            this.optFlds.value(f);
             setPresent("optFlds", true);
         } else {
             setPresent("optFlds", false);

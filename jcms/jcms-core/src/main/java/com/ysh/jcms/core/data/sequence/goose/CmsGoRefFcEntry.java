@@ -44,6 +44,10 @@ public class CmsGoRefFcEntry extends CmsSequence {
         this.fc.value(v);
         return this;
     }
+    public CmsGoRefFcEntry fc(String v) {
+        this.fc.value(Integer.parseInt(v));
+        return this;
+    }
 
     public CmsGoRefFcEntry value(CmsGoRefFcEntry v) {
         this.reference.value(v.reference.value());

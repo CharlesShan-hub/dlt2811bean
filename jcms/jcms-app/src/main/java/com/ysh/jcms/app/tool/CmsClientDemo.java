@@ -56,7 +56,7 @@ public class CmsClientDemo {
         CmsContent<GetDataValuesDao> dv = new CmsContent<>(
                 new GetDataValuesDao()
                         .refs(Arrays.asList("LD0/LLN0.Beh", "LD0/LLN0.NamPlt"))
-                        .fc("ST"));
+                        .fcs(Arrays.asList("ST", "ST")));
         client.getClient(GetDataValuesClient.class).executeResult(dv);
         System.out.println("Data values:");
         CmsPrinter.outputJson(dv.res());

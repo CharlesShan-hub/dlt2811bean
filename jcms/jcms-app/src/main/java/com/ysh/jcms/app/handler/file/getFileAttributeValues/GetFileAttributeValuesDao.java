@@ -3,6 +3,7 @@ package com.ysh.jcms.app.handler.file.getFileAttributeValues;
 import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.pdu.file.CmsGetFileAttributeValuesRequest;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -11,10 +12,13 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 public class GetFileAttributeValuesDao extends BaseDao {
+
+    /** File name whose attributes to read */
     private String fileName;
 
     @Override
     public CmsType toRequest() {
+        Objects.requireNonNull(fileName, "fileName must not be null");
         return new CmsGetFileAttributeValuesRequest().filename(fileName);
     }
 }

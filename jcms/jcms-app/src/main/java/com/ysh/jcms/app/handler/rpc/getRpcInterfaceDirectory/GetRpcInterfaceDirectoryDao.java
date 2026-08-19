@@ -11,13 +11,12 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 public class GetRpcInterfaceDirectoryDao extends BaseDao {
+
+    /** Optional pagination: return interfaces after this reference */
     private String after;
 
     @Override
     public CmsType toRequest() {
-        CmsGetRpcInterfaceDirectoryRequest req = new CmsGetRpcInterfaceDirectoryRequest();
-        if (after != null && !after.isEmpty())
-            req.referenceAfter(after);
-        return req;
+        return new CmsGetRpcInterfaceDirectoryRequest().referenceAfter(after);
     }
 }

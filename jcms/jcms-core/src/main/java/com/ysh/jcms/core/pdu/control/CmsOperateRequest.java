@@ -61,24 +61,63 @@ public class CmsOperateRequest extends CmsSequence {
         this.ctlVal.value(v);
         return this;
     }
+    public CmsOperateRequest ctlVal(Boolean v) {
+        if (v != null) {
+            this.ctlVal.value(new CmsData().alt_boolean(v));
+        }
+        return this;
+    }
     public CmsOperateRequest origin(CmsOriginator v) {
         this.origin.value(v);
+        return this;
+    }
+    public CmsOperateRequest origin(Integer v) {
+        if (v != null) {
+            this.origin.value(new CmsOriginator().orCat(v));
+        }
         return this;
     }
     public CmsOperateRequest ctlNum(int v) {
         this.ctlNum.value(v);
         return this;
     }
+    public CmsOperateRequest ctlNum(Integer v) {
+        if (v != null) {
+            this.ctlNum.value(v);
+        }
+        return this;
+    }
     public CmsOperateRequest t(CmsUtcTime v) {
         this.t.value(v);
+        return this;
+    }
+    public CmsOperateRequest t(Long v) {
+        if (v != null) {
+            this.t.value(new CmsUtcTime().secondsSinceEpoch(v));
+        }
         return this;
     }
     public CmsOperateRequest test(boolean v) {
         this.test.value(v);
         return this;
     }
+    public CmsOperateRequest test(Boolean v) {
+        if (v != null) {
+            this.test.value(v);
+        }
+        return this;
+    }
     public CmsOperateRequest check(CmsCheck v) {
         this.check.value(v);
+        return this;
+    }
+    public CmsOperateRequest check(Integer v) {
+        if (v != null) {
+            CmsCheck ck = new CmsCheck();
+            ck.syncheck((v & 1) != 0);
+            ck.interlock_check((v & 2) != 0);
+            this.check.value(ck);
+        }
         return this;
     }
 }

@@ -10,13 +10,13 @@ public class CancelConsole extends CommandHandler<CancelDao, CancelClient> {
         super(CommandInfo.CANCEL, false);
         Param p = Param.of("ref", null, "ref", String.class, true);
         param(p, "控制对象引用，格式 LD/LN.DO");
-        Param p2 = Param.of("value", null, "value", String.class, false);
+        Param p2 = Param.of("value", null, "ctlVal", Boolean.class, false);
         param(p2, "控制值，SPC 填 true/false");
-        Param p3 = Param.of("origin", null, "origin", String.class, false);
+        Param p3 = Param.of("origin", null, "origin", Integer.class, false);
         param(p3, "操作源，0 本地 1 远程");
-        Param p4 = Param.of("ctlNum", null, "ctlNum", String.class, false);
+        Param p4 = Param.of("ctlNum", null, "ctlNum", Integer.class, false);
         param(p4, "控制序号");
-        Param p5 = Param.of("test", null, "test", String.class, false);
+        Param p5 = Param.of("test", null, "test", Boolean.class, false);
         param(p5, "测试标志");
     }
 }

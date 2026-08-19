@@ -11,16 +11,17 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 public class GetRpcMethodDirectoryDao extends BaseDao {
+
+    /** Interface name to query (optional, omit to get all interfaces' methods) */
     private String iface;
+
+    /** Optional pagination: return methods after this reference */
     private String after;
 
     @Override
     public CmsType toRequest() {
-        CmsGetRpcMethodDirectoryRequest req = new CmsGetRpcMethodDirectoryRequest();
-        if (iface != null && !iface.isEmpty())
-            req.interfaceName(iface);
-        if (after != null && !after.isEmpty())
-            req.referenceAfter(after);
-        return req;
+        return new CmsGetRpcMethodDirectoryRequest()
+            .interfaceName(iface)
+            .referenceAfter(after);
     }
 }

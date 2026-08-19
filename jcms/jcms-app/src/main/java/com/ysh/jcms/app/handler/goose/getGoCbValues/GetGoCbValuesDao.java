@@ -4,22 +4,29 @@ import com.ysh.jcms.app.handler.base.BaseDao;
 import com.ysh.jcms.core.data.core.CmsType;
 import com.ysh.jcms.core.data.scalar.CmsObjectReference;
 import com.ysh.jcms.core.pdu.goose.CmsGetGoCbValuesRequest;
+import java.util.Objects;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import java.util.List;
 
 @Setter
 @Getter
 @Accessors(fluent = true)
 public class GetGoCbValuesDao extends BaseDao {
+
+    /** GOOSE control block references, e.g. "LD0/LLN0.GoCB1" */
     private List<String> refs;
 
     @Override
     public CmsType toRequest() {
-        CmsGetGoCbValuesRequest req = new CmsGetGoCbValuesRequest();
-        addAll(refs, req.reference, CmsObjectReference::new);
-        return req;
+        Objects.requireNonNull(refs, "refs must not be null");
+        return new CmsGetGoCbValuesRequest()
+            .reference(
+                refs.stream()
+                    .map(CmsObjectReference::new)
+                    .collect(Collectors.toList())
+            );
     }
 }

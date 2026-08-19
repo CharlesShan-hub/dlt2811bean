@@ -1,11 +1,9 @@
 package com.ysh.jcms.app.handler.control.selectWithValue;
 
 import com.ysh.jcms.app.handler.base.BaseDao;
-import com.ysh.jcms.core.data.bitarray.CmsCheck;
-import com.ysh.jcms.core.data.choice.CmsData;
 import com.ysh.jcms.core.data.core.CmsType;
-import com.ysh.jcms.core.data.sequence.common.CmsOriginator;
 import com.ysh.jcms.core.pdu.control.CmsSelectWithValueRequest;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -14,47 +12,42 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 public class SelectWithValueDao extends BaseDao {
+
+    /** Control object reference, format LD/LN.DO */
     private String ref;
-    private String ctlVal;
-    private String operTm;
-    private String origin;
-    private String ctlNum;
-    private String t;
-    private String test;
-    private String check;
+
+    /** Control value (SPC), true/false */
+    private Boolean ctlVal;
+
+    /** Operate time (Unix seconds, optional) */
+    private Long operTm;
+
+    /** Originator category (orCat), 0=local 1=remote */
+    private Integer origin;
+
+    /** Command number */
+    private Integer ctlNum;
+
+    /** Timestamp (Unix seconds) */
+    private Long t;
+
+    /** Test flag */
+    private Boolean test;
+
+    /** Check bitmap (0=none, 1=syncheck, 2=interlock, 3=both) */
+    private Integer check;
 
     @Override
     public CmsType toRequest() {
-        CmsSelectWithValueRequest req = new CmsSelectWithValueRequest().reference(ref);
-
-        if (ctlVal != null && !ctlVal.isEmpty()) {
-            CmsData ctlValData = new CmsData();
-            ctlValData.alt_boolean(Boolean.parseBoolean(ctlVal));
-            req.ctlVal(ctlValData);
-        }
-
-        if (origin != null && !origin.isEmpty()) {
-            req.origin(new CmsOriginator().orCat(Integer.parseInt(origin)));
-        }
-
-        if (ctlNum != null && !ctlNum.isEmpty()) {
-            req.ctlNum(Integer.parseInt(ctlNum));
-        }
-
-        if (test != null && !test.isEmpty())
-            req.test(Boolean.parseBoolean(test));
-
-        if (check != null && !check.isEmpty()) {
-            CmsCheck checkObj = new CmsCheck();
-            for (String flag : check.split(",")) {
-                if ("syncheck".equalsIgnoreCase(flag.trim()))
-                    checkObj.syncheck(true);
-                if ("interlock".equalsIgnoreCase(flag.trim()))
-                    checkObj.interlock_check(true);
-            }
-            req.check(checkObj);
-        }
-
-        return req;
+        Objects.requireNonNull(ref, "ref must not be null");
+        return new CmsSelectWithValueRequest()
+            .reference(ref)
+            .ctlVal(ctlVal)
+            .operTm(operTm)
+            .origin(origin)
+            .ctlNum(ctlNum)
+            .t(t)
+            .test(test)
+            .check(check);
     }
 }

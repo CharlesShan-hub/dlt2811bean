@@ -64,28 +64,73 @@ public class CmsTimeActivatedOperateRequest extends CmsSequence {
         this.ctlVal.value(v);
         return this;
     }
+    public CmsTimeActivatedOperateRequest ctlVal(Boolean v) {
+        if (v != null) {
+            this.ctlVal.value(new CmsData().alt_boolean(v));
+        }
+        return this;
+    }
     public CmsTimeActivatedOperateRequest operTm(CmsUtcTime v) {
         this.operTm.value(v);
+        return this;
+    }
+    public CmsTimeActivatedOperateRequest operTm(Long v) {
+        if (v != null) {
+            this.operTm.value(new CmsUtcTime().secondsSinceEpoch(v));
+        }
         return this;
     }
     public CmsTimeActivatedOperateRequest origin(CmsOriginator v) {
         this.origin.value(v);
         return this;
     }
+    public CmsTimeActivatedOperateRequest origin(Integer v) {
+        if (v != null) {
+            this.origin.value(new CmsOriginator().orCat(v));
+        }
+        return this;
+    }
     public CmsTimeActivatedOperateRequest ctlNum(int v) {
         this.ctlNum.value(v);
+        return this;
+    }
+    public CmsTimeActivatedOperateRequest ctlNum(Integer v) {
+        if (v != null) {
+            this.ctlNum.value(v);
+        }
         return this;
     }
     public CmsTimeActivatedOperateRequest t(CmsUtcTime v) {
         this.t.value(v);
         return this;
     }
+    public CmsTimeActivatedOperateRequest t(Long v) {
+        if (v != null) {
+            this.t.value(new CmsUtcTime().secondsSinceEpoch(v));
+        }
+        return this;
+    }
     public CmsTimeActivatedOperateRequest test(boolean v) {
         this.test.value(v);
         return this;
     }
+    public CmsTimeActivatedOperateRequest test(Boolean v) {
+        if (v != null) {
+            this.test.value(v);
+        }
+        return this;
+    }
     public CmsTimeActivatedOperateRequest check(CmsCheck v) {
         this.check.value(v);
+        return this;
+    }
+    public CmsTimeActivatedOperateRequest check(Integer v) {
+        if (v != null) {
+            CmsCheck ck = new CmsCheck();
+            ck.syncheck((v & 1) != 0);
+            ck.interlock_check((v & 2) != 0);
+            this.check.value(ck);
+        }
         return this;
     }
 }
