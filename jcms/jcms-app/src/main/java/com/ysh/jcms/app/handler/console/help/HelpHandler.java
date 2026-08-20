@@ -117,6 +117,12 @@ public class HelpHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseD
                 + String.format("%02X", svc.serviceCode()) + ")");
         CmsPrinter.gray("  EN: " + svc.enName());
         CmsPrinter.gray("  " + svc.description());
+        if (svc.asn1() != null && !svc.asn1().isEmpty()) {
+            CmsPrinter.gray("  ASN.1:");
+            for (String line : svc.asn1().split("\n")) {
+                CmsPrinter.gray("    " + line);
+            }
+        }
     }
 
     // ── data types (CmsDataTypeInfo) ───────────────────────────

@@ -34,56 +34,22 @@
 
     <div class="debug-grid" ref="gridRef" :style="{ gridTemplateColumns: leftColWidth + 'px 6px 1fr' }">
       <!-- ── 左栏：参数 ── -->
-      <CommandParamsPanel
+      <CommandForm
         :def="def"
         :form="form"
+        :cmd="props.cmd"
         :busy="busy"
         :is-connect="isConnect"
-        :cmd="props.cmd"
         :connected="props.connected"
         :tcp-connected="props.tcpConnected"
-        :ld-cache="ldCache"
-        :ld-lns="ldLns"
-        :ref-options="refOptions"
-        :refs-list-options="refsListOptions"
-        :dataset-options="datasetOptions"
-        :sgcb-options="sgcbOptions"
-        :sgcb-num-options="sgcbNumOptions"
-        :ds-member-after-options="dsMemberAfterOptions"
-        :ds-member-options="dsMemberOptions"
-        :ln-ref="lnRef"
         :conn-msg="connMsg"
         :conn-msg-ok="connMsgOk"
-        :simple-params="simpleParams"
-        :param-rows="paramRows"
-        :form-valid="formValid"
-        :dataset-refs="datasetRefs"
-        :cascade-lns="cascadeLns"
-        :on-cascade-ld="onCascadeLd"
-        :cascade-ld-disabled="cascadeLdDisabled"
-        :add-refs="addRefs"
-        :remove-refs="removeRefs"
-        :row-do-options="rowDoOptions"
-        :on-row-ld="onRowLdForSgcb"
-        :on-row-ln="onRowLn"
-        :row-ln-options="rowLnOptions"
-        :on-row-do="onRowDo"
-        :on-row-sdo="onRowSdo"
-        :row-sdo-options="rowSdoOptions"
-        :row-da-options="rowDaOptions"
-        :on-row-da="onRowDa"
-        :on-ds-ref-ld="onDsRefLd"
-        :on-ds-ref-ln="onDsRefLn"
-        :ds-ref-lns="dsRefLns"
-        :ds-ref-exists="dsRefExists"
-        :ds-ref-name-list="dsRefNameList"
-        :ds-ref-invalid="dsRefInvalid"
-        :cb-options="cbOptions"
         @run="run"
         @run-cmd="runCmd"
         @disconnect-tcp="disconnectTcp"
         @release-ap="releaseAp"
         @open-value-editor="openValueEditor"
+        @update:connect-cmd="connectCmd = $event"
       />
 
       <!-- 垂直拖拽手柄（双击还原默认宽度） -->
@@ -131,8 +97,7 @@
 <script setup>
 import { computed, reactive, ref, watch } from 'vue'
 import Section from '@lucide/vue/dist/esm/icons/section.mjs'
-import { debugShared } from '../stores/debugShared.js'
-import CommandParamsPanel from '../components/CommandParamsPanel.vue'
+import CommandForm from '../components/form/CommandForm.vue'
 import CommandResultPanel from '../components/CommandResultPanel.vue'
 import ComplexValueEditor from '../components/ComplexValueEditor.vue'
 import UiModal from '../components/ui/UiModal.vue'
@@ -141,10 +106,9 @@ import { marked } from 'marked'
 import { CMD_DEFS } from '../cmddefs/index.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
 import { pushTerminal } from '../terminalLog.js'
-import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, datasetRefs, datasetMemberRefs, datasetMembers, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs, ensureDatasetRefs, ensureDatasetMemberRefs, ensureDatasetMembers, ensureCbRefs, cbRefs, sgcbData, ensureSgcbData } from '../ldCache.js'
+import { datasetRefs, ensureLdLns, ensureDatasetRefs } from '../ldCache.js'
 import { buildCmd, highlightCmdStr, syntaxHighlightJson, parseResult, parseCmd } from '../utils/cmdFormat.js'
 import { useSplitPane } from '../composables/useSplitPane.js'
-import { useCommandForm } from '../composables/useCommandForm.js'
 
 const props = defineProps({
   cmd: String,
@@ -173,172 +137,6 @@ const titleParts = computed(() => {
 const shortTitle = computed(() => titleParts.value.name)
 const section = computed(() => titleParts.value.section)
 const isConnect = computed(() => props.cmd === 'connect')
-const simpleParams = computed(() => def.value.params)
-
-const paramRows = computed(() => {
-  const rows = []
-  let cur = null
-  for (const p of def.value.params || []) {
-    if (p.inline) {
-      if (!cur || cur.inline !== p.inline) {
-        cur = { inline: p.inline, items: [] }
-        rows.push(cur)
-      }
-      cur.items.push(p)
-    } else {
-      rows.push({ inline: null, items: [p] })
-    }
-  }
-  return rows
-})
-
-const lnRef = computed(() => {
-  const p = def.value.params.find((x) => x.key === 'ln' && x.type === 'ln-cascade')
-  const o = p ? form[p.key] : null
-  return o && o.ld ? (o.ln ? `${o.ld}/${o.ln}` : o.ld) : ''
-})
-
-function cascadeLns(o) {
-  return o && o.ld ? ldLns[o.ld] || [] : []
-}
-
-function onCascadeLd(key) {
-  const o = form[key]
-  if (!o) return
-  o.ln = ''
-  if (o.ld) ensureLdLns(o.ld)
-}
-
-function cascadeLdDisabled(p) {
-  return props.cmd === 'ld-dir' && p.key === 'after' && !!form.ld
-}
-
-// ── ds-ref-input（create-dataset 用） ──
-
-function dsRefLns(o) {
-  return o && o.ld ? ldLns[o.ld] || [] : []
-}
-
-function onDsRefLd(key) {
-  const o = form[key]
-  if (!o) return
-  o.ln = ''
-  o.name = ''
-  if (o.ld) ensureLdLns(o.ld)
-}
-
-function onDsRefLn(key) {
-  const o = form[key]
-  if (!o) return
-  o.name = ''
-  if (o.ld && o.ln) {
-    ensureDatasetRefs(`${o.ld}/${o.ln}`)
-  }
-}
-
-function dsRefExists(o) {
-  if (!o || !o.ld || !o.ln || !o.name) return false
-  const refs = datasetRefs[`${o.ld}/${o.ln}`] || []
-  return refs.includes(o.name)
-}
-
-function dsRefNameList(o) {
-  if (!o || !o.ld || !o.ln) return []
-  return datasetRefs[`${o.ld}/${o.ln}`] || []
-}
-
-/** ds-ref-input 无效判定：无 after 时名称不能已存在，有 after 时名称必须已存在 */
-function dsRefInvalid(o) {
-  if (!o || !o.ld || !o.ln || !o.name) return false
-  const exists = dsRefExists(o)
-  const hasAfter = form.after && String(form.after).trim() !== ''
-  return hasAfter ? !exists : exists
-}
-
-const refOptions = computed(() => {
-  if (props.cmd === 'ln-dir') return lnDirRefs
-  if (props.cmd === 'all-cb') return allCbRefs
-  return allDefRefs
-})
-
-const datasetOptions = computed(() => {
-  const p = def.value.params.find((x) => x.type === 'dataset-select')
-  if (!p) return []
-  const lnKey = p.dependsOn || 'ln'
-  const o = form[lnKey]
-  if (!o || !o.ld || !o.ln) return []
-  const lnRef = `${o.ld}/${o.ln}`
-  return datasetRefs[lnRef] || []
-})
-
-/** SGCB 控制块名选项：从目录树动态加载（标准约定 SGCB 只挂在 LLN0 下） */
-const sgcbOptions = computed(() => {
-  const o = form.ln
-  if (!o || !o.ld || !o.ln) return []
-  const ref = `${o.ld}/${o.ln}`
-  if (!cbRefs[`${ref}|sgcb`]) ensureCbRefs(ref, 'sgcb')
-  return cbRefs[`${ref}|sgcb`] || []
-})
-
-/** SGCB 定值组号选项：从 sgcbData 缓存自动读取 numOfSG，生成 1~numOfSG 的下拉选项 */
-const sgcbNumOptions = computed(() => {
-  const refs = form.ref || []
-  if (!Array.isArray(refs) || refs.length === 0) return []
-  const row = refs[0]
-  if (!row || !row.ld || !row.ln || !row._sgcbName) return []
-  const lnRef = `${row.ld}/${row.ln}`
-  const sgcbName = row._sgcbName
-  if (!sgcbData[lnRef]) ensureSgcbData(lnRef)
-  const sg = sgcbData[lnRef]?.[sgcbName]
-  const n = sg?.numOfSG || 0
-  const opts = []
-  for (let i = 1; i <= n; i++) opts.push(String(i))
-  return opts
-})
-
-/** 控制块选项（cb-select 用）：依赖 ln-cascade 选中的 LN，从 ln-dir 拉取对应 ACSI 类的控制块名 */
-const cbOptions = computed(() => {
-  const p = def.value.params.find((x) => x.type === 'cb-select')
-  if (!p) return []
-  const lnKey = p.dependsOn || 'ln'
-  const o = form[lnKey]
-  if (!o || !o.ld || !o.ln || !p.cb) return []
-  const ref = `${o.ld}/${o.ln}`
-  if (!cbRefs[`${ref}|${p.cb}`]) ensureCbRefs(ref, p.cb)
-  return cbRefs[`${ref}|${p.cb}`] || []
-})
-
-/** ds-member-after 下拉选项：当前 LN + 数据集下的成员引用列表 */
-const dsMemberAfterOptions = computed(() => {
-  const p = def.value.params.find((x) => x.type === 'ds-member-after')
-  if (!p) return []
-  let ld, ln, dsName
-  if (props.cmd === 'set-dataset-values') {
-    // ds-ref-input 模式：form.ds 是 {ld, ln, name}
-    const o = form.ds
-    if (!o || !o.ld || !o.ln || !o.name) return []
-    ld = o.ld; ln = o.ln; dsName = o.name
-  } else {
-    // 普通 ln-cascade + dataset-select 模式
-    const lnKey = p.dependsOn || 'ln'
-    const o = form[lnKey]
-    if (!o || !o.ld || !o.ln) return []
-    ld = o.ld; ln = o.ln; dsName = form.ds
-    if (!dsName) return []
-  }
-  const key = `${ld}/${ln}.${dsName}`
-  return datasetMemberRefs[key] || []
-})
-
-const dsMemberOptions = computed(() => {
-  if (props.cmd !== 'set-dataset-values') return []
-  const o = form.ds
-  if (!o || !o.ld || !o.ln || !o.name) return []
-  const key = `${o.ld}/${o.ln}.${o.name}`
-  return datasetMembers[key] || []
-})
-
-const refsListOptions = computed(() => allLnRefs)
 
 const rightTitle = computed(() => {
   if (isConnect.value) return '连接流程'
@@ -378,108 +176,6 @@ const {
   startHDrag,
   resetSplit,
 } = useSplitPane()
-
-const {
-  initForm,
-  addRefs,
-  removeRefs,
-  rowDoOptions,
-  rowLnOptions,
-  onRowLd,
-  onRowLn,
-  onRowDo,
-  onRowSdo,
-  rowSdoOptions,
-  rowDaOptions,
-  onRowDa,
-  loadNegotiateDefaults,
-  setupFcWatch,
-  setupLnRequiredWatch,
-  setupLdDirWatch,
-  setupLazyLnWatch,
-  setupRefsWatch,
-  setupAllDataRefsWatch,
-} = useCommandForm(form, {
-  getDef: () => def.value,
-  getCmd: () => props.cmd,
-  getLnRef: () => lnRef.value,
-  lnRequiredCmds: ['ln-dir', 'all-data', 'all-def', 'all-cb', 'get-dataset-values', 'get-dataset-dir'],
-})
-
-/* ====== sgcb-vals 专用：LD 选定后自动固定 LLN0 + 加载 SGCB 名称 ====== */
-
-async function loadSgcbNames(row) {
-  if (!row.ld) return
-  const ref = `${row.ld}/LLN0`
-  const names = await ensureCbRefs(ref, 'sgcb')
-  row._sgcbNames = names || []
-  row._sgcbName = (names && names.length > 0) ? names[0] : 'SG'
-  // 预加载 SGCB 完整数据（含 numOfSG），供定值组号下拉使用
-  if (sgcbCmds.includes(props.cmd)) {
-    ensureSgcbData(ref)
-  }
-}
-
-const sgcbCmds = ['sgcb-vals', 'select-active-sg', 'select-edit-sg', 'confirm-edit-sg']
-
-const onRowLdForSgcb = (row) => {
-  if (sgcbCmds.includes(props.cmd)) {
-    row.ln = 'LLN0'
-    row.do = ''
-    row.sdo = ''
-    row.da = ''
-    row._sgcbNames = []
-    row._sgcbName = ''
-    if (row.ld) {
-      ensureLdLns(row.ld)
-      loadSgcbNames(row)
-    }
-  } else {
-    onRowLd(row)
-  }
-}
-
-const formValid = computed(() => {
-  if (isConnect.value) return true
-  const params = def.value.params || []
-  for (const p of params) {
-    const v = form[p.key]
-    if (p.type === 'ln-cascade') {
-      if (v && v.ln && !v.ld) return false
-      if (props.cmd === 'ld-dir' && p.key === 'after' && !form.ld) {
-        if (v && v.ld && !v.ln) return false
-      }
-    }
-    if (p.type === 'refs-list' && p.cascade) {
-      const rows = v || []
-      for (const r of rows) {
-        if (r && r.ln && !r.ld) return false
-      }
-    }
-    if (!p.required) continue
-    if (p.type === 'ln-cascade') {
-      if (!v || !v.ld) return false
-    } else if (p.type === 'ld-select') {
-      if (!v) return false
-    } else if (p.type === 'dataset-select') {
-      // dataset-select 需要在 ln-cascade 有完整 LD/LN 时才有值
-      if (!v) return false
-    } else if (p.type === 'ds-ref-input') {
-      // ds-ref-input: 需要 LD + LN + 数据集名称完整；selectOnly（如删除数据集）要求已存在，否则按 create/append 语义校验
-      if (!v || !v.ld || !v.ln || !v.name) return false
-      if (p.selectOnly ? !dsRefExists(v) : dsRefInvalid(v)) return false
-    } else if (p.type === 'refs-list') {
-      const rows = v || []
-      const hasValid = p.cascade
-        ? rows.some(r => r && r.ld && r.ln)
-        : rows.some(r => r && typeof r === 'string' && r)
-      if (!hasValid) return false
-    } else if (v === '' || v === null || v === undefined) {
-      return false
-    }
-  }
-  return true
-})
 
 const connMsg = ref('')
 const connMsgOk = ref(true)
@@ -538,76 +234,10 @@ const highlightedResultCmd = computed(() => {
   return result.value ? highlightCmdStr(result.value.cmd) : ''
 })
 
-// 设置 watcher
-setupFcWatch()
-setupLnRequiredWatch()
-setupLdDirWatch()
-setupLazyLnWatch()
-setupRefsWatch()
-setupAllDataRefsWatch()
-
-// get-dataset-values / get-dataset-dir: LN 变化时加载数据集列表
-watch([() => form.ln?.ld, () => form.ln?.ln], async ([ld, ln]) => {
-  if (!['get-dataset-values', 'get-dataset-dir'].includes(props.cmd)) return
-  form.ds = '' // 清除数据集选择
-  if (ld && ln) {
-    await ensureDatasetRefs(`${ld}/${ln}`)
-  }
-})
-
-// get-dataset-values / get-dataset-dir: 数据集变化时加载成员引用
-watch(() => form.ds, async (dsName) => {
-  if (!['get-dataset-values', 'get-dataset-dir'].includes(props.cmd)) return
-  if (!dsName) return
-  const o = form.ln
-  if (!o || !o.ld || !o.ln) return
-  const key = `${o.ld}/${o.ln}.${dsName}`
-  if (!datasetMemberRefs[key]) {
-    await ensureDatasetMemberRefs(`${o.ld}/${o.ln}`, dsName)
-  }
-})
-
-// set-dataset-values: ds-ref-input 变化时加载成员引用
-watch([() => form.ds?.ld, () => form.ds?.ln, () => form.ds?.name], async ([ld, ln, name]) => {
-  if (props.cmd !== 'set-dataset-values') return
-  form.values = []
-  if (!ld || !ln || !name) return
-  const key = `${ld}/${ln}.${name}`
-  if (!datasetMemberRefs[key]) {
-    await ensureDatasetMemberRefs(`${ld}/${ln}`, name)
-  }
-  await ensureDatasetMembers(`${ld}/${ln}`, name)
-})
-
-// create-dataset: 选择已存在的数据集名称时，自动调用 get-dataset-dir 获取最后一个成员作为 after
-watch(() => form.ds?.name, async (name) => {
-  if (props.cmd !== 'create-dataset') return
-  form.after = ''
-  if (!form.ds?.ld || !form.ds?.ln || !name) return
-  if (!dsRefExists(form.ds)) return
-  const ref = `${form.ds.ld}/${form.ds.ln}.${name}`
-  try {
-    const res = await executeJson(`get-dataset-dir --ds ${ref} --auto-pull true --json`)
-    if (res && Array.isArray(res.memberData) && res.memberData.length > 0) {
-      form.after = res.memberData[res.memberData.length - 1].reference
-    }
-  } catch {
-    // 静默失败，after 保持为空
-  }
-})
-
-// cmd 切换时重置表单 + 加载 negotiate 默认值
-watch(() => props.cmd, async () => {
+// cmd 切换时重置结果与连接命令（表单初始化与联动由 CommandForm 内部处理）
+watch(() => props.cmd, () => {
   result.value = null
   connectCmd.value = ''
-  initForm()
-  // set-edit-sg: 级联自动按 SE 筛选（协议规定功能约束为 SE）
-  if (props.cmd === 'set-edit-sg') {
-    form.fc = 'SE'
-  }
-  if (props.cmd === 'negotiate') {
-    await loadNegotiateDefaults()
-  }
 }, { immediate: true })
 
 async function run() {
