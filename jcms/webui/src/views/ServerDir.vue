@@ -129,9 +129,6 @@ async function onToggle(node) {
             let typeKey = ''
             if (typeof item === 'string') {
               valueStr = item
-            } else if (typeof item === 'object') {
-              // 新格式：结构化 JSON 对象（quality、utc-time 等）
-              valueStr = JSON.stringify(item)
             } else if (item.choice != null) {
               typeKey = choiceTypeToType(item.choice)
               valueStr = Object.entries(item)
@@ -141,14 +138,16 @@ async function onToggle(node) {
             } else if (item.valueString != null) {
               valueStr = item.valueString
               typeKey = choiceTypeToType(item.choiceType)
-            } else {
+            } else if (typeof item === 'object' && item !== null) {
               for (const k of typeKeys) {
                 if (Object.prototype.hasOwnProperty.call(item, k)) {
                   typeKey = k
-                  valueStr = String(item[k])
+                  const v = item[k]
+                  valueStr = typeof v === 'object' && v !== null ? JSON.stringify(v) : String(v)
                   break
                 }
               }
+              if (!typeKey) valueStr = JSON.stringify(item)
             }
             valMap[attrs[i].fullRef] = { value: valueStr, type: typeKey }
           }
@@ -406,6 +405,11 @@ async function onEditorConfirm(val) {
   }
 }
 
+/** CMS bType 名称列表，用于从 {bType: value} 响应中提取类型与值。 */
+const typeKeys = ['boolean','int8','int16','int32','int64','int8u','int16u','int32u','int64u',
+  'float32','float64','octet-string','visible-string','unicode-string',
+  'timestamp','quality','check']
+
 /** Map CMS choiceType to readable type name. */
 function choiceTypeToType(choiceType) {
   const map = {
@@ -433,9 +437,6 @@ function choiceTypeToType(choiceType) {
 /** 引用类型解析（DO 节点与数据集成员共用）：优先 get-data-def，缺省时用 all-def 缓存兜底（FCD 取 cdcType，FDCA 取 DA 结构类型）。 */
 async function resolveRefTypes(attrs) {
   const defMap = {}
-  const typeKeys = ['boolean','int8','int16','int32','int64','int8u','int16u','int32u','int64u',
-    'float32','float64','octet-string','visible-string','unicode-string',
-    'timestamp','quality','check']
   const refs = attrs.map(a => a.fullRef).join(' ')
   if (refs) {
     try {
