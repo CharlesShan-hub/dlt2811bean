@@ -71,7 +71,7 @@ export function useRefsRows(form, { getDef, getCmd }) {
     if (rowDoRefs[key]) return
     const fc = fcBase()
     try {
-      const res = await executeJson(`all-def --ln ${row.ld}/${row.ln} --fc ${fc} --auto-pull true --json`)
+      const res = await executeJson(`all-def --ln ${row.ld}/${row.ln} --fcs ${fc} --auto-pull true`)
       rowDoRefs[key] = res && Array.isArray(res.data) ? res.data.map((d) => d.reference).filter(Boolean) : []
     } catch {
       rowDoRefs[key] = []
@@ -174,7 +174,7 @@ export function useRefsRows(form, { getDef, getCmd }) {
     const key = rowSdoKey(row)
     if (!key || rowSdoRefs[key]) return
     try {
-      const res = await executeJson(`data-dir --ref ${key} --json`)
+      const res = await executeJson(`data-dir --ref ${key}`)
       const dirList = Array.isArray(res) ? res : (res?.dataAttribute || [])
       const sdos = []
       const das = []
@@ -197,7 +197,7 @@ export function useRefsRows(form, { getDef, getCmd }) {
     const key = rowDaKey(row)
     if (!key || rowDaRefs[key]) return
     try {
-      const res = await executeJson(`data-dir --ref ${key} --json`)
+      const res = await executeJson(`data-dir --ref ${key}`)
       const dirList = Array.isArray(res) ? res : (res?.dataAttribute || [])
       rowDaRefs[key] = dirList
         .filter((d) => d.reference && d.fc)
@@ -224,7 +224,7 @@ export function useRefsRows(form, { getDef, getCmd }) {
 
     let defType = ''
     try {
-      const defRes = await executeJson(`get-data-def --refs "${ref}" --json`)
+      const defRes = await executeJson(`get-data-def --refs "${ref}"`)
       if (reqId !== _typeReqId) return
       const defList = Array.isArray(defRes) ? defRes : (defRes?.data || [])
       if (defList.length > 0 && defList[0]) {
@@ -265,7 +265,7 @@ export function useRefsRows(form, { getDef, getCmd }) {
     let valType = ''
     let valFromChoice = false
     try {
-      const valRes = await executeJson(`get-data-values --refs "${ref}" --json`)
+      const valRes = await executeJson(`get-data-values --refs "${ref}"`)
       if (reqId !== _typeReqId) return
       const valList = Array.isArray(valRes) ? valRes : (valRes?.value || [])
       if (valList.length > 0) {

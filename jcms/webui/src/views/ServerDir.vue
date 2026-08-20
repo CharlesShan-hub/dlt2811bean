@@ -94,7 +94,7 @@ async function onToggle(node) {
     detailRaw.value = ''
 
     try {
-      const dirRes = await executeJson(`data-dir --ref ${node.ref} --json`)
+      const dirRes = await executeJson(`data-dir --ref ${node.ref}`)
       detailRaw.value = JSON.stringify(dirRes, null, 2)
 
       // Handle both old format (array) and new format ({dataAttribute: [...]})
@@ -116,7 +116,7 @@ async function onToggle(node) {
 
         // 并行：读值 + 解析类型（get-data-def 为主，all-def 缓存兜底）
         const [valRes, defMap] = await Promise.all([
-          executeJson(`get-data-values --refs "${refs}" --json`),
+          executeJson(`get-data-values --refs "${refs}"`),
           resolveRefTypes(attrs),
         ])
 
@@ -181,8 +181,8 @@ async function onToggle(node) {
 
     try {
       const cmd = node.type === 'data-set'
-        ? `get-dataset-dir --ds ${node.ref} --auto-pull true --json`
-        : `get-${node.type}-vals --refs "${node.ref}" --json`
+        ? `get-dataset-dir --ds ${node.ref} --auto-pull true`
+        : `get-${node.type}-vals --refs "${node.ref}"`
       const res = await executeJson(cmd)
       detailRaw.value = JSON.stringify(res, null, 2)
 
@@ -215,7 +215,7 @@ async function onToggle(node) {
 
   try {
     if (node.type === 'ld') {
-      const res = await executeJson(`ld-dir --ld ${node.name} --auto-pull true --json`)
+      const res = await executeJson(`ld-dir --ld ${node.name} --auto-pull true`)
       if (res && Array.isArray(res.lnReference)) {
         node.children = res.lnReference.map(name => {
           const lnName = name.includes('/') ? name.split('/')[1] : name
@@ -242,7 +242,7 @@ async function onToggle(node) {
 
 /** 按 ACSI 分类查询某 LN 的成员引用（ln-dir --acsi）。 */
 async function queryLnAcsi(node, acsi) {
-  const res = await executeJson(`ln-dir --ln ${node.name} --acsi ${acsi} --auto-pull true --json`)
+  const res = await executeJson(`ln-dir --ln ${node.name} --acsi ${acsi} --auto-pull true`)
   return res && Array.isArray(res.reference) ? res.reference : []
 }
 
@@ -395,7 +395,6 @@ async function onEditorConfirm(val) {
     if (delim !== ' ') {
       cmd = `set-data-values --delimiter "${delim}" --refs "${entry.fullRef}" --values "${val}"`
     }
-    cmd += ' --json'
     const res = await executeJson(cmd)
     if (res && res.success) {
       entry.value = val
@@ -440,7 +439,7 @@ async function resolveRefTypes(attrs) {
   const refs = attrs.map(a => a.fullRef).join(' ')
   if (refs) {
     try {
-      const defRes = await executeJson(`get-data-def --refs "${refs}" --json`)
+      const defRes = await executeJson(`get-data-def --refs "${refs}"`)
       const defList = Array.isArray(defRes) ? defRes : (defRes?.data || [])
       for (let i = 0; i < defList.length && i < attrs.length; i++) {
         const entry = defList[i]

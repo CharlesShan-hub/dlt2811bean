@@ -17,7 +17,7 @@
     </div>
 
     <!-- 水平拖拽手柄：仅在 ASN.1 可见时显示 -->
-    <div v-if="showAsn1" class="drag-h" @mousedown.prevent="emit('start-h-drag')"></div>
+    <div v-if="showAsn1" class="drag-h" @mousedown.prevent="$emit('start-h-drag', $event)"></div>
 
     <CmdResultCard
       :result="result"

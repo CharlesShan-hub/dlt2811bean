@@ -86,7 +86,7 @@ watch(form, () => emit('update:cmd', buildCmd()), { immediate: true, deep: true 
 /** 读取当前 neg-cfg 配置并回填协商参数。 */
 async function loadConfig() {
   try {
-    const neg = await executeJson('neg-cfg --json')
+    const neg = await executeJson('neg-cfg')
     if (neg && typeof neg.apduSize === 'number') {
       form.value.apdu = neg.apduSize
       form.value.asdu = neg.asduSize
@@ -97,7 +97,7 @@ async function loadConfig() {
   }
 }
 
-/** 拼接 connect 命令（不含 --json），交由父组件执行。 */
+/** 拼接 connect 命令，交由父组件执行。 */
 function buildCmd() {
   const ip = form.value.ip.trim() || '127.0.0.1'
   const port = form.value.port || 8102

@@ -51,7 +51,7 @@ const ap = computed({
 /** 读取当前 AP 来源配置并刷新下拉。 */
 async function loadConfig() {
   try {
-    const res = await executeJson('ap --cfg --json')
+    const res = await executeJson('ap --cfg')
     if (res && typeof res.fromScd === 'boolean') {
       source.value = res.fromScd ? 'scd' : 'list'
     }
@@ -68,14 +68,14 @@ async function refreshAps() {
   let options = []
   try {
     if (source.value === 'list') {
-      // list 模式：ap --cfg --json 返回 {fromScd, defaultAps}
-      const res = await executeJson('ap --cfg --json')
+      // list 模式：ap --cfg 返回 {fromScd, defaultAps}
+      const res = await executeJson('ap --cfg')
       if (res && Array.isArray(res.defaultAps)) {
         options = res.defaultAps
       }
     } else {
-      // scd 模式：ap --list --json 返回 {source, accessPoints: ["IED/AP", ...]}
-      const res = await executeJson('ap --list --json')
+      // scd 模式：ap --list 返回 {source, accessPoints: ["IED/AP", ...]}
+      const res = await executeJson('ap --list')
       if (res && Array.isArray(res.accessPoints)) {
         options = res.accessPoints
       }
@@ -97,7 +97,7 @@ async function onSourceChange(s) {
     return
   }
   source.value = s
-  await executeJson(`ap --cfg --source ${s} --json`)
+  await executeJson(`ap --cfg --source ${s}`)
   await refreshAps()
 }
 

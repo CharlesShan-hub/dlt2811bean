@@ -59,7 +59,7 @@ export function useFormWatchers(form, { getDef, getCmd, getLnRef, lnRequiredCmds
 
   async function loadNegotiateDefaults() {
     try {
-      const neg = await executeJson('neg-cfg --json')
+      const neg = await executeJson('neg-cfg')
       if (neg && typeof neg.apduSize === 'number') {
         form.apdu = neg.apduSize
         form.asdu = neg.asduSize
@@ -213,7 +213,7 @@ export function useFormWatchers(form, { getDef, getCmd, getLnRef, lnRequiredCmds
         if (!form.ds?.ld || !form.ds?.ln || !name) return
         const ref = `${form.ds.ld}/${form.ds.ln}.${name}`
         try {
-          const res = await executeJson(`get-dataset-dir --ds ${ref} --auto-pull true --json`)
+          const res = await executeJson(`get-dataset-dir --ds ${ref} --auto-pull true`)
           if (res && Array.isArray(res.memberData) && res.memberData.length > 0) {
             form.after = res.memberData[res.memberData.length - 1].reference
           }

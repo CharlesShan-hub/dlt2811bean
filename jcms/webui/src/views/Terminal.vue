@@ -2,7 +2,7 @@
   <div class="terminal-page" :class="{ embedded }">
     <template v-if="!embedded">
       <h1 class="page-title">终端</h1>
-      <p class="page-desc">直接输入 CMS 命令，支持 --json 参数</p>
+      <p class="page-desc">直接输入 CMS 命令，输出默认为 JSON 格式</p>
     </template>
 
     <div class="terminal-box">

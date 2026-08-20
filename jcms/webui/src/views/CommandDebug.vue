@@ -309,7 +309,7 @@ async function runCmd(cmdLine) {
           if (name) {
             const ref = `${ds.ld}/${ds.ln}.${name}`
             try {
-              const res = await executeJson(`get-dataset-dir --ds ${ref} --auto-pull true --json`)
+              const res = await executeJson(`get-dataset-dir --ds ${ref} --auto-pull true`)
               if (res && Array.isArray(res.memberData) && res.memberData.length > 0) {
                 form.after = res.memberData[res.memberData.length - 1].reference
               }

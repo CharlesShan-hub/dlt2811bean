@@ -373,7 +373,7 @@ export async function ensureLdLns(ldName) {
   if (!ldName) return []
   if (ldLns[ldName]) return ldLns[ldName]
   try {
-    const res = await executeJson(`ld-dir --ld ${ldName} --auto-pull true --json`)
+    const res = await executeJson(`ld-dir --ld ${ldName} --auto-pull true`)
     ldLns[ldName] = res && Array.isArray(res.lnReference) ? res.lnReference : []
   } catch {
     ldLns[ldName] = []
