@@ -123,14 +123,16 @@ export function useFormOptions(form, { getDef, getCmd }) {
     const p = getDef().params.find((x) => x.type === 'ds-member-after')
     if (!p) return []
     let ld, ln, dsName
-    if (cmd.value === 'set-dataset-values') {
-      const o = form.ds
-      if (!o || !o.ld || !o.ln || !o.name) return []
-      ;({ ld: ld, ln: ln, name: dsName } = o)
+    const dsVal = form.ds
+    if (dsVal && typeof dsVal === 'object') {
+      // ds-ref-input 模式：form.ds = { ld, ln, name }
+      if (!dsVal.ld || !dsVal.ln || !dsVal.name) return []
+      ld = dsVal.ld; ln = dsVal.ln; dsName = dsVal.name
     } else {
+      // ln-cascade + dataset-select 模式：form.ds 为数据集名字符串
       const o = form[p.dependsOn || 'ln']
       if (!o || !o.ld || !o.ln) return []
-      ld = o.ld; ln = o.ln; dsName = form.ds
+      ld = o.ld; ln = o.ln; dsName = dsVal
       if (!dsName) return []
     }
     return datasetMemberRefs[`${ld}/${ln}.${dsName}`] || []

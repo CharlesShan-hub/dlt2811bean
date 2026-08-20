@@ -42,8 +42,7 @@ GetDataSetDirectory-ErrorPDU ::= ServiceError`,
 
 接收到的请求中未指定 referenceAfter 时，应从第一个成员开始读数据集目录。接收到的请求中指定了 referenceAfter 时，应从数据集的指定成员之后读数据集目录。`,
   params: [
-    { key: 'ln', label: '逻辑节点', type: 'ln-cascade', required: true },
-    { key: 'ds', label: '数据集名称', type: 'dataset-select', required: true, dependsOn: 'ln' },
+    { key: 'ds', label: '数据集引用', type: 'ds-ref-input', required: true, selectOnly: true },
     { key: 'after', label: '分页游标 after', type: 'ds-member-after', required: false, placeholder: '（可选）从该成员之后继续返回' },
     { key: 'auto-pull', label: '自动续拉分页 auto-pull', type: 'auto-pull-switch', required: false },
   ],

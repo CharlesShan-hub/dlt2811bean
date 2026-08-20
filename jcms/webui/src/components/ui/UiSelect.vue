@@ -99,6 +99,7 @@ function onInput(e) {
 }
 
 function onTriggerClick() {
+  if (props.disabled) return
   if (props.editable) {
     inputEl.value?.focus()
     openMenu()
@@ -108,6 +109,7 @@ function onTriggerClick() {
 }
 
 function toggle() {
+  if (props.disabled) return
   open.value ? close() : openMenu()
 }
 

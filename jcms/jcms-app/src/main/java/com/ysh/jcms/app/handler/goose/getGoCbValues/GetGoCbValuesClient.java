@@ -2,25 +2,15 @@ package com.ysh.jcms.app.handler.goose.getGoCbValues;
 import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
-import com.ysh.jcms.core.data.choice.CmsGocbValueChoice;
-import com.ysh.jcms.core.data.sequence.block.CmsGoCb;
+import com.ysh.jcms.app.handler.support.CmsClientOperator;
 import com.ysh.jcms.core.pdu.goose.CmsGetGoCbValuesError;
 import com.ysh.jcms.core.pdu.goose.CmsGetGoCbValuesResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GetGoCbValuesClient extends BaseClientHandler<GetGoCbValuesDao> {
-
-    public static final class GoCbEntry {
-        public final String desc;
-        public GoCbEntry(String desc) {
-            this.desc = desc;
-        }
-    }
 
     @Override
     public void execute(GetGoCbValuesDao dao) throws Exception {
@@ -36,22 +26,6 @@ public class GetGoCbValuesClient extends BaseClientHandler<GetGoCbValuesDao> {
     @Override
     protected void onSuccess(Frame frame, GetGoCbValuesDao dao) throws IOException {
         CmsGetGoCbValuesResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetGoCbValuesResponse());
-
-        List<GoCbEntry> entries = new ArrayList<>();
-        for (CmsGocbValueChoice choice : resp.gocb) {
-            if (choice.choice() == CmsGocbValueChoice.VALUE) {
-                CmsGoCb b = choice.altValue;
-                StringBuilder sb = new StringBuilder();
-                sb.append("goEna=").append(b.goEna.value());
-                sb.append(" goID=").append(b.goID.value());
-                sb.append(" datSet=").append(b.datSet.value());
-                sb.append(" confRev=").append(b.confRev.value());
-                sb.append(" ndsCom=").append(b.ndsCom.value());
-                entries.add(new GoCbEntry(sb.toString()));
-            } else {
-                entries.add(new GoCbEntry("error=" + choice.altError.value()));
-            }
-        }
-        content().res(entries);
+        CmsClientOperator.accumulatePage(content(), resp, "gocb");
     }
 }

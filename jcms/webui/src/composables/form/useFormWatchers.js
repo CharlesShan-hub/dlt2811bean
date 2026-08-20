@@ -8,7 +8,7 @@ import {
 import { executeJson } from '../../api/cms.js'
 import { cascadeRow, plainRow } from './refsUtil.js'
 
-const cmdMembersCmds = ['get-dataset-values', 'get-dataset-dir']
+
 
 /**
  * 表单初始化与联动副作用（watcher 集合）。
@@ -186,41 +186,19 @@ export function useFormWatchers(form, { getDef, getCmd, getLnRef, lnRequiredCmds
     )
   }
 
-  // ── 本级联（lb）数据集命令：LN 变化加载数据集列表，ds 变化加载成员 ──
-  function setupDatasetCmdWatch() {
-    const stop1 = watch(
-      [() => form.ln?.ld, () => form.ln?.ln],
-      async ([ld, ln]) => {
-        if (!cmdMembersCmds.includes(getCmd())) return
-        form.ds = ''
-        if (ld && ln) await ensureDatasetRefs(`${ld}/${ln}`)
-      }
-    )
-    const stop2 = watch(
-      () => form.ds,
-      async (dsName) => {
-        if (!cmdMembersCmds.includes(getCmd())) return
-        if (!dsName) return
-        const o = form.ln
-        if (!o || !o.ld || !o.ln) return
-        const key = `${o.ld}/${o.ln}.${dsName}`
-        if (!datasetMemberRefs[key]) await ensureDatasetMemberRefs(`${o.ld}/${o.ln}`, dsName)
-      }
-    )
-    return [stop1, stop2]
-  }
-
-  // ── set-dataset-values：ds-ref-input 变化加载成员 ──
-  function setupSetDatasetValuesWatch() {
+  // ── ds-ref-input 命令：ds 选好后加载成员引用（after 下拉用），set 命令额外加载成员数据 ──
+  function setupDsRefMembersWatch() {
     return watch(
       [() => form.ds?.ld, () => form.ds?.ln, () => form.ds?.name],
       async ([ld, ln, name]) => {
-        if (getCmd() !== 'set-dataset-values') return
-        form.values = []
+        if (!getDef().params.some((x) => x.type === 'ds-ref-input')) return
         if (!ld || !ln || !name) return
         const key = `${ld}/${ln}.${name}`
         if (!datasetMemberRefs[key]) await ensureDatasetMemberRefs(`${ld}/${ln}`, name)
-        await ensureDatasetMembers(`${ld}/${ln}`, name)
+        if (getCmd() === 'set-dataset-values') {
+          form.values = []
+          await ensureDatasetMembers(`${ld}/${ln}`, name)
+        }
       }
     )
   }
@@ -253,8 +231,7 @@ export function useFormWatchers(form, { getDef, getCmd, getLnRef, lnRequiredCmds
       setupFcWatch(),
       setupRefsWatch(),
       setupAllDataRefsWatch(),
-      ...setupDatasetCmdWatch(),
-      setupSetDatasetValuesWatch(),
+      setupDsRefMembersWatch(),
       setupCreateDatasetWatch(),
     ]
   }

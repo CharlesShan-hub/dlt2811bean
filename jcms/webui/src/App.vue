@@ -288,13 +288,13 @@ const navItems = [
     { id: 'sgcb-vals', label: cnTitle('sgcb-vals'), done: true },
   ] },
   { id: 'report', label: '报告服务', icon: 'FileText', done: false, children: [
-    { id: 'get-brcb-vals', label: cnTitle('get-brcb-vals'), done: false },
+    { id: 'get-brcb-vals', label: cnTitle('get-brcb-vals'), done: true },
     { id: 'set-brcb-vals', label: cnTitle('set-brcb-vals'), done: false },
-    { id: 'get-urcb-vals', label: cnTitle('get-urcb-vals'), done: false },
+    { id: 'get-urcb-vals', label: cnTitle('get-urcb-vals'), done: true },
     { id: 'set-urcb-vals', label: cnTitle('set-urcb-vals'), done: false },
   ] },
   { id: 'log', label: '日志服务', icon: 'Scroll', done: false, children: [
-    { id: 'get-lcb-vals', label: cnTitle('get-lcb-vals'), done: false },
+    { id: 'get-lcb-vals', label: cnTitle('get-lcb-vals'), done: true },
     { id: 'set-lcb-vals', label: cnTitle('set-lcb-vals'), done: false },
     { id: 'query-log-by-time', label: cnTitle('query-log-by-time'), done: false },
     { id: 'query-log-after', label: cnTitle('query-log-after'), done: false },
@@ -303,11 +303,11 @@ const navItems = [
   { id: 'goose', label: 'GOOSE', icon: 'Radio', done: false, children: [
     { id: 'get-go-ref', label: cnTitle('get-go-ref'), done: false },
     { id: 'get-goose-elem', label: cnTitle('get-goose-elem'), done: false },
-    { id: 'get-gocb-vals', label: cnTitle('get-gocb-vals'), done: false },
+    { id: 'get-gocb-vals', label: cnTitle('get-gocb-vals'), done: true },
     { id: 'set-gocb-vals', label: cnTitle('set-gocb-vals'), done: false },
   ] },
   { id: 'msv', label: '多播采样值', icon: 'Activity', done: false, children: [
-    { id: 'get-msvcb-vals', label: cnTitle('get-msvcb-vals'), done: false },
+    { id: 'get-msvcb-vals', label: cnTitle('get-msvcb-vals'), done: true },
     { id: 'set-msvcb-vals', label: cnTitle('set-msvcb-vals'), done: false },
   ] },
   { id: 'file', label: '文件服务', icon: 'Folder', done: false, children: [

@@ -33,6 +33,6 @@ GetLCBValues-ErrorPDU ::= ServiceError`,
 | result | | ServiceError |
 `,
   params: [
-    { key: 'refs', label: 'LCB 引用', type: 'refs-list', required: true, placeholder: 'LD/LN.lcbName，如 LD0/LLN0.lcb1' },
+    { key: 'refs', label: 'LCB 引用', type: 'refs-list', required: true, cascade: true, cb: 'lcb', placeholder: 'LD/LN.lcbName，如 LD0/LLN0.lcb1' },
   ],
 }

@@ -5,7 +5,7 @@ import { executeJson } from '../../api/cms.js'
 import { cascadeRow, plainRow } from './refsUtil.js'
 
 const sgcbCmds = ['sgcb-vals', 'select-active-sg', 'select-edit-sg', 'confirm-edit-sg']
-const rcbCmds = ['get-brcb-vals', 'get-urcb-vals']
+const rcbCmds = ['get-brcb-vals', 'get-urcb-vals', 'get-gocb-vals', 'get-lcb-vals', 'get-msvcb-vals']
 
 /** Map CMS choiceType to readable type name. */
 function choiceTypeToType(choiceType) {
