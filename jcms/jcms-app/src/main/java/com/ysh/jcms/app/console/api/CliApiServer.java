@@ -29,6 +29,9 @@ import java.util.concurrent.Executors;
  */
 public class CliApiServer {
 
+    private static final boolean ECHO_CMD = System.getProperty("cms.echoCmd") != null
+            || "1".equals(System.getenv("CMS_ECHO_CMD"));
+
     private final int port;
     private final CmsConsole console;
     private HttpServer server;
@@ -70,6 +73,10 @@ public class CliApiServer {
         String cmdLine = body.trim();
         if (cmdLine.startsWith("cmd=")) {
             cmdLine = URLDecoder.decode(cmdLine.substring(4), "UTF-8");
+        }
+
+        if (ECHO_CMD) {
+            System.err.println("[CliApiServer] received cmdLine: [" + cmdLine + "]");
         }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

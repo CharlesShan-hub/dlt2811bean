@@ -2,7 +2,6 @@ package com.ysh.jcms.core.data.choice;
 
 import com.ysh.jcms.core.data.bitarray.CmsCheck;
 import com.ysh.jcms.core.data.bitarray.CmsQuality;
-import com.ysh.jcms.core.data.bitarray.CmsTimeQuality;
 import com.ysh.jcms.core.data.core.CmsChoice;
 import com.ysh.jcms.data.DefaultInnerOctetString;
 import com.ysh.jcms.data.DefaultInnerUtf8String;
@@ -16,6 +15,7 @@ import com.ysh.jcms.core.data.enumerate.CmsTcmd;
 import com.ysh.jcms.core.data.scalar.*;
 import com.ysh.jcms.core.data.sequence.common.CmsBinaryTime;
 import com.ysh.jcms.core.data.sequence.common.CmsUtcTime;
+import com.ysh.jcms.core.data.core.CmsType;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -429,16 +429,55 @@ public class CmsData extends CmsChoice {
     }
 
     /**
-     * Convert the value of this CmsData to a human-readable string, based on the
-     * current choice() index.
+     * Convert the value of this CmsData to a bare scalar string (no CHOICE
+     * wrapper), suitable for SCL storage / {@code DataWriterResolver.setValue}.
      * <p>
-     * Delegates to {@link #toJson()} for consistent formatting.
+     * For example, an {@code int32}=1 CmsData returns {@code "1"}, not
+     * {@code {"int32":1}}. Complex types (quality, utc-time, binary-time) fall
+     * back to {@link #toJson()} since {@code CmsDataUtil.toValueString} handles
+     * them via hex encoding separately.
      *
-     * @deprecated Use {@link #toJson()} instead for proper JSON output.
+     * @deprecated For JSON interchange, use {@link #toJson()} instead.
      */
     @Deprecated
     public String toValueString() {
-        return toJson();
+        switch (choice()) {
+            case CHOICE_BOOLEAN :
+                return String.valueOf(alt_boolean.value());
+            case CHOICE_INT8 :
+                return String.valueOf(alt_int8.value());
+            case CHOICE_INT16 :
+                return String.valueOf(alt_int16.value());
+            case CHOICE_INT32 :
+                return String.valueOf(alt_int32.value());
+            case CHOICE_INT64 :
+                return String.valueOf(alt_int64.value());
+            case CHOICE_INT8U :
+                return String.valueOf(alt_int8u.value());
+            case CHOICE_INT16U :
+                return String.valueOf(alt_int16u.value());
+            case CHOICE_INT32U :
+                return String.valueOf(alt_int32u.value());
+            case CHOICE_INT64U :
+                return String.valueOf(alt_int64u.value());
+            case CHOICE_FLOAT32 :
+                return String.valueOf(alt_float32.value());
+            case CHOICE_FLOAT64 :
+                return String.valueOf(alt_float64.value());
+            case CHOICE_VISIBLE_STRING :
+                return String.valueOf(V.getVal(alt_visible_string._v));
+            case CHOICE_UNICODE_STRING :
+                return String.valueOf(V.getVal(alt_unicode_string._v));
+            case CHOICE_OCTET_STRING :
+                Object oct = V.getVal(alt_octet_string._v);
+                return oct instanceof byte[] ? InnerBase.hex((byte[]) oct) : String.valueOf(oct);
+            case CHOICE_DBPOS :
+                return String.valueOf(alt_dbpos.value());
+            case CHOICE_TCMD :
+                return String.valueOf(alt_tcmd.value());
+            default :
+                return toJson();
+        }
     }
 
     // ── Domain JSON ──────────────────────────────────────────────────
@@ -544,21 +583,28 @@ public class CmsData extends CmsChoice {
      * ObjectMapper for user-friendly JSON input (supports unquoted field names).
      * Distinct from {@link InnerBase#MAPPER} which is tuned for Inner* serialization.
      */
-    private static final ObjectMapper JSON_MAPPER = new ObjectMapper()
-            .configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
     /**
-     * Parse a user-friendly JSON string into a {@link CmsData} instance.
+     * Parse a JSON string into a {@link CmsData} instance.
      * <p>
-     * JSON objects ({@code {...}}) are auto-detected as Quality, UTC-Time, or
-     * Binary-Time based on their keys. Plain strings fall back to
-     * {@code visible-string} or {@code unicode-string}.
+     * Accepts the unified CHOICE JSON form {@code {"variantName": value}} — the
+     * same format produced by {@link #toJson()} (e.g. {@code {"int32":1}},
+     * {@code {"quality":{...}}}, {@code {"visible-string":"hello"}},
+     * {@code {"array":[...]}}). Dispatch is driven by {@code @Choice} annotations
+     * via {@link #fromJsonValue(Object)}.
      * <p>
-     * This eliminates the need for external helpers like {@code CmsDataFiller}
-     * in CLI or application code.
+     * The input must be standard JSON matching {@link #toJson()} output.
+     * At the CLI, wrap JSON values in single quotes (e.g.
+     * {@code --values '{"int32":1}'}) so the shell preserves the inner
+     * double-quote JSON intact.
+     * <p>
+     * Plain (non-JSON) strings fall back to {@code visible-string} or
+     * {@code unicode-string} for CLI convenience.
      *
-     * @param json the raw JSON string (e.g. {@code {"validity":0, "overflow":true}})
-     * @return a populated CmsData with the auto-detected variant
+     * @param json the raw JSON string (e.g. {@code {"int32":1}})
+     * @return a populated CmsData with the dispatched variant, or an empty CmsData
+     *         for null/empty input
      */
     public static CmsData fromJson(String json) {
         CmsData data = new CmsData();
@@ -569,15 +615,11 @@ public class CmsData extends CmsChoice {
             try {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> map = JSON_MAPPER.readValue(json, Map.class);
-                if (tryParseQuality(data, map))
-                    return data;
-                if (tryParseUtcTime(data, map))
-                    return data;
-                if (tryParseBinaryTime(data, map))
-                    return data;
+                data.fromJsonValue(map);
             } catch (Exception e) {
-                // fall through to plain string
+                throw new RuntimeException("fromJson failed for CmsData: " + json, e);
             }
+            return data;
         }
 
         if (containsNonAscii(json)) {
@@ -586,94 +628,6 @@ public class CmsData extends CmsChoice {
             data.alt_visible_string(json);
         }
         return data;
-    }
-
-    private static boolean tryParseQuality(CmsData data, Map<String, Object> map) {
-        if (!map.containsKey("validity"))
-            return false;
-        CmsQuality q = new CmsQuality();
-        q.validity = toInt(map.get("validity"));
-        q.overflow = toBool(map.get("overflow"));
-        q.outOfRange = toBool(map.get("outOfRange"));
-        q.badReference = toBool(map.get("badReference"));
-        q.oscillatory = toBool(map.get("oscillatory"));
-        q.failure = toBool(map.get("failure"));
-        q.oldData = toBool(map.get("oldData"));
-        q.inconsistent = toBool(map.get("inconsistent"));
-        q.inaccurate = toBool(map.get("inaccurate"));
-        q.substituted = toBool(map.get("substituted"));
-        q.test = toBool(map.get("test"));
-        q.operatorBlocked = toBool(map.get("operatorBlocked"));
-        data.alt_quality(q);
-        return true;
-    }
-
-    private static boolean tryParseUtcTime(CmsData data, Map<String, Object> map) {
-        if (!map.containsKey("secondsSinceEpoch"))
-            return false;
-        CmsUtcTime utc = new CmsUtcTime();
-        utc.secondsSinceEpoch.value(toLong(map.get("secondsSinceEpoch")));
-        utc.fractionOfSecond.value(toInt(map.get("fractionOfSecond")));
-        @SuppressWarnings("unchecked")
-        Map<String, Object> tq = (Map<String, Object>) map.get("timeQuality");
-        if (tq != null) {
-            CmsTimeQuality timeQuality = new CmsTimeQuality();
-            timeQuality.leap_seconds_known = toBool(tq.get("leap_seconds_known"));
-            timeQuality.clock_failure = toBool(tq.get("clock_failure"));
-            timeQuality.clock_not_synchronized = toBool(tq.get("clock_not_synchronized"));
-            timeQuality.precision = toInt(tq.get("precision"), 24);
-            utc.timeQuality(timeQuality);
-        }
-        data.alt_utc_time(utc);
-        return true;
-    }
-
-    private static boolean tryParseBinaryTime(CmsData data, Map<String, Object> map) {
-        if (!map.containsKey("msOfDay"))
-            return false;
-        CmsBinaryTime bt = new CmsBinaryTime();
-        bt.msOfDay.value(toLong(map.get("msOfDay")));
-        bt.daysSince1984.value(toInt(map.get("daysSince1984")));
-        data.alt_binary_time(bt);
-        return true;
-    }
-
-    private static int toInt(Object v) {
-        return toInt(v, 0);
-    }
-
-    private static int toInt(Object v, int def) {
-        if (v instanceof Number)
-            return ((Number) v).intValue();
-        if (v instanceof String)
-            try {
-                return Integer.parseInt((String) v);
-            } catch (Exception e) {
-                /* ignore */
-            }
-        return def;
-    }
-
-    private static long toLong(Object v) {
-        if (v instanceof Number)
-            return ((Number) v).longValue();
-        if (v instanceof String)
-            try {
-                return Long.parseLong((String) v);
-            } catch (Exception e) {
-                /* ignore */
-            }
-        return 0L;
-    }
-
-    private static boolean toBool(Object v) {
-        if (v instanceof Boolean)
-            return (Boolean) v;
-        if (v instanceof String)
-            return "true".equalsIgnoreCase((String) v);
-        if (v instanceof Number)
-            return ((Number) v).intValue() != 0;
-        return false;
     }
 
     private static boolean containsNonAscii(String s) {

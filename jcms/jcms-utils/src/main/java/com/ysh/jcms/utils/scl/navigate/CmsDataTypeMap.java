@@ -29,9 +29,9 @@ public final class CmsDataTypeMap {
     public static final int SEL_BIT_STRING = 14;
     public static final int SEL_VISIBLE_STRING = 16;
     public static final int SEL_UNICODE_STRING = 17;
-    public static final int SEL_QUALITY = 18;
-    public static final int SEL_UTC_TIME = 19;
-    public static final int SEL_BINARY_TIME = 20;
+    public static final int SEL_UTC_TIME = 18;
+    public static final int SEL_BINARY_TIME = 19;
+    public static final int SEL_QUALITY = 20;
     public static final int SEL_DBPOS = 21;
     public static final int SEL_TCMD = 22;
     public static final int SEL_CHECK = 23;

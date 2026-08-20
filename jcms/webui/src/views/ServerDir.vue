@@ -34,7 +34,7 @@
 
 <script setup>
 import { ref, reactive, watch } from 'vue'
-import { executeJson } from '../api/cms.js'
+import { executeJson, executeCommand } from '../api/cms.js'
 import SvcPage from '../components/SvcPage.vue'
 import ServerDirTree from '../components/ServerDirTree.vue'
 import ServerDirDetail from '../components/ServerDirDetail.vue'
@@ -380,6 +380,24 @@ function startEdit(entry) {
   editorVisible.value = true
 }
 
+/** Display-friendly scalar unwrap: {"int32":122} → "122". Structured types keep JSON. */
+function extractDisplayValue(jsonStr, type) {
+  if (!jsonStr || typeof jsonStr !== 'string') return jsonStr
+  const structuredTypes = ['quality', 'utc-time', 'binary-time']
+  if (structuredTypes.includes(type)) return jsonStr
+  try {
+    const obj = JSON.parse(jsonStr)
+    if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+      const values = Object.values(obj)
+      if (values.length === 1) {
+        const v = values[0]
+        return typeof v === 'object' && v !== null ? JSON.stringify(v) : String(v)
+      }
+    }
+  } catch { /* not JSON, return as-is */ }
+  return jsonStr
+}
+
 async function onEditorConfirm(val) {
   if (!editorEntry.value) return
   const entry = editorEntry.value
@@ -389,47 +407,55 @@ async function onEditorConfirm(val) {
   }
   editError.value = ''
   try {
+    const escapedVal = val.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
     const delim = findSafeDelimiter([entry.fullRef, val])
-    let cmd = `set-data-values --refs "${entry.fullRef}" --values "${val}"`
+    let cmd = `set-data-values --refs "${entry.fullRef}" --values "${escapedVal}"`
     if (delim !== ' ') {
-      cmd = `set-data-values --delimiter "${delim}" --refs "${entry.fullRef}" --values "${val}"`
+      cmd = `set-data-values --delimiter "${delim}" --refs "${entry.fullRef}" --values "${escapedVal}"`
     }
-    const res = await executeJson(cmd)
-    if (res && res.success) {
-      entry.value = val
+    const raw = await executeCommand(cmd)
+    const clean = raw.replace(/\x1b\[\d+m/g, '').trim()
+    const start = clean.indexOf('{')
+    const parsed = start >= 0 ? JSON.parse(clean.slice(start)) : null
+    if (parsed && parsed.success) {
+      entry.value = extractDisplayValue(val, entry.type)
     } else {
-      editError.value = res?.error || '保存失败'
+      editError.value = parsed?.info || '保存失败'
     }
   } catch {
     editError.value = '请求失败'
   }
 }
 
-/** CMS bType 名称列表，用于从 {bType: value} 响应中提取类型与值。 */
+/** CMS bType 名称列表，用于从 {bType: value} 响应中提取类型与值。对齐 CmsDataDefinition @Choice name。 */
 const typeKeys = ['boolean','int8','int16','int32','int64','int8u','int16u','int32u','int64u',
   'float32','float64','octet-string','visible-string','unicode-string',
-  'timestamp','quality','check']
+  'utc-time','binary-time','quality','dbpos','tcmd','check']
 
-/** Map CMS choiceType to readable type name. */
+/** Map CmsData.CHOICE_* index to readable type name. 对齐 CmsData.java 的 CHOICE 常量。 */
 function choiceTypeToType(choiceType) {
   const map = {
-    1: 'boolean',
-    2: 'int8',
-    3: 'int16',
-    4: 'int32',
-    5: 'int64',
-    6: 'int8u',
-    7: 'int16u',
-    8: 'int32u',
-    9: 'int64u',
-    10: 'float32',
-    11: 'float64',
-    12: 'octet-string',
-    13: 'visible-string',
-    14: 'unicode-string',
-    15: 'timestamp',
-    16: 'quality',
-    17: 'check',
+    3: 'boolean',
+    4: 'int8',
+    5: 'int16',
+    6: 'int32',
+    7: 'int64',
+    8: 'int8u',
+    9: 'int16u',
+    10: 'int32u',
+    11: 'int64u',
+    12: 'float32',
+    13: 'float64',
+    14: 'bit-string',
+    15: 'octet-string',
+    16: 'visible-string',
+    17: 'unicode-string',
+    18: 'utc-time',
+    19: 'binary-time',
+    20: 'quality',
+    21: 'dbpos',
+    22: 'tcmd',
+    23: 'check',
   }
   return map[choiceType] || 'visible-string'
 }

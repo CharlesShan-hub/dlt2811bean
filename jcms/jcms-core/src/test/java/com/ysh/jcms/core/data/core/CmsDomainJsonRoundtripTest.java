@@ -222,7 +222,7 @@ public class CmsDomainJsonRoundtripTest {
         CmsData d = CmsData.fromJson("42");
         assertEquals(CmsData.CHOICE_VISIBLE_STRING, d.choice());
 
-        d = CmsData.fromJson("{\"validity\":0, \"overflow\":true}");
+        d = CmsData.fromJson("{\"quality\":{\"validity\":0, \"overflow\":true}}");
         assertEquals(CmsData.CHOICE_QUALITY, d.choice());
         assertEquals(0, d.alt_quality.validity);
         assertTrue(d.alt_quality.overflow);

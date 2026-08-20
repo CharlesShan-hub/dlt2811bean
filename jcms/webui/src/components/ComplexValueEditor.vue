@@ -181,6 +181,26 @@ const numericTypes = ['int8', 'int16', 'int32', 'int64', 'int8u', 'int16u', 'int
   'float32', 'float64', 'INT8', 'INT16', 'INT32', 'INT64', 'INT8U', 'INT16U', 'INT32U', 'INT64U',
   'FLOAT32', 'FLOAT64', 'ENUM', 'ENUMERATED', 'CODED_ENUM']
 
+// 前端 type 标签 → @Choice(name=...) 的 name。唯一不对齐的是 boolean ↔ Boolean（大写 B）。
+const choiceNameMap = {
+  boolean: 'Boolean',
+}
+function choiceName(type) {
+  return choiceNameMap[type] || type
+}
+
+// 简单标量：数字转 Number，boolean 转 Boolean，其它保持字符串（由后端 visible-string 接收）
+function castScalar(type, raw) {
+  if (numericTypes.includes(type)) {
+    const n = Number(raw)
+    return Number.isFinite(n) ? n : raw
+  }
+  if (type === 'boolean') {
+    return raw === 'true' || raw === true
+  }
+  return raw
+}
+
 const isSimple = computed(() => simpleTypes.includes(props.type))
 const isNumeric = computed(() => numericTypes.includes(props.type))
 
@@ -249,6 +269,14 @@ function initFromValue(val) {
     }
   } catch { /* not JSON */ }
 
+  // 统一 CHOICE 格式：{"variantName": inner}——剥掉外层 name，用 inner 填充表单
+  if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+    const name = choiceName(props.type)
+    if (parsed[name] !== undefined) {
+      parsed = parsed[name]
+    }
+  }
+
   if (parsed && typeof parsed === 'object') {
     // JSON 格式
     if (props.type === 'quality') {
@@ -292,29 +320,30 @@ watch(() => props.visible, (v) => {
   }
 })
 
-// ── 预览 ──
+// ── 预览 ── 统一 CHOICE 格式 {"variantName": value}，与后端 CmsData.toJson 对称
 const previewValue = computed(() => {
   if (isSimple.value) {
-    return localValue.value || '(空)'
+    if (localValue.value === '') return '(空)'
+    return JSON.stringify({ [choiceName(props.type)]: castScalar(props.type, localValue.value) })
   }
   if (props.type === 'quality') {
-    return JSON.stringify({
+    return JSON.stringify({ [choiceName(props.type)]: {
       validity: parseInt(qualityValidity.value),
       ...Object.fromEntries(Object.entries(qualityBits.value).map(([k, v]) => [k, v])),
-    })
+    } })
   }
   if (props.type === 'utc-time') {
-    return JSON.stringify({
+    return JSON.stringify({ [choiceName(props.type)]: {
       secondsSinceEpoch: utcSeconds.value,
       fractionOfSecond: utcFraction.value,
       timeQuality: { ...utcTq.value },
-    })
+    } })
   }
   if (props.type === 'binary-time') {
-    return JSON.stringify({
+    return JSON.stringify({ [choiceName(props.type)]: {
       msOfDay: btMsOfDay.value,
       daysSince1984: btDays.value,
-    })
+    } })
   }
   return localValue.value || '(空)'
 })
@@ -344,23 +373,24 @@ function fillNowBinary() {
 function confirm() {
   let result
   if (isSimple.value) {
-    result = localValue.value
+    const name = choiceName(props.type)
+    result = JSON.stringify({ [name]: castScalar(props.type, localValue.value) })
   } else if (props.type === 'quality') {
-    result = JSON.stringify({
+    result = JSON.stringify({ [choiceName(props.type)]: {
       validity: parseInt(qualityValidity.value),
       ...Object.fromEntries(Object.entries(qualityBits.value).map(([k, v]) => [k, v])),
-    })
+    } })
   } else if (props.type === 'utc-time') {
-    result = JSON.stringify({
+    result = JSON.stringify({ [choiceName(props.type)]: {
       secondsSinceEpoch: utcSeconds.value,
       fractionOfSecond: utcFraction.value,
       timeQuality: { ...utcTq.value },
-    })
+    } })
   } else if (props.type === 'binary-time') {
-    result = JSON.stringify({
+    result = JSON.stringify({ [choiceName(props.type)]: {
       msOfDay: btMsOfDay.value,
       daysSince1984: btDays.value,
-    })
+    } })
   } else {
     result = localValue.value
   }
