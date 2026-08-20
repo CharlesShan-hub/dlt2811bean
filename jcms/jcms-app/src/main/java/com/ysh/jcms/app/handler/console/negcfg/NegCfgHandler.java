@@ -1,4 +1,4 @@
-package com.ysh.jcms.app.handler.console.client;
+package com.ysh.jcms.app.handler.console.negcfg;
 
 import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.CommandHandler;
@@ -17,7 +17,7 @@ import java.util.Map;
  * Handler for the {@code neg-cfg} command.
  *
  * <p>
- * 运行时查看/修改协商（negotiate）参数（对齐 ap-cfg 的内存开关模式，改完即生效）。 影响后续 connect 时的默认协商值；也可被
+ * 运行时查看/修改协商（negotiate）参数（对齐 ap --cfg 的内存开关模式，改完即生效）。 影响后续 connect 时的默认协商值；也可被
  * connect --apdu/--asdu/--version 显式覆盖。
  */
 public class NegCfgHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseDao>> {

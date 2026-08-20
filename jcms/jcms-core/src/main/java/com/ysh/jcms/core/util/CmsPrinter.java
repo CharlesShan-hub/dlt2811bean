@@ -19,6 +19,10 @@ public final class CmsPrinter {
     private static final String GRN = "\u001B[32m";
     private static final String YEL = "\u001B[33m";
     private static final String GRY = "\u001B[90m";
+    /** Clear screen (ANSI ED2). */
+    private static final String CLEAR_SCREEN = "\u001B[2J";
+    /** Move cursor to top-left corner (ANSI CUP 1;1). */
+    private static final String CURSOR_HOME = "\u001B[H";
 
     /** Write to stdout FD as UTF-8 (console code page is 65001). */
     private static final FileOutputStream STDOUT;
@@ -76,12 +80,20 @@ public final class CmsPrinter {
         println(CYAN + "  " + msg + RST);
     }
 
-    /** 输出 JSON 成功响应：{"success":true,"info":"...","data":null}。 */
+    /** Clear the screen and move the cursor to the top-left corner. Skipped in API capture mode to avoid leaking escape sequences into responses. */
+    public static void clear() {
+        if (captureStream.get() != null) {
+            return;
+        }
+        consoleOnly(CLEAR_SCREEN + CURSOR_HOME);
+    }
+
+    /** Output a JSON success response: {"success":true,"info":"...","data":null}. */
     public static void success(String msg) {
         raw("{\"success\":true,\"info\":\"" + CmsFormatUtil.escapeJson(msg) + "\",\"data\":null}");
     }
 
-    /** 输出 JSON 错误响应：{"success":false,"info":"...","data":null}。 */
+    /** Output a JSON error response: {"success":false,"info":"...","data":null}. */
     public static void error(String msg) {
         raw("{\"success\":false,\"info\":\"" + CmsFormatUtil.escapeJson(msg) + "\",\"data\":null}");
     }
@@ -128,9 +140,10 @@ public final class CmsPrinter {
     }
 
     /**
-     * 直接序列化原始对象为 JSON 输出，不做任何包装。
+     * Serialize an arbitrary object to JSON and print it without any wrapping.
      * <p>
-     * 调用方应直接传入要输出的数据对象（如 List、Map、POJO）， 该方法会将其序列化为 JSON 并输出。
+     * Callers pass the object to print directly (e.g. a List, Map or POJO); it is
+     * serialized to JSON and printed.
      */
     public static void outputJson(Object result) {
         try {
@@ -145,9 +158,10 @@ public final class CmsPrinter {
     }
 
     /**
-     * 统一响应包装：{"success":true,"info":"OK","data":<原始字段>}。
+     * Unified response wrapper: {"success":true,"info":"OK","data":<raw fields>}.
      * <p>
-     * 将原始数据对象包装为统一的 success/info/data 响应格式输出。
+     * Wraps the raw data object into the unified success/info/data response format
+     * and prints it.
      */
     public static void result(Object data) {
         try {
@@ -166,8 +180,9 @@ public final class CmsPrinter {
     }
 
     /**
-     * JSON 语法高亮：键=青色，字符串值=绿色，布尔/数字=黄色，null=灰色。 仅用于终端输出（CLI 模式），API server 模式输出原始
-     * JSON。
+     * JSON syntax highlighting: keys = cyan, string values = green, booleans/numbers
+     * = yellow, null = gray. Only used for terminal output (CLI mode); API server
+     * mode prints raw JSON.
      */
     private static String highlightJson(String json) {
         json = json.replaceAll("(\"[^\"]*\")(\\s*:)", CYAN + "$1" + RST + "$2");

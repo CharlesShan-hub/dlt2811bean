@@ -21,8 +21,7 @@ public enum CommandInfo {
     NEGOTIATE("negotiate", "协商参数", Requirement.CONNECTED),
 
     // ── 本地配置 ──
-    AP_DIR("ap-dir", "列出 SCD 中所有可用的 AccessPoint", Requirement.NONE),
-    AP_CFG("ap-cfg", "查看/修改 AP 来源配置", Requirement.NONE),
+    AP("ap", "访问点：--list 枚举（--source scd|list），--cfg 查看/改来源与缓存列表", Requirement.NONE),
     NEG_CFG("neg-cfg", "查看/修改协商参数", Requirement.NONE),
     SCL_CHECK("scl-check", "按 Q/GDW 1396 校验 SCL 文件（国网符合性检查）", Requirement.NONE),
 
@@ -105,7 +104,6 @@ public enum CommandInfo {
     TRACE_PDU("trace-pdu", "开启/关闭 PDU 跟踪", Requirement.NONE),
     MAX_ENTRIES("max-entries", "设置服务端最大返回条数（用于测试分页）", Requirement.NONE),
     CLEAR("clear", "清空屏幕", Requirement.NONE),
-    LIST_AP("list-ap", "列出全部访问点", Requirement.NONE),
     HELP("help", "显示帮助信息", Requirement.NONE);
     // @formatter:on
 

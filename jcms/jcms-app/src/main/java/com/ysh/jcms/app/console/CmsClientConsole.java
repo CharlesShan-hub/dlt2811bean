@@ -1,8 +1,13 @@
 package com.ysh.jcms.app.console;
 
-import com.ysh.jcms.app.handler.console.client.*;
-import com.ysh.jcms.app.handler.console.LogHandler;
-import com.ysh.jcms.app.handler.console.ClearHandler;
+import com.ysh.jcms.app.handler.console.help.HelpHandler;
+import com.ysh.jcms.app.handler.console.connect.ConnectHandler;
+import com.ysh.jcms.app.handler.console.disconnect.DisconnectHandler;
+import com.ysh.jcms.app.handler.console.negcfg.NegCfgHandler;
+import com.ysh.jcms.app.handler.console.conformance.ConformanceHandler;
+import com.ysh.jcms.app.handler.console.ap.ApClientHandler;
+import com.ysh.jcms.app.handler.console.log.LogHandler;
+import com.ysh.jcms.app.handler.console.clear.ClearHandler;
 import com.ysh.jcms.app.handler.rpc.getRpcInterfaceDirectory.GetRpcInterfaceDirectoryConsole;
 import com.ysh.jcms.app.handler.rpc.getRpcMethodDirectory.GetRpcMethodDirectoryConsole;
 import com.ysh.jcms.app.handler.rpc.getRpcInterfaceDefinition.GetRpcInterfaceDefinitionConsole;
@@ -71,10 +76,9 @@ public class CmsClientConsole extends CmsClient implements CmsConsole {
         register(new HelpHandler(this));
         register(new ConnectHandler());
         register(new DisconnectHandler());
-        register(new ApDirHandler());
-        register(new ApCfgHandler());
         register(new NegCfgHandler());
         register(new ConformanceHandler());
+        register(new ApClientHandler());
         register(new SvrDirConsole());
         register(new LdDirConsole());
         register(new LnDirConsole());

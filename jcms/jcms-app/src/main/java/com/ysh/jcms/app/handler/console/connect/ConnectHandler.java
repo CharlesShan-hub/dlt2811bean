@@ -1,4 +1,4 @@
-package com.ysh.jcms.app.handler.console.client;
+package com.ysh.jcms.app.handler.console.connect;
 
 import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.core.util.CmsPrinter;

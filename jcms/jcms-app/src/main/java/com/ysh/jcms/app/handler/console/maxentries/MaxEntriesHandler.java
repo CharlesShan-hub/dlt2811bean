@@ -1,4 +1,4 @@
-package com.ysh.jcms.app.handler.console.server;
+package com.ysh.jcms.app.handler.console.maxentries;
 
 import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.CommandHandler;
