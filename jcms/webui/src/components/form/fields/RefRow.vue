@@ -17,6 +17,22 @@
           <X :size="14" />
         </button>
       </template>
+      <template v-else-if="isRcbCmd">
+        <UiSelect
+          :model-value="row.ln"
+          :options="ctx.rowLnOptions(row)"
+          placeholder="LN"
+          empty-label="（不选）"
+          @update:model-value="onLn"
+        />
+        <UiSelect
+          :model-value="row.do"
+          :options="ctx.rowCbOptions(row)"
+          placeholder="控制块名"
+          empty-label="（不选）"
+          @update:model-value="onDo"
+        />
+      </template>
       <template v-else>
         <UiSelect
           :model-value="row.ln"
@@ -35,8 +51,8 @@
       </template>
     </div>
 
-    <!-- 非 SGCB 命令：第二行 SDO → DA → FC -->
-    <div v-if="!isSgcbCmd" class="refs-row">
+    <!-- 非 SGCB/RCB 命令：第二行 SDO → DA → FC -->
+    <div v-if="!isSgcbCmd && !isRcbCmd" class="refs-row">
       <button v-if="!info.single" type="button" class="glass glass-danger refs-del" title="删除该引用" @click="ctx.removeRefs(index)">
         <X :size="14" />
       </button>
@@ -103,6 +119,7 @@ const ctx = useFormCtx()
 const info = computed(() => props.param)
 const cmd = computed(() => ctx.cmd)
 const isSgcbCmd = computed(() => ctx.isSgcbCmd)
+const isRcbCmd = computed(() => ctx.isRcbCmd)
 const showFc = computed(() => !['data-dir', 'set-edit-sg'].includes(cmd.value))
 const showValue = computed(() => ['set-data-values', 'set-edit-sg'].includes(cmd.value))
 

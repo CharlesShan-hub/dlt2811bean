@@ -41,6 +41,6 @@ a) 一帧报文无法返回所有非缓存报告控制块的值时，服务器�
 b) 请求队列中的某一个控制块无法访问时，应返回错误原因，并继续处理下一个控制块。
 `,
   params: [
-    { key: 'refs', label: 'URCB 引用', type: 'refs-list', required: true, placeholder: 'LD/LN.urcbName，如 LD0/LLN0.urcbEvent' },
+    { key: 'refs', label: 'URCB 引用', type: 'refs-list', required: true, cascade: true, cb: 'urcb', placeholder: 'LD/LN.urcbName，如 LD0/LLN0.urcbEvent' },
   ],
 }

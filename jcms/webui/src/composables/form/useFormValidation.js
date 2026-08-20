@@ -45,7 +45,7 @@ export function useFormValidation(form, { getDef, getCmd, dsRefExists, dsRefInva
       } else if (p.type === 'refs-list') {
         const rows = v || []
         const hasValid = p.cascade
-          ? rows.some((r) => r && r.ld && r.ln)
+          ? (p.cb ? rows.some((r) => r && r.ld && r.ln && r.do) : rows.some((r) => r && r.ld && r.ln))
           : rows.some((r) => r && typeof r === 'string' && r)
         if (!hasValid) return false
       } else if (v === '' || v === null || v === undefined) {

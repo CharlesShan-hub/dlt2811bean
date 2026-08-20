@@ -1,10 +1,11 @@
 import { reactive, computed } from 'vue'
 import { FC_OPTIONS } from '../../cmddefs/common.js'
-import { ldLns, ensureLdLns, ensureCbRefs, ensureSgcbData, ensureAllDefData } from '../../ldCache.js'
+import { ldLns, cbRefs, ensureLdLns, ensureCbRefs, ensureSgcbData, ensureAllDefData } from '../../ldCache.js'
 import { executeJson } from '../../api/cms.js'
 import { cascadeRow, plainRow } from './refsUtil.js'
 
 const sgcbCmds = ['sgcb-vals', 'select-active-sg', 'select-edit-sg', 'confirm-edit-sg']
+const rcbCmds = ['get-brcb-vals', 'get-urcb-vals']
 
 /** Map CMS choiceType to readable type name. */
 function choiceTypeToType(choiceType) {
@@ -29,6 +30,16 @@ function choiceTypeToType(choiceType) {
 export function useRefsRows(form, { getDef, getCmd }) {
   const cmd = computed(() => getCmd())
   const isSgcbCmd = computed(() => sgcbCmds.includes(cmd.value))
+  const isRcbCmd = computed(() => {
+    if (!rcbCmds.includes(cmd.value)) return false
+    const p = getDef().params.find((x) => x.type === 'refs-list')
+    return !!(p && p.cb)
+  })
+  /** 当前 refs-list 参数的 cb 类型（'brcb' / 'urcb' / ''）。 */
+  function cbKind() {
+    const p = getDef().params.find((x) => x.type === 'refs-list')
+    return (p && p.cb) || ''
+  }
   const fcRowOptions = computed(() => FC_OPTIONS)
 
   // ── 行增删 ──
@@ -77,6 +88,12 @@ export function useRefsRows(form, { getDef, getCmd }) {
     })
   }
   function onRowLd(row) {
+    if (isRcbCmd.value) {
+      row.ln = ''
+      row.do = ''
+      if (row.ld) ensureLdLns(row.ld)
+      return
+    }
     if (isSgcbCmd.value) {
       // SGCB：固定 LLN0 + 加载 SGCB 名称
       row.ln = 'LLN0'
@@ -105,6 +122,10 @@ export function useRefsRows(form, { getDef, getCmd }) {
     }
   }
   function onRowLn(row) {
+    if (isRcbCmd.value) {
+      row.do = ''
+      return
+    }
     row.do = ''
     row.sdo = ''
     row.da = ''
@@ -273,6 +294,16 @@ export function useRefsRows(form, { getDef, getCmd }) {
     row._resolvedType = defType || (valFromChoice ? valType : '') || (valType !== 'visible-string' ? valType : '') || ''
   }
 
+  // ── RCB 控制块名选项（brcb/urcb 命令的 LN 变更时懒加载） ──
+  function rowCbOptions(row) {
+    if (!row.ld || !row.ln) return []
+    const kind = cbKind()
+    if (!kind) return []
+    const ref = `${row.ld}/${row.ln}`
+    if (!cbRefs[`${ref}|${kind}`]) ensureCbRefs(ref, kind)
+    return cbRefs[`${ref}|${kind}`] || []
+  }
+
   // ── SGCB 名称加载（sgcb 命令的 LD 变更时触发） ──
   function loadSgcbNames(row) {
     if (!row.ld) return
@@ -288,6 +319,8 @@ export function useRefsRows(form, { getDef, getCmd }) {
     addRefs,
     removeRefs,
     isSgcbCmd,
+    isRcbCmd,
+    rowCbOptions,
     fcRowOptions,
     rowLnOptions,
     rowDoOptions,

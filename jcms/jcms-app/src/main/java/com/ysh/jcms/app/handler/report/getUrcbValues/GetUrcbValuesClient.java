@@ -2,6 +2,7 @@ package com.ysh.jcms.app.handler.report.getUrcbValues;
 import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
+import com.ysh.jcms.app.handler.support.CmsClientOperator;
 import com.ysh.jcms.core.pdu.report.CmsGetUrcbValuesError;
 import com.ysh.jcms.core.pdu.report.CmsGetUrcbValuesResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;
@@ -25,6 +26,6 @@ public class GetUrcbValuesClient extends BaseClientHandler<GetUrcbValuesDao> {
     @Override
     protected void onSuccess(Frame frame, GetUrcbValuesDao dao) throws IOException {
         CmsGetUrcbValuesResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetUrcbValuesResponse());
-        content().res(resp.urcb);
+        CmsClientOperator.accumulatePage(content(), resp, "urcb");
     }
 }

@@ -2,6 +2,7 @@ package com.ysh.jcms.app.handler.report.getBrcbValues;
 import com.ysh.jcms.app.handler.support.CmsFrameDecoder;
 
 import com.ysh.jcms.app.handler.base.BaseClientHandler;
+import com.ysh.jcms.app.handler.support.CmsClientOperator;
 import com.ysh.jcms.core.pdu.report.CmsGetBrcbValuesError;
 import com.ysh.jcms.core.pdu.report.CmsGetBrcbValuesResponse;
 import com.ysh.jcms.core.info.CmsServiceInfo;
@@ -25,6 +26,6 @@ public class GetBrcbValuesClient extends BaseClientHandler<GetBrcbValuesDao> {
     @Override
     protected void onSuccess(Frame frame, GetBrcbValuesDao dao) throws IOException {
         CmsGetBrcbValuesResponse resp = CmsFrameDecoder.decodeResp(frame, new CmsGetBrcbValuesResponse());
-        content().res(resp.brcb);
+        CmsClientOperator.accumulatePage(content(), resp, "brcb");
     }
 }
