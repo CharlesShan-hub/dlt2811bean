@@ -93,10 +93,53 @@ public class CmsConfigInjector {
                 return value;
             return Boolean.parseBoolean(value.toString());
         }
+        if (targetType == short.class || targetType == Short.class) {
+            if (value instanceof Number)
+                return ((Number) value).shortValue();
+            return Short.parseShort(value.toString());
+        }
+        if (targetType == byte.class || targetType == Byte.class) {
+            if (value instanceof Number)
+                return ((Number) value).byteValue();
+            return Byte.parseByte(value.toString());
+        }
+        if (targetType == float.class || targetType == Float.class) {
+            if (value instanceof Number)
+                return ((Number) value).floatValue();
+            return Float.parseFloat(value.toString());
+        }
+        if (targetType == double.class || targetType == Double.class) {
+            if (value instanceof Number)
+                return ((Number) value).doubleValue();
+            return Double.parseDouble(value.toString());
+        }
         if (targetType == String.class) {
             return value.toString();
         }
+        // Enum: first try standard Enum.valueOf() with uppercase, then from(String)
+        if (targetType.isEnum()) {
+            return convertToEnum(value.toString(), (Class<? extends Enum>) targetType);
+        }
 
         return null;
+    }
+
+    private static <E extends Enum<E>> Object convertToEnum(String raw, Class<E> enumType) {
+        // 1) static from(String) factory (project convention, e.g. SclConformanceMode.from)
+        for (String factory : new String[]{"from", "of", "parse", "valueOf"}) {
+            try {
+                Method m = enumType.getMethod(factory, String.class);
+                if (java.lang.reflect.Modifier.isStatic(m.getModifiers())) {
+                    return m.invoke(null, raw);
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        // 2) uppercase Enum.valueOf (standard JDK fallback)
+        try {
+            return Enum.valueOf(enumType, raw.toUpperCase());
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

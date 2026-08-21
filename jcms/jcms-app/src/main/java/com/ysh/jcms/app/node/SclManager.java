@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.node;
 
-import com.ysh.jcms.utils.config.CmsConfigLoader;
+import com.ysh.jcms.utils.config.CmsConfigInjector;
+import com.ysh.jcms.utils.config.CmsValue;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.conformance.SclConformanceCheck;
 import com.ysh.jcms.utils.scl.conformance.SclConformanceIssue;
@@ -20,8 +21,15 @@ public class SclManager {
 
     private SclDocument document;
     private String source;
+
+    @CmsValue("scl.conformanceMode")
     private SclConformanceMode conformanceMode = SclConformanceMode.LOOSE;
+
     private List<SclConformanceIssue> conformanceIssues = Collections.emptyList();
+
+    public SclManager() {
+        CmsConfigInjector.inject(this);
+    }
 
     public SclManager load(String filePath) {
         if (filePath == null) {
@@ -80,7 +88,6 @@ public class SclManager {
      * logged once per load; LOOSE mode keeps the historical behaviour.
      */
     private void runConformanceCheck() {
-        this.conformanceMode = SclConformanceMode.from(CmsConfigLoader.load().scl().conformanceMode());
         if (document == null || conformanceMode == SclConformanceMode.LOOSE) {
             this.conformanceIssues = Collections.emptyList();
             return;

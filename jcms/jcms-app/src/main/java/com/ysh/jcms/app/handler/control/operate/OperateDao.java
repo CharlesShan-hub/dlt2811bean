@@ -37,6 +37,12 @@ public class OperateDao extends BaseDao {
     @Override
     public CmsType toRequest() {
         Objects.requireNonNull(ref, "ref must not be null");
+        Objects.requireNonNull(ctlVal, "ctlVal must not be null");
+        Objects.requireNonNull(origin, "origin must not be null");
+        Objects.requireNonNull(ctlNum, "ctlNum must not be null");
+        Objects.requireNonNull(t, "t must not be null");
+        Objects.requireNonNull(test, "test must not be null");
+        Objects.requireNonNull(check, "check must not be null");
         return new CmsOperateRequest()
             .reference(ref)
             .ctlVal(ctlVal)

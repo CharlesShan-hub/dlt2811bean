@@ -75,6 +75,12 @@ public class CmsCancelRequest extends CmsSequence {
         }
         return this;
     }
+    public CmsCancelRequest operTm(Long v) {
+        if (v != null) {
+            return operTm(new CmsUtcTime().secondsSinceEpoch(v));
+        }
+        return operTm((CmsUtcTime) null);
+    }
     public CmsCancelRequest origin(CmsOriginator v) {
         this.origin.value(v);
         return this;
@@ -97,6 +103,12 @@ public class CmsCancelRequest extends CmsSequence {
     }
     public CmsCancelRequest t(CmsUtcTime v) {
         this.t.value(v);
+        return this;
+    }
+    public CmsCancelRequest t(Long v) {
+        if (v != null) {
+            this.t.value(new CmsUtcTime().secondsSinceEpoch(v));
+        }
         return this;
     }
     public CmsCancelRequest test(boolean v) {
