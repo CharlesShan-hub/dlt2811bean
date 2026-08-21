@@ -32,6 +32,7 @@ public class AssociateClient extends BaseClientHandler<AssociateDao> {
     protected void beforeAll(AssociateDao dao) throws IOException {
         if (!dao.secure()) {
             dao.authParam(null);
+            return;
         }
         try {
             dao.authParam(buildAuthParam(node.credentialManager(), dao.sapRef()));
@@ -73,9 +74,9 @@ public class AssociateClient extends BaseClientHandler<AssociateDao> {
 
     private CmsAuthenticationParameter buildAuthParam(GmCredentialManager cm, String sapRef) throws Exception {
         byte[] certBytes = cm.getCertificate().getEncoded();
+        CmsUtcTime signedTime = new CmsUtcTime().now();
         byte[] sapBytes = sapRef.getBytes(StandardCharsets.UTF_8);
-        long now = System.currentTimeMillis();
-        byte[] timeBytes = String.valueOf(now / 1000).getBytes(StandardCharsets.UTF_8);
+        byte[] timeBytes = String.valueOf(signedTime.secondsSinceEpoch.value()).getBytes(StandardCharsets.UTF_8);
 
         byte[] signedData = new byte[sapBytes.length + timeBytes.length];
         System.arraycopy(sapBytes, 0, signedData, 0, sapBytes.length);
@@ -83,7 +84,7 @@ public class AssociateClient extends BaseClientHandler<AssociateDao> {
 
         byte[] signatureValue = GmSignature.sign(cm.getPrivateKey(), signedData);
 
-        return new CmsAuthenticationParameter().signatureCertificate(certBytes).signedTime(new CmsUtcTime().now())
+        return new CmsAuthenticationParameter().signatureCertificate(certBytes).signedTime(signedTime)
                 .signedValue(signatureValue);
     }
 

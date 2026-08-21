@@ -149,5 +149,5 @@ CmsClient 构造
 ## 相关文档
 
 - [jcms-node.md](jcms-node.md) — CmsNode 基类细节
-- [jcms-svc.md](jcms-svc.md) — 服务报文段封装
+- [04-jcms-core.md](04-jcms-core.md) — 服务报文段封装（pdu/ 包）
 - [jcms-transport.md](jcms-transport.md) — 传输层实现

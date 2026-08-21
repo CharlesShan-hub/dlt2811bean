@@ -18,9 +18,8 @@
 - **jcms-data**（inner-data）
   - [data](docs/impl/03-jcms-data.md): 由 csasn1 自动生成的 `Inner*` POJO 类，是数据结构的单一真相源，以 JSON（JER）作为与上层交换的载体。
 - **jcms-core**
-  - [core](docs/impl/jcms-core.md): 手写封装，将 jcms-data 打包为 `CmsType` 等 Cms* 基类体系。
-  - [info](docs/impl/04-jcms-info.md): 一些文档性质的枚举和说明。
-  - [svc](docs/impl/jcms-svc.md): dlt2811 §8的java封装。
+  - [core](docs/impl/04-jcms-core.md): 手写封装，将 jcms-data 打包为 `CmsType` 等 Cms* 基类体系（含 §8 服务报文段）。
+  - [info](docs/impl/04a-jcms-info.md): 一些文档性质的枚举和说明。(core/info子模块进一步介绍，与代码规则)
 - **jcms-utils**
   - [config](docs/impl/jcms-config.md): 配置模块。
   - [scl](docs/impl/jcms-scl.md):  scd文件解析模块。

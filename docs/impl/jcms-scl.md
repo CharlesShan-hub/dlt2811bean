@@ -405,7 +405,6 @@ CmsData data = DataConverter.toCmsData(dv);
 | **jcms-app/handler** | 目录/数据/数据集/控制块各 handler 通过 **service 层**（`SclDirectoryService` / `SclAllValuesService` / `SclDataDirectoryService` / `SclDatasetService` / `SclControlBlockService`）查询 SCL 模型；`AssociateServer` 用 `SclAccessPointService` 解析访问点 |
 | **jcms-app/console** | `ApDirHandler` 用 `SclReader.scanAccessPoints()` 轻量扫描 IED→AP 目录 |
 | **jcms-core** | 反向依赖：jcms-scl 依赖 jcms-core 的协议类型（`CmsData` / `CmsBrcb` / `CmsFC` / `CmsServiceError` 等），用于转换与状态载体 |
-| **jcms-svc** | 不直接依赖，服务响应数据来源于 SCL 模型的值 |
 
 ## 测试覆盖
 

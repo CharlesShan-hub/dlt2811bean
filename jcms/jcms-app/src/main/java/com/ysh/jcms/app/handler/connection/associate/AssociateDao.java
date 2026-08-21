@@ -33,7 +33,6 @@ public class AssociateDao extends BaseDao {
     @Override
     public CmsType toRequest() {
         Objects.requireNonNull(sapRef, "sapRef must not be null");
-        Objects.requireNonNull(authParam, "authParam must not be null");
         return new CmsAssociateRequest()
             .authenticationParameter(authParam)
             .serverAccessPointReference(sapRef);

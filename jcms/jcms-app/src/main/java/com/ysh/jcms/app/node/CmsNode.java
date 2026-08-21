@@ -56,7 +56,7 @@ public class CmsNode {
 
     private static GmCredentialManager initCredentialManager() {
         try {
-            return SecurityContext.generateSelfSigned().credentialManager();
+            return SecurityContext.fromConfig(CmsConfigLoader.load()).credentialManager();
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize GmCredentialManager", e);
         }

@@ -50,12 +50,15 @@ public class AssociateSecurity {
         if (!req.isPresent("authenticationParameter") || req.authenticationParameter.signatureCertificate.value().length == 0)
             return CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE;
 
-        if (authenticator != null) {
-            byte[] signedData = prepareSignedData(sapRef, req);
-            Optional<CmsServiceError> authError = authenticator.validate(req.authenticationParameter, signedData);
-            if (authError.isPresent())
-                return authError.get().value();
+        if (authenticator == null) {
+            log.error("Authenticator not initialized, rejecting authentication");
+            return CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT;
         }
+
+        byte[] signedData = prepareSignedData(sapRef, req);
+        Optional<CmsServiceError> authError = authenticator.validate(req.authenticationParameter, signedData);
+        if (authError.isPresent())
+            return authError.get().value();
         return CmsServiceError.NO_ERROR;
     }
 
@@ -69,9 +72,10 @@ public class AssociateSecurity {
             return null;
         if (serverPrivateKey != null && sapRef != null) {
             try {
-                byte[] signedData = buildServerSignedData(sapRef);
+                CmsUtcTime signedTime = new CmsUtcTime().now();
+                byte[] signedData = buildServerSignedData(sapRef, signedTime.secondsSinceEpoch.value());
                 byte[] signature = GmSignature.sign(serverPrivateKey, signedData);
-                return new CmsAuthenticationParameter().signatureCertificate(serverCertificateBytes).signedTime(new CmsUtcTime().now())
+                return new CmsAuthenticationParameter().signatureCertificate(serverCertificateBytes).signedTime(signedTime)
                         .signedValue(signature);
             } catch (Exception e) {
                 log.warn("Failed to sign server auth param", e);
@@ -93,11 +97,10 @@ public class AssociateSecurity {
         return sapBytes;
     }
 
-    private byte[] buildServerSignedData(String sapRef) {
-        // 服务端签名内容：sapRef + 当前时间
-        long now = System.currentTimeMillis() / 1000;
+    private byte[] buildServerSignedData(String sapRef, long epochSeconds) {
+        // 服务端签名内容：sapRef + 时间戳
         byte[] sapBytes = sapRef.getBytes(StandardCharsets.UTF_8);
-        byte[] timeBytes = String.valueOf(now).getBytes(StandardCharsets.UTF_8);
+        byte[] timeBytes = String.valueOf(epochSeconds).getBytes(StandardCharsets.UTF_8);
         byte[] result = new byte[sapBytes.length + timeBytes.length];
         System.arraycopy(sapBytes, 0, result, 0, sapBytes.length);
         System.arraycopy(timeBytes, 0, result, sapBytes.length, timeBytes.length);
