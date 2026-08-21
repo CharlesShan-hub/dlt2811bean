@@ -12,14 +12,14 @@
 
 本项目就是制作CMS标准的代码实现。PER 编解码由 Rust 侧负责：基于 [rasn](https://github.com/rustasn/rasn) 开源库，通过 `csasn1` 生成器从 `assets/cms.asn1` 生成 Java 数据类，并借助 Rust FFI 完成 APER 编解码。Java 侧在此基础上手写封装。项目目录包含下边内容：
 
-- **csasn1**（Rust）
-  - 基于 rasn 的 ASN.1 生成器，从 `assets/cms.asn1` 生成 jcms-data 的 Java 代码，同时提供 Rust FFI 编解码入口。
+- **encoding and decoding**:
+  - [rasn](docs/impl/01-rasn.md):rasn 开源库，完成 PER 编解码。本项目参与了rasn的开源贡献。
+  - [csasn1](docs/impl/02-csasn1.md): 基于 csasn1 生成器，从 `assets/cms.asn1` 生成 jcms-data 的 Java 代码，同时提供 Rust FFI 编解码入口。（除了java，csasn1也提供生成rust与python模板代码）
 - **jcms-data**（inner-data）
-  - 由 csasn1 自动生成的 `Inner*` POJO 类，是数据结构的单一真相源，以 JSON（JER）作为与上层交换的载体。
+  - [data](docs/impl/03-jcms-data.md): 由 csasn1 自动生成的 `Inner*` POJO 类，是数据结构的单一真相源，以 JSON（JER）作为与上层交换的载体。
 - **jcms-core**
   - [core](docs/impl/jcms-core.md): 手写封装，将 jcms-data 打包为 `CmsType` 等 Cms* 基类体系。
-  - [info](docs/impl/jcms-info.md): 一些文档性质的枚举和说明。
-  - [data](docs/impl/jcms-data.md): dlt2811 §7的java封装。
+  - [info](docs/impl/04-jcms-info.md): 一些文档性质的枚举和说明。
   - [svc](docs/impl/jcms-svc.md): dlt2811 §8的java封装。
 - **jcms-utils**
   - [config](docs/impl/jcms-config.md): 配置模块。

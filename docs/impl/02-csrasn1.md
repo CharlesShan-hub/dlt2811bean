@@ -135,3 +135,4 @@ void  csasn1_free_string(char* s);                             // 释放返回�
 - **前缀 `Inner`**：jcms-data 的生成类统一用 `Inner` 前缀（`--prefix Inner`），README 示例里的 `Cms` 只是演示。
 - **编码固定 `aper`**：生成时 `--enc aper` 把编码方式固化进生成代码，运行时无需再指定。
 - **DLL 位置**：生成器自动把 `asn1.dll` 拷到 `jcms-data/src/main/resources/win32-x86-64/`（及 `assets/java`、`assets/python` 对应目录）。
+- **`encode` 返回字节数组而非 hex（刻意设计）**：`csasn1_encode` 的返回值里二进制结果用 JSON 数字数组（`{"bytes": [1,2,3,...]}`），而不是 hex 字符串。这是**刻意为之**，不要"优化"回 hex：Jackson 把 JSON 字符串反序列化成 `byte[]` 时默认按 **base64** 解析（不是 hex），而 hex 字符恰好落在 base64 字母表内，会**静默解出错误字节**（不报错但结果错）。数字数组是 Jackson / ctypes 都原生支持的 `byte[]` 表示，无歧义。decode 方向走 JER 用 hex 是因为那是 rust 侧的 JER 编码输出，不受此坑影响。
