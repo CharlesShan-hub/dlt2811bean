@@ -38,13 +38,13 @@ security:
 | `false` | `false` | **档位 1：不认证** | 服务器自认证（自签名 + trustAll），客户端爱带不带，带了也放行 |
 | `true` | `false` | **档位 2：可选认证** | 服务器真实 CA 校验；客户端带了就走真实流程，不带也放行 |
 | `true` | `true` | **档位 3：强制认证** | 服务器真实 CA 校验 + 必须携带，缺或验不过就拒绝 |
-| `false` | `true` | ⚠️ 无效 | 未启用却强制，代码里显式拒绝或忽略并告警 |
+| `false` | `true` | **档位 4：模拟安全** | 启动告警，但仍按 trustAll 运行（本地证书未配好的"安全姿态"） |
 
 ### 关键语义
 
 - **`enabled` 决定"怎么验"**：`false` → trustAll（自认证）；`true` → CA 签发校验（`cert.verify(caKey)`）。
 - **`required` 决定"要不要验"**：`true` → 客户端必须带认证参数；`false` → 客户端可带可不带。
-- `required` 只在 `enabled=true` 时有意义；`enabled=false` 时无论 `required` 如何，都按 trustAll 处理（若配了 `required=true` 应告警）。
+- `required` 只在 `enabled=true` 时才有强制力；`enabled=false` 时无论 `required` 如何，都按 trustAll 处理（若配了 `required=true` 应告警，但不阻止运行）。
 
 ## 四、分步任务
 
@@ -62,7 +62,7 @@ security:
   - `enabled=false` → 不校验（现状）。
   - `enabled=true, required=false` → 带了就验，没带放行。
   - `enabled=true, required=true` → 没带直接拒绝；带了走真实校验。
-- [ ] **2.4** 处理无效组合 `enabled=false, required=true`：启动时告警，按 `enabled=false`（trustAll）处理。
+- [x] **2.4** 处理组合 `enabled=false, required=true`：启动时告警，按 `enabled=false`（trustAll）继续运行（模拟安全）。
 
 ### 阶段 3：配置与文档
 

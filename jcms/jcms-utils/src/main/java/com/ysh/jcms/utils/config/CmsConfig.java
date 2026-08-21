@@ -166,6 +166,7 @@ public class CmsConfig {
     @Accessors(fluent = true)
     public static class Security {
         private boolean enabled = false;
+        private boolean required = false;
         private long timeTolerance = 300;
         private Keystore keystore = new Keystore();
         private Truststore truststore = new Truststore();
@@ -275,6 +276,7 @@ public class CmsConfig {
         }
         if (other.security != null) {
             security.enabled = other.security.enabled;
+            security.required = other.security.required;
         }
         if (other.scl != null) {
             if (other.scl.conformanceMode != null && !other.scl.conformanceMode.equals("LOOSE"))

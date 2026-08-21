@@ -81,6 +81,17 @@ public class GmTrustManager {
             return true;
         }
 
+        // Check chain: the certificate is issued by any trusted CA
+        for (X509Certificate ca : trustedCertificates) {
+            try {
+                certificate.verify(ca.getPublicKey());
+                log.debug("Certificate trusted by CA signature");
+                return true;
+            } catch (Exception ignored) {
+                // try next trusted certificate
+            }
+        }
+
         return false;
     }
 

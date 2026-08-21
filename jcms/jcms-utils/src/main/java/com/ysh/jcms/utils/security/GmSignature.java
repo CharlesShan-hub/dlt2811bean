@@ -353,4 +353,37 @@ public class GmSignature {
             throw new SecurityException("Failed to generate self-signed certificate", e);
         }
     }
+
+    /**
+     * Issues a certificate signed by the given CA key pair (issuer = CA subject,
+     * subject = {@code subjectDN}). Used to build a CA-issued server/client
+     * certificate whose chain verifies against the CA certificate via
+     * {@code cert.verify(caCert.getPublicKey())}.
+     *
+     * @param caKeyPair
+     *            CA key pair (issuer)
+     * @param subjectPublicKey
+     *            the subject's public key
+     * @param subjectDN
+     *            subject DN
+     * @return the CA-issued certificate
+     */
+    public static X509Certificate issueCertificate(KeyPair caKeyPair, PublicKey subjectPublicKey, String subjectDN) {
+        try {
+            long now = System.currentTimeMillis();
+            Date notBefore = new Date(now - 24 * 60 * 60 * 1000); // Yesterday
+            Date notAfter = new Date(now + 365L * 24 * 60 * 60 * 1000); // 1 year
+
+            // Use a fixed issuer DN for generated test CA certificates.
+            JcaX509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(
+                    new X500Name("CN=CMS Test CA"), BigInteger.valueOf(now), notBefore, notAfter, new X500Name(subjectDN),
+                    subjectPublicKey);
+
+            ContentSigner signer = new JcaContentSignerBuilder(SIGNATURE_ALGORITHM).setProvider(PROVIDER).build(caKeyPair.getPrivate());
+
+            return new JcaX509CertificateConverter().setProvider(PROVIDER).getCertificate(certBuilder.build(signer));
+        } catch (Exception e) {
+            throw new SecurityException("Failed to issue certificate", e);
+        }
+    }
 }

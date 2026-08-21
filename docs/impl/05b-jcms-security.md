@@ -252,9 +252,10 @@ node.setCredentialManager(ctx.credentialManager());
 // 生产环境：从配置文件加载 CA + 证书 + 私钥
 SecurityContext ctx = SecurityContext.fromConfig(CmsConfigLoader.load());
 // security.enabled=true 时：
+//   - 首次运行自动生成 SM2 CA 证书（truststore）与本地证书+私钥（keystore）
 //   - 从 security.truststore.path 加载 CA 根证书
 //   - 从 security.keystore.path 加载本地证书和私钥
-//   - 启用真实 CA 校验（不信任自签名证书）
+//   - 启用真实 CA 签发校验（cert.verify(caKey)，不信任自签名证书）
 //   - 验证签名时间差（防重放，默认 5 分钟）
 // security.enabled=false 时：
 //   - 回退到 generateSelfSigned() + trustAll
@@ -286,7 +287,8 @@ SecurityContext ctx = SecurityContext.fromConfig(CmsConfigLoader.load());
 
 ```yaml
 security:
-  enabled: false                    # 总开关
+  enabled: false                    # 是否启用真实认证机制（false=自认证/trustAll）
+  required: false                   # 是否强制客户端认证（仅 enabled=true 时有效）
   timeTolerance: 300                # 签名时间容差（秒），默认 5min
   keystore:
     path: "certs/server.pfx"        # 服务端密钥库（PKCS12）
@@ -296,4 +298,17 @@ security:
     password: "changeit"
 ```
 
-`SecurityContext.fromConfig()` 读取 `application.yaml` 的 `security.*` 配置，根据 `enabled` 标志决定使用 CA 验证还是自签名 trustAll：
+`enabled` 与 `required` 是两个正交开关，组合出三个档位：
+
+| `enabled` | `required` | 档位 | 服务端行为 |
+| --- | --- | --- | --- |
+| `false` | `false` | ① 不认证 | 自签名 + trustAll，客户端带不带都放行 |
+| `true` | `false` | ② 可选认证 | CA 校验；客户端带了就验，没带也放行 |
+| `true` | `true` | ③ 强制认证 | CA 校验 + 必须携带，缺或验不过就拒绝 |
+| `false` | `true` | ④ 模拟安全 | 启动告警，但仍按 trustAll 运行（本地证书未配好的"安全姿态"） |
+
+- `enabled` 决定「怎么验」：`false` → trustAll；`true` → CA 签发校验（`cert.verify(caKey)`）。
+- `required` 决定「要不要验」：`true` → 客户端必须带认证参数；`false` → 可带可不带。
+- `enabled=false, required=true` 不视为错误：启动时告警，但继续按 trustAll 运行，适合"想摆出安全姿态、本地证书还没配好"的场景。
+
+`SecurityContext.fromConfig()` 读取 `security.*`，按 `enabled` 决定 CA 验证还是自签名 trustAll；`AssociateServer` 再按 `enabled` + `required` 决定是否强制校验。

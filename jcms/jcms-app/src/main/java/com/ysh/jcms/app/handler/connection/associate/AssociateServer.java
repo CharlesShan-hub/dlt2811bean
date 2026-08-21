@@ -8,6 +8,8 @@ import com.ysh.jcms.core.data.sequence.connection.CmsAuthenticationParameter;
 import com.ysh.jcms.core.pdu.connection.CmsAssociateError;
 import com.ysh.jcms.core.pdu.connection.CmsAssociateRequest;
 import com.ysh.jcms.core.pdu.connection.CmsAssociateResponse;
+import com.ysh.jcms.utils.config.CmsConfig;
+import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.service.SclAccessPointService;
 import com.ysh.jcms.core.info.CmsServiceInfo;
@@ -40,6 +42,11 @@ public class AssociateServer extends BaseServerHandler<CmsAssociateRequest, CmsA
             int authError = security.validate(req, sapRef);
             if (authError != CmsServiceError.NO_ERROR)
                 return onDecodeError(reqId, authError);
+        } else {
+            CmsConfig.Security sec = CmsConfigLoader.load().security();
+            // 强制认证：enabled && required 时，缺失认证参数直接拒绝
+            if (sec.enabled() && sec.required())
+                return onDecodeError(reqId, CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE);
         }
 
         byte[] assocId = AssociationIdGenerator.generate();

@@ -1,11 +1,19 @@
 package com.ysh.jcms.utils.security;
 
 import com.ysh.jcms.utils.config.CmsConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyPair;
+import java.security.KeyStore;
 import java.security.Security;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
@@ -24,6 +32,8 @@ import java.security.cert.X509Certificate;
  * </pre>
  */
 public class SecurityContext {
+
+    private static final Logger log = LoggerFactory.getLogger(SecurityContext.class);
 
     private final GmCredentialManager credentialManager;
     private final GmAuthenticator authenticator;
@@ -56,8 +66,13 @@ public class SecurityContext {
     public static SecurityContext fromConfig(CmsConfig config) throws Exception {
         CmsConfig.Security sec = config.security();
         if (!sec.enabled()) {
+            if (sec.required())
+                log.warn("security.required=true is ignored because security.enabled=false");
             return generateSelfSigned();
         }
+
+        // 自动生成缺失的 CA 证书与本地密钥库（首次运行开箱即用）
+        ensureCertificates(sec);
 
         // 加载 CA 证书（truststore）
         X509Certificate caCert = loadCertificate(sec.truststore().path());
@@ -73,6 +88,54 @@ public class SecurityContext {
         GmAuthenticator auth = new GmAuthenticator(trustManager, timeTolerance);
 
         return new SecurityContext(cm, auth, cm.getCertificate());
+    }
+
+    /**
+     * Ensures the CA certificate and local keystore exist. If either is missing,
+     * generates a fresh SM2 CA and a CA-issued local certificate + keystore.
+     *
+     * <p>
+     * CA certificate is written as DER to {@code security.truststore.path}; the
+     * local certificate + private key (+ CA chain) as PKCS12 to
+     * {@code security.keystore.path}.
+     */
+    private static void ensureCertificates(CmsConfig.Security sec) throws Exception {
+        String caPath = sec.truststore().path();
+        String ksPath = sec.keystore().path();
+        boolean caExists = caPath != null && Files.exists(Paths.get(caPath));
+        boolean ksExists = ksPath != null && Files.exists(Paths.get(ksPath));
+        if (caExists && ksExists)
+            return;
+
+        // 1. CA key pair + self-signed CA certificate
+        KeyPair caKeyPair = GmSignature.generateKeyPair();
+        X509Certificate caCert = GmSignature.generateSelfSignedCertificate(caKeyPair, "CN=CMS Test CA");
+
+        // 2. Local key pair + CA-issued local certificate
+        KeyPair localKeyPair = GmSignature.generateKeyPair();
+        X509Certificate localCert = GmSignature.issueCertificate(caKeyPair, localKeyPair.getPublic(), "CN=CMS Local");
+
+        if (!caExists && caPath != null) {
+            Path p = Paths.get(caPath);
+            if (p.getParent() != null)
+                Files.createDirectories(p.getParent());
+            Files.write(p, caCert.getEncoded());
+            log.info("Generated CA certificate: {}", p.toAbsolutePath());
+        }
+
+        if (!ksExists && ksPath != null) {
+            Path p = Paths.get(ksPath);
+            if (p.getParent() != null)
+                Files.createDirectories(p.getParent());
+            KeyStore ks = KeyStore.getInstance("PKCS12", "BC");
+            ks.load(null, null);
+            ks.setKeyEntry("cms", localKeyPair.getPrivate(), sec.keystore().password().toCharArray(),
+                    new Certificate[]{localCert, caCert});
+            try (FileOutputStream out = new FileOutputStream(p.toFile())) {
+                ks.store(out, sec.keystore().password().toCharArray());
+            }
+            log.info("Generated local keystore: {}", p.toAbsolutePath());
+        }
     }
 
     /** 客户端凭证（私钥 + 证书）。 */
