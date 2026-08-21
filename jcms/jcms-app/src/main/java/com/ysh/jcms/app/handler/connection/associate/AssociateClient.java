@@ -102,7 +102,7 @@ public class AssociateClient extends BaseClientHandler<AssociateDao> {
         // 3. 如果配置了 CA，验证证书是否由 CA 签发
         CmsConfig.Security sec = CmsConfigLoader.load().security();
         if (sec.enabled()) {
-            X509Certificate caCert = loadCaCertificate(sec.truststore().path());
+            X509Certificate caCert = loadCaCertificate(sec.cert().caPath());
             try {
                 serverCert.verify(caCert.getPublicKey());
                 log.info("Server certificate verified against CA: {}", caCert.getSubjectX500Principal().getName());

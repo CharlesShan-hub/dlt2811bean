@@ -75,13 +75,13 @@ public class SecurityContext {
         ensureCertificates(sec);
 
         // 加载 CA 证书（truststore）
-        X509Certificate caCert = loadCertificate(sec.truststore().path());
+        X509Certificate caCert = loadCertificate(sec.cert().caPath());
 
         // 构造信任管理器（加入 CA 证书）
         GmTrustManager trustManager = new GmTrustManager().addTrustedCertificate(caCert);
 
         // 加载本地证书和私钥（keystore）
-        GmCredentialManager cm = GmCredentialManager.forServer(sec.keystore().path(), sec.keystore().password(), null);
+        GmCredentialManager cm = GmCredentialManager.forServer(sec.cert().keystorePath(), sec.cert().password(), null);
 
         // 构造认证器（CA 验证 + 时间检查）
         long timeTolerance = sec.timeTolerance();
@@ -100,10 +100,11 @@ public class SecurityContext {
      * {@code security.keystore.path}.
      */
     private static void ensureCertificates(CmsConfig.Security sec) throws Exception {
-        String caPath = sec.truststore().path();
-        String ksPath = sec.keystore().path();
-        boolean caExists = caPath != null && Files.exists(Paths.get(caPath));
-        boolean ksExists = ksPath != null && Files.exists(Paths.get(ksPath));
+        String caPath = sec.cert().caPath();
+        String ksPath = sec.cert().keystorePath();
+        String password = sec.cert().password();
+        boolean caExists = Files.exists(Paths.get(caPath));
+        boolean ksExists = Files.exists(Paths.get(ksPath));
         if (caExists && ksExists)
             return;
 
@@ -115,7 +116,7 @@ public class SecurityContext {
         KeyPair localKeyPair = GmSignature.generateKeyPair();
         X509Certificate localCert = GmSignature.issueCertificate(caKeyPair, localKeyPair.getPublic(), "CN=CMS Local");
 
-        if (!caExists && caPath != null) {
+        if (!caExists) {
             Path p = Paths.get(caPath);
             if (p.getParent() != null)
                 Files.createDirectories(p.getParent());
@@ -123,16 +124,18 @@ public class SecurityContext {
             log.info("Generated CA certificate: {}", p.toAbsolutePath());
         }
 
-        if (!ksExists && ksPath != null) {
+        if (!ksExists) {
             Path p = Paths.get(ksPath);
             if (p.getParent() != null)
                 Files.createDirectories(p.getParent());
             KeyStore ks = KeyStore.getInstance("PKCS12", "BC");
-            ks.load(null, null);
-            ks.setKeyEntry("cms", localKeyPair.getPrivate(), sec.keystore().password().toCharArray(),
+            // Use the real password when initializing the empty keystore; otherwise
+            // BC stores it without a valid MAC and JDK/BouncyCastle can't reload it.
+            ks.load(null, password.toCharArray());
+            ks.setKeyEntry("cms", localKeyPair.getPrivate(), password.toCharArray(),
                     new Certificate[]{localCert, caCert});
             try (FileOutputStream out = new FileOutputStream(p.toFile())) {
-                ks.store(out, sec.keystore().password().toCharArray());
+                ks.store(out, password.toCharArray());
             }
             log.info("Generated local keystore: {}", p.toAbsolutePath());
         }

@@ -51,9 +51,6 @@ protocol:
 security:
   enabled: true
   required: false
-  keystore:
-    path: certs/server.pfx
-    password: changeit
-  truststore:
-    path: certs/ca.cer
+  cert:
+    rootPath: config/certs
     password: changeit

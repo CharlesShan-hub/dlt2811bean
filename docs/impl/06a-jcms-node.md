@@ -317,37 +317,45 @@ node.registerClient(handler)        → clientHandlers[class] = handler
 
 | 模块 | 使用方式 |
 |------|---------|
-| **jcms-utils/transport** | `InnerServer` 使用 `ServerAcceptor` + `Dispatcher`；`InnerClient` 使用 `ClientConnector` + `ClientSession` |
-| **jcms-utils/scl** | `SclManager` 通过 `SclReader` 加载 SCL 文件 |
+| **jcms-utils/transport** | `InnerServer` → `ServerAcceptor` + `Dispatcher`；`InnerClient` → `ClientConnector` + `ClientSession` |
+| **jcms-utils/scl** | `SclManager` 通过 `SclReader` 加载 SCL 文件并运行一致性检查 |
 | **jcms-utils/config** | 从 `CmsConfigLoader` 读取端口、保活、SCL 路径等配置 |
-| **jcms-utils/security** | `CmsNode` 初始化 `GmCredentialManager` |
-| **jcms-core/data/svc** | Handler 中使用 data/svc PDU 类型编解码帧的 ASDU |
+| **jcms-utils/security** | 初始化 `GmCredentialManager` 管理国密/TLS 凭证 |
+| **jcms-core/data/svc** | Handler 中使用 data/svc PDU 类型编解码 ASDU |
 
-## 完整使用示例
+## 快速使用
 
+### 方式一：CmsServer（服务端）
 ```java
-// 1. 创建节点（服务端 + 客户端）
+// 创建预置所有服务的服务端节点
+CmsServer server = new CmsServer();
+server.start(true);  // 启动，加载 testSclFiles
+```
+
+### 方式二：CmsClient（客户端）
+```java
+// 创建预置所有客户端 Handler 的节点
+CmsClient client = new CmsClient();
+// 或指定 SCL 文件
+CmsClient client = new CmsClient("config/sample.scd");
+
+// 连接
+client.connect("127.0.0.1", 8102);
+
+// 执行操作（DAO 自动定位 Handler）
+AssociateDao dao = new AssociateDao("C_B5041X", "S1");
+client.execute(dao);
+```
+
+### 方式三：CmsNode（自定义）
+```java
+// 创建自定义节点
 CmsNode node = new CmsNode(true);
 
-// 2. 注册服务端 Handler
-node.registerServer(new GetDataValuesHandler());
-node.registerServer(new SetDataValuesHandler());
-node.registerServer(new GetServerDirectoryHandler());
+// 注册自定义 Handler
+node.registerServer(new MyCustomHandler());
+node.registerClient(new MyCustomClient());
 
-// 3. 注册客户端 Handler
-node.registerClient(new AssociateClient());
-node.registerClient(new GetDataValuesClient());
-
-// 4. 启动服务端
-node.start(true);
-
-// 5. 客户端连接另一台设备
-node.connect("192.168.1.100", 8102);
-
-// 6. 执行客户端操作
-AssociateDao dao = new AssociateDao("C_B5041X", "S1");
-CmsAssociateResponse resp = node.execute(AssociateClient.class, dao);
-
-// 7. 关闭
-node.stop();
+// 启动
+node.start(false);  // 加载生产配置
 ```

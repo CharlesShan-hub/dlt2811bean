@@ -252,9 +252,8 @@ node.setCredentialManager(ctx.credentialManager());
 // 生产环境：从配置文件加载 CA + 证书 + 私钥
 SecurityContext ctx = SecurityContext.fromConfig(CmsConfigLoader.load());
 // security.enabled=true 时：
-//   - 首次运行自动生成 SM2 CA 证书（truststore）与本地证书+私钥（keystore）
-//   - 从 security.truststore.path 加载 CA 根证书
-//   - 从 security.keystore.path 加载本地证书和私钥
+//   - 首次运行自动生成 SM2 CA 证书与本地证书+私钥（见 security.cert.rootPath）
+//   - 从 security.cert.rootPath 下加载 ca.cer（CA 根证书）与 server.pfx（本地密钥库）
 //   - 启用真实 CA 签发校验（cert.verify(caKey)，不信任自签名证书）
 //   - 验证签名时间差（防重放，默认 5 分钟）
 // security.enabled=false 时：

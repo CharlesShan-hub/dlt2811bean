@@ -168,21 +168,23 @@ public class CmsConfig {
         private boolean enabled = false;
         private boolean required = false;
         private long timeTolerance = 300;
-        private Keystore keystore = new Keystore();
-        private Truststore truststore = new Truststore();
+        private Cert cert = new Cert();
 
         @Data
         @Accessors(fluent = true)
-        public static class Keystore {
-            private String path = "certs/server.pfx";
+        public static class Cert {
+            private String rootPath = "config/certs";
             private String password = "changeit";
-        }
 
-        @Data
-        @Accessors(fluent = true)
-        public static class Truststore {
-            private String path = "certs/ca.cer";
-            private String password = "changeit";
+            /** CA 根证书文件路径（相对于 rootPath）。 */
+            public String caPath() {
+                return rootPath + "/ca.cer";
+            }
+
+            /** 本地密钥库文件路径（相对于 rootPath）。 */
+            public String keystorePath() {
+                return rootPath + "/server.pfx";
+            }
         }
     }
 
@@ -277,6 +279,12 @@ public class CmsConfig {
         if (other.security != null) {
             security.enabled = other.security.enabled;
             security.required = other.security.required;
+            if (other.security.cert != null) {
+                if (other.security.cert.rootPath != null && !other.security.cert.rootPath.equals("config/certs"))
+                    security.cert.rootPath = other.security.cert.rootPath;
+                if (other.security.cert.password != null && !other.security.cert.password.equals("changeit"))
+                    security.cert.password = other.security.cert.password;
+            }
         }
         if (other.scl != null) {
             if (other.scl.conformanceMode != null && !other.scl.conformanceMode.equals("LOOSE"))
